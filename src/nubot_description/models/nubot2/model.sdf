@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.4">
+   <model name="nubot1">
+      <static>false</static>
+      <link name="chassis">
+         <pose>0 0 0.3 0 0 0</pose>
+         <inertial>
+            <mass>31</mass>
+            <pose>0 0 0 0 0 0</pose>
+            <inertia>
+               <ixx>100</ixx>
+               <ixy>0</ixy>
+               <ixz>0</ixz>
+               <iyy>100</iyy>
+               <iyz>0</iyz>
+               <izz>2.86</izz>
+            </inertia>
+         </inertial>
+         <collision name="robot_collision">
+            <pose>0 0 0 0 0 0</pose>
+            <geometry>
+               <!-- <mesh>
+                  <scale>0.9 0.9 1.1</scale>
+                  <uri>file://meshes/nubot_frame_collision.dae</uri>
+               </mesh> -->
+               <cylinder>
+                  <radius>0.23</radius>
+                  <length>0.6</length>
+               </cylinder>
+            </geometry>
+            <surface>
+               <bounce>
+                  <restitution_coefficient>0</restitution_coefficient>
+               </bounce>
+               <friction>
+                  <ode>
+                     <mu>0.1</mu>
+                     <mu2>0.1</mu2>
+                  </ode>
+               </friction>
+            </surface>
+         </collision>
+         <visual name="visual">
+            <pose>0 0.04 -0.68 0 0 1.57</pose>
+            <geometry>
+               <mesh>
+                  <!-- <scale>1.0 1.0 1.1</scale> -->
+                  <scale>0.001 0.001 0.001</scale>
+                  <uri>file://meshes/nubot_frame/robot6th.stl</uri>
+                  <!-- <uri>file://meshes/nubot_frame/nubot_frame1.dae</uri> -->
+               </mesh>
+            </geometry>
+         </visual>
+         <velocity_decay>
+            <linear>0</linear>
+            <angular>0</angular>
+         </velocity_decay>
+         <self_collide>0</self_collide>
+         <gravity>1</gravity>
+      </link>
+
+      <joint name="scan_joint" type="fixed">
+         <parent>chassis</parent>
+         <child>base_scan</child>
+         <pose>0 0.0 0 0 0 0</pose>
+         <axis>
+            <xyz>0 0 1</xyz>
+         </axis>
+      </joint>
+      
+      <link name="base_scan">
+         <pose>-0.000113 -0.003369 0.645 0 0 0</pose>
+
+         <collision name="box_collision">
+            <geometry>
+            <cylinder>
+              <radius>.03</radius>
+              <length>.01</length>
+            </cylinder>
+            </geometry>
+         </collision>
+
+         <visual name="visual">
+            <geometry>
+            <cylinder>
+              <radius>.03</radius>
+              <length>.01</length>
+            </cylinder>
+            </geometry>
+         </visual>
+         <sensor type="ray" name="lds_lfcd_sensor">
+            <pose>0 0 -0.005 0 0 0</pose>
+            <visualize>true</visualize>
+            <!-- <visualize>false</visualize> -->
+            <update_rate>1800</update_rate>
+            <ray>
+            <scan>
+               <horizontal>
+                  <samples>360</samples>
+                  <!-- <samples>60</samples> -->
+                  <resolution>1</resolution>
+                  <min_angle>0.0</min_angle>
+                  <max_angle>6.28</max_angle>
+               </horizontal>
+            </scan>
+            <range>
+               <min>0.20</min>
+               <max>2.5</max>
+               <resolution>0.015</resolution>
+            </range>
+            <noise>
+               <type>gaussian</type>
+               <mean>0.0</mean>
+               <stddev>0.01</stddev>
+            </noise>
+            </ray>
+            <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_laser.so">
+            <topicName>scan</topicName>
+            <frameName>base_scan</frameName>
+            </plugin>
+         </sensor>
+      </link>
+
+      <plugin name="nubot_gazebo" filename="libnubot_gazebo.so" />
+
+   </model>
+</sdf>
+<!-- for copy-paste :)
+    <plugin name="nubot_gazebo"     filename="libnubot_gazebo.so"/>
+    <plugin name="world_model"      filename="libworld_model.so"/>
+    <plugin name="nubot_control"    filename="libnubot_control.so"/>
+-->
