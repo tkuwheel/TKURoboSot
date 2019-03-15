@@ -59,68 +59,6 @@
          <gravity>1</gravity>
       </link>
 
-      <joint name="scan_joint" type="fixed">
-         <parent>chassis</parent>
-         <child>base_scan</child>
-         <pose>0 0.0 0 0 0 0</pose>
-         <axis>
-            <xyz>0 0 1</xyz>
-         </axis>
-      </joint>
-      
-      <link name="base_scan">
-         <pose>-0.000113 -0.003369 0.645 0 0 0</pose>
-
-         <collision name="box_collision">
-            <geometry>
-            <cylinder>
-              <radius>.03</radius>
-              <length>.01</length>
-            </cylinder>
-            </geometry>
-         </collision>
-
-         <visual name="visual">
-            <geometry>
-            <cylinder>
-              <radius>.03</radius>
-              <length>.01</length>
-            </cylinder>
-            </geometry>
-         </visual>
-         <sensor type="ray" name="lds_lfcd_sensor">
-            <pose>0 0 -0.005 0 0 0</pose>
-            <visualize>true</visualize>
-            <!-- <visualize>false</visualize> -->
-            <update_rate>1800</update_rate>
-            <ray>
-            <scan>
-               <horizontal>
-                  <samples>360</samples>
-                  <!-- <samples>60</samples> -->
-                  <resolution>1</resolution>
-                  <min_angle>0.0</min_angle>
-                  <max_angle>6.28</max_angle>
-               </horizontal>
-            </scan>
-            <range>
-               <min>0.20</min>
-               <max>2.5</max>
-               <resolution>0.015</resolution>
-            </range>
-            <noise>
-               <type>gaussian</type>
-               <mean>0.0</mean>
-               <stddev>0.01</stddev>
-            </noise>
-            </ray>
-            <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_laser.so">
-            <topicName>scan</topicName>
-            <frameName>base_scan</frameName>
-            </plugin>
-         </sensor>
-      </link>
-
       <plugin name="nubot_gazebo" filename="libnubot_gazebo.so" />
 
    </model>

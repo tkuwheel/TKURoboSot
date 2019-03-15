@@ -28,8 +28,7 @@ class Strategy(object):
                 angle_type = 'alpha'
             br_x = self.ball_dis * math.cos(math.radians(self.ball_ang))
             br_y = self.ball_dis * math.sin(math.radians(self.ball_ang))
-
-            if self.ball_dis <= 50 and self.ball_ang <= 20:
+            if self.ball_dis <= 50 and abs(self.ball_ang) <= 20:
                 v_x = self.right_goal_dis * math.cos(math.radians(self.right_goal_ang))
                 v_y = self.right_goal_dis * math.sin(math.radians(self.right_goal_ang))
                 v_yaw = self.right_goal_ang
@@ -65,24 +64,47 @@ class Strategy(object):
         self.right_goal_dis = goal_info.right_radius
         self.right_goal_ang = goal_info.right_angle
 
-    def pubNubotCtrl(self, v_x, v_y, v_yaw):
-        vel = VelCmd()
-        vel.Vx = v_x/5
-        vel.Vy = v_y/5
-        vel.w = v_yaw/18
-        if abs(vel.w) >= 10:
-            if vel.w < 0:
-                vel.w = -10
-            else:
-                vel.w = 10
-        elif abs(vel.w) <= 1:
-            if vel.w < 0:
-                vel.w = -0.1
-            else:
-                vel.w = 0.1
+    def pubNubotCtrl(self, x, y, yaw):
+        angle = yaw
+        velocity = math.hypot(x, y)
+        if x != 0:
+            alpha = math.degrees(math.atan2(y, x))
         else:
+            alpha = 0
+        dis_max = 2
+        dis_min = 0.3
+        velocity_max = 70
+        velocity_min = 50
+        angular_velocity_max = 2
+        angular_velocity_min = 0.5
+        angle_max = 144
+        angle_min = 20
+        angle_out = angle
+        if velocity == 0:
             pass
-
+        elif velocity > dis_max:
+            velocity = velocity_max
+        elif velocity < dis_min:
+            velocity = velocity_min
+        else:
+            velocity = (velocity_max - velocity_min) * (math.cos((((velocity - dis_min) / (dis_max-dis_min) - 1) * math.pi)) + 1 )/ 2 + velocity_min
+        if angle == 0:
+            pass
+        elif abs(angle) > angle_max:
+            angle_out = angular_velocity_max
+        elif abs(angle) < angle_min:
+            angle_out = angular_velocity_min
+        else:
+            angle_out = (angular_velocity_max - angular_velocity_min) * (math.cos((((angle - angle_min) / (angle_max-angle_min) - 1) * math.pi)) + 1 )/ 2 + angular_velocity_min
+        if angle < 0:
+            angle_out = -angle_out
+        x = velocity * math.cos(math.radians(alpha))
+        y = velocity * math.sin(math.radians(alpha))
+        yaw = angle_out
+        vel = VelCmd()
+        vel.Vx = x
+        vel.Vy = y
+        vel.w = yaw
         self.nubot_cmd_pub.publish(vel)
 
 if __name__ == '__main__':
