@@ -1,0 +1,11 @@
+2019 (c) RoboSot Software
+Developer NEET <zxc455233@gmail.com>
+URL: http://www.iarc.tku.edu.tw
+
+RoboSot Software is licensed under MIT License. You can read MIT License in LICENSE file.
+
+RoboSot Software contains Gazebo Simulator Kit by nubot-nudt in directory named Simulator (https://github.com/nubot-nudt/gazebo_visual) under Apache License 2.0. For the licensing rule and related notices of Gazebo Simulator Kit, please see the THIRDPARTY file.
+
+RoboSot Software have adjusted Gazebo Simulator Kit, as below:
+  1. Add the FIRA_Field and FIRA_Goal to nubot_description/models
+  2. Change robots model file in nubot_description/models/nubot[1-5]
