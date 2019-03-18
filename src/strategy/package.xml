@@ -1,0 +1,21 @@
+<package>
+  <name>strategy</name>
+  <version>0.1.0</version>
+  <description>Transfer some topic and services</description>
+  <maintainer email="acgeusmile@gmail.com">Chen-You, Chu</maintainer>
+
+  <license>None</license>
+
+  <author email="acgeusmile@gmail.com">Chen-You, Chu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+
+  <build_depend>rospy</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>message_generation</run_depend>
+
+  <export>
+  </export>
+</package>
