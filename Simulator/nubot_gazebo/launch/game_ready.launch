@@ -21,7 +21,7 @@
   That -g flag as below is given to turn off the gazebo gui if you're going to 
   be working from the local machine
   -->
-  <node name="robot_up" pkg="nubot_gazebo" type="robot_up.sh" args="-g" respawn="false" output="screen"/>
+  <node name="robot_up" pkg="nubot_gazebo" type="robot_up.sh" args="-g" respawn="false" output="screen" />
   <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find nubot_description)/models/nubot1/model.sdf -sdf -x -2.0 -y -0.5 -z 0.0 -model nubot1" /> -->
 
   <include file="$(find transfer)/launch/transfer.launch"/>
