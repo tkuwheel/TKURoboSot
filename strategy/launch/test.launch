@@ -1,0 +1,4 @@
+<launch>
+<arg name="sim" default="" />
+<node name="core" pkg="strategy" type="core.py" args="$(arg sim)" output="screen" />
+</launch>

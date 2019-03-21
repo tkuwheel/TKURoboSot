@@ -13,12 +13,12 @@ then
 fi
 
 function Check() {
-  if grep -q "source $SCRIPT_PATH/.robot" "$HOME/.bashrc";
+  if grep -q "source $SCRIPT_PATH/.robot_ns" "$HOME/.bashrc";
   then
     echo "OK"
   else
-    echo "source $SCRIPT_PATH/.robot >> ~/.bashrc"
-    echo "source $SCRIPT_PATH/.robot" >> ~/.bashrc
+    echo "source $SCRIPT_PATH/.robot_ns >> ~/.bashrc"
+    echo "source $SCRIPT_PATH/.robot_ns" >> ~/.bashrc
   fi
 }
 
@@ -26,24 +26,24 @@ function Change() {
   echo "Select the NUMBER below: "
   select ns in "/robot1" "/robot2" "/robot3" "other"; do
     case $ns in
-      /robot1) export ROBOT=$ns;break;;
-      /robot2) export ROBOT=$ns;break;;
-      /robot3) export ROBOT=$ns;break;;
+      /robot1) export ROBOT_NS=$ns;break;;
+      /robot2) export ROBOT_NS=$ns;break;;
+      /robot3) export ROBOT_NS=$ns;break;;
       other)  read -p "Enter the NAMESPACE below:" ns
-              export ROBOT=$ns;break;;
+              export ROBOT_NS=$ns;break;;
     esac
   done
-  echo "\$ROBOT was already setting by '$ROBOT'"
-  echo "export ROBOT=$ROBOT" > $SCRIPT_PATH/.robot
+  echo "\$ROBOT_NS was already setting by '$ROBOT_NS'"
+  echo "export ROBOT_NS=$ROBOT_NS" > $SCRIPT_PATH/.robot_ns
   Check
 }
 
-if [ -z "$ROBOT" ]
+if [ -z "$ROBOT_NS" ]
 then
-  echo "\$ROBOT is empty."
+  echo "\$ROBOT_NS is empty."
   Change
 else
-  echo "\$ROBOT is '$ROBOT' now."
+  echo "\$ROBOT_NS is '$ROBOT_NS' now."
   read -t 10 -p "Do you want to change? (y/n)" response
   case $response in
     [yY][eE][sS] | [yY])
