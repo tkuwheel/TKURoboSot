@@ -21,11 +21,11 @@ class Robot(object):
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
     if not sim :
-      self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
-      self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number))
-    else:
       self._Subscriber("")
       self._Publisher("")
+    else:
+      self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
+      self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number))
 
   def _Subscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
