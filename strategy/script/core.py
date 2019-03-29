@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import rospy
-import sys, getopt
+import sys
 from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
-from my_print import log
+from my_sys import log, SysCheck
 
 class SoccerMachine(StateMachine):
   wait    = State('Wait', initial=True)
@@ -26,37 +26,25 @@ class Core(Robot):
   sm = SoccerMachine()
   def __init__(self, robot_num, sim = False):
     self.sim = sim
-    super(Core, self).__init__(robot_num)
+    super(Core, self).__init__(robot_num, sim)
   
   def Brain(self):
     obj = self.GetObjectInfo()
     if obj['ball']['dis'] is None:
       log("NONE")
     else:
-      self.RobotCtrl(50, 0, 0)
-      log(self.sm.current_state)
+      print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
 
 def main(argv):
   rospy.init_node('core', anonymous=True)
   rate = rospy.Rate(50)
 
-  try:
-    opts, args = getopt.getopt(argv,"hs",["help", "sim"])
-  except getopt.GetoptError:
-    log("[ERROR] Append argument --sim to start with simulative mode.", True)
-    sys.exit(2)
-
-  if len(argv) < 3:
-    log("Native Mode", rosout = True)
+  if SysCheck(argv) == "Native Mode":
+    log("Start Native")
     robot = Core(1)
-  else:
-    for opt, arg in opts:
-      if opt in ("-h", "--help"):
-        log("Append argument --sim to start with simulative mode.")
-        sys.exit()
-      elif opt in ("-s", "--sim"):
-        log("Simulative Mode", True)
-        robot = Core(1, True)
+  elif SysCheck(argv) == "Simulative Mode":
+    log("Start Sim")
+    robot = Core(1, True)
 
   while not rospy.is_shutdown():
     robot.Brain()
