@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.8.3)
 project(strategy)
 
 find_package(catkin REQUIRED COMPONENTS
-  dynamic_reconfigure
-  dynamic_tutorials
+#  dynamic_tutorials
   roscpp
   rospy
   std_msgs
+  dynamic_reconfigure
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -35,16 +35,18 @@ find_package(catkin REQUIRED COMPONENTS
 #   std_msgs
 # )
 
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/Tutorials.cfg
+)
+
+# make sure configure headers are built before any node using them
+#add_dependencies(example_node ${PROJECT_NAME}_gencfg)
 
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES strategy
-#  CATKIN_DEPENDS dynamic_reconfigure dynamic_tutorials roscpp rospy std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES strategy
+  CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs # dynamic_tutorials 
+  DEPENDS system_lib
 )
 
 include_directories(

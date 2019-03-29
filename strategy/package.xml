@@ -11,17 +11,17 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>dynamic_reconfigure</build_depend>
-  <build_depend>dynamic_tutorials</build_depend>
+  <!--<build_depend>dynamic_tutorials</build_depend>-->
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_export_depend>dynamic_reconfigure</build_export_depend>
-  <build_export_depend>dynamic_tutorials</build_export_depend>
+  <!--<build_export_depend>dynamic_tutorials</build_export_depend>-->
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <exec_depend>dynamic_reconfigure</exec_depend>
-  <exec_depend>dynamic_tutorials</exec_depend>
+  <!--<exec_depend>dynamic_tutorials</exec_depend>-->
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
