@@ -27,7 +27,7 @@ ImportError: No module named 'rospkg'
 ```
 Add the line to ~/.bashrc
 ```bash
-$ export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
+export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
 ```
 ### pip3 syntax error
 Error message:
