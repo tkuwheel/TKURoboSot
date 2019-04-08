@@ -49,7 +49,7 @@ add_dependencies(dynamic_reconfigure_node ${PROJECT_NAME}_gencfg)
 target_link_libraries(dynamic_reconfigure_node ${catkin_LIBRARIES})
 
 catkin_package(
-  INCLUDE_DIRS include
+# INCLUDE_DIRS include
   LIBRARIES strategy
   CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs # dynamic_tutorials 
   DEPENDS system_lib
