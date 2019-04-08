@@ -54,7 +54,9 @@ SyntaxError: invalid syntax
 ```
 
 Edit ```/usr/lib/python2.7/dist-packages/concurrent/futures/_base.py```
+
 Replace ```raise type(self._exception), self._exception, self._traceback```
+
 with ```raise Exception(self._exception).with_traceback(self._traceback)```
 <hr>
 
