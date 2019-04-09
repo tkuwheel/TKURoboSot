@@ -1,4 +1,5 @@
 <launch>
-<arg name="sim" default="" />
+<arg name="sim" default="false" />
 <node name="core" pkg="strategy" type="core.py" args="$(arg sim)" output="screen" />
+<node name="game_state_server" pkg="strategy" type="game_state_server" output="screen" />
 </launch>

@@ -11,7 +11,7 @@ void callback(strategy::GameStateConfig &config, uint32_t level) {
 
 int main(int argc, char **argv) 
 {
-  ros::init(argc, argv, "dynamic_server_node");
+  ros::init(argc, argv, "game_state_server");
 
   dynamic_reconfigure::Server<strategy::GameStateConfig> server;
   dynamic_reconfigure::Server<strategy::GameStateConfig>::CallbackType f;

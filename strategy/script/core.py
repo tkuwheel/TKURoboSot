@@ -4,7 +4,7 @@ import sys
 from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
-from my_sys import log, SysCheck
+from my_sys import log, SysCheck, logInOne
 
 class SoccerMachine(StateMachine):
   wait    = State('Wait', initial=True)
@@ -33,7 +33,13 @@ class Core(Robot):
     if obj['ball']['dis'] is None:
       log("NONE")
     else:
-      print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
+      # logInOne("Ball: [{:4.2f}, {:4.2f}] \
+      #         \tCyan Goal: [{:4.2f}, {:4.2f}] \
+      #         \tMagenta Goal: [{:4.2f}, {:4.2f}]".format(obj['ball']['dis'], obj['ball']['ang'], \
+      #                                                      obj['cyan_goal']['dis'], obj['cyan_goal']['ang'], \
+      #                                                      obj['magenta_goal']['dis'], obj['magenta_goal']['ang']))
+      gains = rospy.get_param("/game_state_server")
+      print("{}, {}, {}".format(gains['game_start'], gains['game_state'], gains['side']))
 
 def main(argv):
   rospy.init_node('core', anonymous=True)

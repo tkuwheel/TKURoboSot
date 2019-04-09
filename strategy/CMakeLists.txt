@@ -40,13 +40,13 @@ generate_dynamic_reconfigure_options(
 )
 
 # for dynamic reconfigure
-add_executable(dynamic_reconfigure_node src/server.cpp)
+add_executable(game_state_server src/game_state_server.cpp)
 
 # make sure configure headers are built before any node using them
-add_dependencies(dynamic_reconfigure_node ${PROJECT_NAME}_gencfg)
+add_dependencies(game_state_server ${PROJECT_NAME}_gencfg)
 
 # for dynamic reconfigure
-target_link_libraries(dynamic_reconfigure_node ${catkin_LIBRARIES})
+target_link_libraries(game_state_server ${catkin_LIBRARIES})
 
 catkin_package(
 # INCLUDE_DIRS include
