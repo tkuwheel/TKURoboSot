@@ -23,6 +23,7 @@ class Robot(object):
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
+    print(sim)
     if not sim :
       self._Subscriber("")
       self._Publisher("")

@@ -36,7 +36,6 @@ class Core(Robot):
   def __init__(self, robot_num, sim = False): #在最一開始創建函式時成立
     self.sim = sim
     super(Core, self).__init__(robot_num, sim)
-
   def Brain(self):
     obj = self.GetObjectInfo()
     if obj['ball']['dis'] == 0:
@@ -55,7 +54,7 @@ class Core(Robot):
 
       elif self.sm.is_chase :
         if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20:
-            self.ballhandle()
+           
             self.sm.assault()
         else:
           
