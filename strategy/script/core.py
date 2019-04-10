@@ -5,10 +5,9 @@ import math
 from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
-from my_sys import log, SysCheck
+from my_sys import log, SysCheck, logInOne
 from methods.chase import strategy
 from methods.attack import strategy as attack
-
 
 class SoccerMachine(StateMachine):
   wait    = State('Wait', initial=True)
@@ -37,6 +36,8 @@ class Core(Robot):
     self.sim = sim
     super(Core, self).__init__(robot_num, sim)
   def Brain(self):
+#     gains = rospy.get_param("/game_state_server")
+#     print("{}, {}, {}".format(gains['game_start'], gains['game_state'], gains['side']))
     obj = self.GetObjectInfo()
     if obj['ball']['dis'] == 0:
       log("NONE")  
@@ -109,9 +110,6 @@ class Core(Robot):
         y = velocity * math.sin(math.radians(alpha))
         yaw = angle_out
         self.RobotCtrl(x, y, yaw)
-          
-            
-       
 
 def main(argv):
   rospy.init_node('core', anonymous=True)
