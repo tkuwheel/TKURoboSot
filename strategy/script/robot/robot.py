@@ -65,21 +65,21 @@ class Robot(object):
     return self.__object_info
 
   def shoot(self,x,y) :
-    rospy.wait_for_service('nubot1/Shoot')
+    #rospy.wait_for_service('nubot1/Shoot')
     try:
       Shoot_client = rospy.ServiceProxy('nubot1/Shoot',Shoot)
       resp1 = Shoot_client(x,y)
       return resp1
-    except(rospy.ServiceException):
-      print("Service call failed")
+    except rospy.ServiceException :
+      print ("Service call failed")
 
   
   def ballhandle(self):
-    rospy.wait_for_service('nubot1/Ballhandle')
+    #rospy.wait_for_service('nubot1/Ballhandle')
     try:
       Ballhandle_client = rospy.ServiceProxy('nubot1/Ballhandle',BallHandle)
       resp1 = Ballhandle_client(1)
       return resp1
-    except(rospy.ServiceException):
-      print("Service call failed") 
+    except rospy.ServiceException :
+      print ("Service call failed")
   

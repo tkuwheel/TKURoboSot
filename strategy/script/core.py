@@ -54,8 +54,11 @@ class Core(Robot):
 
       elif self.sm.is_chase :
         if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20:
-           
+         
             self.sm.assault()
+              
+           
+            
         else:
           
           ro = strategy(self,obj)
@@ -67,6 +70,10 @@ class Core(Robot):
       elif self.sm.is_attack :
         if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20 :
           self.sm.enter()
+
+        x = obj['magenta_goal']['dis']-obj['ball']['dis']
+       
+        
         ro = attack(self,obj)
         log(self.sm.current_state)
         self.pubNubotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
