@@ -2,17 +2,20 @@ import rospy
 import math
 from nubot_common.msg import OminiVisionInfo
 from nubot_common.msg import VelCmd
+from nubot_common.srv import Shoot
+from nubot_common.srv import BallHandle
 from transfer.msg import PPoint
 
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 
+
 class Robot(object):
 
   __robot_info = {'location' : None}
-  __object_info = {'ball':{'dis' : None, 'ang' : None},
-                   'cyan_goal':{'dis' : None, 'ang' : None},
-                   'magenta_goal':{'dis' : None, 'ang' : None}}
+  __object_info = {'ball':{'dis' : 0, 'ang' : 0},
+                   'cyan_goal':{'dis' : 0, 'ang' : 0},
+                   'magenta_goal':{'dis' : 0, 'ang' : 0}}
 
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
@@ -60,3 +63,23 @@ class Robot(object):
 
   def GetObjectInfo(self):
     return self.__object_info
+
+  def shoot(self,x,y) :
+    rospy.wait_for_service('nubot1/Shoot')
+    try:
+      Shoot_client = rospy.ServiceProxy('nubot1/Shoot',Shoot)
+      resp1 = Shoot_client(x,y)
+      return resp1
+    except(rospy.ServiceException):
+      print("Service call failed")
+
+  
+  def ballhandle(self):
+    rospy.wait_for_service('nubot1/Ballhandle')
+    try:
+      Ballhandle_client = rospy.ServiceProxy('nubot1/Ballhandle',BallHandle)
+      resp1 = Ballhandle_client(1)
+      return resp1
+    except(rospy.ServiceException):
+      print("Service call failed") 
+  
