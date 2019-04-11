@@ -1,6 +1,11 @@
 import rospy
 import sys, getopt
 import re
+import time
+
+def logInOne(msg):
+  print(msg, end='\r')
+  time.sleep(.5)
 
 def log(msg, rosout = False, level = "INFO"):
   if rosout:
