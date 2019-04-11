@@ -36,11 +36,17 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 generate_dynamic_reconfigure_options(
-  cfg/Tutorials.cfg
+  cfg/GameState.cfg
 )
 
+# for dynamic reconfigure
+add_executable(game_state_server src/game_state_server.cpp)
+
 # make sure configure headers are built before any node using them
-#add_dependencies(example_node ${PROJECT_NAME}_gencfg)
+add_dependencies(game_state_server ${PROJECT_NAME}_gencfg)
+
+# for dynamic reconfigure
+target_link_libraries(game_state_server ${catkin_LIBRARIES})
 
 catkin_package(
 # INCLUDE_DIRS include
