@@ -14,7 +14,8 @@ class Robot(object):
   __robot_info = {'location' : None}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'cyan_goal':{'dis' : 0, 'ang' : 0},
-                   'magenta_goal':{'dis' : 0, 'ang' : 0}}
+                   'magenta_goal':{'dis' : 0, 'ang' : 0},
+                   'vecility' : 0 }
 
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
@@ -63,10 +64,10 @@ class Robot(object):
 
     dis_max = 2
     dis_min = 0.3
-    velocity_max = 70
-    velocity_min = 50
-    angular_velocity_max = 3
-    angular_velocity_min = 0.5
+    velocity_max = 80
+    velocity_min = 20
+    angular_velocity_max = 4.5
+    angular_velocity_min = 2
     angle_max = 144
     angle_min = 20
     angle_out = angle

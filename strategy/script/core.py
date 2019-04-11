@@ -17,9 +17,9 @@ class SoccerMachine(StateMachine):
   attack  = State('Attack')
   cross   = State('Cross')
  
-  enter = wait.to(chase) | attack.to(chase)
+  enter = wait.to(chase) | attack.to(chase) | cross.to(chase)
   stop = chase.to(wait) | attack.to(wait)|cross.to(wait)
-  assault = chase.to(attack)
+  assault = chase.to(attack) | cross.to(attack)
   circle = chase.to(cross)
   
   
@@ -40,30 +40,39 @@ class SoccerMachine(StateMachine):
 
 class Core(Robot):
   sm = SoccerMachine()
+  bh = 0
   def __init__(self, robot_num, sim = False):
     self.sim = sim
+    
     super(Core, self).__init__(robot_num, sim)
   def Brain(self):
 #     gains = rospy.get_param("/game_state_server")
 #     print("{}, {}, {}".format(gains['game_start'], gains['game_state'], gains['side']))
     obj = self.GetObjectInfo()
+    
     if obj['ball']['dis'] == 0:
       log("NONE")  
     else:
       if self.sm.is_wait :
-        if obj['ball']['dis'] >= 36 :
-          log(self.sm.current_state)
-          print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-          self.sm.enter()
+          
         if obj['ball']['dis'] <= 36 and abs(obj['magenta_goal']['dis'] <= 55) :
           log("NONE")    
           log(self.sm.current_state)
-          print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
           sys.exit()
+        else :
+          log(self.sm.current_state)
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
+          self.sm.enter()
+
+
+
       elif self.sm.is_chase :
-        if obj['ball']['dis'] <= 50:
-            self.sm.circle()
-            
+        if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20 and self.bh == 1:
+            self.sm.assault()
+        
+        elif self.bh == 0 and obj['ball']['dis'] <= 50:
+          self.sm.circle()
         else:
           ro = strategy(self,obj)
           log(self.sm.current_state)
@@ -71,29 +80,35 @@ class Core(Robot):
           print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
           if obj['ball']['dis'] <= 36 and abs(obj['magenta_goal']['dis'] <= 55) :  
             self.sm.stop()
+
+
+          
+
+
+
       elif self.sm.is_attack :
         if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20 :
           self.sm.enter()
-
-        x = obj['magenta_goal']['dis']-obj['ball']['dis']
-       
-        
         ro = attack(self,obj)
         log(self.sm.current_state)
         self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-        print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-      elif self.sm.is_cross :
-        
+        print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+          
 
-        x = obj['magenta_goal']['dis']-obj['ball']['dis']
-       
-        
+
+
+      elif self.sm.is_cross :
         ro = rotate(self,obj)
         log(self.sm.current_state)
-        
+        obj['velicity'] = math.hypot(ro['v_x'], ro['v_y'])
         self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-        print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-  
+        print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+        if  obj['magenta_goal']['ang'] <= 15  and obj['magenta_goal']['ang'] > 0 :
+          self.bh = 1
+          self.sm.stop()
+        
+        
+
           
             
        
