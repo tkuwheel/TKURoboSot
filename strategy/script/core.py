@@ -8,17 +8,22 @@ from std_msgs.msg import String
 from my_sys import log, SysCheck
 from methods.chase import strategy
 from methods.attack import strategy as attack
+from methods.cross import rotate
+
 
 
 class SoccerMachine(StateMachine):
   wait    = State('Wait', initial=True)
   chase   = State('Chase')
   attack  = State('Attack')
+  cross   = State('Cross')
  
 
   enter = wait.to(chase) | attack.to(chase)
-  stop = chase.to(wait) | attack.to(wait)
+  stop = chase.to(wait) | attack.to(wait)|cross.to(wait)
   assault = chase.to(attack)
+  circle = chase.to(cross)
+  
   
 
 
@@ -30,6 +35,10 @@ class SoccerMachine(StateMachine):
 
   def on_enter_attack(self):
     log("I'm attacking.")
+
+
+  def on_enter_cross(self):
+    log("I'm 轉ing.")
 
 class Core(Robot):
   sm = SoccerMachine()
@@ -53,9 +62,9 @@ class Core(Robot):
           sys.exit()
 
       elif self.sm.is_chase :
-        if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20:
+        if obj['ball']['dis'] <= 100 :
          
-            self.sm.assault()
+            self.sm.circle()
               
            
             
@@ -76,6 +85,17 @@ class Core(Robot):
         
         ro = attack(self,obj)
         log(self.sm.current_state)
+        self.pubNubotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
+        print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
+      elif self.sm.is_cross :
+        
+
+        x = obj['magenta_goal']['dis']-obj['ball']['dis']
+       
+        
+        ro = rotate(self,obj)
+        log(self.sm.current_state)
+        
         self.pubNubotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
         print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
   def pubNubotCtrl(self, x, y, yaw):
