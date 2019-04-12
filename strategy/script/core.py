@@ -89,23 +89,33 @@ class Core(Robot):
       elif self.sm.is_attack :
         if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20 :
           self.sm.enter()
-        ro = attack(self,obj)
-        log(self.sm.current_state)
-        self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-        print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+        else:
+          ro = attack(self,obj)
+          log(self.sm.current_state)
+          self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
           
 
 
 
       elif self.sm.is_cross :
-        ro = rotate(self,obj)
-        log(self.sm.current_state)
-        obj['velicity'] = math.hypot(ro['v_x'], ro['v_y'])
-        self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-        print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
-        if  obj['magenta_goal']['ang'] <= 15  and obj['magenta_goal']['ang'] > 0 :
-          self.bh = 1
-          self.sm.stop()
+        if obj['ball']['dis'] <= 40:
+          ro = rotate(self,obj)
+          log(self.sm.current_state)
+          obj['velicity'] = math.hypot(ro['v_x'], ro['v_y'])
+          self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+          if  obj['magenta_goal']['ang'] <= 15  and obj['magenta_goal']['ang'] > 0 :
+            self.bh = 1
+            self.sm.stop()
+
+        else:
+          ro = rotate(self,obj)
+          log(self.sm.current_state)
+          obj['velicity'] = math.hypot(ro['v_x'], ro['v_y'])
+          self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+
         
         
 
