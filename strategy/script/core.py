@@ -1,89 +1,78 @@
 #!/usr/bin/env python3
 import rospy
 import sys
+#sys.path.insert(0, "/home/superwheel/RoboSot/devel/lib/python2.7/dist-packages")
 import math
 from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
 from my_sys import log, SysCheck, logInOne
-from methods.chase import strategy
+from methods.chase import Chase
 from methods.attack import strategy as attack
+from dynamic_reconfigure.server import Server
+from strategy.cfg import GameStateConfig
 
-class SoccerMachine(StateMachine):
-  wait    = State('Wait', initial=True)
-  chase   = State('Chase')
-  attack  = State('Attack')
- 
-  enter = wait.to(chase) | attack.to(chase)
-  stop = chase.to(wait) | attack.to(wait)
-  assault = chase.to(attack)
+class Core(Robot, StateMachine):
+  idle   = State('Idle', initial = True)
+  chase  = State('Chase')
+  attack = State('Attack')
 
-  def on_enter_active(self):
-    log("I'm running~")
+  toChase  = idle.to(chase) | attack.to(chase)
+  toIdle   = chase.to(idle) | attack.to(idle)
+  toAttack = chase.to(attack)
 
-  def on_enter_wait(self):
-    log("I'm stopping.")
+  def on_toChase(self):
+    log("To Chase")
+  
+  def on_toIdle(self):
+    log("To Idle")
 
-  def on_enter_attack(self):
-    log("I'm attacking.")
+  def on_toAttack(self):
+    log("To Attack")
 
-class Core(Robot):
-  sm = SoccerMachine()
   def __init__(self, robot_num, sim = False):
+    self.CC  = Chase()
     self.sim = sim
     super(Core, self).__init__(robot_num, sim)
-  def Brain(self):
-#     gains = rospy.get_param("/game_state_server")
-#     print("{}, {}, {}".format(gains['game_start'], gains['game_state'], gains['side']))
-    obj = self.GetObjectInfo()
-    if obj['ball']['dis'] == 0:
-      log("NONE")  
-    else:
-      if self.sm.is_wait :
-        if obj['ball']['dis'] >= 36 :
-          log(self.sm.current_state)
-          print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-          self.sm.enter()
-        if obj['ball']['dis'] <= 36 and abs(obj['magenta_goal']['dis'] <= 55) :
-          log("NONE")    
-          log(self.sm.current_state)
-          print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-          sys.exit()
-      elif self.sm.is_chase :
-        if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20:
-            self.sm.assault()
-        else:
-          ro = strategy(self,obj)
-          log(self.sm.current_state)
-          self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-          print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
-          if obj['ball']['dis'] <= 36 and abs(obj['magenta_goal']['dis'] <= 55) :  
-            self.sm.stop()
-      elif self.sm.is_attack :
-        if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20 :
-          self.sm.enter()
-        ro = attack(self,obj)
-        log(self.sm.current_state)
-        self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-        print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
+    StateMachine.__init__(self)
 
-def main(argv):
-  rospy.init_node('core', anonymous=True)
-  rate = rospy.Rate(50)
+class Strategy(object):
+  def __init__(self):
+    pass
 
-  if SysCheck(argv) == "Native Mode":
-    log("Start Native")
-    robot = Core(1)
-  elif SysCheck(argv) == "Simulative Mode":
-    log("Start Sim")
-    robot = Core(1, True)
+  def Callback(self, config, level):
+    rospy.loginfo(config)
+    return config
 
-  while not rospy.is_shutdown():
-    robot.Brain()
-    rate.sleep()
+  def main(self, argv):
+    rospy.init_node('core', anonymous=True)
+    rate = rospy.Rate(10)
+
+    srv = Server(GameStateConfig, self.Callback)
+    print(srv)
+
+    if SysCheck(argv) == "Native Mode":
+      log("Start Native")
+      robot = Core(1)
+    elif SysCheck(argv) == "Simulative Mode":
+      log("Start Sim")
+      robot = Core(1, True)
+
+    while not rospy.is_shutdown():
+      gains = rospy.get_param("game_state_server", False)
+      targets = robot.GetObjectInfo()
+
+      while targets is not None:
+        targets = robot.GetObjectInfo()
+        if robot.is_idle:
+          print(robot.current_state)
+          exit()
+        rospy.spinOnce()
+        rate.sleep()
 
 if __name__ == '__main__':
   try:
-    main(sys.argv[1:])
+    s = Strategy()
+    s.main(sys.argv[1:])
   except rospy.ROSInterruptException:
     pass
