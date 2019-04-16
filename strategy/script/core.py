@@ -68,7 +68,7 @@ class Core(Robot):
 
 
       elif self.sm.is_chase :
-        if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20 and self.bh == 1:
+        if obj['ball']['dis'] <= 100 and self.bh == 1:
             self.sm.assault()
         
         elif self.bh == 0 and obj['ball']['dis'] <= 50:
@@ -82,12 +82,12 @@ class Core(Robot):
             self.sm.stop()
 
 
-          
+
 
 
 
       elif self.sm.is_attack :
-        if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20 :
+        if obj['ball']['dis'] > 200  :
           self.sm.enter()
         else:
           ro = attack(self,obj)
