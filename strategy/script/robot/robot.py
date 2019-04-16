@@ -15,7 +15,7 @@ class Robot(object):
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'cyan_goal':{'dis' : 0, 'ang' : 0},
                    'magenta_goal':{'dis' : 0, 'ang' : 0},
-                   'vecility' : 0 }
+                   'velocity' : 0 }
 
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
@@ -56,6 +56,7 @@ class Robot(object):
 
   def RobotCtrl(self, x, y, yaw):
     angle = yaw
+   
     velocity = math.hypot(x, y)
     if x != 0:
         alpha = math.degrees(math.atan2(y, x))

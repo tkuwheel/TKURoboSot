@@ -68,14 +68,16 @@ class Core(Robot):
 
 
       elif self.sm.is_chase :
-        if obj['ball']['dis'] <= 100 and self.bh == 1:
-            self.sm.assault()
+        if obj['ball']['dis'] <= 50 and abs(obj['ball']['ang']) <= 20:
+          self.sm.assault()
         
         elif self.bh == 0 and obj['ball']['dis'] <= 50:
           self.sm.circle()
         else:
           ro = strategy(self,obj)
           log(self.sm.current_state)
+          if self.bh == 0:
+            ro['v_yaw'] = obj['ball']['ang']
           self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
           print("Ball: {}\tCyan Goal: {}\tMagenta Goal: {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal']))
           if obj['ball']['dis'] <= 36 and abs(obj['magenta_goal']['dis'] <= 55) :  
@@ -87,13 +89,13 @@ class Core(Robot):
 
 
       elif self.sm.is_attack :
-        if obj['ball']['dis'] > 200  :
+        if obj['ball']['dis'] > 50 or abs(obj['ball']['ang']) > 20  :
           self.sm.enter()
         else:
           ro = attack(self,obj)
           log(self.sm.current_state)
           self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velocity']))
           
 
 
@@ -114,7 +116,7 @@ class Core(Robot):
           log(self.sm.current_state)
           obj['velicity'] = math.hypot(ro['v_x'], ro['v_y'])
           self.RobotCtrl(ro['v_x'], ro['v_y'], ro['v_yaw'])
-          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velicity']))
+          print("Ball:         {}\nCyan Goal:    {}\nMagenta Goal: {}\nVelicity:     {}".format(obj['ball'], obj['cyan_goal'], obj['magenta_goal'],obj['velocity']))
 
         
         

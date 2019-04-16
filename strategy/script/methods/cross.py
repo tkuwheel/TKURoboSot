@@ -3,7 +3,7 @@ import rospy
 import math
 
 def rotate(self,obj):
-  __pub_info = {'v_x':None,'v_y':None,'v_yaw':None}              
+  __pub_info = {'v_x':0,'v_y':0,'v_yaw':0}              
   alpha = 0.5 #math.radians(obj['ball']['ang'])
   #br_x = obj['ball']['dis'] * math.cos(math.radians(obj['ball']['ang']))
   #br_y = obj['ball']['dis'] * math.sin(math.radians(obj['ball']['ang']))
