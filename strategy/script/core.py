@@ -57,7 +57,7 @@ class Strategy(object):
 
   def main(self, argv):
     rospy.init_node('core', anonymous=True)
-    rate = rospy.Rate(30)
+    rate = rospy.Rate(1000)
 
     dsrv = Server(GameStateConfig, self.Callback)
 
@@ -71,9 +71,7 @@ class Strategy(object):
     while not rospy.is_shutdown():
       targets = robot.GetObjectInfo()
 
-      while targets is not None:
-        targets = robot.GetObjectInfo()
-
+      if targets is not None:
         if not robot.is_idle and not self.game_start:
           # stay idle
           robot.toIdle()
@@ -82,21 +80,20 @@ class Strategy(object):
           robot.toChase(targets)
         elif robot.is_chase and targets['ball']['dis'] >= 37:
           # keep chase
-          log("keep{}".format(targets['ball']['dis']))
+          # log("keep{}".format(targets['ball']['dis']))
           robot.toChase(targets)
-        elif robot.is_chase and targets['ball']['ang'] < 20:
+        elif robot.is_chase and targets['ball']['ang'] < 37:
           # go attack
           robot.toAttack(targets)
         elif robot.is_attack and targets['ball']['dis'] > 30:
           # back chase
           robot.toChase(targets)
 
-        if rospy.is_shutdown():
-          log('shutdown')
-          break
+      if rospy.is_shutdown():
+        log('shutdown')
+        break
 
-    rospy.spin()
-    rate.sleep()
+      # rate.sleep()
 
 if __name__ == '__main__':
   try:
