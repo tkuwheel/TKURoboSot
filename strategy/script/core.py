@@ -42,9 +42,12 @@ class Core(Robot, StateMachine):
     o = self.AC.ClassicAttacking(t['magenta_goal']['dis'], t['magenta_goal']['ang'])
     self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
+  def pubCurrentState(self):
+    self.RobotStatePub(self.current_state.identifier)
+
 class Strategy(object):
   def __init__(self):
-    gains = rospy.get_param("core")
+    gains = rospy.get_param("/core")
     self.game_start = gains['game_start']
     self.game_state = gains['game_state']
     self.side       = gains['side']
@@ -69,6 +72,8 @@ class Strategy(object):
       robot = Core(1, True)
 
     while not rospy.is_shutdown():
+
+      robot.pubCurrentState()
       targets = robot.GetObjectInfo()
 
       if targets is not None:
@@ -93,7 +98,7 @@ class Strategy(object):
         log('shutdown')
         break
 
-      # rate.sleep()
+      rate.sleep()
 
 if __name__ == '__main__':
   try:

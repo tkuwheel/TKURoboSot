@@ -5,9 +5,12 @@ from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
 from transfer.msg import PPoint
+from std_msgs.msg import String
 
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
+
+STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
 
@@ -28,7 +31,8 @@ class Robot(object):
       self._Publisher("")
     else:
       self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
-      self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number))
+      self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
+      self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
 
   def _Subscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
@@ -38,10 +42,8 @@ class Robot(object):
                       PPoint, \
                       self._GetGoalInfo)
 
-  def _Publisher(self, topic):
-    self.cmdvel_pub = rospy.Publisher(topic.format(self.robot_number), \
-                                      VelCmd, \
-                                      queue_size=1)
+  def _Publisher(self, topic, mtype):
+    return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
 
   def _GetOmniVsison(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
@@ -52,6 +54,11 @@ class Robot(object):
     self.__object_info['cyan_goal']['ang'] = goal_info.left_angle
     self.__object_info['magenta_goal']['dis'] = goal_info.right_radius
     self.__object_info['magenta_goal']['ang'] = goal_info.right_angle
+
+  def RobotStatePub(self, state):
+    s = String()
+    s.data = state
+    self.state_pub.publish(s)
 
   def RobotCtrl(self, x, y, yaw):
     angle = yaw
@@ -77,7 +84,8 @@ class Robot(object):
     elif velocity < dis_min:
       velocity = velocity_min
     else:
-      velocity = (velocity_max - velocity_min) * (math.cos((((velocity - dis_min) / (dis_max-dis_min) - 1) * math.pi)) + 1 )/ 2 + velocity_min
+      velocity = (velocity_max - velocity_min) * \
+                 (math.cos((((velocity - dis_min) / (dis_max-dis_min) - 1) * math.pi)) + 1 )/ 2 + velocity_min
     if angle == 0:
       pass
     elif abs(angle) > angle_max:
@@ -85,7 +93,8 @@ class Robot(object):
     elif abs(angle) < angle_min:
       angle_out = angular_velocity_min
     else:
-      angle_out = (angular_velocity_max - angular_velocity_min) * (math.cos((((angle - angle_min) / (angle_max-angle_min) - 1) * math.pi)) + 1 )/ 2 + angular_velocity_min
+      angle_out = (angular_velocity_max - angular_velocity_min) * \
+                  (math.cos((((angle - angle_min) / (angle_max-angle_min) - 1) * math.pi)) + 1 )/ 2 + angular_velocity_min
     if angle < 0:
       angle_out = -angle_out
     x = velocity * math.cos(math.radians(alpha))
@@ -101,7 +110,7 @@ class Robot(object):
   def GetObjectInfo(self):
     return self.__object_info
 
-  def shoot(self,x,y) :
+  def Shoot(self,x,y) :
     rospy.wait_for_service('nubot1/Shoot')
     try:
       Shoot_client = rospy.ServiceProxy('nubot1/Shoot',Shoot)
@@ -111,7 +120,7 @@ class Robot(object):
       print("Service call failed")
 
   
-  def ballhandle(self):
+  def Ballhandle(self):
     rospy.wait_for_service('nubot1/Ballhandle')
     try:
       Ballhandle_client = rospy.ServiceProxy('nubot1/Ballhandle',BallHandle)
