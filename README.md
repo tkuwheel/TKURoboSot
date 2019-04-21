@@ -20,6 +20,19 @@ $ pip3 install -r requirements.txt
 ```
 <hr>
 
+# Startup
+```bash
+# Gazebo Simulator
+$ roslaunch nubot_gazebo game_ready.launch
+
+# Strategy w/ simulation mode
+$ roslaunch strategy core sim:=true
+
+# GUI
+# using plugin of dynamic_reconfigure
+$ rqt
+```
+
 # Troubleshooting
 ### import rospkg library error:
 ```bash
