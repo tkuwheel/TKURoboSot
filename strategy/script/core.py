@@ -36,6 +36,77 @@ class Core(Robot, StateMachine):
     self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
 
+  def on_toIdle(self):
+    log("To Idle")
+
+  def on_toAttack(self, t):
+    o = self.AC.ClassicAttacking(t['magenta_goal']['dis'], t['magenta_goal']['ang'])
+    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+
+class Strategy(object):
+  def __init__(self):
+    gains = rospy.get_param("core")
+    self.game_start = gains['game_start']
+    self.game_state = gains['game_state']
+    self.side       = gains['side']
+
+  def Callback(self, config, level):
+    self.game_start = config['game_start']
+    self.game_state = config['game_state']
+    self.side       = config['side']
+    return config
+
+  def main(self, argv):
+    rospy.init_node('core', anonymous=True)
+    rate = rospy.Rate(30)
+
+    dsrv = Server(GameStateConfig, self.Callback)
+
+    if SysCheck(argv) == "Native Mode":
+      log("Start Native")
+      robot = Core(1)
+    elif SysCheck(argv) == "Simulative Mode":
+      log("Start Sim")
+      robot = Core(1, True)
+
+    while not rospy.is_shutdown():
+      targets = robot.GetObjectInfo()
+
+      while targets is not None:
+        targets = robot.GetObjectInfo()
+
+        if not robot.is_idle and not self.game_start:
+          # stay idle
+          robot.toIdle()
+        elif robot.is_idle and self.game_start:
+          # go chase
+          robot.toChase(targets)
+        elif robot.is_chase and targets['ball']['dis'] >= 37:
+          # keep chase
+          log("keep{}".format(targets['ball']['dis']))
+          robot.toChase(targets)
+        elif robot.is_chase and targets['ball']['ang'] < 20:
+          # go attack
+          robot.toAttack(targets)
+        elif robot.is_attack and targets['ball']['dis'] > 30:
+          # back chase
+          robot.toChase(targets)
+
+        if rospy.is_shutdown():
+          log('shutdown')
+          break
+
+    rospy.spin()
+    rate.sleep()
+
+if __name__ == '__main__':
+  try:
+    s = Strategy()
+    s.main(sys.argv[1:])
+  except rospy.ROSInterruptException:
+    pass
+
+
   '''
   def on_enter_cross(self):
     log("I'm 轉ing.")
@@ -142,72 +213,3 @@ def main(argv):
     robot.Brain()
     
     '''
-  def on_toIdle(self):
-    log("To Idle")
-
-  def on_toAttack(self, t):
-    o = self.AC.ClassicAttacking(t['magenta_goal']['dis'], t['magenta_goal']['ang'])
-    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
-
-class Strategy(object):
-  def __init__(self):
-    gains = rospy.get_param("core")
-    self.game_start = gains['game_start']
-    self.game_state = gains['game_state']
-    self.side       = gains['side']
-
-  def Callback(self, config, level):
-    self.game_start = config['game_start']
-    self.game_state = config['game_state']
-    self.side       = config['side']
-    return config
-
-  def main(self, argv):
-    rospy.init_node('core', anonymous=True)
-    rate = rospy.Rate(30)
-
-    dsrv = Server(GameStateConfig, self.Callback)
-
-    if SysCheck(argv) == "Native Mode":
-      log("Start Native")
-      robot = Core(1)
-    elif SysCheck(argv) == "Simulative Mode":
-      log("Start Sim")
-      robot = Core(1, True)
-
-    while not rospy.is_shutdown():
-      targets = robot.GetObjectInfo()
-
-      while targets is not None:
-        targets = robot.GetObjectInfo()
-
-        if not robot.is_idle and not self.game_start:
-          # stay idle
-          robot.toIdle()
-        elif robot.is_idle and self.game_start:
-          # go chase
-          robot.toChase(targets)
-        elif robot.is_chase and targets['ball']['dis'] >= 37:
-          # keep chase
-          log("keep{}".format(targets['ball']['dis']))
-          robot.toChase(targets)
-        elif robot.is_chase and targets['ball']['ang'] < 20:
-          # go attack
-          robot.toAttack(targets)
-        elif robot.is_attack and targets['ball']['dis'] > 30:
-          # back chase
-          robot.toChase(targets)
-
-        if rospy.is_shutdown():
-          log('shutdown')
-          break
-
-    rospy.spin()
-    rate.sleep()
-
-if __name__ == '__main__':
-  try:
-    s = Strategy()
-    s.main(sys.argv[1:])
-  except rospy.ROSInterruptException:
-    pass

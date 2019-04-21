@@ -2,7 +2,7 @@
 import rospy
 import math
 
-'''<<<<<<< HEAD
+'''
 def strategy(self,obj):
   __pub_info = {'v_x':0.0,'v_y':0.0,'v_yaw':0.0}              
   
@@ -15,7 +15,7 @@ def strategy(self,obj):
   strategy_type = 'chase'
   
   return __pub_info
-======='''
+'''
 class Chase(object):
   __pub_info = {'v_x':None,'v_y':None,'v_yaw':None}
   __goal = None
@@ -57,4 +57,4 @@ class Chase(object):
 #    self.__pub_info['v_yaw'] = obj['magenta_goal']['ang']
 #    
 #    return self.__pub_info
->>>>>>> tkurobot/master
+
