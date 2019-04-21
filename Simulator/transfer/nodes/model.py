@@ -118,13 +118,13 @@ class ModelTransfer(object):
                         remainder=3)
                 nubot2_left_goal_ang = my_math.calAng(
                         x=left_goal_x-nubot2_x, y=left_goal_y-nubot2_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot2_yaw, remainder=3)
                 nubot2_right_goal_dis = my_math.calDis(
                         x=right_goal_x-nubot2_x, y=right_goal_y-nubot2_y,
                         remainder=3)
                 nubot2_right_goal_ang = my_math.calAng(
                         x=right_goal_x-nubot2_x, y=right_goal_y-nubot2_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot2_yaw, remainder=3)
                 nubot2_goal = PPoint()
                 nubot2_goal.left_angle = nubot2_left_goal_ang
                 nubot2_goal.left_radius = nubot2_left_goal_dis
@@ -137,13 +137,13 @@ class ModelTransfer(object):
                         remainder=3)
                 nubot3_left_goal_ang = my_math.calAng(
                         x=left_goal_x-nubot3_x, y=left_goal_y-nubot3_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot3_yaw, remainder=3)
                 nubot3_right_goal_dis = my_math.calDis(
                         x=right_goal_x-nubot3_x, y=right_goal_y-nubot3_y,
                         remainder=3)
                 nubot3_right_goal_ang = my_math.calAng(
                         x=right_goal_x-nubot3_x, y=right_goal_y-nubot3_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot3_yaw, remainder=3)
                 nubot3_goal = PPoint()
                 nubot3_goal.left_angle = nubot3_left_goal_ang
                 nubot3_goal.left_radius = nubot3_left_goal_dis
@@ -156,13 +156,13 @@ class ModelTransfer(object):
                         remainder=3)
                 nubot4_left_goal_ang = my_math.calAng(
                         x=left_goal_x-nubot4_x, y=left_goal_y-nubot4_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot4_yaw, remainder=3)
                 nubot4_right_goal_dis = my_math.calDis(
                         x=right_goal_x-nubot4_x, y=right_goal_y-nubot4_y,
                         remainder=3)
                 nubot4_right_goal_ang = my_math.calAng(
                         x=right_goal_x-nubot4_x, y=right_goal_y-nubot4_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot4_yaw, remainder=3)
                 nubot4_goal = PPoint()
                 nubot4_goal.left_angle = nubot4_left_goal_ang
                 nubot4_goal.left_radius = nubot4_left_goal_dis
@@ -175,13 +175,13 @@ class ModelTransfer(object):
                         remainder=3)
                 nubot5_left_goal_ang = my_math.calAng(
                         x=left_goal_x-nubot4_x, y=left_goal_y-nubot5_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot5_yaw, remainder=3)
                 nubot5_right_goal_dis = my_math.calDis(
                         x=right_goal_x-nubot4_x, y=right_goal_y-nubot5_y,
                         remainder=3)
                 nubot5_right_goal_ang = my_math.calAng(
                         x=right_goal_x-nubot4_x, y=right_goal_y-nubot5_y, 
-                        yaw=nubot1_yaw, remainder=3)
+                        yaw=nubot5_yaw, remainder=3)
                 nubot5_goal = PPoint()
                 nubot5_goal.left_angle = nubot5_left_goal_ang
                 nubot5_goal.left_radius = nubot5_left_goal_dis

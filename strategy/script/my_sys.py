@@ -1,3 +1,4 @@
+from __future__ import print_function
 import rospy
 import sys, getopt
 import re
