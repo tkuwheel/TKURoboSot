@@ -9,6 +9,8 @@ from std_msgs.msg import String
 
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
+SIM_SHOOT_SRV  = "nubot{}/Shoot"
+SIM_HANDLE_SRV = "nubot{}/Ballhandle"
 
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
@@ -110,21 +112,20 @@ class Robot(object):
   def GetObjectInfo(self):
     return self.__object_info
 
-  def Shoot(self,x,y) :
-    rospy.wait_for_service('nubot1/Shoot')
+  def RobotShoot(self, power, pos) :
+    rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number))
     try:
-      Shoot_client = rospy.ServiceProxy('nubot1/Shoot',Shoot)
-      resp1 = Shoot_client(x,y)
+      client = rospy.ServiceProxy(SIM_SHOOT_SRV.format(self.robot_number), Shoot)
+      resp1 = client(power, pos)
       return resp1
     except(rospy.ServiceException):
       print("Service call failed")
 
-  
-  def Ballhandle(self):
-    rospy.wait_for_service('nubot1/Ballhandle')
+  def RobotBallhandle(self):
+    rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))
     try:
-      Ballhandle_client = rospy.ServiceProxy('nubot1/Ballhandle',BallHandle)
-      resp1 = Ballhandle_client(1)
+      client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
+      resp1 = client(1)
       return resp1
     except(rospy.ServiceException):
       print("Service call failed") 

@@ -22,5 +22,5 @@ class Chase(object):
     self.__pub_info['v_x']   = br_x * math.cos(alpha) - br_y * math.sin(alpha)
     self.__pub_info['v_y']   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
     self.__pub_info['v_yaw'] = goal_ang
-    
+
     return self.__pub_info

@@ -26,7 +26,7 @@ $ pip3 install -r requirements.txt
 $ roslaunch nubot_gazebo game_ready.launch
 
 # Strategy w/ simulation mode
-$ roslaunch strategy core sim:=true
+$ roslaunch strategy core.launch sim:=true
 
 # GUI
 # using plugin of dynamic_reconfigure
