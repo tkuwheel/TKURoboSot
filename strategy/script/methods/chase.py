@@ -37,7 +37,7 @@ class Chase(object):
     self.__pub_info['v_y']   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
     self.__pub_info['v_yaw'] = goal_ang
     
-    return self.__pub_info
+    
 
 #  def ClassicRounding(self, goal_ang=None, ball_dis=None, ball_ang=None, obj):
 #    alpha = math.radians(obj['ball']['ang'] - obj['magenta_goal']['ang'])
@@ -58,3 +58,4 @@ class Chase(object):
 #    
 #    return self.__pub_info
 
+    return self.__pub_info

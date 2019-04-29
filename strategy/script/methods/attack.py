@@ -42,4 +42,6 @@ class Attack(object):
 
 
   
-  return __pub_info'''
+  return __pub_info
+  '''
+ 

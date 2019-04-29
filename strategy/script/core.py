@@ -29,8 +29,8 @@ class Core(Robot, StateMachine):
   toIdle   = chase.to(idle) | attack.to(idle)
   toAttack = chase.to(attack)
 
-  def on_toChase(self, t):
-    o = self.CC.ClassicRounding(t['magenta_goal']['ang'],\
+  def on_toChase(self, t,side):
+    o = self.CC.ClassicRounding(t[side]['ang'],\
                                 t['ball']['dis'],\
                                 t['ball']['ang'])
     self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
@@ -39,13 +39,16 @@ class Core(Robot, StateMachine):
   def on_toIdle(self):
     log("To Idle")
 
-  def on_toAttack(self, t):
-    o = self.AC.ClassicAttacking(t['magenta_goal']['dis'], t['magenta_goal']['ang'])
+  def on_toAttack(self, t,side):
+    o = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+
+  def pubCurrentState(self):
+    self.RobotStatePub(self.current_state.identifier)
 
 class Strategy(object):
   def __init__(self):
-    gains = rospy.get_param("core")
+    gains = rospy.get_param("/core")
     self.game_start = gains['game_start']
     self.game_state = gains['game_state']
     self.side       = gains['side']
@@ -58,7 +61,7 @@ class Strategy(object):
 
   def main(self, argv):
     rospy.init_node('core', anonymous=True)
-    rate = rospy.Rate(30)
+    rate = rospy.Rate(1000)
 
     dsrv = Server(GameStateConfig, self.Callback)
 
@@ -70,34 +73,33 @@ class Strategy(object):
       robot = Core(1, True)
 
     while not rospy.is_shutdown():
+
+      robot.pubCurrentState()
       targets = robot.GetObjectInfo()
 
-      while targets is not None:
-        targets = robot.GetObjectInfo()
-
+      if targets is not None:
         if not robot.is_idle and not self.game_start:
           # stay idle
           robot.toIdle()
         elif robot.is_idle and self.game_start:
           # go chase
-          robot.toChase(targets)
+          robot.toChase(targets,self.side)
         elif robot.is_chase and targets['ball']['dis'] >= 37:
           # keep chase
-          log("keep{}".format(targets['ball']['dis']))
-          robot.toChase(targets)
-        elif robot.is_chase and targets['ball']['ang'] < 20:
+          # log("keep{}".format(targets['ball']['dis']))
+          robot.toChase(targets,self.side)
+        elif robot.is_chase and targets['ball']['ang'] < 37:
           # go attack
-          robot.toAttack(targets)
+          robot.toAttack(targets,self.side)
         elif robot.is_attack and targets['ball']['dis'] > 30:
           # back chase
-          robot.toChase(targets)
+          robot.toChase(targets,self.side)
 
-        if rospy.is_shutdown():
-          log('shutdown')
-          break
+      if rospy.is_shutdown():
+        log('shutdown')
+        break
 
-    rospy.spin()
-    rate.sleep()
+      rate.sleep()
 
 if __name__ == '__main__':
   try:
