@@ -19,6 +19,8 @@ typedef struct{
 	unsigned char w4;
 	unsigned char enable_and_stop;
 	unsigned char shoot;
+	unsigned char crc_16_1;
+	unsigned char crc_16_2;
 	unsigned char checksum;
 }serial_tx;
 

@@ -38,7 +38,7 @@ Motion_nodeHandle::~Motion_nodeHandle()
 
 void Motion_nodeHandle::init(int argc, char **argv)
 {
-    std::cout << "=== Init node ===\n";
+    std::cout << "==== Init node ====\n";
     ros::init(argc, argv, "Attack_motion");
 #ifdef DEBUG
     std::cout << "nodeHandle init(DEBUG)\n";
@@ -125,7 +125,7 @@ void Motion_nodeHandle::run()
 void* Motion_nodeHandle::pThreadRun(void* p)
 {
     Motion_nodeHandle* Node = (Motion_nodeHandle*)p;
-//    Node->run();
+    Node->run();
     pthread_exit(NULL);
 }
 

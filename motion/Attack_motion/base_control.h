@@ -12,10 +12,10 @@
 /*******************************
   * Include library
   ******************************/
-extern "C"{
+//extern "C"{
 #include "motor_data.h"
 #include "cssl.h"
-}
+//}
 //#include "../common/cssl/cssl.c"
 //#include "../common/cssl/port.h"
 
@@ -26,7 +26,7 @@ extern "C"{
 //#define DEBUG_CSSL
 //#define DEBUG_CSSLCALLBACK
 //#define DEBUG_CSSLCALLBACK_TEST
-typedef void * (*THREADFUNCPTR)(void *);
+//typedef void * (*THREADFUNCPTR)(void *);
 
 class BaseControl{
 public:
@@ -51,7 +51,7 @@ private:
 	//const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;
 	const double yaw_inv = 2.3251;
-    const char *port = "dev/communication/rs232";
+    const char *port = "/dev/communication/rs232";
 
     pthread_t tid;
 	cssl_t *serial;
@@ -64,7 +64,7 @@ private:
 
 	double x_CMD, y_CMD, yaw_CMD;
 	unsigned char en1,en2,en3,stop1,stop2,stop3;
-//	unsigned char w1_dir,w2_dir,w3_dir;
+    //unsigned char w1_dir,w2_dir,w3_dir;
 	//static	unsigned char cssl_buffer[50];
 	//static	int count_buffer;
 	//void send();
@@ -72,9 +72,8 @@ private:
 public:
     static void *pThreadRun(void *argv);
     bool getBaseFlag();
-    serial_rx getPack();
+    serial_rx* getPack();
 	void send(const robot_command &);
 	robot_command *get_feedback();
-//	int 	mcssl_init();
 };
 #endif

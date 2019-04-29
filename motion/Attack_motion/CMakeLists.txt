@@ -19,5 +19,5 @@ add_executable(Attack_motion_node
                 base_control.cpp 
 				#CTest.cpp
 )
-target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib motorDataLib)
+target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib motorDataLib crcLib)
 
