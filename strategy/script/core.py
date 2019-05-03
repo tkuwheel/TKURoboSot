@@ -29,7 +29,7 @@ class Core(Robot, StateMachine):
   toIdle   = chase.to(idle) | attack.to(idle)
   toAttack = chase.to(attack)
 
-  def on_toChase(self, t,side):
+  def on_toChase(self, t, side):
     o = self.CC.ClassicRounding(t[side]['ang'],\
                                 t['ball']['dis'],\
                                 t['ball']['ang'])
@@ -83,17 +83,17 @@ class Strategy(object):
           robot.toIdle()
         elif robot.is_idle and self.game_start:
           # go chase
-          robot.toChase(targets,self.side)
+          robot.toChase(targets, self.side)
         elif robot.is_chase and targets['ball']['dis'] >= 37:
           # keep chase
           # log("keep{}".format(targets['ball']['dis']))
-          robot.toChase(targets,self.side)
+          robot.toChase(targets, self.side)
         elif robot.is_chase and targets['ball']['ang'] < 37:
           # go attack
-          robot.toAttack(targets,self.side)
+          robot.toAttack(targets, self.side)
         elif robot.is_attack and targets['ball']['dis'] > 30:
           # back chase
-          robot.toChase(targets,self.side)
+          robot.toChase(targets, self.side)
 
       if rospy.is_shutdown():
         log('shutdown')
