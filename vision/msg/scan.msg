@@ -1,0 +1,11 @@
+int64 Angle_Near_Gap
+int64 Magn_Near_Gap
+int64 Magn_Near_Start
+int64 Magn_Middle_Start
+int64 Magn_Far_Start
+int64 Magn_Far_End
+int64 Dont_Search_Angle_1
+int64 Dont_Search_Angle_2
+int64 Dont_Search_Angle_3
+int64 Angle_range_1
+int64 Angle_range_2_3

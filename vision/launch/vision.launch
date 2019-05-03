@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<launch> 
+  <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml" ns="prosilica_driver"/>
+  <rosparam command="load" file="$(find vision)/config/FIRA.yaml" ns="FIRA"/>
+
+  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+  <!--<node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>!-->
+  <node name="web_video_server" pkg="web_video_server" type="web_video_server"/>
+
+  <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="true" respawn_delay="5" output="screen"/>
+  <node name="interface" pkg="vision" type="interface" respawn="true" respawn_delay="5"/>
+  <node name="white_line" pkg="vision" type="white_line" respawn="true" respawn_delay="5"/>
+  <node name="black_item" pkg="vision" type="black_item" respawn="true" respawn_delay="5"/>
+  <node name="monitor" pkg="vision" type="monitor" respawn="true" respawn_delay="5" />
+</launch>

@@ -1,0 +1,453 @@
+/*==============================================*/
+
+body {
+    background-color: #708090;
+}
+
+
+/*class*/
+
+.modal-dialog {
+    width: 1400px;
+}
+
+
+/*==============================================*/
+
+
+/*Wifi*/
+
+#StrategyWifi {
+    border: 0px solid #d3d3d3;
+}
+
+#StrategyWifi span {
+    cursor: pointer;
+    position: absolute;
+    top: 1%;
+    left: 12%;
+}
+
+#Setting_Wifi {
+    height: 100%;
+    width: 50px;
+}
+
+#WifiLight {
+    width: 45px;
+    height: 45px;
+    border: 0px solid #d3d3d3;
+    position: absolute;
+    top: 1.5%;
+    left: 13%;
+}
+
+.Wifimodal_content {
+    position: relative;
+    background-color: #FFFFFF;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+
+/*==============================================*/
+
+
+/*modal*/
+
+.modal-content {
+    position: relative;
+    background-color: #8B4513;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+.modal-title {
+    color: #FFA500;
+    font-size: 25px;
+}
+
+#StrategyParameter {
+    width: 1365px;
+    height: 590px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #FFEFD5;
+}
+
+
+/*==========================================================*/
+
+#SwitchButttonDiv {
+    position: absolute;
+    top: 1.5%;
+    left: 28%;
+    width: 160px;
+    height: 60px;
+}
+
+#SwitchButttonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+
+/*==========================================================*/
+
+#TeamColorButttonDiv {
+    position: absolute;
+    top: 1.5%;
+    left: 42%;
+    width: 160px;
+    height: 60px;
+}
+
+#TeamColorButttonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+
+/*==========================================================*/
+
+#FunctionButttonDiv {
+    position: absolute;
+    top: 1.5%;
+    left: 56%;
+    width: 300px;
+    height: 60px;
+}
+
+#FunctionButttonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+
+/*==========================================================*/
+
+/*==========================================================*/
+
+#MapArea {
+    width: 700px;
+    height: 550px;
+    z-index: 1;
+/*    border: 1px solid black;
+*/    position: relative;
+    top: 3%;
+    left: 27%;
+    text-align: center;
+}
+
+#MapCanvas {
+    position: relative;
+    top:5%;
+    width: 659px;
+    height: 493px;
+}
+
+
+/*==========================================================*/
+
+#RobotStateDiv {
+    width: 180px;
+    height: 200px;
+    z-index: 1;
+    position: relative;
+    top: -91%;
+    left: 85%;
+}
+
+#RobotStateDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+#HoldBallDiv1 {
+    text-align: center;
+    width: 50px;
+} 
+#HoldBallButton1 {
+    width: 50px;
+}
+
+#HoldBallDiv2 {
+    text-align: center;
+    width: 50px;
+} 
+#HoldBallButton2 {
+    width: 50px;
+}
+
+#HoldBallDiv3 {
+    text-align: center;
+    width: 50px;
+} 
+#HoldBallButton3 {
+    width: 50px;
+}
+
+ #RobotOneButton {
+    width: 110px;
+}
+
+#RobotTwoButton {
+    width: 110px;
+}
+
+#RobotThreeButton {
+    width: 110px;
+}
+
+#StandByButton {
+    width: 110px;
+} 
+
+#Light {
+    width: 25px;
+    height: 40px;
+}
+
+#Light2 {
+    width: 25px;
+    height: 40px;
+}
+
+#Light3 {
+    width: 25px;
+    height: 40px;
+}
+
+
+/*==========================================================*/
+
+#SpeedDiv {
+    width: 280px;
+    height: 60px;
+    z-index: 1;
+    position: relative;
+    top: -90%;
+    left: 79%;
+    font-size: 20px;
+}
+
+#SpeedDiv table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#SpeedSlider {
+    width: 220px;
+    position: relative;
+}
+
+#SpeedInput {
+    width: 55px;
+    height: 25px;
+}
+
+
+/*==========================================================*/
+
+#ShootDiv {
+    width: 150px;
+    height: 60px;
+    z-index: 1;
+    position: relative;
+    top: -88%;
+    left: 84%;
+}
+
+#ShootDiv table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#ShootInput {
+    width: 55px;
+    height: 25px;
+}
+
+
+/*==========================================================*/
+
+
+/*JoyStick*/
+
+#Joystick {
+    position: relative;
+    top: -86%;
+    left: 82%;
+    width: 210px;
+    height: 210px;
+    z-index: 1;
+    border-radius: 210px;
+    /*border-style: dashed;*/
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: #fff;
+    cursor: crosshair;
+}
+
+
+}
+#Joystick_Canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/*==========================================================*/
+
+/*RobotInformation*/
+#RobotInformationDiv {
+    width: 340px;
+    height: 300px;
+    z-index: 1;
+    border: 1px solid black;
+    position: relative;
+    bottom: 180%;
+    left: 1%;
+    background-color: #FFF;
+    /*overflow: scroll;*/
+}
+#RobotInformationDiv table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 10px;
+}
+#RobotInformationDiv table tr td {
+    border: 1px solid black;
+}
+#RobotInformationDiv td {
+    height: 24.8%;
+}
+table.RobotInformationTable thead th {
+    font-size: 12px;
+    padding: 5px 0px;
+    color: #fff;
+    background-color: #2f4f4f;
+    text-align: center;
+}
+table.RobotInformationTable tfoot td {
+    font-size: 15px;
+    padding: 25px 0px;
+    text-align: center;
+    background-color: #b0c4de;
+}
+.RobotInformationTbody1 {
+    font-size: 15px;
+    padding: 10px 8px;
+    text-align: center;
+    background-color: #ffb6c1;
+}
+.RobotInformationTbody2 {
+    font-size: 15px;
+    padding: 10px 8px;
+    text-align: center;
+    background-color: #90ee90;
+}
+.info1{
+    width:50px;
+}
+.info2{
+    width:41px;
+}
+.info3{
+    width:83px;
+}
+/*==========================================================*/
+
+/*RobotInformation*/
+#RobotStrategyDiv {
+    width: 340px;
+    height: 250px;
+    z-index: 1;
+    border: 1px solid black;
+    position: relative;
+    bottom: 181%;
+    left: 1%;
+    background-color: #FFF;
+}
+/*#RobotStrategyDiv table {
+    border-bottom: 1px solid black;
+}*/
+#RobotStrategyTable1 {
+    width: 100%;
+    height: 20%;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+#RobotStrategyTable1 td{
+    width: 50%;
+    text-align: center;
+}
+#RobotStrategyTable2 {
+    width: 100%;
+    height: 80%;
+    text-align: center;
+}
+
+/*#RobotStrategyTable2 td{
+    width: 33%;
+}*/
+
+/*==========================================================*/
+
+/*==========================================================*/
+
+/*setting*/
+#SettingButtonDiv {
+    right: 2%;
+    position: absolute;
+    bottom: 92.5%;
+}
+#SettingButton {
+    height: 30px;
+}
+#SettingUL {
+    min-width: 100px;
+    text-align: left;
+}
+#GeneralButton {
+    margin-left: 3px;
+    line-height: 30px;
+    cursor: pointer;
+}
+#PathPlanButton {
+    margin-left: 3px;
+    line-height: 30px;
+    cursor: pointer;
+}
+#BehaviorButton {
+    margin-left: 3px;
+    line-height: 30px;
+    cursor: pointer;
+}
+#TeamStrategyButton {
+    margin-left: 3px;
+    line-height: 30px;
+    cursor: pointer;
+}
+#ChooseShowButton {
+    margin-left: 3px;
+    line-height: 30px;
+    cursor: pointer;
+}
+
+/*==========================================================*/
