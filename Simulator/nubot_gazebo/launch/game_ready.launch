@@ -12,8 +12,9 @@
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(find nubot_gazebo)/worlds/robocup15MSL.world"/>
-    <arg name="verbose" 	value="true"/>
-    <arg name="paused"		value="false"/>
+    <arg name="gui" default="true"/>
+    <arg name="verbose"  value="true"/>
+    <arg name="paused"   value="false"/>
   </include>
 
   <!-- <node name="robot_up" pkg="nubot_gazebo" type="robot_up.sh"/> -->
