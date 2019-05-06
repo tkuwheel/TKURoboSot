@@ -10,6 +10,10 @@ ROS Kinetic w/ Ubuntu 16.04 [Install](http://wiki.ros.org/kinetic/Installation/U
 ```bash
 $ mkdir robosot_ws/src && cd robosot_ws
 $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
+```
+**Installization and Requirments of FLIR Grasshopper3 Camera,**
+**see [pointgrey_camera_driver/README.md](pointgrey_camera_driver/README.md)**
+```
 $ catkin_make
 ```
 
