@@ -45,6 +45,21 @@ $ cat /sys/module/usbcore/parameters/usbfs_memory_mb # 檢查是否成功，應�
 ```bash
 $ cd <Path to flycapture2-2.13.3.31-amd64>
 $ sudo sh install_flycapture.sh
+
+#Interaction of flycapture Q/A
+Enter the name of the user to add to this user group.
+$ <username> #輸入你的使用者名稱
+Is this user name ok?: <username>
+(y/n)$ y
+
+Add user <username> to group flirimaging.
+Is this ok?:
+(y/n)$ y
+
+Writing the udev rules file.
+
+Do you want to restart the udev daemon?
+(y/n)$ y
 ```
 
 _因為套件預設最高fps只能調整到100，故下載套件原始碼修改最大值_
@@ -58,3 +73,16 @@ $ rosrun pointgrey_camera_driver list_cameras # 察看攝影機序號
 $ roslaunch pointgrey_camera_driver camera.launch camera_serial:=xxxxxxxx
 ```
 
+# Troubleshooting
+## 安裝flycapture SDK ERROR資訊
+```bash
+dpkg: dependency problems prevent configuration of flycap:
+ flycap depends on libglademm-2.4-dev; however:
+  Package libglademm-2.4-dev is not installed.
+
+dpkg: error processing package flycap (--install):
+```
+## 下載套件
+```bash
+sudo apt-get install libglademm-2.4-dev
+```
