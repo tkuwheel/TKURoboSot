@@ -2,6 +2,7 @@
 import rospy
 import math
 
+
 class Attack(object):
   __pub_info = {'v_x':None,'v_y':None,'v_yaw':None} 
 

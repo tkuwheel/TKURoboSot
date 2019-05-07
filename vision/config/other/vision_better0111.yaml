@@ -1,0 +1,64 @@
+FIRA:
+  Attack_Strategy: [0]
+  Camera: {Focal: 13.971313932573906, High: 650.0}
+  Center: {Camera_high: 650, Center_X: 275, Center_Y: 270, Front: 267, Inner: 44,
+    Outer: 235, X: 308, Y: 266}
+  Chase_Strategy: [0]
+  Corner_Kick: [1.2, 60, 90, 50]
+  Distance:
+    Gap: 20
+    Pixel: [0, 21, 46, 66, 82, 94, 102, 109, 115, 121, 125, 129]
+    Space: [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
+  Distance_Settings: [0, 0, 0]
+  Dorsad_Attack: [6, 90, 180, 2, 1, 2]
+  FPS: 20
+  HSV:
+    Ball: [0, 55, 35, 100, 42, 100]
+    Blue: [160, 261, 0, 100, 0, 100]
+    Green: [0, 195, 59, 100, 18, 100]
+    White: [0, 359, 0, 100, 0, 100]
+    Yellow: [33, 107, 20, 85, 54, 100]
+    black: {angle: 1, gray: 31}
+    white: {angle: 1, gray: 170}
+  IsSimulator: 0
+  Parameterbutton: 4
+  Penalty_Kick: [-45, 2]
+  RobotNumber: 1
+  SCAN: {Angle_Near_Gap: 4, Angle_range_1: 1, Angle_range_2_3: 1, Dont_Search_Angle_1: 329,
+    Dont_Search_Angle_2: 93, Dont_Search_Angle_3: 210, Magn_Far_End: 240, Magn_Far_Start: 141,
+    Magn_Middle_Start: 98, Magn_Near_Gap: 4, Magn_Near_Start: 40}
+  SPlanning_Velocity: [3, 0.3, 100, 80, 15, 5, 144, 5, 1]
+  SideSpeedUp: [0.73, 1.2, 0.7, 5, 17.6]
+  TypeS_Attack: [1.2, 0.2]
+  TypeU_Attack: [0.8, 1, -90, 90, 0.6, 0.3, 10, 20]
+  Zone_Attack: [0.85, 1.25]
+  blackItem: {angle: 3, gray: 40}
+  whiteline: {angle: 4, gray: 100}
+FIRA_Behavior:
+  Attack_Strategy: [5, 1, 0.4]
+  Chase_Strategy: [5, 0.15, 0.2, 3, 0.33]
+  Corner_Kick: [120, 0.45]
+  Side_Speed_UP: [10, 0.45]
+  TypeS_Attack: [20, 1, 1.5]
+  TypeU_Chase: [30, 0.3]
+  Zone_Attack: [0.6]
+StrategySelection: [0, 1, 0, 0, 1, 0]
+amcl: {base_frame_id: /base_link, beam_skip_distance: 2.0, beam_skip_threshold: 1.0,
+  do_beamskip: false, first_map_only: true, global_frame_id: /map, gui_publish_rate: 90.0,
+  initial_cov_aa: 2.3637392544171303, initial_cov_xx: 1.81218359004809, initial_cov_yy: 1.4574361390514445,
+  initial_pose_a: -0.96453947620356, initial_pose_x: 1.8353706871243047, initial_pose_y: -0.2183677131519785,
+  kld_err: 0.01, kld_z: 0.99, laser_lambda_short: 0.1, laser_likelihood_max_dist: 1.0,
+  laser_max_beams: 30, laser_max_range: -1.0, laser_min_range: -1.0, laser_model_type: likelihood_field,
+  laser_sigma_hit: 0.2, laser_z_hit: 0.9, laser_z_max: 0.05, laser_z_rand: 0.5, laser_z_short: 0.1,
+  max_particles: 5000, min_particles: 100, odom_alpha1: 3.0, odom_alpha2: 3.0, odom_alpha3: 3.0,
+  odom_alpha4: 3.0, odom_alpha5: 3.0, odom_frame_id: /odom, odom_model_type: omni,
+  recovery_alpha_fast: 0.0, recovery_alpha_slow: 0.0, resample_interval: 1, restore_defaults: false,
+  save_pose_rate: 10.0, tf_broadcast: true, transform_tolerance: 0.1, update_min_a: 0.523598775598,
+  update_min_d: 0.05, use_map_topic: true}
+prosilica_driver: {auto_adjust_stream_bytes_per_second: true, auto_exposure: false, auto_gain: false,
+  auto_whitebalance: false, binning_x: 1, binning_y: 1, exposure: 0.025, exposure_auto_max: 0.5,
+  exposure_auto_target: 50, fixed_rate: 15.0, frame_id: '', gain: 0, gain_auto_max: 19,
+  gain_auto_target: 50, height: 493, stream_bytes_per_second: 45000000, trig_rate: 15.0,
+  trig_timestamp_topic: '', trigger_mode: streaming, whitebalance_blue: 100, whitebalance_red: 100,
+  width: 659, x_offset: 0, y_offset: 0}
+

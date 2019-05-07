@@ -1,0 +1,113 @@
+/*====================================================*/
+/*RobotState*/
+
+#TeamStrategySettingRobotDiv {
+    position: absolute;
+    top: 2%;
+    left: 40%;
+    width: 250px;
+    height: 60px;
+}
+
+#TeamStrategySettingRobotDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+#TeamStrategyRobot1Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TeamStrategyRobot1Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TeamStrategyRobot2Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TeamStrategyRobot2Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TeamStrategyRobot3Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TeamStrategyRobot3Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+/*====================================================*/
+/*form*/
+
+.TeamStrategyDialog {
+    width: 500px;
+}
+
+.TeamStrategyContent {
+    position: relative;
+    background-color: #FFF;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+/*=====================================================*/
+/*Module*/
+
+#RobotModule{
+  height:200px;
+  text-align:left;
+  border-style:solid;
+  overflow:scroll;
+}
+/*====================================================*/
+#auto{
+  background-image: none;
+  background-color: #E6E6E6;
+  font-size: 14px;
+  color: #999999;
+}
+#auto.ui-state-active{
+  background-color: #FFCC00;
+  font-size: 14px;
+  color: #1A1A65;
+}
+#manual{
+  background-image: none;
+  background-color: #E6E6E6;
+  font-size: 14px;
+  color: #999999;
+}
+#manual.ui-state-active{
+  background-color: #FFCC00;
+  font-size: 14px;
+  color: #1A1A65;
+}
+
+/*=====================================================*/
+/*Save*/
+#TeamStrategyExecute{
+  text-align:center;
+}
