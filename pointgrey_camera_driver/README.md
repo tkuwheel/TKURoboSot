@@ -44,7 +44,7 @@ $ cat /sys/module/usbcore/parameters/usbfs_memory_mb # 檢查是否成功，應�
 ## 到[FLEA官網](https://www.ptgrey.com/support/downloads)下載SDK並解壓縮
 ```bash
 $ cd <Path to flycapture2-2.13.3.31-amd64>
-$ sudo sh install_flycapture.sh
+$ sudo ./install_flycapture.sh
 
 #Interaction of flycapture Q/A
 Enter the name of the user to add to this user group.
