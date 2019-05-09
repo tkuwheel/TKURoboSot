@@ -147,7 +147,7 @@ var mouse_clicked = false;
 var angle_offset=0;
 var mouse_angle = 0;
 ResetMap.addEventListener("mousedown", function(e) {
-    console.log("reset_map");
+    //console.log("reset_map");
     if(e.button == 0){
         mouse_clicked = true;
         reset_bool = true;
@@ -191,6 +191,7 @@ ResetMap.addEventListener("mousedown", function(e) {
             reset_y=-y_;
             reset_w=-((mouse_angle/pi*180)-180);
         }
+        console.log(parseInt(reset_x), parseInt(reset_y), parseInt(reset_w));
         ResetMap.addEventListener("mousemove", function(event) {
             if(mouse_clicked == true){
                 let canvas = document.getElementById('reset_map');
@@ -216,6 +217,7 @@ ResetMap.addEventListener("mousedown", function(e) {
                 }
             }
         });
+        
     }
 });
 ResetMap.addEventListener("mouseup", function(e) {

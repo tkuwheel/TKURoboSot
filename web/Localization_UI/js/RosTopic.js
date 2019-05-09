@@ -1,3 +1,27 @@
+//=====================================================================================
+// hold ball
+var HoldBall1 = new ROSLIB.Topic({
+    ros: ros,
+    name: '/motion/hold_ball',
+    messageType: 'std_msgs/Bool'
+});
+
+function HoldBallSwitch(state,robot) {
+    var check;
+    if (state) {
+        console.log(robot,"hold ball :",state);
+        check = new ROSLIB.Message({
+            data: true
+        });
+    } else {
+        console.log(robot,"hold ball :",state);
+        check = new ROSLIB.Message({
+            data: false
+        });
+    }
+    HoldBall1.publish(check);
+}
+//=======================================================
 var coord = new ROSLIB.Topic({
     ros: ros,
     name: '/akf_pose',
@@ -23,7 +47,7 @@ coord.subscribe(function(msg) {
     y=Math.round(y);
 
     document.getElementById('coordinate_x').innerText = x;
-    document.getElementById('coordinate_y').innerText = y;
+    document.getElementById('coordinate_y').innerText = -y;
     document.getElementById('coordinate_angle').innerText = w;
 
     let canvas = document.getElementById('robot_map');

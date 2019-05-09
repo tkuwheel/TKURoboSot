@@ -173,7 +173,7 @@ function releasebutton(state) {
 
 function keyuped(e) {
     if (start) {
-      console.log(1111);
+        //console.log(1111);
         if (keys[e.keyCode] == true) releasebutton(e.keyCode);
         //else if (keys[69] == true) releasebutton(69);
         //else if (keys[87] == true) releasebutton(87);

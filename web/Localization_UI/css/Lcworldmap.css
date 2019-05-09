@@ -10,7 +10,15 @@ body {
     //overflow-x: hidden;
 }
 
-
+#HoldBallDiv1 {
+    position: absolate;
+    right: 100px;
+    top:10px;
+    height: 60px;
+    width: 50px;
+    cursor: pointer;
+    bottom: 10px;
+}
 /*====================WIFI============================*/
 
 #InterfaceSetting {
