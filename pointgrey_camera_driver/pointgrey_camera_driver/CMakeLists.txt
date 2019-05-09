@@ -4,7 +4,7 @@ project(pointgrey_camera_driver)
 find_package(catkin REQUIRED COMPONENTS
   camera_info_manager diagnostic_updater dynamic_reconfigure
   image_exposure_msgs image_transport nodelet roscpp sensor_msgs
-  wfov_camera_msgs
+  wfov_camera_msgs cv_bridge
 )
 
 generate_dynamic_reconfigure_options(
@@ -82,6 +82,10 @@ target_link_libraries(pointgrey_list_cameras PointGreyCamera ${catkin_LIBRARIES}
 set_target_properties(pointgrey_list_cameras
                       PROPERTIES OUTPUT_NAME list_cameras PREFIX "")
 add_dependencies(pointgrey_list_cameras ${catkin_EXPORTED_TARGETS})
+
+find_package(OpenCV)
+include_directories($ {} OpenCV_INCLUDE_DIRS)
+target_link_libraries(PointGreyCameraNodelet ${OpenCV_LIBRARIES})
 
 install(TARGETS
   PointGreyCamera

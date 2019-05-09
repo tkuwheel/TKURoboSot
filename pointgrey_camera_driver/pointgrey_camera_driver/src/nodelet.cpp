@@ -51,6 +51,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include <fstream>
 
+#include <opencv2/opencv.hpp>
+#include <cv_bridge/cv_bridge.h>
+#include <image_transport/image_transport.h>
+using namespace cv;
+
 namespace pointgrey_camera_driver
 {
 
@@ -516,7 +521,22 @@ private:
             if(it_pub_.getNumSubscribers() > 0)
             {
               sensor_msgs::ImagePtr image(new sensor_msgs::Image(wfov_image->image));
-              it_pub_.publish(image, ci_);
+              
+              cv::Mat img;
+              cv_bridge::CvImagePtr cv_ptr;
+              cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
+              cv_ptr->image.copyTo(img);
+
+              double scale = 0.4;
+              Mat frame = img;
+              Size dsize = Size(frame.cols * scale, frame.rows * scale);
+              resize(frame, frame, dsize);
+              
+              sensor_msgs::ImagePtr image_rot;
+              image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+
+              it_pub_.publish(image_rot, ci_);
+              // it_pub_.publish(image, ci_);
             }
           }
           catch(CameraTimeoutException& e)
