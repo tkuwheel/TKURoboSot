@@ -112,7 +112,7 @@ cv::Mat Vision::CameraModel(const cv::Mat iframe)
     //if(0<fpsMsg<=100){}else{fpsMsg=25;}
     //get_campara();
     //cout<<camera_exposure<<endl;
-    set_campara(fpsMsg);
+    //set_campara(fpsMsg);
     return iframe;
 }
 cv::Mat Vision::CenterModel(const cv::Mat iframe)

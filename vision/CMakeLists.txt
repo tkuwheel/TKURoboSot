@@ -150,6 +150,8 @@ foreach(
     monitor
     white_line
     black_item
+    localization_white_line
+    tracking
 )
 add_subdirectory(${subdir})
 endforeach()

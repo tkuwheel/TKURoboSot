@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int32MultiArray.h>
+#include <fstream>
 #include "vision/center.h"
 #include "vision/black.h"
 #include "vision/bin.h"
