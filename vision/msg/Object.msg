@@ -24,3 +24,6 @@ int32   yellow_fix_x
 int32   yellow_fix_y
 int32   yellow_fix_ang
 int32   yellow_fix_dis
+
+int32   goalkeeper_move
+int32   ball_fly

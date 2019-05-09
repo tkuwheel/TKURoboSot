@@ -26,7 +26,7 @@ void NodeHandle::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " /FIRA";
+        std::string temp = "rosparam load " + param + " /FIRA/vision";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
@@ -41,15 +41,15 @@ void NodeHandle::Parameter_getting()
 {
     cout << "get parameter" << endl;
     //===================中心參數=========================
-    nh.getParam("/FIRA/Center/Center_X", CenterXMsg);
-    nh.getParam("/FIRA/Center/Center_Y", CenterYMsg);
-    nh.getParam("/FIRA/Center/Inner", InnerMsg);
-    nh.getParam("/FIRA/Center/Outer", OuterMsg);
-    nh.getParam("/FIRA/Center/Front", FrontMsg);
-    nh.getParam("/FIRA/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
+    nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
+    nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
+    nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
+    nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
+    nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
     //==================黑白掃描參數=======================
-    nh.getParam("/FIRA/HSV/black/gray", BlackGrayMsg);
-    nh.getParam("/FIRA/HSV/black/angle", BlackAngleMsg);
+    nh.getParam("/FIRA/vision/HSV/black/gray", BlackGrayMsg);
+    nh.getParam("/FIRA/vision/HSV/black/angle", BlackAngleMsg);
 }
 //======================前置處理結束========================
 int NodeHandle::Frame_Area(int coordinate, int range)

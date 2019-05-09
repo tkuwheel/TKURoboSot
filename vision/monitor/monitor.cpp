@@ -297,6 +297,9 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
 
     if (color == REDITEM)
     {
+        if(obj_.dis_max<70){
+            obj_.dis_min = obj_.dis_max - 26;
+        }
         angle_ = Angle_Adjustment((obj_.ang_max + obj_.ang_min) / 2);
         distance_ = obj_.dis_min;
 

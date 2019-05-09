@@ -12,6 +12,7 @@
 #include <signal.h>
 #include <std_msgs/Int32.h>
 #include <std_srvs/Empty.h>
+#include <fstream>
 #include "vision/Two_point.h"
 #include "vision/Object.h"
 #include "vision/bin.h"
