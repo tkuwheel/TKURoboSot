@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import sys
 import math
@@ -51,8 +51,8 @@ class Core(Robot, StateMachine):
     else:
       print("NOT YET NOT YET")
 
-  def pubCurrentState(self):
-    self.RobotStatePub(self.current_state.identifier)
+  ''' def pubCurrentState(self):
+    self.RobotStatePub(self.current_state.identifier)'''
 
 class Strategy(object):
   def __init__(self):
@@ -82,9 +82,11 @@ class Strategy(object):
 
     while not rospy.is_shutdown():
 
-      robot.pubCurrentState()
+      #robot.pubCurrentState()
       targets = robot.GetObjectInfo()
-      # print(targets['ball']['ang'])
+      
+
+      print(targets)
 
       if targets is not None:
         if not robot.is_idle and not self.game_start:

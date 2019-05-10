@@ -4,6 +4,8 @@ from nubot_common.msg import OminiVisionInfo
 from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
+from sensor_msgs.msg import JointState
+from vision.msg import Object
 from transfer.msg import PPoint
 from std_msgs.msg import String
 
@@ -11,6 +13,7 @@ SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
 SIM_HANDLE_SRV = "nubot{}/Ballhandle"
+VISION_TOPIC   = "vision/object"
 
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
@@ -30,8 +33,7 @@ class Robot(object):
     self.robot_number = robot_num
 
     if not sim :
-      self._Subscriber("")
-      self._Publisher("")
+      rospy.Subscriber("vision/object", Object, self._GetVision)   
     else:
       self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
@@ -51,6 +53,15 @@ class Robot(object):
   def _GetOmniVsison(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
     self.__object_info['ball']['ang'] = math.degrees(vision.ballinfo.real_pos.angle)
+
+
+  def _GetVision(self, vision):
+    self.__object_info['ball']['dis'] = vision.ball_dis
+    self.__object_info['ball']['ang'] = math.degrees(vision.ball_ang)
+    self.__object_info['Cyan']['dis'] = vision.blue_dis
+    self.__object_info['Cyan']['ang'] = vision.blue_ang
+    self.__object_info['Magenta']['dis'] = vision.yellow_dis
+    self.__object_info['Magenta']['ang'] = vision.yellow_ang
     
   def _GetGoalInfo(self, goal_info):
     self.__object_info['Cyan']['dis'] = goal_info.left_radius
@@ -58,10 +69,10 @@ class Robot(object):
     self.__object_info['Magenta']['dis'] = goal_info.right_radius
     self.__object_info['Magenta']['ang'] = goal_info.right_angle
 
-  def RobotStatePub(self, state):
+  '''def RobotStatePub(self, state):
     s = String()
     s.data = state
-    self.state_pub.publish(s)
+    self.state_pub.publish(s)'''
 
   def RobotCtrl(self, x, y, yaw):
     angle = yaw

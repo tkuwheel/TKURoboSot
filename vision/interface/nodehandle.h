@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <std_msgs/Int32.h>
 #include <std_srvs/Empty.h>
+#include <fstream>
 #include "vision/parameterbutton.h"
 #include "vision/camera.h"
 #include "vision/center.h"

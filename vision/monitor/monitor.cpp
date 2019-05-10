@@ -297,6 +297,11 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
 
     if (color == REDITEM)
     {
+        //cout<<obj_.dis_max<<"  "<<obj_.dis_max-obj_.dis_min<<endl;
+        //fix catch ball distance        
+        if(obj_.dis_max<70){
+            obj_.dis_min = obj_.dis_max - 26;
+        }
         angle_ = Angle_Adjustment((obj_.ang_max + obj_.ang_min) / 2);
         distance_ = obj_.dis_min;
 
@@ -306,7 +311,7 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
         y_ = distance_ * Angle_sin[find_angle];
 
         x = Frame_Area(CenterXMsg + x_, Source.cols);
-        y = Frame_Area(CenterYMsg - y_, Source.rows);
+        y = Frame_Area(CenterYMsg - y_, Source.rows);    
 
         obj_.x = x;
         obj_.y = y;
