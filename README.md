@@ -22,11 +22,6 @@ $ pip install -r requirements.txt
 ```
 ### Installization and Requirments of FLIR Grasshopper3 Camera
 **see [pointgrey_camera_driver/README.md](pointgrey_camera_driver/README.md)**
-### Environment Setting
-```bash
-# Setting Robot's number & Camera's Serail number
-$ source Setting.sh
-```
 
 ## Compiling
 ```bash
@@ -36,6 +31,13 @@ $ catkin_make
 <hr>
 
 # Startup
+### Environment Setting
+```bash
+# Get Camera's serial number
+$ rosrun pointgrey_camera_driver list_cameras
+# Setting Robot's number & Camera's Serail number
+$ source Setting.sh
+```
 ```bash
 # Gazebo Simulator
 $ roslaunch nubot_gazebo game_ready.launch
