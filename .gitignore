@@ -1,5 +1,5 @@
 .catkin_workspace
-.robot_ns
+.robot_setting
 *.0
 __pycache__
 *.pyc

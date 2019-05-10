@@ -26,6 +26,7 @@
     <node pkg="nodelet" type="nodelet" name="image_proc_debayer"
           args="load image_proc/debayer camera_nodelet_manager">
     </node>
-    <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam" args="load /camera/camera_nodelet $(find pointgrey_camera_driver)/cfg/camera_nodelet.yaml" />
+    <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure"
+          type="dynparam" args="load /camera/camera_nodelet $(find pointgrey_camera_driver)/cfg/camera_nodelet.yaml" />
   </group>
 </launch>
