@@ -6,22 +6,33 @@ The purpose of this project is implementing, researching, developing the Soccer 
 ### System:
 ROS Kinetic w/ Ubuntu 16.04 [Install](http://wiki.ros.org/kinetic/Installation/Ubuntu)
 
-### Setup:
+## Setup:
 ```bash
 $ mkdir robosot_ws/src && cd robosot_ws
 $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ```
-**Installization and Requirments of FLIR Grasshopper3 Camera,**
-**see [pointgrey_camera_driver/README.md](pointgrey_camera_driver/README.md)**
+### ROS Packages:
+```bash
+$ sudo apt-get install ros-kinetic-rosbridge-server ros-kinetic-web-video-server
 ```
-$ catkin_make
-```
-
 ### Python packages:
 ```bash
 $ cd src/
-$ pip3 install -r requirements.txt
+$ pip install -r requirements.txt
 ```
+### Installization and Requirments of FLIR Grasshopper3 Camera
+**see [pointgrey_camera_driver/README.md](pointgrey_camera_driver/README.md)**
+### Environment Setting
+```bash
+# Setting Robot's number & Camera's Serail number
+$ source Setting.sh
+```
+
+## Compiling
+```bash
+$ catkin_make
+```
+
 <hr>
 
 # Startup

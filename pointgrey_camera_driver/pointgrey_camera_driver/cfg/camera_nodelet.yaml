@@ -17,7 +17,7 @@ dictitems:
   format7_roi_width: 1600
   format7_x_offset: 160
   format7_y_offset: 0
-  frame_rate: 60.0
+  frame_rate: 120.0
   gain: 0.0
   gamma: 1.0
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
@@ -39,7 +39,7 @@ dictitems:
       format7_roi_width: 1600
       format7_x_offset: 160
       format7_y_offset: 0
-      frame_rate: 60.0
+      frame_rate: 120.0
       gain: 0.0
       gamma: 1.0
       groups: !!python/object/new:dynamic_reconfigure.encoding.Config
@@ -52,7 +52,7 @@ dictitems:
       parent: 0
       saturation: 100.0
       sharpness: 0.0
-      shutter_speed: 0.016337871551513672
+      shutter_speed: 0.00827634334564209
       state: true
       strobe1_delay: 0.0
       strobe1_duration: 0.0
@@ -74,7 +74,7 @@ dictitems:
   pan: 0
   saturation: 100.0
   sharpness: 0.0
-  shutter_speed: 0.016337871551513672
+  shutter_speed: 0.00827634334564209
   strobe1_delay: 0.0
   strobe1_duration: 0.0
   strobe1_polarity: 0
