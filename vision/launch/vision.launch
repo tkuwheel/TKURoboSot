@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <launch> 
-  <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml" ns="prosilica_driver"/>
+  <!-- <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml" ns="prosilica_driver"/> -->
   <rosparam command="load" file="$(find vision)/config/FIRA.yaml" ns="FIRA"/>
 
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />

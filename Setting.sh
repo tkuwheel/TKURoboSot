@@ -3,6 +3,7 @@
 #     This program will setting environment variable for ros namespace.
 # History:
 # 2019/3/19 NEET First Edit
+# 2019/5/10 NEET Add Camera serial setting
 
 SCRIPT_PATH=`cd "$( dirname ${BASH_SOURCE[0]})" && pwd`
 
@@ -18,6 +19,7 @@ function Check() {
     echo "OK"
   else
     echo "source $SCRIPT_PATH/.robot_setting >> ~/.bashrc"
+    echo "source $SCRIPT_PATH/.robot_setting" >> ~/.bashrc
   fi
 }
 
