@@ -4,14 +4,21 @@ from nubot_common.msg import OminiVisionInfo
 from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
+from sensor_msgs.msg import JointState
+from vision.msg import Object
 from transfer.msg import PPoint
 from std_msgs.msg import String
 
+# Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
 SIM_HANDLE_SRV = "nubot{}/Ballhandle"
 
+# Real Robot
+VISION_TOPIC = "vision/object"
+
+# Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
@@ -30,8 +37,7 @@ class Robot(object):
     self.robot_number = robot_num
 
     if not sim :
-      self._Subscriber("")
-      self._Publisher("")
+      rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     else:
       self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
@@ -40,23 +46,31 @@ class Robot(object):
   def _Subscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
                       OminiVisionInfo, \
-                      self._GetOmniVsison)
+                      self._GetSimVision)
     rospy.Subscriber((topic + "/GoalInfo").format(self.robot_number), \
                       PPoint, \
-                      self._GetGoalInfo)
+                      self._GetSimGoalInfo)
 
   def _Publisher(self, topic, mtype):
     return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
 
-  def _GetOmniVsison(self, vision):
+  def _GetSimVision(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
     self.__object_info['ball']['ang'] = math.degrees(vision.ballinfo.real_pos.angle)
-    
-  def _GetGoalInfo(self, goal_info):
+
+  def _GetSimGoalInfo(self, goal_info):
     self.__object_info['Cyan']['dis'] = goal_info.left_radius
     self.__object_info['Cyan']['ang'] = goal_info.left_angle
     self.__object_info['Magenta']['dis'] = goal_info.right_radius
     self.__object_info['Magenta']['ang'] = goal_info.right_angle
+
+  def _GetVision(self, vision):
+    self.__object_info['ball']['dis']    = vision.ball_dis
+    self.__object_info['ball']['ang']    = math.degrees(vision.ball_ang)
+    self.__object_info['Cyan']['dis']    = vision.blue_dis
+    self.__object_info['Cyan']['ang']    = vision.blue_ang
+    self.__object_info['Magenta']['dis'] = vision.yellow_dis
+    self.__object_info['Magenta']['ang'] = vision.yellow_ang
 
   def RobotStatePub(self, state):
     s = String()
