@@ -192,8 +192,8 @@ wire 			oMotor5_DIR;
 wire			oTXD;
 wire			iRXD;
 wire			oLight;
-wire			okick;
-wire	[7:0]	wkick;
+wire			oKick;
+wire	[7:0]	wKick;
 wire			wRST1ms_n, wRST2ms_n, wRST3ms_n;
 wire	[7:0]	wCMD_Motor1;
 wire	[7:0]	wCMD_Motor2;
@@ -453,7 +453,7 @@ MotorController MotorD (
 //assign oMotor5_DIR	=	2'b01;
 //assign oMotor5_PWM	=	wBrush ? 1'b1 : 1'b0;
 
-//持球----------------------------------------------------------------------------------------------------------
+//蹓---------------------------------------------------------------------------------------------------------
 
 /*wire 			oRH;
 wire			oLH;
@@ -467,8 +467,8 @@ holdBall(.iC(CLOCK_50),
 			.iCMD1(wCMD_Motor1),
 			.iCMD2(wCMD_Motor2),
 			.iCMD3(wCMD_Motor3),
-			.iS(wSignal[0]),
-			.oLED(LED[1])
+			.iS(wSignal[0])
+//			.oLED(LED[1])
 			);
 //------------------------------------------------------------------------------------------------------------
 //=======================================================
@@ -476,8 +476,8 @@ holdBall(.iC(CLOCK_50),
 ShootControl (
 			.iClk(CLOCK_50),
 			.iRst_n(iReset_n),
-			.iPower(wkick),
-			.oPower(okick)
+			.iPower(wKick),
+			.oPower(oKick)
 );
 
 assign GPIO_0_D[33] = oTXD;
@@ -503,63 +503,55 @@ UART_if RS_232 (
 
 //assign LED = SW[0] ? wTx_data : wRx_data;
 //assign GPIO_0_D[] = oLight;
-assign GPIO_0_D[29] = okick;
+assign GPIO_0_D[29] = oKick;
 //assign LED[0] = okick;
 assign LED[7:2] = wSignal[7:2];
-assign LED[0] = okick;
-//assign LED = wkick;
+assign LED[0] = oKick;
+	
 // Sperate package to command
 Serial2CMD (
 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
 	.iRst_n		(iReset_n),			// Reset
 	.iData		(wRx_data),
 	.iRx_ready	(wRx_ready),
-//	.oCMD_Motor1(wCMD_Motor1_RS232),
-//	.oCMD_Motor2(wCMD_Motor2_RS232),
-//	.oAX_12		(wAX_12_RS232),
 	.oCMD_Motor1(wCMD_Motor1),		// Command of motor1
 	.oCMD_Motor2(wCMD_Motor2),		// Command of motor2
 	.oCMD_Motor3(wCMD_Motor3),		// Command of motor3
 	.oSignal	(wSignal),			// Command of Enable & Stop signal
-	.oAX_12		(wAX_12),
-//	.oLight		(oLight),
-	.okick		(wkick),				// shoot a ball at the goal
-//	.oBrush		(wBrush_RS232),
-//	.oRx_done	(wRx_done_RS232)
-	.oBrush		(wBrush),
+	.oKick		(wKick),				// shoot a ball at the goal
 	.oRx_done	(wRx_done)
 );
 
 
-//FB_Counter Motor_A (
-//	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-//	.iRst_n		(iReset_n),			// Reset
-//	.iSend		(wRx_done),
-//	.iFB_FREQ	(wFB_FREQ1),		// Feedback frequency Input
-//	.iFB		(wFB_Motor1),			// Feedback of motor1 Input
-//	.oFB		(wFB_CNT_Motor1),		// Feedback of motor1 Output
-//	.oFB_FREQ	(wFB_CNT_FREQ1)	// Feedback frequency Output
-//);
-//
-//FB_Counter Motor_B (
-//	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-//	.iRst_n		(iReset_n),			// Reset
-//	.iSend		(wRx_done),
-//	.iFB_FREQ	(wFB_FREQ2),		// Feedback frequency Input
-//	.iFB		(wFB_Motor2),			// Feedback of motor2 Input
-//	.oFB		(wFB_CNT_Motor2),		// Feedback of motor2 Output
-//	.oFB_FREQ	(wFB_CNT_FREQ2)	// Feedback frequency Output
-//);
-//
-//FB_Counter Motor_C (
-//	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-//	.iRst_n		(iReset_n),			// Reset
-//	.iSend		(wRx_done),
-//	.iFB_FREQ	(wFB_FREQ3),		// Feedback frequency Input
-//	.iFB		(wFB_Motor3),			// Feedback of motor3 Input
-//	.oFB		(wFB_CNT_Motor3),		// Feedback of motor3 Output
-//	.oFB_FREQ	(wFB_CNT_FREQ3)	// Feedback frequency Output
-//);
+FB_Counter Motor_A (
+	.iCLK		(CLOCK_50),				// 50MHz, System Clock
+	.iRst_n		(iReset_n),			// Reset
+	.iSend		(wRx_done),
+	.iFB_FREQ	(wFB_FREQ1),		// Feedback frequency Input
+	.iFB		(wFB_Motor1),			// Feedback of motor1 Input
+	.oFB		(wFB_CNT_Motor1),		// Feedback of motor1 Output
+	.oFB_FREQ	(wFB_CNT_FREQ1)	// Feedback frequency Output
+);
+
+FB_Counter Motor_B (
+	.iCLK		(CLOCK_50),				// 50MHz, System Clock
+	.iRst_n		(iReset_n),			// Reset
+	.iSend		(wRx_done),
+	.iFB_FREQ	(wFB_FREQ2),		// Feedback frequency Input
+	.iFB		(wFB_Motor2),			// Feedback of motor2 Input
+	.oFB		(wFB_CNT_Motor2),		// Feedback of motor2 Output
+	.oFB_FREQ	(wFB_CNT_FREQ2)	// Feedback frequency Output
+);
+
+FB_Counter Motor_C (
+	.iCLK		(CLOCK_50),				// 50MHz, System Clock
+	.iRst_n		(iReset_n),			// Reset
+	.iSend		(wRx_done),
+	.iFB_FREQ	(wFB_FREQ3),		// Feedback frequency Input
+	.iFB		(wFB_Motor3),			// Feedback of motor3 Input
+	.oFB		(wFB_CNT_Motor3),		// Feedback of motor3 Output
+	.oFB_FREQ	(wFB_CNT_FREQ3)	// Feedback frequency Output
+);
 
 
 /*
@@ -575,8 +567,8 @@ FB_Counter Motor_D (
 */
 
 
-assign wFB_CNT_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
-
+// assign wFB_CNT_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
+assign wFB_CNT_FREQ = wFB_FREQ1;
 
 // Combine feedbacks to package
 CMD2Serial (

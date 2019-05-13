@@ -52,7 +52,7 @@ reg				rDLA, rDLB;
 
 //Clock Divisor
 Clkdiv #(
-	.EXCEPTCLK	(1000)
+	.EXCEPTCLK	(1)
 ) Clk1K (
 	.iClk		(iCLK),	// 50Mhz clock 
 	.iRst_n	(iRst_n),// Reset
@@ -99,34 +99,34 @@ always @(posedge iCLK) begin
 	rDFREQ	<=	wFREQ;
 end
 
-//// Count feedback for 1ms
-//always @(posedge iCLK)
-//begin : Counter
-//	if (~rDFREQ & wFREQ) begin
-//		rCNT	<=	0;
-//		//oDIR	<=	0;
-//	end
-//	else if (wPLS) begin
-//		oDIR	<=	wDIR;
-//		if (wDIR) begin
-//			rCNT	<=	rCNT - 1;
-//		end
-//		else if (~wDIR) begin
-//			rCNT	<=	rCNT + 1;
-//		end
-//	end
-//	else begin
-//		rCNT	<=	rCNT;
-//	end
-//end
-//
+// Count feedback for 1ms
+always @(posedge iCLK)
+begin : Counter
+	if (~rDFREQ & wFREQ) begin
+		rCNT	<=	0;
+		//oDIR	<=	0;
+	end
+	else if (wPLS) begin
+		oDIR	<=	wDIR;
+		if (wDIR) begin
+			rCNT	<=	rCNT - 1;
+		end
+		else if (~wDIR) begin
+			rCNT	<=	rCNT + 1;
+		end
+	end
+	else begin
+		rCNT	<=	rCNT;
+	end
+end
+
 
 // Count feedback for all time 
 always @(posedge iCLK  or negedge iRst_n)
 begin : Counter_AllTime
 	if (!iRst_n)
 		rFB_CNT <= 0;
-  else begin 
+	else begin 
 		if (wPLS & wDIR) begin
 			rFB_CNT	<=	rFB_CNT - 1;
 		end
@@ -136,7 +136,7 @@ begin : Counter_AllTime
 		else begin
 			rFB_CNT	<=	rFB_CNT;
 		end
-  end
+	end
 end
 
 assign oFB_AllTime = rFB_CNT;

@@ -16,7 +16,7 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   1.8  :| Chun-Jui Huang    :| 2017/07/07 :|  Add Checksum and Shoot Control
 // --------------------------------------------------------------------
-
+//`default_nettype  none
 module Serial2CMD (
 //===========================================================================
 // PORT declarations
@@ -28,43 +28,47 @@ input		[7:0]	iData,		// Data
 output	reg	[7:0]	oCMD_Motor1,	// Command of motor1
 output	reg	[7:0]	oCMD_Motor2,	// Command of motor2
 output	reg	[7:0]	oCMD_Motor3,	// Command of motor3
-output	reg	[7:0]	oSignal,			// Command of EN&STOP
-output	reg	[7:0]	oAX_12,
-output	reg	[7:0]	okick,			// shoot a ball at the goal
-output	reg			oBrush,
+output	reg	[7:0]	oSignal,		// Command of EN&STOP
+output	reg	[7:0]	oKick,			// shoot a ball 
 output	reg			oRx_done,
-output	reg			rError
+output 	reg	[15:0]	oCrc,			// CRC debug
+output	reg			oCrcSuccess,
+output 	reg	[7:0]	debug			//  debug
+
 );
 
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
-parameter SIZE	=	8;
+//parameter SIZE	=	8;
 // differentiate state in order to change state
-parameter DATA0	=	8'b00000001;
-parameter DATA1	=	8'b00000010;
-parameter DATA2	=	8'b00000100;
-parameter DATA3	=	8'b00001000;
-parameter DATA4	=	8'b00010000;
-parameter DATA5	=	8'b00100000;
-parameter DATA6	=	8'b01000000;
-parameter END	=	8'b10000000;
+parameter DATA0	=	0;
+parameter DATA1	=	1;
+parameter DATA2	=	2;
+parameter DATA3	=	3;
+parameter DATA4	=	4;
+parameter DATA5	=	5;
+parameter DATA6	=	6;
+parameter DATA7	=	7;
+parameter DATA8	=	8;
+parameter END	=	8'hFF;
 
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-//	divide information to 6 part and 8 bits per part
-reg		[7:0]	rData_0, rData_1, rData_2, rData_3, rData_4, rData_5,rData_6,rData_7;
-reg		[7:0]	rTmpData_0, rTmpData_1, rTmpData_2, rTmpData_3, rTmpData_4, rTmpData_5, rTmpData_6, rTmpData_7;
-
-
-
-reg		[SIZE-1:0]	state;
-
+reg		[71:0] 	rPacket;
+reg		[7:0]	rData_0, rData_1, rData_2, rData_3, rData_4, rData_5,rData_6, rData_7, rData_8;	//	divide information to 6 part and 8 bits per part
+reg		[7:0]	state;
 reg				rRx_ready;
 reg				rCheck;
 reg		[7:0]	rChecksum;
 reg		[7:0]	null = 8'h0;
+
+wire				wCrcFinish;
+wire				wCrcSuccess;
+wire		[15:0]	wCrc;
+wire		[7:0]	wCMD_Motor1, wCMD_Motor2, wCMD_Motor3, wSignal, wKick;
+
 //=============================================================================
 // Structural coding
 //=============================================================================
@@ -85,27 +89,28 @@ always @(posedge iCLK) begin
 		oCMD_Motor2	<=	0;
 		oCMD_Motor3	<=	0;
 		oSignal		<=	0;
-		okick		<=	0;
-		rError		<=	1;
-		rChecksum	<=	0;
-		rTmpData_0	<=	0;
-		rTmpData_1	<=	0;
-		rTmpData_2	<=	0;
-		rTmpData_3	<=	0;
-		rTmpData_4	<=	0;
-		rTmpData_5	<=	0;
-		rTmpData_6	<=	0;
-		rTmpData_7	<=	0;
+		oKick		<=	0;
+
+		oCrcSuccess	<=	0;
+		// rError		<=	1;
+		// rCheck		<= 0;
+		debug <= 0;
+
 	end
 	// Take apart Data
 	else begin
 		
-		rChecksum <= rData_2 + rData_3 + rData_4 + rData_5 + rData_6;
+//		rChecksum <= rData_2 + rData_3 + rData_4 + rData_5 + rData_6;
 
 		if(~rRx_ready & iRx_ready) begin
+			oCrc <= oCrc;
+			oCrcSuccess	<=	oCrcSuccess;
+			debug	<= debug;
+			// rError <= rError;
 			case(state)
 				DATA0:
 					begin
+						// rCheck <= 0;
 						if( iData == 8'hFF ) begin	// when getting initiation packet, state jump next
 							rData_0	<=	iData;
 							state	<=	DATA1;
@@ -113,6 +118,7 @@ always @(posedge iCLK) begin
 					end
 				DATA1:
 					begin
+						// rCheck <= 0;
 						if( iData == 8'hFA ) begin	//when getting second initiation packet, start to receive and transmit Data
 							rData_1	<=	iData;
 							state	<=	DATA2;
@@ -124,32 +130,51 @@ always @(posedge iCLK) begin
 				DATA2:				
 					begin
 						rData_2	<=	iData;		//motor1
+						// rCheck <= 0;
 						state	<=	DATA3;
 					end
 				DATA3:				
 					begin
 						rData_3	<=	iData;		//motor2
+						// rCheck <= 0;
 						state	<=	DATA4;
 					end
 				DATA4:
 					begin
 						rData_4	<=	iData;		//motor3
+						// rCheck <= 0;
 						state	<=	DATA5;
 					end
 				DATA5:
 					begin
 						rData_5	<=	iData;		//enable+stop
+						// rCheck <= 0;
 						state	<=	DATA6;
 					end
 				DATA6:
 					begin
-						rCheck <= 0;
 						rData_6	<=	iData;		//shoot
+						// rCheck <= 0;
+						state	<=	DATA7;
+					end
+				DATA7:
+					begin
+						rData_7	<=	iData;		//crc_1
+						// rCheck <= 0;
+						state	<=	DATA8;
+					end
+				DATA8:
+					begin
+						rData_8	<=	iData;		//crc_2
+						// rCheck <= 0;
 						state	<=	END;
 					end
 				END:
 					begin
-						rData_7	<=	iData;		//checksum
+						
+						rPacket <= {rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8};
+						
+						// rCheck <= 1;
 						oRx_done	<=	1;
 						state	<=	DATA0;
 					end
@@ -158,59 +183,45 @@ always @(posedge iCLK) begin
 			endcase
 		end
 		else begin
-//			oCMD_Motor1 <= rData_2;
-//			oCMD_Motor2 <= rData_3;
-//			oCMD_Motor3 <= rData_4;
-//			oSignal 	<= rData_5;
-//			okick 		<= rData_6;
-//			
-			rData_0 <= rData_0;
-			rData_1 <= rData_1;
-			rData_2 <= rData_2;
-			rData_3 <= rData_3;
-			rData_4 <= rData_4;
-			rData_5 <= rData_5;
-			rData_6 <= rData_6;
-			rData_7 <= rData_7;
-			rTmpData_0	<=	rData_0;
-			rTmpData_1	<=	rData_1;
-			rTmpData_2	<=	rData_2;
-			rTmpData_3	<=	rData_3;
-			rTmpData_4	<=	rData_4;
-			rTmpData_5	<=	rData_5;
-			if (rData_6 == 1)begin
-				rTmpData_6	<=	0;
-			end
-			else begin
-				rTmpData_6	<=	rData_6;
-			end
-			rTmpData_7 	<=	rData_7;
-			state <= state;
-			
-			
-			if(((rChecksum == rTmpData_7) && (rTmpData_0 == 8'hFF)) && 
-				((rTmpData_1 == 8'hFA) && (rTmpData_5[1] == 1'b1)))begin
-				rError <= 0;
-				oCMD_Motor1 <= rTmpData_2;
-				oCMD_Motor2 <= rTmpData_3;
-				oCMD_Motor3 <= rTmpData_4;
-				oSignal 	<= rTmpData_5;
-				okick 		<= rTmpData_6;
-			end
-			else begin
-				rError <= 1;
-				oCMD_Motor1 	<= 	oCMD_Motor1;
-				oCMD_Motor2 	<= 	oCMD_Motor2;
-				oCMD_Motor3 	<= 	oCMD_Motor3;
-				oSignal 		<= 	oSignal;
-				okick			<= 	okick;
-			end
-			
-			oRx_done	<=	0;
+
+			oCMD_Motor1 	<= 	wCMD_Motor1;
+			oCMD_Motor2 	<= 	wCMD_Motor2;
+			oCMD_Motor3 	<= 	wCMD_Motor3;
+			oSignal 		<= 	wSignal;
+			oKick			<= 	wKick;
+			oCrcSuccess		<=	wCrcSuccess;
+			debug	<= wCrcFinish;
+			// rCheck 			<=	0;
+			oRx_done		<=	0;
+			oCrc <= wCrc;
 		end
 		
 		rRx_ready	<=	iRx_ready;
 	end
 end
+Crc16 #(
+	.PACKAGE_SIZE(9),
+	.STREAM_SIZE(72)
+	) Crc_RX (
+	.iClk(iCLK),
+	.iRst_n(iRst_n),
+	.iDataValid(oRx_done),
+	.iData(rPacket),
+	.oCrc(wCrc),
+	.oSuccess(wCrcSuccess),
+	.oFinish(wCrcFinish)
+);
+Packet2CMD packet(
+	.iClk(iCLK),
+	.iRst_n(iRst_n),
+	.iDataValid(wCrcSuccess),
+	.iPacket(rPacket),
+	.oMotor1(wCMD_Motor1),
+	.oMotor2(wCMD_Motor2),
+	.oMotor3(wCMD_Motor3),
+	.oEN(wSignal),
+	.oShoot(wKick)
+);
 
 endmodule
+
