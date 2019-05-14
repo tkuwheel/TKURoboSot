@@ -5,3 +5,14 @@ __pycache__
 *.pyc
 .vscode
 CATKIN_IGNORE
+*.swp
+
+# fpga
+db
+export_db
+incremental_db
+output_files
+
+*.stp
+*.qdf
+*.bak
