@@ -1,13 +1,18 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(motion)
 
+add_definitions(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS
 # qt_build
  message_generation
  std_msgs
  roscpp
 )
-include_directories(${catkin_INCLUDE_DIRS})
+set(INCLUDE_DIR
+        common/
+)
+include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 catkin_package(CATKIN_DEPENDS
  message_runtime
@@ -24,8 +29,8 @@ foreach(subdir
 	add_subdirectory(${subdir})
 endforeach()
 
-#add_executable(motion_attack motion.cpp MotorControl.h)
-#target_link_libraries(motion_attack ${catkin_LIBRARIES})
+add_executable(Crc get_crc.cpp)
+target_link_libraries(Crc ${catkin_LIBRARIES} crcLib)
 ##target_link_libraries(motion_test qnode)
 #target_link_libraries(motion_attack csslLib)
 
