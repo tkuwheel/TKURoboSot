@@ -48,7 +48,7 @@ always@(posedge iClk) begin
 	if(!iRst_n)begin
 		oCrc = 16'hffff;
 		oSuccess = 0;
-		oFinish = 1;
+		oFinish = 0;
 		rDataValid = 0;
 	end
 	else if(~rDataValid & iDataValid)begin

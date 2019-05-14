@@ -385,47 +385,47 @@ MotorController MotorA (
 	.oFB_FREQ	(wFB_FREQ1)		
 );
 
-assign iMotor2_PA = GPIO_0_D[30];
-assign iMotor2_PB = GPIO_0_D[32];
-assign GPIO_0_D[21] = oMotor2_PWM;
-assign GPIO_0_D[25] = oMotor2_DIR;
-assign GPIO_0_D[23] = wSignal[6];
-assign GPIO_0_D[27] = wSignal[3];
+// assign iMotor2_PA = GPIO_0_D[30];
+// assign iMotor2_PB = GPIO_0_D[32];
+// assign GPIO_0_D[21] = oMotor2_PWM;
+// assign GPIO_0_D[25] = oMotor2_DIR;
+// assign GPIO_0_D[23] = wSignal[6];
+// assign GPIO_0_D[27] = wSignal[3];
 
 
-MotorController MotorB (
-	.iCLK		(CLOCK_50),			// 50MHz, System Clock
-	.iRst_n		(iReset_n),		// Reset
-	.iCMD		(wCMD_Motor2),		// Command, SPD + DIR
-	.iPA		(iMotor2_PA),		// Encoder Channel A
-	.iPB		(iMotor2_PB),		// Encoder Channel B
-	.oPWM_Pulse	(oMotor2_PWM),	// PWM of motor
-	.oDIR		(oMotor2_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
-	.oFB		(wFB_Motor2),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ2)		// Feedback renew trigger
-);
+// MotorController MotorB (
+// 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
+// 	.iRst_n		(iReset_n),		// Reset
+// 	.iCMD		(wCMD_Motor2),		// Command, SPD + DIR
+// 	.iPA		(iMotor2_PA),		// Encoder Channel A
+// 	.iPB		(iMotor2_PB),		// Encoder Channel B
+// 	.oPWM_Pulse	(oMotor2_PWM),	// PWM of motor
+// 	.oDIR		(oMotor2_DIR),		// Direction of motor
+// 	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
+// 	.oFB		(wFB_Motor2),		// Feedback of motor
+// 	.oFB_FREQ	(wFB_FREQ2)		// Feedback renew trigger
+// );
 
-assign iMotor3_PA = GPIO_0_D[17];
-assign iMotor3_PB = GPIO_0_D[19];
-assign GPIO_0_D[1] = oMotor3_PWM;
-assign GPIO_0_D[5] = oMotor3_DIR;
-assign GPIO_0_D[3] = wSignal[5];
-assign GPIO_0_D[7] = wSignal[2];
+// assign iMotor3_PA = GPIO_0_D[17];
+// assign iMotor3_PB = GPIO_0_D[19];
+// assign GPIO_0_D[1] = oMotor3_PWM;
+// assign GPIO_0_D[5] = oMotor3_DIR;
+// assign GPIO_0_D[3] = wSignal[5];
+// assign GPIO_0_D[7] = wSignal[2];
 
 
-MotorController MotorC (
-	.iCLK		(CLOCK_50),			// 50MHz, System Clock
-	.iRst_n		(iReset_n),		// Reset
-	.iCMD		(wCMD_Motor3),		// Command, SPD + DIR
-	.iPA		(iMotor3_PA),		// Encoder Channel A
-	.iPB		(iMotor3_PB),		// Encoder Channel B
-	.oPWM_Pulse	(oMotor3_PWM),	// PWM of motor
-	.oDIR		(oMotor3_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
-	.oFB		(wFB_Motor3),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ3)		// Feedback renew trigger
-);
+// MotorController MotorC (
+// 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
+// 	.iRst_n		(iReset_n),		// Reset
+// 	.iCMD		(wCMD_Motor3),		// Command, SPD + DIR
+// 	.iPA		(iMotor3_PA),		// Encoder Channel A
+// 	.iPB		(iMotor3_PB),		// Encoder Channel B
+// 	.oPWM_Pulse	(oMotor3_PWM),	// PWM of motor
+// 	.oDIR		(oMotor3_DIR),		// Direction of motor
+// 	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
+// 	.oFB		(wFB_Motor3),		// Feedback of motor
+// 	.oFB_FREQ	(wFB_FREQ3)		// Feedback renew trigger
+// );
 
 /*
 assign iMotor4_PA = GPIO_0_D[22];
@@ -533,25 +533,25 @@ FB_Counter Motor_A (
 	.oFB_FREQ	(wFB_CNT_FREQ1)	// Feedback frequency Output
 );
 
-FB_Counter Motor_B (
-	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-	.iRst_n		(iReset_n),			// Reset
-	.iSend		(wRx_done),
-	.iFB_FREQ	(wFB_FREQ2),		// Feedback frequency Input
-	.iFB		(wFB_Motor2),			// Feedback of motor2 Input
-	.oFB		(wFB_CNT_Motor2),		// Feedback of motor2 Output
-	.oFB_FREQ	(wFB_CNT_FREQ2)	// Feedback frequency Output
-);
+// FB_Counter Motor_B (
+// 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
+// 	.iRst_n		(iReset_n),			// Reset
+// 	.iSend		(wRx_done),
+// 	.iFB_FREQ	(wFB_FREQ2),		// Feedback frequency Input
+// 	.iFB		(wFB_Motor2),			// Feedback of motor2 Input
+// 	.oFB		(wFB_CNT_Motor2),		// Feedback of motor2 Output
+// 	.oFB_FREQ	(wFB_CNT_FREQ2)	// Feedback frequency Output
+// );
 
-FB_Counter Motor_C (
-	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-	.iRst_n		(iReset_n),			// Reset
-	.iSend		(wRx_done),
-	.iFB_FREQ	(wFB_FREQ3),		// Feedback frequency Input
-	.iFB		(wFB_Motor3),			// Feedback of motor3 Input
-	.oFB		(wFB_CNT_Motor3),		// Feedback of motor3 Output
-	.oFB_FREQ	(wFB_CNT_FREQ3)	// Feedback frequency Output
-);
+// FB_Counter Motor_C (
+// 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
+// 	.iRst_n		(iReset_n),			// Reset
+// 	.iSend		(wRx_done),
+// 	.iFB_FREQ	(wFB_FREQ3),		// Feedback frequency Input
+// 	.iFB		(wFB_Motor3),			// Feedback of motor3 Input
+// 	.oFB		(wFB_CNT_Motor3),		// Feedback of motor3 Output
+// 	.oFB_FREQ	(wFB_CNT_FREQ3)	// Feedback frequency Output
+// );
 
 
 /*

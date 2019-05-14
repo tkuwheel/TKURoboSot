@@ -12,44 +12,54 @@ wire    finish;
 reg [127:0] iData;
 reg reset;
 reg ready;
-// initial begin
-//     # 0 ready = 0;
-//         reset = 0;
-//         iData = 72'hFFFA8080800000767d;
-//     # 2 ready = 1;
-//         reset = 1;
-//         iData = {72'hFFFA8080800000767d};
-//     # 2 ready = 0;
-//         iData = {72'hFFFA80808000001234};
-//     # 2 ready = 1;
-//         iData = {72'hFFFA80808000001234};
-//     # 2 ready = 0;
-//         iData = {72'hFFFA171717e0004d8a};
-//     # 2 ready = 1;
-//         iData = {72'hFFFA171717e0004d8a};
-//     # 2 ready = 0;
-//         iData = {72'hFFFA171717e0005678};
-//     # 2 ready = 1;
-//         iData = {72'hFFFA171717e0005678};
-//     # 2 ready = 0;
-//         iData = {72'hFFFA1b9022e0ff7a11};
-//     # 2 ready = 1;
-//         iData = {72'hFFFA1b9022e0ff7a11};
-//     # 2 ready = 0;
-//         iData = {72'hFFFA1b9022e0ff7a12};
-//     # 2 ready = 1;
-//         iData = {72'hFFFA1b9022e0ff7a12};
-// end
-
 initial begin
     # 0 ready = 0;
         reset = 0;
         iData = 72'hFFFA8080800000767d;
     # 2 ready = 1;
         reset = 1;
-        iData = {8'hff, 8'hfa, 112'h0};
-    
+        iData = {72'hFFFA8080800000767d};
+    # 2 ready = 0;
+        iData = {72'hFFFA80808000001234};
+    # 2 ready = 1;
+        iData = {72'hFFFA80808000001234};
+    # 2 ready = 0;
+        iData = {72'hFFFA171717e0004d8a};
+    # 2 ready = 1;
+        iData = {72'hFFFA171717e0004d8a};
+    # 2 ready = 0;
+        iData = {72'hFFFA171717e0005678};
+    # 2 ready = 1;
+        iData = {72'hFFFA171717e0005678};
+    # 2 ready = 0;
+        iData = {72'hFFFA1b9022e0ff7a11};
+    # 2 ready = 1;
+        iData = {72'hFFFA1b9022e0ff7a11};
+    # 2 ready = 0;
+        iData = {72'hFFFA1b9022e0ff7a12};
+    # 2 ready = 1;
+        iData = {72'hFFFA1b9022e0ff7a12};
 end
+
+// initial begin
+//     # 0 ready = 0;
+//         reset = 0;
+//         iData = 72'hFFFA8080800000767d;
+//     # 2 ready = 1;
+//         reset = 1;
+//         iData = {8'hff, 8'hfa, 112'h0};
+    
+// end
+
+// initial begin
+//     # 0 ready = 0;
+//         reset = 0;
+//         iData = 72'hFFFA171717e0015dab;
+//     # 2 ready = 1;
+//         reset = 1;
+//         iData = 72'hFFFA171717e0015dab;
+    
+// end
 Clk_50M CLOCK_50(.clk(clk));
 // assign wclk =  clk;
 
