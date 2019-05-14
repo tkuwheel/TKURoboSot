@@ -13,10 +13,11 @@ from std_msgs.msg import String
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
-SIM_HANDLE_SRV = "nubot{}/Ballhandle"
+SIM_HANDLE_SRV = "nubot{}/BallHandle"
 
 # Real Robot
 VISION_TOPIC = "vision/object"
+CMDVEL_TOPIC = "cmd_vel"
 
 # Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
@@ -39,11 +40,11 @@ class Robot(object):
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     else:
-      self._Subscriber(SIM_VISION_TOPIC.format(self.robot_number))
+      self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
 
-  def _Subscriber(self, topic):
+  def _SimSubscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
                       OminiVisionInfo, \
                       self._GetSimVision)
@@ -137,12 +138,12 @@ class Robot(object):
     except rospy.ServiceException :
       print ("Service call failed")
 
-  def RobotBallhandle(self):
+  def RobotBallHandle(self):
     rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))
     try:
       client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
       resp1 = client(1)
-      return resp1
+      return resp1.BallIsHolding
     except rospy.ServiceException :
       print ("Service call failed")
   
