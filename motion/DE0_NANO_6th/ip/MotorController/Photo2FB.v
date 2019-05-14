@@ -34,7 +34,7 @@ output	[31:0]	oFB_AllTime	// Feedback sum pluse,until reset signal
 //  REG/WIRE declarations
 //=======================================================
 
-reg		[9:0]	rCNT;
+reg		[31:0]	rCNT;
 reg		[31:0]	rFB_CNT;
 reg		[9:0]	rDB;
 wire			wFREQ;
@@ -52,7 +52,7 @@ reg				rDLA, rDLB;
 
 //Clock Divisor
 Clkdiv #(
-	.EXCEPTCLK	(1)
+	.EXCEPTCLK	(10)
 ) Clk1K (
 	.iClk		(iCLK),	// 50Mhz clock 
 	.iRst_n	(iRst_n),// Reset
@@ -145,7 +145,7 @@ assign oFB_AllTime = rFB_CNT;
 always @(posedge iCLK)
 begin : DataTran
 	if (~rDFREQ & wFREQ) begin
-		oDB	<=	oFB_AllTime;
+		oDB	<=	rCNT;
 		oST	<=	1;
 	end
 	else begin
