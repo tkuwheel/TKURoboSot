@@ -5,3 +5,13 @@ __pycache__
 *.pyc
 .vscode
 *.swp
+
+# fpga
+db
+export_db
+incremental_db
+output_files
+
+*.stp
+*.qdf
+*.bak
