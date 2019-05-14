@@ -73,20 +73,23 @@ void BaseControl::mcssl_Callback(int id, uint8_t* buf, int length)
 //    for(int i = 0; i < length; i++){
 //        printf("%x ", *(buf+i));
 //    }
-	static uint8_t cssl_buffer[50]={0};
+    int buffer_size = 50;
+	static uint8_t cssl_buffer[50] = {0};
 	static int count_buffer=0;
     for(int i = 0; i < length; i++){
-	    count_buffer = (count_buffer)%50;
+	    count_buffer = (count_buffer)%100;
         cssl_buffer[count_buffer++] = *(buf+i);
     }
 	int size = 16;
 //    base_flag = false;
-	for(int i=0; i<34; i++){
-		if((cssl_buffer[i]==0xff)&&(cssl_buffer[i+1]==0xfa)&&(cssl_buffer[i+16]==0xff)&&(cssl_buffer[i+17])==0xfa){
-			uint8_t data[] = {  cssl_buffer[i], cssl_buffer[i+1], cssl_buffer[i+2], cssl_buffer[i+3], 
-                                cssl_buffer[i+4], cssl_buffer[i+5], cssl_buffer[i+6], cssl_buffer[i+7], 
-                                cssl_buffer[i+8], cssl_buffer[i+9], cssl_buffer[i+10], cssl_buffer[i+11], 
-                                cssl_buffer[i+12], cssl_buffer[i+13], cssl_buffer[i+14], cssl_buffer[i+15]};
+	for(int i=0; i<buffer_size; i++){
+		if((cssl_buffer[i]==0xff)&&(cssl_buffer[(i+1)%buffer_size]==0xfa)){
+			uint8_t data[] = {  cssl_buffer[i], cssl_buffer[(i+1)%buffer_size], cssl_buffer[(i+2)%buffer_size], 
+                        cssl_buffer[(i+3)%buffer_size], cssl_buffer[(i+4)%buffer_size], cssl_buffer[(i+5)%buffer_size], 
+                        cssl_buffer[(i+6)%buffer_size], cssl_buffer[(i+7)%buffer_size], cssl_buffer[(i+8)%buffer_size], 
+                        cssl_buffer[(i+9)%buffer_size], cssl_buffer[(i+10)%buffer_size], cssl_buffer[(i+11)%buffer_size], 
+                        cssl_buffer[(i+12)%buffer_size], cssl_buffer[(i+13)%buffer_size], cssl_buffer[(i+14)%buffer_size], 
+                        cssl_buffer[(i+15)%buffer_size]};
 
             Crc_16 Crc16(data, size);
             unsigned short crc_16 = Crc16.getCrc();
@@ -94,9 +97,9 @@ void BaseControl::mcssl_Callback(int id, uint8_t* buf, int length)
 			if(crc_16 == 0){
 				base_RX.head1 = id;
 				base_RX.head2 = length;
-				base_RX.w1 = (cssl_buffer[i+2]<<24)+(cssl_buffer[i+3]<<16)+(cssl_buffer[i+4]<<8)+(cssl_buffer[i+5]);
-				base_RX.w2 = (cssl_buffer[i+6]<<24)+(cssl_buffer[i+7]<<16)+(cssl_buffer[i+8]<<8)+(cssl_buffer[i+9]);
-				base_RX.w3 = (cssl_buffer[i+10]<<24)+(cssl_buffer[i+11]<<16)+(cssl_buffer[i+12]<<8)+(cssl_buffer[i+13]);
+				base_RX.w1 = (cssl_buffer[(i+2)%buffer_size]<<24)+(cssl_buffer[(i+3)%buffer_size]<<16)+(cssl_buffer[(i+4)%buffer_size]<<8)+(cssl_buffer[(i+5)%buffer_size]);
+				base_RX.w2 = (cssl_buffer[(i+6)%buffer_size]<<24)+(cssl_buffer[(i+7)%buffer_size]<<16)+(cssl_buffer[(i+8)%buffer_size]<<8)+(cssl_buffer[(i+9)%buffer_size]);
+				base_RX.w3 = (cssl_buffer[(i+10)%buffer_size]<<24)+(cssl_buffer[(i+11)%buffer_size]<<16)+(cssl_buffer[(i+12)%buffer_size]<<8)+(cssl_buffer[(i+13)%buffer_size]);
 				base_RX.shoot = 0;
 				base_RX.batery = 0;
                 base_flag = true;

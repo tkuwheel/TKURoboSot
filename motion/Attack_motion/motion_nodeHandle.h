@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include <pthread.h>
+//#include <signal.h>
 /*********************
  ** Include ROS
  *********************/
@@ -50,6 +51,7 @@ private:
     bool holdBall;
     bool motion_flag;
 private:
+    static void* pThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
@@ -58,7 +60,6 @@ private:
 	void pub(const geometry_msgs::Twist &);
     void run();
 public:
-    static void* pThreadRun(void* p);
 //    void *run();
 	robot_command getMotion();
 	void pub_robotFB(robot_command &);

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
-
+#include <signal.h>
 /********************************
  *	Include libraries
  ********************************/
@@ -22,8 +22,13 @@
  *	Define	
  ********************************/
 //typedef void * (*THREADFUNCPTR)(void *);
-#define DEBUG 
-
+//#define DEBUG 
+bool flag = 0;
+void inturrupt(int signal)
+{
+    printf("get SIGINT %d\n", signal);
+    flag = 1;
+}
 int main(int argc, char **argv)
 {
 	Motion_nodeHandle Node(argc, argv);
@@ -54,10 +59,14 @@ int main(int argc, char **argv)
 	//		exit(EXIT_FAILURE);
 	//	}
 	//}
+    signal(SIGINT, inturrupt);
 	std::cout << "ATTACK MOTION IS RUNNING!\n";
-	ros::Rate loop_rate(10);
+	ros::Rate loop_rate(100);
     int count = 0;
-	while(ros::ok()){
+	while(true){
+        if(flag){
+            break;
+        }
 //		main_robotCMD = nodeHandle.getMotion();
 //		main_Base_Control.send(main_robotCMD);
 //		if(*main_robotCMD->shoot_power > 0){
@@ -92,14 +101,14 @@ int main(int argc, char **argv)
             RX = Base.getPack();
             printf("head1: %x\t", RX->head1);
             printf("head2: %x\t", RX->head2);
-            printf("w1: %x\t", RX->w1);
-            printf("w2: %x\t", RX->w2);
-            printf("w3: %x\t", RX->w3);
+            printf("w1: %d\t", RX->w1 * 600/2000);
+            printf("w2: %d\t", RX->w2);
+            printf("w3: %d\t", RX->w3);
             printf("shoot: %x\t", RX->shoot);
             printf("batery: %x\n", RX->batery);
         }
 //		ros::spinOnce();
-		loop_rate.sleep();
+//		loop_rate.sleep();
 	}
 //	delete main_robotCMD;
 	ros::shutdown();
