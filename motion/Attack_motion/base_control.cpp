@@ -8,10 +8,10 @@ serial_rx BaseControl::base_RX;
 bool BaseControl::base_flag;
 BaseControl::BaseControl()
 {
-//    this->base_robotCMD = {0, 0, 0, 0, 0};
-//    this->base_robotFB = {0, 0, 0, 0, 0};
-//    this->base_TX = {0xff, 0xfa, 0, 0, 0, 0, 0, 0, 0};
-//    BaseControl::base_RX = {0, 0, 0, 0, 0, 0, 0};
+    this->base_robotCMD = {0, 0, 0, 0, 0, 0};
+    this->base_robotFB = {0, 0, 0, 0, 0};
+    this->base_TX = {0xff, 0xfa, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    BaseControl::base_RX = {0, 0, 0, 0, 0, 0, 0};
     BaseControl::base_flag = false;
 	this->serial = NULL;
 #ifdef DEBUG
@@ -29,7 +29,9 @@ BaseControl::BaseControl()
 
 BaseControl::~BaseControl()
 {
+#ifdef DEBUG
 	std::cout << "~BaseControl(DEBUG)\n";
+#endif
 	mcssl_finish();
 }
 
@@ -68,28 +70,36 @@ void BaseControl::mcssl_finish()
 
 void BaseControl::mcssl_Callback(int id, uint8_t* buf, int length)
 {
-//    printf("%x ", *buf);
-	static unsigned char cssl_buffer[50]={0};
+//    for(int i = 0; i < length; i++){
+//        printf("%x ", *(buf+i));
+//    }
+	static uint8_t cssl_buffer[50]={0};
 	static int count_buffer=0;
-	cssl_buffer[count_buffer++] = *buf;
-	count_buffer = (count_buffer)%50;
-	unsigned char checksum;
-	bool error = true;
-	int i;
-	for(i=0; i<30; i++){
-		if((cssl_buffer[i]==0xff)&&(cssl_buffer[i+1]==0xfa)&&(cssl_buffer[i+15]==0xff)&&(cssl_buffer[i+16])==0xfa){
-			checksum = cssl_buffer[i+2]+cssl_buffer[i+3]+cssl_buffer[i+4]+cssl_buffer[i+5]+cssl_buffer[i+6]+cssl_buffer[i+7]+cssl_buffer[i+8]+cssl_buffer[i+9]+cssl_buffer[i+10]+cssl_buffer[i+11]+cssl_buffer[i+12]+cssl_buffer[i+13];
-			if(cssl_buffer[i+14]==checksum){
-				base_RX.head1 = cssl_buffer[i];
-				base_RX.head2 = cssl_buffer[i+1];
+    for(int i = 0; i < length; i++){
+	    count_buffer = (count_buffer)%50;
+        cssl_buffer[count_buffer++] = *(buf+i);
+    }
+	int size = 16;
+//    base_flag = false;
+	for(int i=0; i<34; i++){
+		if((cssl_buffer[i]==0xff)&&(cssl_buffer[i+1]==0xfa)&&(cssl_buffer[i+16]==0xff)&&(cssl_buffer[i+17])==0xfa){
+			uint8_t data[] = {  cssl_buffer[i], cssl_buffer[i+1], cssl_buffer[i+2], cssl_buffer[i+3], 
+                                cssl_buffer[i+4], cssl_buffer[i+5], cssl_buffer[i+6], cssl_buffer[i+7], 
+                                cssl_buffer[i+8], cssl_buffer[i+9], cssl_buffer[i+10], cssl_buffer[i+11], 
+                                cssl_buffer[i+12], cssl_buffer[i+13], cssl_buffer[i+14], cssl_buffer[i+15]};
+
+            Crc_16 Crc16(data, size);
+            unsigned short crc_16 = Crc16.getCrc();
+//            printf("%x\n", crc_16);
+			if(crc_16 == 0){
+				base_RX.head1 = id;
+				base_RX.head2 = length;
 				base_RX.w1 = (cssl_buffer[i+2]<<24)+(cssl_buffer[i+3]<<16)+(cssl_buffer[i+4]<<8)+(cssl_buffer[i+5]);
 				base_RX.w2 = (cssl_buffer[i+6]<<24)+(cssl_buffer[i+7]<<16)+(cssl_buffer[i+8]<<8)+(cssl_buffer[i+9]);
 				base_RX.w3 = (cssl_buffer[i+10]<<24)+(cssl_buffer[i+11]<<16)+(cssl_buffer[i+12]<<8)+(cssl_buffer[i+13]);
 				base_RX.shoot = 0;
 				base_RX.batery = 0;
-				error = false;
                 base_flag = true;
-//                printf("cssl: %x \n", base_RX.w2);
 				break;
 			}else{
 				continue;
@@ -103,46 +113,14 @@ void BaseControl::mcssl_Callback(int id, uint8_t* buf, int length)
 void BaseControl::mcssl_send2motor()
 {	
 
-//	*(this->base_TX->checksum) = *(this->base_TX->w1)+*(this->base_TX->w2)+*(this->base_TX->w3)+*(this->base_TX->enable_and_stop)+*(this->base_TX->shoot);
-//#ifdef DEBUG_CSSL
-//	std::cout << "mcssl_send2motor(DEBUG_CSSL)\n";
-//	std::cout << std::hex;
-//	std::cout << "w1: " << (int)*(this->base_TX->w1) << std::endl;
-//	std::cout << "w2: " << (int)*(this->base_TX->w2) << std::endl;
-//	std::cout << "w3: " << (int)*(this->base_TX->w3) << std::endl;
-//	std::cout << "en1 en2 en3 stop1 stop2 stop3: ";	
-//	std::cout << (int)en1 << (int)en2 << (int)en3 << (int)stop1;
-//	std::cout << " ";
-//	std::cout << (int)stop2 << (int)stop3 << "00 (" << (int)*(this->base_TX->enable_and_stop) << ")"<<  std::endl;
-//	std::cout << "shoot: " << (int)*(this->base_TX->shoot) << std::endl;
-//	std::cout << "checksum: " << (int)*(this->base_TX->checksum) << std::endl;
-//	std::cout << std::endl;
-//#else
-//#ifdef DEBUG
-//	std::cout << "mcssl_send2motor(DEBUG)\n";
-//	std::cout << std::hex;
-//	std::cout << "w1: " << (int)*(this->base_TX->w1) << std::endl;
-//	std::cout << "w2: " << (int)*(this->base_TX->w2) << std::endl;
-//	std::cout << "w3: " << (int)*(this->base_TX->w3) << std::endl;
-//	std::cout << "en1 en2 en3 stop1 stop2 stop3: ";	
-//	std::cout << (int)en1 << (int)en2 << (int)en3 << (int)stop1;
-//	std::cout << " ";
-//	std::cout << (int)stop2 << (int)stop3 << "00 (" << (int)*(this->base_TX->enable_and_stop) << ")"<<  std::endl;
-//	std::cout << "shoot: " << (int)*(this->base_TX->shoot) << std::endl;
-//	std::cout << "checksum: " << (int)*(this->base_TX->checksum) << std::endl;
-//	std::cout << std::endl;
-//#endif
+    uint8_t data[] = {  this->base_TX.head1, 
+                        this->base_TX.head2, 
+                        this->base_TX.w1, 
+                        this->base_TX.w2, 
+                        this->base_TX.w3, 
+                        this->base_TX.enable_and_stop, 
+                        this->base_TX.shoot};
 
-//	cssl_putchar(serial, *(this->base_TX->head1));
-//	cssl_putchar(serial, *(this->base_TX->head2));
-//	cssl_putchar(serial, *(this->base_TX->w1));
-//	cssl_putchar(serial, *(this->base_TX->w2));
-//	cssl_putchar(serial, *(this->base_TX->w3));
-//	cssl_putchar(serial, *(this->base_TX->enable_and_stop));
-//	cssl_putchar(serial, *(this->base_TX->shoot));
-//	cssl_putchar(serial, *(this->base_TX->checksum));
-//#endif
-    uint8_t data[] = {this->base_TX.head1, this->base_TX.head2, this->base_TX.w1, this->base_TX.w2, this->base_TX.w3, this->base_TX.enable_and_stop, this->base_TX.shoot};
     int size = sizeof(data)/sizeof(uint8_t);
     Crc_16 Crc16(data, size);
     unsigned short crc_16 = Crc16.getCrc();
@@ -150,9 +128,34 @@ void BaseControl::mcssl_send2motor()
 //    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
     this->base_TX.crc_16_1 = crc_16 >> 8;
     this->base_TX.crc_16_2 = crc_16;
-    uint8_t buffer[] = {this->base_TX.head1, this->base_TX.head2, this->base_TX.w1, this->base_TX.w2, this->base_TX.w3, this->base_TX.enable_and_stop, this->base_TX.shoot};
+    uint8_t buffer[] = {    this->base_TX.head1, 
+                            this->base_TX.head2, 
+                            this->base_TX.w1, 
+                            this->base_TX.w2, 
+                            this->base_TX.w3, 
+                            this->base_TX.enable_and_stop, 
+                            this->base_TX.shoot, 
+                            this->base_TX.crc_16_1, 
+                            this->base_TX.crc_16_2, 
+                            0};
 #ifndef DEBUG_CSSL
     cssl_putdata(serial, buffer, int(sizeof(buffer)/sizeof(uint8_t)));
+#ifdef DEBUG
+    printf("**************************\n");
+    printf("* mcssl_send(DEBUG) *\n");
+    printf("**************************\n");
+    printf("already send to motor\n");
+    printf("head1: %x\n", (this->base_TX.head1));
+    printf("head2: %x\n", (this->base_TX.head2));
+    printf("w1: %x\n", (this->base_TX.w1));
+    printf("w2: %x\n", (this->base_TX.w2));
+    printf("w3: %x\n", (this->base_TX.w3));
+    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("shoot: %x\n", (this->base_TX.shoot));
+    printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
+    printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
+    printf("crc16: %x\n", (crc_16));
+#endif
 #endif
 #ifdef DEBUG_CSSL
     printf("**************************\n");
@@ -164,29 +167,29 @@ void BaseControl::mcssl_send2motor()
     printf("w2: %x\n", (this->base_TX.w2));
     printf("w3: %x\n", (this->base_TX.w3));
     printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("shoot: %x\n", (this->base_TX.shoot));
     printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
     printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
     printf("crc16: %x\n", (crc_16));
-//    printf("checksum: %x\n", *(this->base_TX->checksum));
 #endif
 }
 
 void BaseControl::shoot_regularization()
 {
-//	if(*(this->base_robotCMD->shoot_power)==0){
-//		*(this->base_TX->shoot) = 1;
-//	}else if(*(this->base_robotCMD->shoot_power)>=100){
-//		*(this->base_TX->shoot) = 255;
-//	}
-//	else{
-//		*(this->base_TX->shoot) = (255**(this->base_robotCMD->shoot_power)/100);
-//	}
-//#ifdef DEBUG
-//	std::cout << "shoot_regularization(DEBUG)\n";
-//	std::cout << std::hex;
-//	std::cout << "shoot byte(hex): " << (int)*(this->base_TX->shoot) << std::endl;
-//	std::cout << std::endl;
-//#endif
+	if(this->base_robotCMD.shoot_power == 0){
+		this->base_TX.shoot = 0;
+	}else if(this->base_robotCMD.shoot_power >= 100){
+		this->base_TX.shoot = 255;
+	}
+	else{
+		this->base_TX.shoot = (255 * this->base_robotCMD.shoot_power / 100);
+	}
+#ifdef DEBUG
+	std::cout << "shoot_regularization(DEBUG)\n";
+	std::cout << std::hex;
+	std::cout << "shoot byte(hex): " << (int)(this->base_TX.shoot) << std::endl;
+	std::cout << std::endl;
+#endif
 }
 
 void BaseControl::speed_regularization(double w1, double w2, double w3)
@@ -241,7 +244,6 @@ void BaseControl::speed_regularization(double w1, double w2, double w3)
 	std::cout << std::hex;
 	std::cout << "enable & stop(hex): " << (int)(this->base_TX.enable_and_stop) << std::endl;
 	std::cout << std::endl;
-
 #endif
 }
 
@@ -302,7 +304,6 @@ void BaseControl::inverseKinematics()
 	w1_speed = this->x_CMD*cos(m1_Angle)+y_CMD*sin(m1_Angle)+yaw_CMD*robot_radius*(-1);
 	w2_speed = this->x_CMD*cos(m2_Angle)+y_CMD*sin(m2_Angle)+yaw_CMD*robot_radius*(-1);
 	w3_speed = this->x_CMD*cos(m3_Angle)+y_CMD*sin(m3_Angle)+yaw_CMD*robot_radius*(-1);
-	speed_regularization(w1_speed, w2_speed, w3_speed);
 #ifdef DEBUG
 	std::cout << "Inverse kinematics(DEBUG)\n";
 	std::cout << std::dec;
@@ -314,6 +315,7 @@ void BaseControl::inverseKinematics()
 	std::cout << "w3_speed(%): " << w3_speed << std::endl;
 	std::cout << std::endl;
 #endif
+	speed_regularization(w1_speed, w2_speed, w3_speed);
 }
 
 void BaseControl::run()
@@ -342,8 +344,11 @@ serial_rx* BaseControl::getPack()
 
 void BaseControl::send(const robot_command &CMD)
 {
+#ifdef DEBUG
+	std::cout << "BaseControl::send(DEBUG)\n";
+#endif
 	this->base_robotCMD = CMD;
-//	shoot_regularization();
+	shoot_regularization();
 	inverseKinematics();
 	mcssl_send2motor();
 }

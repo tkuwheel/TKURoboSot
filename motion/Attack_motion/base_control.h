@@ -12,20 +12,14 @@
 /*******************************
   * Include library
   ******************************/
-//extern "C"{
 #include "motor_data.h"
 #include "cssl.h"
-//}
-//#include "../common/cssl/cssl.c"
-//#include "../common/cssl/port.h"
 
 /*******************************
   * Define 
   ******************************/
 //#define DEBUG
 //#define DEBUG_CSSL
-//#define DEBUG_CSSLCALLBACK
-//#define DEBUG_CSSLCALLBACK_TEST
 //typedef void * (*THREADFUNCPTR)(void *);
 
 class BaseControl{
