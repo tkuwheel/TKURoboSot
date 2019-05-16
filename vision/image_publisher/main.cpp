@@ -32,9 +32,9 @@ int main(int argc, char **argv)
         img_pub.publish(msg);
         if (!img.empty())
         {
-            //cout<<img.size()<<endl;
-            //imshow("Publisher window", img);
-            //waitKey(10);
+            // cout<<img.size()<<endl;
+            // imshow("Publisher window", img);
+            // waitKey(10);
         }
         else
         {
