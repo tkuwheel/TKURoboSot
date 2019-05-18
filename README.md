@@ -51,10 +51,20 @@ $ rqt
 ```
 
 # Troubleshooting
+### import error
+```bash
+from error import *
+ImportError: No module named 'error'
+```
+Missing 'rospkg' 'catkin_tools'
+```bash
+pip install rospkg catkin_tools
+```
 ### import rospkg library error:
 ```bash
 ImportError: No module named 'rospkg'
 ```
+
 Add the line to ~/.bashrc
 ```bash
 export PYTHONPATH=$PYTHONPATH:/usr/lib/python2.7/dist-packages
