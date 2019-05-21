@@ -78,6 +78,13 @@ class Robot(object):
     s.data = state
     self.state_pub.publish(s)
 
+  def RobotCtrlS(self, x, y, yaw):
+    msg = VelCmd()
+    msg.Vx = x
+    msg.Vy = y
+    msg.w = yaw
+    self.cmdvel_pub.publish(msg)
+
   def RobotCtrl(self, x, y, yaw):
     angle = yaw
    
