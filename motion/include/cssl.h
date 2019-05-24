@@ -4,10 +4,12 @@
 #ifndef __CSSL_H__
 #define __CSSL_H__
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 #include <stdint.h>
 #include <signal.h>
 #include <termios.h>
-
 
 typedef void (*cssl_callback_t)(int id,  /* id passed to callback */
 				uint8_t *buffer, /* data received */
@@ -117,6 +119,7 @@ int cssl_getchar(cssl_t *serial);
 int cssl_getdata(cssl_t *serial,
 		 uint8_t *buffer,  /* buffer for data */
 		 int size);        /* buffer size */
-
-
+#ifdef __cplusplus
+}
+#endif
 #endif /* __CSSL_H__ */

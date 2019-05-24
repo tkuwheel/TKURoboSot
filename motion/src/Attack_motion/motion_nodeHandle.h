@@ -17,7 +17,7 @@
 #include "nav_msgs/Odometry.h"
 
 /*********************
- ** Include library->
+ ** Include header files
  *********************/
 #include "motor_data.h"
 /*********************

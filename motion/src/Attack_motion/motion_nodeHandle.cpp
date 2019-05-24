@@ -2,7 +2,7 @@
 Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
 {
     this->robotCMD = {0, 0, 0, 0, 0};
-    this->RX = {0, 0, 0, 0, 0, 0, 0};
+    this->RX = {0, 0, 0, 0, 0, 0};
     this->motion_flag = false;
 //    this->node_robotCMD = new robot_command;
 //    this->node_robotCMD->x_speed = new double;
@@ -120,13 +120,15 @@ void Motion_nodeHandle::run()
         
         ros::spin();
     }
+    ros::shutdown();
+    std::cout << "ROS shutdown\n";
 }
 
 void* Motion_nodeHandle::pThreadRun(void* p)
 {
-    Motion_nodeHandle* Node = (Motion_nodeHandle*)p;
-    Node->run();
+    ((Motion_nodeHandle*)p)->run();
     pthread_exit(NULL);
+    return NULL;
 }
 
 robot_command Motion_nodeHandle::getMotion()

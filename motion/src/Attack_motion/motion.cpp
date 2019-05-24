@@ -7,22 +7,18 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <signal.h>
-/********************************
- *	Include libraries
- ********************************/
-#include "motor_data.h"
-
+#include <sys/time.h>
 /********************************
  *	Include header files
  ********************************/
+#include "motor_data.h"
 #include "motion_nodeHandle.h"
 #include "base_control.h"
-//#include "CTest.h"
 /********************************
  *	Define	
  ********************************/
 //typedef void * (*THREADFUNCPTR)(void *);
-//#define DEBUG 
+#define DEBUG_M_FB
 bool flag = 0;
 void inturrupt(int signal)
 {
@@ -61,8 +57,7 @@ int main(int argc, char **argv)
 	//}
     signal(SIGINT, inturrupt);
 	std::cout << "ATTACK MOTION IS RUNNING!\n";
-	ros::Rate loop_rate(100);
-    int count = 0;
+	ros::Rate loop_rate(1);
 	while(true){
         if(flag){
             break;
@@ -82,8 +77,9 @@ int main(int argc, char **argv)
 //		main_robotFB = main_Base_Control.get_feedback();
 //		main_nodeHandle.pub_robotFB(main_robotFB);
         if(Node.getMotionFlag()){
-            printf("\n*****get motion******\n");
             robotCMD = Node.getMotion();
+#ifdef DEBUG
+            printf("\n*****get motion******\n");
             std::cout << "x: " << robotCMD.x_speed << "\t";
             std::cout << "y: " << robotCMD.y_speed << "\t";
             std::cout << "yaw: " << robotCMD.yaw_speed << "\t";
@@ -91,31 +87,26 @@ int main(int argc, char **argv)
             std::cout << "hold: " << robotCMD.hold_ball << "\t";
             std::cout << "remote: " << robotCMD.remote;
             std::cout << std::endl;
+#endif
             Base.send(robotCMD);
         }
-//        Base.send(robotCMD);
-//        printf("main\n");
         if(Base.getBaseFlag()){
-            printf("\n*****get feedback******\n");
-//            printf("get rx data: ");
             RX = Base.getPack();
-            printf("head1: %x\t", RX->head1);
-            printf("head2: %x\t", RX->head2);
-            printf("w1: %d\t", RX->w1 * 600/2000);
-            printf("w2: %d\t", RX->w2);
-            printf("w3: %d\t", RX->w3);
-            printf("shoot: %x\t", RX->shoot);
-            printf("batery: %x\n", RX->batery);
+#ifdef DEBUG_M_FB
+            printf("\n*****get feedback******\n");
+            std::cout << std::dec;
+            std::cout << "id: " << RX->id << "\t";
+            std::cout << "size: " << RX->size << "\t";
+            std::cout << "duration: " << RX->duration << "\t\n";
+            std::cout << "w1: " << RX->w1 * 600  / 2000 << "\t\n";
+            std::cout << "w2: " << RX->w2 << "\t\n";
+            std::cout << "w3: " << RX->w3 << "\t\n";
+#endif
         }
-//		ros::spinOnce();
-//		loop_rate.sleep();
+		loop_rate.sleep();
 	}
-//	delete main_robotCMD;
-	ros::shutdown();
+    Base.mcssl_finish();
 	std::cout << "Close Attack Motion\n";
-//#ifdef DEBUG
-//#else
-//#endif
 	return 0;
 }
 

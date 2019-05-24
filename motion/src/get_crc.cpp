@@ -4,19 +4,20 @@
 
 int main(int argc, char** argv)
 {
-    int size;
+    int size = argc - 1;
+    std::cout << argc << std::endl;
     if(argc > 1){
-        char *pEnd;
-        size = strtol(argv[1], &pEnd, 10);
+//        char *pEnd;
+//        size = strtol(argv[1], &pEnd, 10);
         uint8_t data[size];
 
         for(int i = 0; i<size; i++){
-            data[i] = strtol(argv[i+2], NULL, 16);
+            data[i] = strtol(argv[i+1], NULL, 16);
             printf("%d %x\n", i, data[i]);
         }
         Crc_16 crc(data, size);
         unsigned short check = crc.getCrc();
-
+        std::cout << std::hex;
         std::cout << check << std::endl;
 
     }else{

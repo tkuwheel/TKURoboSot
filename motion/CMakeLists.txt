@@ -10,8 +10,12 @@ find_package(catkin REQUIRED COMPONENTS
  roscpp
 )
 set(INCLUDE_DIR
-        common/
+    ${PROJECT_SOURCE_DIR}/include
+# common/
+# common/cssl
 )
+# message(FIND PATH ${PROJECT_SOURCE_DIR})
+# message(FIND INCLUDE ${INCLUDE_DIR})
 include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 catkin_package(CATKIN_DEPENDS
@@ -19,18 +23,17 @@ catkin_package(CATKIN_DEPENDS
  std_msgs
  roscpp
 )
-#add_library(csslLib cssl/cssl.h cssl/cssl.h cssl/uty.c)
-foreach(subdir
-		common
-		Attack_motion
-# Defend_motion
+add_library(csslLib src/cssl.c)
+add_library(crcLib src/crc_16.cpp)
+# foreach(subdir
+#         src
+#       Defend_motion
 #		test
-		)
-	add_subdirectory(${subdir})
-endforeach()
+#		)
+# 	add_subdirectory(${subdir})
+# endforeach()
+add_subdirectory(src)
 
-add_executable(Crc get_crc.cpp)
-target_link_libraries(Crc ${catkin_LIBRARIES} crcLib)
 ##target_link_libraries(motion_test qnode)
 #target_link_libraries(motion_attack csslLib)
 
