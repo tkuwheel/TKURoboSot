@@ -45,7 +45,7 @@ private:
 	//const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;
 	const double yaw_inv = 2.3251;
-    const char *port = "/dev/communication/rs232";
+    const char *port = "/dev/communication/motion";
 
     pthread_t tid;
 	cssl_t *serial;
