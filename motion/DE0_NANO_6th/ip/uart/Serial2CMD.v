@@ -20,7 +20,7 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   2.0  :| Chun-Jui Huang    :| 2017/07/07 :|  use Crc16
 // --------------------------------------------------------------------
-//`default_nettype  none
+`default_nettype  none
 module Serial2CMD (
 //===========================================================================
 // PORT declarations
@@ -40,11 +40,12 @@ output	reg			oCrcSuccess,
 output 	reg	[7:0]	debug			//  debug
 
 );
-
+`include "param.h"
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
-//parameter SIZE	=	8;
+parameter PACKAGE_SIZE	=	RX_PACKAGE_SIZE;
+parameter STREAM_SIZE	=	PACKAGE_SIZE * 8;
 // differentiate state in order to change state
 parameter DATA0	=	0;
 parameter DATA1	=	1;
@@ -66,7 +67,7 @@ reg		[7:0]	state;
 reg				rRx_ready;
 reg				rCheck;
 reg		[7:0]	rChecksum;
-reg		[7:0]	null = 8'h0;
+// reg		[7:0]	null = 8'h0;
 
 wire				wCrcFinish;
 wire				wCrcSuccess;
@@ -204,8 +205,7 @@ always @(posedge iCLK) begin
 	end
 end
 Crc16 #(
-	.PACKAGE_SIZE(9),
-	.STREAM_SIZE(72)
+	.STREAM_SIZE(STREAM_SIZE)
 	) Crc_RX (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),

@@ -11,6 +11,8 @@ db
 export_db
 incremental_db
 output_files
+work]
+signaltap
 
 *.stp
 *.qdf

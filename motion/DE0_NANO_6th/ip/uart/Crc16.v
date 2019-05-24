@@ -12,9 +12,8 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   1.0  :| Chun-Jui Huang    :| 2019/04/30 :|  Initial version
 // --------------------------------------------------------------------
-//`default_nettype  none
+`default_nettype  none
 module Crc16 #(
-	parameter PACKAGE_SIZE 	= 	1,
 	parameter STREAM_SIZE	=	8
 )(
 //===========================================================================
@@ -23,10 +22,11 @@ module Crc16 #(
 input					iClk,
 input					iRst_n,
 input					iDataValid,
-input			[STREAM_SIZE:0]	iData,
+input			[STREAM_SIZE - 1 :0]	iData,
 output  reg 	[15:0]	oCrc,
 output  reg 			oSuccess,
-output  reg	 			oFinish
+output  reg	 			oFinish,
+output	reg		[STREAM_SIZE - 1 :0]	oData
 );
 
 
@@ -50,6 +50,7 @@ always@(posedge iClk) begin
 		oSuccess = 0;
 		oFinish = 0;
 		rDataValid = 0;
+		oData = 0;
 	end
 	else if(~rDataValid & iDataValid)begin
 		rData = iData;
@@ -66,6 +67,7 @@ always@(posedge iClk) begin
 		end
 		oCrc = rData[STREAM_SIZE-1:STREAM_SIZE-16];
 		oFinish = 1;
+		oData = {iData[STREAM_SIZE-1 : 16], rData[STREAM_SIZE-1:STREAM_SIZE-16]};
 		if(oCrc == 16'h0) begin
 			oSuccess = 1;
 			
@@ -78,6 +80,7 @@ always@(posedge iClk) begin
 		oCrc = oCrc;
 		oSuccess = 0;
 		oFinish = 0;
+		oData = 0;
 
 		
 	end
