@@ -88,11 +88,11 @@ int main(int argc, char **argv)
             std::cout << "remote: " << robotCMD.remote;
             std::cout << std::endl;
 #endif
-            Base.send(robotCMD);
+            Base.Send(robotCMD);
         }
-        if(Base.getBaseFlag()){
-            RX = Base.getPack();
-#ifdef DEBUG_M_FB
+        if(Base.GetBaseFlag()){
+            RX = Base.GetPack();
+#ifdef DEBUG
             printf("\n*****get feedback******\n");
             std::cout << std::dec;
             std::cout << "id: " << RX->id << "\t";
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
         }
 		loop_rate.sleep();
 	}
-    Base.mcssl_finish();
+    Base.McsslFinish();
 	std::cout << "Close Attack Motion\n";
 	return 0;
 }

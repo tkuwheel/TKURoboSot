@@ -23,7 +23,7 @@ catkin_package(CATKIN_DEPENDS
  std_msgs
  roscpp
 )
-add_library(csslLib src/cssl.c)
+add_library(csslLib src/cssl/cssl.c)
 add_library(crcLib src/crc_16.cpp)
 # foreach(subdir
 #         src

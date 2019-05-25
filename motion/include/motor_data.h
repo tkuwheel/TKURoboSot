@@ -11,7 +11,7 @@ typedef struct{
 	double x_speed;
 	double y_speed;
 	double yaw_speed;
-	int shoot_power;
+	uint8_t shoot_power;
     bool hold_ball;
     bool remote;
 }robot_command;
@@ -19,10 +19,13 @@ typedef struct{
 typedef struct{
 	TX_DATA_TYPE head1;
 	TX_DATA_TYPE head2;
-	TX_DATA_TYPE w1;
-	TX_DATA_TYPE w2;
-	TX_DATA_TYPE w3;
-	TX_DATA_TYPE w4;
+	TX_DATA_TYPE w1_h;
+	TX_DATA_TYPE w1_l;
+	TX_DATA_TYPE w2_h;
+	TX_DATA_TYPE w2_l;
+	TX_DATA_TYPE w3_h;
+	TX_DATA_TYPE w3_l;
+//	TX_DATA_TYPE w4;
 	TX_DATA_TYPE enable_and_stop;
 	TX_DATA_TYPE shoot;
 	TX_DATA_TYPE crc_16_1;

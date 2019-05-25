@@ -22,10 +22,10 @@
 /*******************************
   * Define 
   ******************************/
-//#define DEBUG
-//#define DEBUG_CSSL
-#define DEBUG_CSSLCALLBACK
-//typedef void * (*THREADFUNCPTR)(void *);
+#define DEBUG
+#define CSSL
+//#define DEBUG_CSSLCALLBACK
+typedef void * (*THREADFUNCPTR)(void *);
 
 class BaseControl{
 public:
@@ -55,27 +55,29 @@ private:
     static struct timeval last_time;
 
 	double x_CMD, y_CMD, yaw_CMD;
-	unsigned char en1,en2,en3,stop1,stop2,stop3;
-    //unsigned char w1_dir,w2_dir,w3_dir;
-	//static	unsigned char cssl_buffer[50];
-	//static	int count_buffer;
-	//void send();
-	//void get();
+    int16_t w1, w2, w3;
+    uint8_t shoot_power;
+	bool en1,en2,en3,stop1,stop2,stop3;
+    bool hold_ball;
+    bool remote;
+
+    Crc_16 Crc;
+    unsigned short crc_16;
 private:
-	static void	mcssl_Callback(int, uint8_t*, int);
-	void 	mcssl_send2motor();
-	int 	mcssl_init();
-	void	shoot_regularization();
-	void	speed_regularization(double, double, double);
-	void	inverseKinematics();
-	void	forwardKinematics();	
-    void    run();
+	static void	McsslCallback(int, uint8_t*, int);
+	void 	McsslSend2FPGA();
+	int 	McsslInit();
+	void	ShootRegularization();
+	void	SpeedRegularization(double, double, double);
+	void	InverseKinematics();
+	void	ForwardKinematics();	
+    void    Run();
 public:
-    static void *pThreadRun(void *argv);
-	void 	mcssl_finish();
-    bool getBaseFlag();
-    serial_rx* getPack();
-	void send(const robot_command &);
-	robot_command *get_feedback();
+    static void *pThreadRun(void *p);
+	void 	McsslFinish();
+    bool    GetBaseFlag();
+    serial_rx* GetPack();
+	void Send(const robot_command &);
+	robot_command *GetFeedback();
 };
 #endif

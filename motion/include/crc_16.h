@@ -44,11 +44,13 @@ class Crc_16{
     */
 // Construct and Deconstruct
 public:
+    Crc_16();
     Crc_16(unsigned char* msg, int size);
     ~Crc_16();  
 // Member Functions
 public:
     unsigned short getCrc();                                                 // get crc code 
+    unsigned short getCrc(unsigned char* msg, int size);                                                 // get crc code 
     bool checkCrc(unsigned short* msg, int size);                            // check error
 private:
     unsigned short genCrc(unsigned char* msg=NULL, int size=0);              // generator a crc code 2 input
