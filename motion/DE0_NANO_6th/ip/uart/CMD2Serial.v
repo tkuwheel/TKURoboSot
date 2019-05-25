@@ -37,7 +37,7 @@ input				iDIR_Motor3,		// Direction of motor3
 output	reg			oTx_send,
 output	reg	[7:0]	oTx_data
 );
-
+`include "param.h"
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
@@ -46,7 +46,7 @@ parameter SEND	=	3'b001;
 parameter WAIT	=	3'b010;
 parameter END	=	3'b100;
 
-parameter PACKAGE_SIZE	=	16;
+parameter PACKAGE_SIZE	=	TX_PACKAGE_SIZE;
 parameter STREAM_SIZE	=	PACKAGE_SIZE * 8;
 parameter DELAY			=	1000;
 
@@ -72,7 +72,7 @@ reg				rCheckReady;
 
 wire	[15:0]	wCrc;
 wire 			wCrcFinish;
-
+wire	[STREAM_SIZE-1 : 0] wData;
 /*
 reg		[31:0]	rTest1;
 reg		[31:0]	rTest2;
@@ -95,22 +95,7 @@ always @(posedge iCLK) begin
 		rCNT_Package	<=	0;
 		rDataReady		<=	0;
 		rCheckReady		<=	1;
-		rData[7:0]		<=	8'hFF;
-		rData[15:8]		<=	8'hFA;
-		rData[23:16]	<=	0;
-		rData[31:24]	<=	0;
-		rData[39:32]	<=	0;
-		rData[47:40]	<=	0;
-		rData[55:48]	<=	0;
-		rData[63:56]	<=	0;
-		rData[71:64]	<=	0;
-		rData[79:72]	<=	0;
-		rData[87:80]	<= 0;
-		rData[95:88]	<= 0;
-		rData[103:96]	<= 0;
-		rData[111:104]	<= 0;
-		rData[119:112]	<= 0;		//crc1
-		rData[127:120]	<= 0;		//crc2
+		rData			<=	0;
 /*		rTest1			<= 0;
 		rTest2			<= 0;
 */
@@ -122,11 +107,11 @@ always @(posedge iCLK) begin
 			case(state)
 				SEND:
 					begin
-						oTx_data	<=	rData[7:0];
+						oTx_data	<=	rData[STREAM_SIZE - 1 :STREAM_SIZE -8];
 						oTx_send	<=	1'b1;
 						if (rTx_busy & ~iTx_busy) begin	// Delay Signal
 							oTx_send	<=	1'b0;
-							rData		<=	{rData[7:0], rData[STREAM_SIZE-1:8]};
+							rData		<=	{rData[STREAM_SIZE-9:0], rData[STREAM_SIZE-1 :STREAM_SIZE-8]};
 							state		<=	WAIT;
 						end
 					end
@@ -160,48 +145,32 @@ always @(posedge iCLK) begin
 	end
 	else begin 
 		if(~wCrcFinish)begin
+
 			rCheckReady		<= 	0;
 			rDataReady		<=	1;
-			rData[7:0]		<=	8'hFF;
-			rData[15:8]		<=	8'hFA;
-			rData[23:16]	<=	iFB_Motor1[31:24];
-			rData[31:24]	<=	iFB_Motor1[23:16];
-			rData[39:32]	<=	iFB_Motor1[15:8];
-			rData[47:40]	<=	iFB_Motor1[7:0];
-			rData[55:48]	<=	iFB_Motor2[31:24];
-			rData[63:56]	<=	iFB_Motor2[23:16];
-			rData[71:64]	<=	iFB_Motor2[15:8];
-			rData[79:72]	<=	iFB_Motor2[7:0];
-			rData[87:80]	<=	iFB_Motor3[31:24];
-			rData[95:88]	<=	iFB_Motor3[23:16];
-			rData[103:96]	<=	iFB_Motor3[15:8];
-			rData[111:104]	<=	iFB_Motor3[7:0];
-			
-			// rData[119:112]	<= (iFB_Motor1[31:24]+iFB_Motor1[23:16]+iFB_Motor1[15:8]+iFB_Motor1[7:0]+
-			// 					iFB_Motor2[31:24]+iFB_Motor2[23:16]+iFB_Motor2[15:8]+iFB_Motor2[7:0]+
-			// 					iFB_Motor3[31:24]+iFB_Motor3[23:16]+iFB_Motor3[15:8]+iFB_Motor3[7:0]);	//checksum
+
 		end
 		else begin
 			rCheckReady		<=	1;
-			rDataReady		<= 0;
-			rData[119:112]	<=	wCrc[15:8];
-			rData[127:120]	<=	wCrc[7:0];
+			rDataReady		<=	0;
+			rData			<=	wData;
 		end
 	end
 	rTx_busy	<=	iTx_busy;
 end
 
 Crc16 #(
-	.PACKAGE_SIZE(16),
-	.STREAM_SIZE(128)		//PACKAGE SIZE *　8
+	.STREAM_SIZE(STREAM_SIZE)		//PACKAGE SIZE *　8
 	) Crc_TX (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
 	.iDataValid(rDataReady),
 	.iData({8'hFF, 8'hFA, iFB_Motor1 ,iFB_Motor2, iFB_Motor3, 16'h0}),
+	// .iData({8'hFF, 8'hFA, 16'h0 , 16'h0, 16'h0, 16'h0}),
 	.oCrc(wCrc),
 	.oSuccess(),
-	.oFinish(wCrcFinish)
+	.oFinish(wCrcFinish),
+	.oData(wData)
 );
 
 endmodule
