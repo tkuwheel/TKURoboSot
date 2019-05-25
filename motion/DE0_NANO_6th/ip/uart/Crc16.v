@@ -19,14 +19,14 @@ module Crc16 #(
 //===========================================================================
 // PORT declarations
 //===========================================================================
-input					iClk,
-input					iRst_n,
-input					iDataValid,
-input			[STREAM_SIZE - 1 :0]	iData,
-output  reg 	[15:0]	oCrc,
-output  reg 			oSuccess,
-output  reg	 			oFinish,
-output	reg		[STREAM_SIZE - 1 :0]	oData
+input		iClk,
+input		iRst_n,
+input		iDataValid,
+input		[STREAM_SIZE - 1 :0]	iData,
+output reg 	[15:0] oCrc,
+output reg 	oSuccess,
+output reg	oFinish,
+output reg	[STREAM_SIZE - 1 :0]	oData
 );
 
 

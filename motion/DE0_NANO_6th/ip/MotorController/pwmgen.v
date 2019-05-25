@@ -29,7 +29,6 @@ parameter SPD_DIV = 1
 // PARAMETER declarations
 //===========================================================================
 //parameter PWMCYCLE=10000;  // PWM cycle = 10Khz
-//parameter PWMClk=10000*(127*SPD_DIV)*2;  // PWM clock = PWM_cycle * (100*2)
 parameter PWMClk=1000*(127*SPD_DIV);
 
 //===========================================================================
