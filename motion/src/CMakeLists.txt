@@ -11,3 +11,9 @@ add_executable(Crc
                 get_crc.cpp
 )
 target_link_libraries(Crc  crcLib)
+include_directories(Attack_motion)
+add_executable(Single
+                single_motor.cpp
+                Attack_motion/base_control.cpp
+)
+target_link_libraries(Single  ${catkin_LIBRARIES} crcLib csslLib)

@@ -1,6 +1,7 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
+#define FB_FREQUENCY 10
 #define TX_PACKAGE_SIZE 12
 #define RX_PACKAGE_SIZE 16
 #define MAX_MOTOR_RPM 6950

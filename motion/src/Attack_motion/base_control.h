@@ -60,6 +60,7 @@ private:
 	bool en1,en2,en3,stop1,stop2,stop3;
     bool hold_ball;
     bool remote;
+    bool enable_flag;
 
     Crc_16 Crc;
     unsigned short crc_16;
@@ -71,6 +72,7 @@ private:
 	void	SpeedRegularization(double, double, double);
 	void	InverseKinematics();
 	void	ForwardKinematics();	
+    void    ReEnable();
     void    Run();
 public:
     static void *pThreadRun(void *p);
@@ -79,5 +81,6 @@ public:
     serial_rx* GetPack();
 	void Send(const robot_command &);
 	robot_command *GetFeedback();
+    void SetSingle(int, int16_t);
 };
 #endif

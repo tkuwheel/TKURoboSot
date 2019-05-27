@@ -10,6 +10,7 @@ BaseControl::BaseControl()
     this->base_robotFB = {0, 0, 0, 0, 0, 0};
     this->base_TX = {0xff,0xfa,0,0,0,0,0,0,0,0,0};
 	this->serial = NULL;
+    this->enable_flag = false;
 #ifdef DEBUG
     std::cout << "BaseControl(DEBUG)\n";
 #endif
@@ -83,21 +84,29 @@ void BaseControl::McsslCallback(int id, uint8_t* buf, int length)
     gettimeofday(&now, 0);
 //    printf("duration: %f %f\n", now.tv_usec, now.tv_sec);
 
-
+    uint8_t data[RX_PACKAGE_SIZE];
     if((*(buf + 0) == 0xff) && (*(buf + 1) == 0xfa)){
-        uint8_t data[RX_PACKAGE_SIZE] = {  *(buf + 0), *(buf + 1), *(buf + 2), *(buf + 3), *(buf + 4), 
-                            *(buf + 5), *(buf + 6), *(buf + 7), *(buf + 8), *(buf +9)};
+
+        for(int i=0; i<RX_PACKAGE_SIZE; i++){
+            data[i] = *(buf + i);
+//            printf("data[i]= %x, buf[i] = %x", data[i], *(buf + i));
+//            printf("\n");
+        } 
+//       uint8_t data = {  *(buf + 0), *(buf + 1), *(buf + 2), *(buf + 3), *(buf + 4), 
+//                            *(buf + 5), *(buf + 6), *(buf + 7), *(buf + 8), *(buf +9)};
         Crc_16 Crc16(data, sizeof(data)/sizeof(uint8_t));
         unsigned short crc_16 = Crc16.getCrc(data, sizeof(data)/sizeof(uint8_t));
         if(crc_16 == 0){
             long duration_s = now.tv_sec - last_time.tv_sec;
             long duration_us = now.tv_usec - last_time.tv_usec;
+            base_RX.duration = duration_s * 1000000 + duration_us;
+            
             base_RX.id = id;
             base_RX.size = length;
-            base_RX.duration = duration_s * 1000000 + duration_us;
-            base_RX.w1 = (data[2] << 8) + data[3];
-            base_RX.w2 = (data[4] << 8) + data[5];
-            base_RX.w3 = (data[6] << 8) + data[7];
+            base_RX.w1 = (data[2] << 24) + (data[3] << 16) + (data[4] << 8) + data[5];
+            base_RX.w1 = (data[2] << 24) + (data[3] << 16) + (data[4] << 8) + data[5];
+            base_RX.w2 = (data[6] << 24) + (data[7] << 16) + (data[8] << 8) + data[9];
+            base_RX.w3 = (data[10] << 24) + (data[11] << 16) + (data[12] << 8) + data[13];
             base_flag = true;
             last_time = now;
         }else{
@@ -108,7 +117,11 @@ void BaseControl::McsslCallback(int id, uint8_t* buf, int length)
     for(int i = 0; i < length; i++){
         printf("%x ",*(buf + i));
     }
-    printf("\n");
+    printf("1 \n");
+//    for(int i = 0; i < RX_PACKAGE_SIZE; i++){
+//        printf("%x ", data[i]);
+//    }
+//    printf("\n");
 #endif
 }
 
@@ -309,6 +322,11 @@ void BaseControl::ShootRegularization()
 #endif
 }
 
+void BaseControl::ReEnable()
+{
+    this->base_TX.enable_and_stop = 0;
+}
+
 void BaseControl::Run()
 {
     printf("in the run\n");
@@ -356,4 +374,106 @@ robot_command *BaseControl::GetFeedback()
 {
 	ForwardKinematics();
 	return &base_robotFB;
+}
+
+void BaseControl::SetSingle(int number, int16_t rpm)
+{
+    switch(number){
+        case 1:
+            this->base_TX.w1_l = rpm;
+            this->base_TX.w1_h = rpm >> 8;
+            this->base_TX.w2_l = 0;
+            this->base_TX.w2_h = 0;
+            this->base_TX.w3_l = 0;
+            this->base_TX.w3_h = 0;
+            this->base_TX.enable_and_stop = 0x80;
+            break;
+        case 2:
+            this->base_TX.w1_l = 0;
+            this->base_TX.w1_h = 0;
+            this->base_TX.w2_l = rpm;
+            this->base_TX.w2_h = rpm >> 8;
+            this->base_TX.w3_l = 0;
+            this->base_TX.w3_h = 0;
+            this->base_TX.enable_and_stop = 0x40;
+            break;
+        case 3:
+            this->base_TX.w1_l = 0;
+            this->base_TX.w1_h = 0;
+            this->base_TX.w2_l = 0;
+            this->base_TX.w2_h = 0;
+            this->base_TX.w3_l = rpm;
+            this->base_TX.w3_h = rpm >> 8;
+            this->base_TX.enable_and_stop = 0x20;
+            break;
+        default:
+            break;
+    }
+    if(rpm==0){
+        this->base_TX.enable_and_stop = 0x10;
+        this->enable_flag = false;
+    }else{
+        this->enable_flag = true;
+    }
+    if(rpm!=0 && !enable_flag){
+        this->ReEnable();
+    }
+    this->base_TX.shoot = 0;
+    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot
+    };
+
+//    Crc_16 Crc16(crc_data, TX_PACKAGE_SIZE - 2);
+    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
+//    this->base_TX.crc_16_1 = *(unsigned char*)(&crc_16) + 1;
+//    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
+    this->base_TX.crc_16_1 = crc_16 >> 8;
+    this->base_TX.crc_16_2 = crc_16;
+    uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot,
+        this->base_TX.crc_16_1,
+        this->base_TX.crc_16_2,
+        0
+    };
+#ifdef CSSL
+    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE + 1);
+#endif
+    printf("**************************\n");
+    printf("* mcssl_send(DEBUG) *\n");
+    printf("**************************\n");
+    printf("head1: %x\n", (this->base_TX.head1));
+    printf("head2: %x\n", (this->base_TX.head2));
+    printf("w1_h: %x\n", (this->base_TX.w1_h));
+    printf("w1_l: %x\n", (this->base_TX.w1_l));
+    printf("w2_h: %x\n", (this->base_TX.w2_h));
+    printf("w2_l: %x\n", (this->base_TX.w2_l));
+    printf("w3_h: %x\n", (this->base_TX.w3_h));
+    printf("w3_l: %x\n", (this->base_TX.w3_l));
+    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("shoot: %x\n", (this->base_TX.shoot));
+    printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
+    printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
+    printf("crc16: %x\n", (crc_16));
+    printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
+    printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
+    printf("w3: %x\n", ((this->base_TX.w3_h) << 8) + (this->base_TX.w3_l));
+
 }
