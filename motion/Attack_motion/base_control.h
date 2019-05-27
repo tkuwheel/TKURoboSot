@@ -38,14 +38,14 @@ private:
 	void	forwardKinematics();	
     void    run();
 private:
-	const double m1_Angle = -M_PI/3;
-	const double m2_Angle =  M_PI/3;
-	const double m3_Angle = -M_PI;
+	const double m1_Angle = -M_PI/6;
+	const double m2_Angle =  -5*M_PI/6;
+	const double m3_Angle = M_PI/2;
 	const double robot_radius = 1;
 	//const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;
 	const double yaw_inv = 2.3251;
-    const char *port = "/dev/communication/rs232";
+    const char *port = "/dev/communication/motion";
 
     pthread_t tid;
 	cssl_t *serial;

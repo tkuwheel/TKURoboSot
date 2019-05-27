@@ -304,9 +304,9 @@ void BaseControl::inverseKinematics()
 //			break;
 //		}
 //	}
-	w1_speed = this->x_CMD*cos(m1_Angle)+y_CMD*sin(m1_Angle)+yaw_CMD*robot_radius*(-1);
-	w2_speed = this->x_CMD*cos(m2_Angle)+y_CMD*sin(m2_Angle)+yaw_CMD*robot_radius*(-1);
-	w3_speed = this->x_CMD*cos(m3_Angle)+y_CMD*sin(m3_Angle)+yaw_CMD*robot_radius*(-1);
+	w1_speed = -this->x_CMD*cos(m1_Angle)+y_CMD*sin(m1_Angle)+yaw_CMD*robot_radius*(-1);
+	w2_speed = -this->x_CMD*cos(m2_Angle)+y_CMD*sin(m2_Angle)+yaw_CMD*robot_radius*(-1);
+	w3_speed = -this->x_CMD*cos(m3_Angle)+y_CMD*sin(m3_Angle)+yaw_CMD*robot_radius*(-1);
 #ifdef DEBUG
 	std::cout << "Inverse kinematics(DEBUG)\n";
 	std::cout << std::dec;

@@ -16,6 +16,10 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   1.8  :| Chun-Jui Huang    :| 2017/07/07 :|  Add Checksum and Shoot Control
 // --------------------------------------------------------------------
+// --------------------------------------------------------------------
+//   Ver  :| Author            :| Mod. Date  :|  Changes Made:
+//   2.0  :| Chun-Jui Huang    :| 2017/07/07 :|  use Crc16
+// --------------------------------------------------------------------
 //`default_nettype  none
 module Serial2CMD (
 //===========================================================================
@@ -110,7 +114,7 @@ always @(posedge iCLK) begin
 			case(state)
 				DATA0:
 					begin
-						// rCheck <= 0;
+						rCheck <= 0;
 						if( iData == 8'hFF ) begin	// when getting initiation packet, state jump next
 							rData_0	<=	iData;
 							state	<=	DATA1;
@@ -118,7 +122,7 @@ always @(posedge iCLK) begin
 					end
 				DATA1:
 					begin
-						// rCheck <= 0;
+						rCheck <= 0;
 						if( iData == 8'hFA ) begin	//when getting second initiation packet, start to receive and transmit Data
 							rData_1	<=	iData;
 							state	<=	DATA2;
@@ -130,51 +134,51 @@ always @(posedge iCLK) begin
 				DATA2:				
 					begin
 						rData_2	<=	iData;		//motor1
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA3;
 					end
 				DATA3:				
 					begin
 						rData_3	<=	iData;		//motor2
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA4;
 					end
 				DATA4:
 					begin
 						rData_4	<=	iData;		//motor3
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA5;
 					end
 				DATA5:
 					begin
 						rData_5	<=	iData;		//enable+stop
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA6;
 					end
 				DATA6:
 					begin
 						rData_6	<=	iData;		//shoot
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA7;
 					end
 				DATA7:
 					begin
 						rData_7	<=	iData;		//crc_1
-						// rCheck <= 0;
+						rCheck <= 0;
 						state	<=	DATA8;
 					end
 				DATA8:
 					begin
 						rData_8	<=	iData;		//crc_2
-						// rCheck <= 0;
+						rCheck <= 1;
 						state	<=	END;
 					end
 				END:
 					begin
 						
-						rPacket <= {rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8};
+						// rPacket <= {rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8};
 						
-						// rCheck <= 1;
+						rCheck <= 0;
 						oRx_done	<=	1;
 						state	<=	DATA0;
 					end
@@ -190,8 +194,8 @@ always @(posedge iCLK) begin
 			oSignal 		<= 	wSignal;
 			oKick			<= 	wKick;
 			oCrcSuccess		<=	wCrcSuccess;
-			debug	<= wCrcFinish;
-			// rCheck 			<=	0;
+			debug			<=	wCrcFinish;
+			rCheck 			<=	rCheck;
 			oRx_done		<=	0;
 			oCrc <= wCrc;
 		end
@@ -205,17 +209,18 @@ Crc16 #(
 	) Crc_RX (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
-	.iDataValid(oRx_done),
-	.iData(rPacket),
+	.iDataValid(rCheck),
+	.iData({rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8}),
 	.oCrc(wCrc),
 	.oSuccess(wCrcSuccess),
 	.oFinish(wCrcFinish)
 );
+
 Packet2CMD packet(
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
 	.iDataValid(wCrcSuccess),
-	.iPacket(rPacket),
+	.iPacket({rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8}),
 	.oMotor1(wCMD_Motor1),
 	.oMotor2(wCMD_Motor2),
 	.oMotor3(wCMD_Motor3),
