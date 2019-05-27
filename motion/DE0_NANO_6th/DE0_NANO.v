@@ -165,7 +165,7 @@ input 		     [1:0]		GPIO_0_IN;
 inout 		    [33:0]		GPIO_1_D;
 input 		     [1:0]		GPIO_1_IN;
 
-
+`include "param.h"
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
@@ -195,10 +195,10 @@ wire			oLight;
 wire			oKick;
 wire	[7:0]	wKick;
 wire			wRST1ms_n, wRST2ms_n, wRST3ms_n;
-wire	[7:0]	wCMD_Motor1;
-wire	[7:0]	wCMD_Motor2;
-wire	[7:0]	wCMD_Motor3;
-wire	[7:0]	wCMD_Motor4;
+wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor1;
+wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor2;
+wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor3;
+wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor4;
 wire	[7:0]	wAX_12;
 wire			wBrush;
 
@@ -267,7 +267,7 @@ assign oFLASH_RST_N = iReset_n;
 
 wire wclk_50hz;
 Clkdiv #(
-	.EXCEPTCLK	(5000)
+	.EXCEPTCLK	(2000)
 ) Clk1K (
 	.iClk		(CLOCK_50),	// 50Mhz clock 
 	.iRst_n	(iReset_n),// Reset
@@ -424,7 +424,9 @@ assign LED[7:2] = wSignal[7:2];
 assign LED[0] = oKick;
 	
 // Sperate package to command
-Serial2CMD (
+Serial2CMD #(
+	.MOTOR_STREAM_SIZE(RX_MOTOR_SIZE*8)
+)(
 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
 	.iRst_n		(iReset_n),			// Reset
 	.iData		(wRx_data),

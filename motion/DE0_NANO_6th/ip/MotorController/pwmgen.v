@@ -15,7 +15,7 @@
 // --------------------------------------------------------------------
 
 module pwmgen #(
-parameter SPD_DIV = 1
+parameter SPD_DIV = 4
 )(
 			iClk,		// 25Mhz clock
 			iRst_n,	// reset, low active
@@ -29,8 +29,8 @@ parameter SPD_DIV = 1
 // PARAMETER declarations
 //===========================================================================
 //parameter PWMCYCLE=10000;  // PWM cycle = 10Khz
-parameter PWMClk=1000*(127*SPD_DIV);
-
+// parameter PWMClk=1000*(127*SPD_DIV);
+parameter PWMClk = 10000;       // PWM frequency 10kHz
 //===========================================================================
 // PORT declarations
 //===========================================================================
@@ -44,7 +44,7 @@ output      oErrorValue;
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-reg	[7:0]	rPWMCnt;
+reg	[10:0]	rPWMCnt;
 wire				wClk;
 wire				wTempPWM;
 

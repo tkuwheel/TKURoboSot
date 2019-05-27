@@ -13,23 +13,26 @@
 //   1.0  :| Chun-Jui Huang    :| 2019/05/8 :|  Initial version
 // --------------------------------------------------------------------
 `default_nettype  none
+
 module Packet2CMD #(
-	parameter STREAM_SIZE	=	8
+	parameter STREAM_SIZE	=	8,
+	parameter MOTOR_STREAM_SIZE = 16
 )(
+
 //===========================================================================
 // PORT declarations
 //===========================================================================
 input 					iClk,
 input 					iRst_n,
 input 					iDataValid,
-input 		[STREAM_SIZE-1:0]	iPacket,
-output reg 	[7:0]		oMotor1,
-output reg 	[7:0]		oMotor2,
-output reg 	[7:0]		oMotor3,
+input 		[63:0]		iPacket,
+output reg 	[MOTOR_STREAM_SIZE-1:0]		oMotor1,
+output reg 	[MOTOR_STREAM_SIZE-1:0]		oMotor2,
+output reg 	[MOTOR_STREAM_SIZE-1:0]		oMotor3,
 output reg 	[7:0]		oEN,
 output reg 	[7:0]		oShoot
 );
-
+`include "param.h"
 always@(posedge iClk)begin
 	if(!iRst_n)begin
 		oMotor1 <= 0;

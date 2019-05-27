@@ -21,7 +21,9 @@
 //   2.0  :| Chun-Jui Huang    :| 2017/07/07 :|  use Crc16
 // --------------------------------------------------------------------
 `default_nettype  none
-module Serial2CMD (
+module Serial2CMD #(
+	MOTOR_STREAM_SIZE = 16
+)(
 //===========================================================================
 // PORT declarations
 //===========================================================================
@@ -29,9 +31,9 @@ input				iCLK, 		// 50MHz
 input				iRst_n,		// Reset
 input				iRx_ready,
 input		[7:0]	iData,		// Data
-output	reg	[7:0]	oCMD_Motor1,	// Command of motor1
-output	reg	[7:0]	oCMD_Motor2,	// Command of motor2
-output	reg	[7:0]	oCMD_Motor3,	// Command of motor3
+output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor1,	// Command of motor1
+output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor2,	// Command of motor2
+output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor3,	// Command of motor3
 output	reg	[7:0]	oSignal,		// Command of EN&STOP
 output	reg	[7:0]	oKick,			// shoot a ball 
 output	reg			oRx_done,
@@ -64,7 +66,7 @@ parameter END	=	8'hFF;
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-reg		[71:0] 	rPacket;
+reg		[STREAM_SIZE-1-32:0] 	rPacket;
 reg		[7:0]	rData_0, rData_1, rData_2, rData_3, rData_4, rData_5; 	//
 reg		[7:0] rData_6, rData_7, rData_8, rData_9, rData_10, rData_11;	//	divide information to 11 part and 8 bits per part
 reg		[7:0]	state;
@@ -76,7 +78,8 @@ reg		[7:0]	rChecksum;
 wire				wCrcFinish;
 wire				wCrcSuccess;
 wire		[15:0]	wCrc;
-wire		[7:0]	wCMD_Motor1, wCMD_Motor2, wCMD_Motor3, wSignal, wKick;
+wire		[MOTOR_STREAM_SIZE-1:0]	wCMD_Motor1, wCMD_Motor2, wCMD_Motor3;
+wire		[7:0]	wSignal, wKick;
 
 //=============================================================================
 // Structural coding
@@ -101,6 +104,7 @@ always @(posedge iCLK) begin
 		oKick		<=	0;
 
 		oCrcSuccess	<=	0;
+		rPacket		<= 	0;
 		// rError		<=	1;
 		// rCheck		<= 0;
 		debug <= 0;
@@ -193,13 +197,14 @@ always @(posedge iCLK) begin
 				DATA11:
 					begin
 						rData_11	<=	iData;		//crc_2
+						rPacket <= {rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8,rData_9};
 						rCheck <= 1;
 						state	<=	END;
 					end
 				END:
 					begin
 						
-						// rPacket <= {rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8};
+						
 						
 						rCheck <= 0;
 						oRx_done	<=	1;
@@ -210,7 +215,7 @@ always @(posedge iCLK) begin
 			endcase
 		end
 		else begin
-
+			rPacket	<= rPacket;
 			oCMD_Motor1 	<= 	wCMD_Motor1;
 			oCMD_Motor2 	<= 	wCMD_Motor2;
 			oCMD_Motor3 	<= 	wCMD_Motor3;
@@ -239,12 +244,13 @@ Crc16 #(
 );
 
 Packet2CMD #(
-	.STREAM_SIZE(STREAM_SIZE - 32) // remove ff fa crc_1 crc_2
+	.STREAM_SIZE(STREAM_SIZE - 32), // remove ff fa crc_1 crc_2
+	.MOTOR_STREAM_SIZE(MOTOR_STREAM_SIZE)
 	) Packet (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
 	.iDataValid(wCrcSuccess),
-	.iPacket({rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8,rData_9}),
+	.iPacket(rPacket),
 	.oMotor1(wCMD_Motor1),
 	.oMotor2(wCMD_Motor2),
 	.oMotor3(wCMD_Motor3),
