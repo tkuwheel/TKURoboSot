@@ -267,7 +267,7 @@ assign oFLASH_RST_N = iReset_n;
 
 wire wclk_50hz;
 Clkdiv #(
-	.EXCEPTCLK	(2000)
+	.EXCEPTCLK	(25000)
 ) Clk1K (
 	.iClk		(CLOCK_50),	// 50Mhz clock 
 	.iRst_n	(iReset_n),// Reset

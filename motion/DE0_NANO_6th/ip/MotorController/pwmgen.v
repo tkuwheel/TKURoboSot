@@ -29,8 +29,8 @@ parameter SPD_DIV = 4
 // PARAMETER declarations
 //===========================================================================
 //parameter PWMCYCLE=10000;  // PWM cycle = 10Khz
-// parameter PWMClk=1000*(127*SPD_DIV);
-parameter PWMClk = 10000;       // PWM frequency 10kHz
+parameter PWMClk=1000*(127*SPD_DIV);
+// parameter PWMClk = 10000;       // PWM frequency 10kHz
 //===========================================================================
 // PORT declarations
 //===========================================================================
