@@ -1,5 +1,4 @@
 <?xml version="1.0" ?>
-
 <launch>
   <node name="model" pkg="transfer" type="model.py" respawn="true" respawn_delay="1" output="screen"/>
 </launch>

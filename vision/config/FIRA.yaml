@@ -1,9 +1,9 @@
 Camera: {Focal: 13.971313932573906, High: 650.0}
-Center: {Camera_high: 670, Center_X: 321, Center_Y: 240, Front: 97, Inner: 37, Outer: 265,
+Center: {Camera_high: 670, Center_X: 321, Center_Y: 253, Front: 188, Inner: 37, Outer: 223,
   X: 308, Y: 266}
 FPS: 20
 HSV:
-  Ball: [0, 125, 76, 100, 33, 100]
+  Ball: [0, 34, 27, 100, 28, 100]
   Blue: [170, 258, 64, 81, 36, 67]
   Green: [80, 170, 28, 87, 26, 84]
   White: [0, 360, 0, 27, 0, 31]

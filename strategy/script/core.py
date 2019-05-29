@@ -25,34 +25,42 @@ class Core(Robot, StateMachine):
   attack = State('Attack')
   shoot  = State('Shoot')
 
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to(chase)
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself()
   toIdle   = chase.to(idle) | attack.to(idle)
-  toAttack = chase.to(attack)
+  toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack)
   toShoot  = attack.to(shoot)
 
   def on_toChase(self, t, side):
     o = self.CC.ClassicRounding(t[side]['ang'],\
                                 t['ball']['dis'],\
                                 t['ball']['ang'])
-    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+    self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
+    if self.RobotBallHandle():
+      self.toAttack(t, side)
+    else:
+      pass
 
   def on_toIdle(self):
+    for i in range(0,100):
+        self.MotionCtrl(0,0,0)
     log("To Idle")
 
-  def on_toAttack(self, t,side):
+  def on_toAttack(self, t, side):
     o = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+    self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
   def on_toShoot(self, power, pos):
-    if self.RobotBallhandle():
-      print("GOOOOOOOOOOOAAAAAAAAAAAAAALLLLLLLLLLLL")
+    if self.RobotBallHandle():
       self.RobotShoot(power, pos)
     else:
-      print("NOT YET NOT YET")
+      print("NOT YET")
 
-  ''' def pubCurrentState(self):
-    self.RobotStatePub(self.current_state.identifier)'''
+  def PubCurrentState(self):
+    self.RobotStatePub(self.current_state.identifier)
+
+  def CheckBallHandle(self):
+    return self.RobotBallHandle()
 
 class Strategy(object):
   def __init__(self):
@@ -60,11 +68,13 @@ class Strategy(object):
     self.game_start = gains['game_start']
     self.game_state = gains['game_state']
     self.side       = gains['side']
+    self.opp_side   = 'Cyan' if gains['side'] == 'Magenta' else 'Magenta'
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
     self.side       = config['side']
+    self.opp_side   = 'Cyan' if config['side'] == 'Magenta' else 'Magenta'
     return config
 
   def main(self, argv):
@@ -82,29 +92,35 @@ class Strategy(object):
 
     while not rospy.is_shutdown():
 
-      #robot.pubCurrentState()
+      robot.PubCurrentState()
       targets = robot.GetObjectInfo()
-      
-
-      print(targets)
 
       if targets is not None:
         if not robot.is_idle and not self.game_start:
-          # stay idle
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          # go chase
+          robot.PubCurrentState()
           robot.toChase(targets, self.side)
-        elif robot.is_chase and targets['ball']['dis'] >= 37:
-          # keep chase
-          # log("keep{}".format(targets['ball']['dis']))
-          robot.toChase(targets, self.side)
-        elif robot.is_chase and targets['ball']['ang'] < 37:
-          # go attack
+        elif robot.is_chase:
+          #robot.toChase(targets, self.side)
+          robot.toIdle()
+
+        if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
+                          and targets['ball']['dis'] <= 50:
           robot.toAttack(targets, self.side)
-        elif robot.is_attack and targets['ball']['dis'] > 30:
-          # back chase
+        elif robot.is_attack:
+          robot.toAttack(targets, self.side)
+
+        if robot.is_attack and abs(targets['ball']['ang']) > 20 \
+                           and targets['ball']['dis'] > 50:
           robot.toChase(targets, self.side)
+
+        if robot.is_attack and abs(targets[self.side]['ang']) < 10:
+          robot.toShoot(3, 1)
+
+        if robot.is_shoot:
+          robot.toAttack(targets, self.side)
+
       if rospy.is_shutdown():
         log('shutdown')
         break
