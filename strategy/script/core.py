@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import sys
 import math
@@ -34,7 +34,7 @@ class Core(Robot, StateMachine):
     o = self.CC.ClassicRounding(t[side]['ang'],\
                                 t['ball']['dis'],\
                                 t['ball']['ang'])
-    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+    self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
     if self.RobotBallHandle():
       self.toAttack(t, side)
@@ -42,11 +42,13 @@ class Core(Robot, StateMachine):
       pass
 
   def on_toIdle(self):
+    for i in range(0,100):
+        self.MotionCtrl(0,0,0)
     log("To Idle")
 
   def on_toAttack(self, t, side):
     o = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-    self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+    self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
   def on_toShoot(self, power, pos):
     if self.RobotBallHandle():
@@ -97,9 +99,11 @@ class Strategy(object):
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
+          robot.PubCurrentState()
           robot.toChase(targets, self.side)
         elif robot.is_chase:
-          robot.toChase(targets, self.side)
+          #robot.toChase(targets, self.side)
+          robot.toIdle()
 
         if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
                           and targets['ball']['dis'] <= 50:
