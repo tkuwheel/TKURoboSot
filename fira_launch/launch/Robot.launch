@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<launch> 
+	<arg name="robotIndex" default="R1" />
+	<arg name="robotNameSpace" value="/FIRA/$(arg robotIndex)" />
+
+	<!-- for strategy -->
+	<arg name="Opponent" value="false"/>
+
+	
+	<group ns="$(arg robotNameSpace)">
+		<rosparam command="load" file="$(find fira_launch)/default_config/$(arg robotIndex).yaml" />
+
+		<!-- strategy -->
+		<group ns="strategy">
+			<!-- FIRA_strategy -->
+			<node name="strategy" pkg="strategy" type="FIRA_strategy" output="screen" args="$(arg robotIndex)" />
+			<!-- Team strategy -->
+			<node name="teamStrategy" pkg="strategy" type="teamStrategy" output="screen" args="$(arg robotIndex)" />
+		</group>
+		
+		<!-- vision -->
+		<group ns="strategy">
+			<!-- Segmation -->
+			<node name="qSeg_show" pkg="vision" type="FIRA_qSeg_show" output="screen" args="$(arg robotIndex)" />
+		</group>
+		
+
+		<!-- system -->
+		<group ns="system">
+			<!-- FIRA_strategy -->
+			<node name="motion" pkg="system" type="motion" output="screen" args="$(arg robotIndex)" />
+		</group>
+					
+	</group>
+
+</launch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+This file lists notable changes in each release. For the full history of all
+changes, see the VCS history.
+
+v0.3rc0:
+ * Windows support
+ * Device discovery on Linux
+ * Bug fixes
+ * API cleanup
+
+v0.2:
+ * Upgrade to libusb 1.0 and
+ * Asynchronous API
+ * Some OSX support
+ * API Changes:
+   1. No need to initialize libusb anymore. Call freespace_init()
+      and freespace_exit().
+   2. freespace_open -> freespace_openDevice
+   3. freespace_close -> freespace_closeDevice
+   4. freespace_destroy -> freespace_freeDevice
+
+v0.1:
+ * Initial Linux/libusb 0.9 release

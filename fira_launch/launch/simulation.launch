@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<launch> 
+ <rosparam command="load" file="$(find fira_launch)/default_config/vision_better.yaml"/>
+ <!-- <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="true" respawn_delay="5" output="screen"/> -->
+ <node name="objectdetection" pkg="vision" type="objectdetection"  respawn="true" respawn_delay="5" output="screen"/>
+ <!-- <node name="interface" pkg="vision" type="interface" respawn="false"/> -->
+ <!--node name="FIRA_strategy" pkg="strategy" type="FIRA_strategy"/-->
+ <node name="teamStrategy" pkg="strategy" type="teamStrategy"/>
+ <!-- <node name="motion" pkg="motion" type="motion" output="screen"/> -->
+ <node name="strategy_param_server" pkg="param_convey" type="strategy_param_server"/>
+ <!-- <node name="blackItem" pkg="vision" type="blackItem"/> -->
+ <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+</launch>

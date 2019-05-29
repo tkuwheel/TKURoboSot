@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<launch> 
+	<arg name="remoteNS" value="FIRA/remote"/>
+	<arg name="Opponent" value="false"/>
+
+	
+	<group ns="/FIRA">
+		<rosparam command="load" file="$(find fira_launch)/default_config/fira.yaml" />
+			
+	</group>
+	
+	<!-- remote -->
+	<group ns="$(arg remoteNS)">
+		<!-- teamStrategy -->
+		<!--<node name="Coach" pkg="strategy" type="teamStrategy" output="screen" args="-opt $(arg Opponent)" />-->
+		
+
+		<!-- ui -->
+		<node name="remoteUI" pkg="strategy" type="strategy_ui" output="screen" />
+					
+	</group>
+
+	
+	
+</launch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

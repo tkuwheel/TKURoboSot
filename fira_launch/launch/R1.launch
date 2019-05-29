@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<launch> 
+	<include file="$(find fira_launch)/launch/Robot.launch">
+		<arg name="robotIndex" value="R1" />
+	</include>
+
+</launch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

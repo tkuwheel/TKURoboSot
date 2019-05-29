@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import rospy
 import sys
 import math
@@ -44,17 +44,17 @@ class Core(Robot, StateMachine):
   def on_toIdle(self):
     for i in range(0,100):
         self.MotionCtrl(0,0,0)
-    log("To Idle")
+    log("To Idle1")
 
   def on_toAttack(self, t, side):
     o = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
   def on_toShoot(self, power, pos):
-    if self.RobotBallHandle():
+    '''if self.RobotBallHandle():
       self.RobotShoot(power, pos)
-    else:
-      print("NOT YET")
+    else:'''
+    print("NOT YET")
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -84,26 +84,29 @@ class Strategy(object):
     dsrv = Server(GameStateConfig, self.Callback)
 
     if SysCheck(argv) == "Native Mode":
+      
       log("Start Native")
       robot = Core(1)
+      
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       robot = Core(1, True)
-
+    
     while not rospy.is_shutdown():
 
       robot.PubCurrentState()
+      
       targets = robot.GetObjectInfo()
 
       if targets is not None:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          robot.PubCurrentState()
+          
           robot.toChase(targets, self.side)
         elif robot.is_chase:
-          #robot.toChase(targets, self.side)
-          robot.toIdle()
+          robot.toChase(targets, self.side)
+          #robot.toIdle()
 
         if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
                           and targets['ball']['dis'] <= 50:
@@ -115,7 +118,7 @@ class Strategy(object):
                            and targets['ball']['dis'] > 50:
           robot.toChase(targets, self.side)
 
-        if robot.is_attack and abs(targets[self.side]['ang']) < 10:
+        #if robot.is_attack and abs(targets[self.side]['ang']) < 10:
           #robot.toShoot(3, 1)
 
         if robot.is_shoot:

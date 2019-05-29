@@ -1,0 +1,57 @@
+Strategy:
+  Behavior: {aa: 55, beta_const: 0.9, cc: 33, close_ball_dis_const: 1, close_ball_speed_const: 3,
+    far_ball_speed_const: 1, goalkeeper_front_angle: 30, goalkeeper_front_dis: 2,
+    goalkeeper_front_speed: 8, goalkeeper_mid_angle: 50, goalkeeper_mid_dis: 1.75,
+    goalkeeper_mid_speed: 5, goalkeeper_radius: 0.5, goalkeeper_side_dis: 1.5, goalkeeper_side_speed: 4,
+    head2ball_speed: 5, long_rush_alpha: 5, long_rush_dis_br: 0.5, long_rush_speed_const: 3,
+    short_rush_alpha: 30, short_rush_dis_br: 0.5, short_rush_dis_dr: 2.5, short_rush_speed_const: 4}
+  Behavioraa: 33
+  Behaviorbeta_const: 0.9
+  Behaviorcc: 33
+  Behaviorclose_ball_dis_const: 1
+  Behaviorclose_ball_speed_const: 3
+  Behaviorfar_ball_speed_const: 1
+  Behaviorgoalkeeper_front_angle: 30
+  Behaviorgoalkeeper_front_dis: 2
+  Behaviorgoalkeeper_front_speed: 8
+  Behaviorgoalkeeper_mid_angle: 50
+  Behaviorgoalkeeper_mid_dis: 1.75
+  Behaviorgoalkeeper_mid_speed: 5
+  Behaviorgoalkeeper_radius: 0.5
+  Behaviorgoalkeeper_side_dis: 1.5
+  Behaviorgoalkeeper_side_speed: 4
+  Behaviorhead2ball_speed: 5
+  Behaviorlong_rush_alpha: 5
+  Behaviorlong_rush_dis_br: 0.5
+  Behaviorlong_rush_speed_const: 3
+  Behaviorshort_rush_alpha: 30
+  Behaviorshort_rush_dis_br: 0.5
+  Behaviorshort_rush_dis_dr: 2.5
+  Behaviorshort_rush_speed_const: 4
+  Pathplan: {aa: 33, beta_const: 0.73, close_ball_dis_const: 1, close_ball_speed_const: 3,
+    far_ball_speed_const: 1, goalkeeper_front_angle: 30, goalkeeper_front_dis: 2,
+    goalkeeper_front_speed: 8, goalkeeper_mid_angle: 60, goalkeeper_mid_dis: 1.75,
+    goalkeeper_mid_speed: 5, goalkeeper_radius: 0.5, goalkeeper_side_dis: 1.5, goalkeeper_side_speed: 4,
+    head2ball_speed: 5, long_rush_alpha: 5, long_rush_dis_br: 0.5, long_rush_speed_const: 3,
+    short_rush_alpha: 30, short_rush_dis_br: 0.5, short_rush_dis_dr: 2.5, short_rush_speed_const: 4}
+beta_const: 0.8
+close_ball_dis_const: 1
+close_ball_speed_const: 3
+far_ball_speed_const: 1
+goalkeeper_front_angle: 30
+goalkeeper_front_dis: 2
+goalkeeper_front_speed: 8
+goalkeeper_mid_angle: 50
+goalkeeper_mid_dis: 1.75
+goalkeeper_mid_speed: 5
+goalkeeper_radius: 0.5
+goalkeeper_side_dis: 1.5
+goalkeeper_side_speed: 4
+head2ball_speed: 5
+long_rush_alpha: 5
+long_rush_dis_br: 0.5
+long_rush_speed_const: 3
+short_rush_alpha: 30
+short_rush_dis_br: 0.5
+short_rush_dis_dr: 2.5
+short_rush_speed_const: 4
