@@ -309,7 +309,7 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
         y_ = distance_ * Angle_sin[find_angle];
 
         x = Frame_Area(CenterXMsg + x_, Source.cols);
-        y = Frame_Area(CenterYMsg - y_, Source.rows);
+        y = Frame_Area(CenterYMsg - y_, Source.rows);    
 
         obj_.x = x;
         obj_.y = y;
