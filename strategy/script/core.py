@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import rospy
 import sys
 import math
@@ -37,7 +37,6 @@ class Core(Robot, StateMachine):
       o = self.CC.ClassicRounding(t[side]['ang'],\
                                   t['ball']['dis'],\
                                   t['ball']['ang'])
-      #self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
       self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
       if self.RobotBallHandle():
