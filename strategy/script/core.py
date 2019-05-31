@@ -24,22 +24,35 @@ class Core(Robot, StateMachine):
   chase  = State('Chase')
   attack = State('Attack')
   shoot  = State('Shoot')
+  orbit  = State('Orbit')
 
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself()
-  toIdle   = chase.to(idle) | attack.to(idle)
+  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack)
   toShoot  = attack.to(shoot)
+  toOrbit  = chase.to(orbit) | orbit.to.itself()
 
-  def on_toChase(self, t, side):
-    o = self.CC.ClassicRounding(t[side]['ang'],\
-                                t['ball']['dis'],\
-                                t['ball']['ang'])
-    self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+  def on_toChase(self, t, side, method = "Classic"):
+    if method == "Classic":
+      o = self.CC.ClassicRounding(t[side]['ang'],\
+                                  t['ball']['dis'],\
+                                  t['ball']['ang'])
+      #self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+      self.MotionCtrl(o['v_x'], o['v_y'], o['v_yaw'])
 
-    if self.RobotBallHandle():
-      self.toAttack(t, side)
-    else:
-      pass
+      if self.RobotBallHandle():
+        self.toAttack(t, side)
+      else:
+        pass
+
+    elif method == "Straight":
+      o = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
+      self.RobotCtrl(o['v_x'], o['v_y'], o['v_yaw'])
+
+  def on_toOrbit(self, t, side):
+    o = self.CC.Orbit(t[side]['ang'])
+    print(o)
+    self.RobotCtrlS(o['v_x'], o['v_y'], o['v_yaw'])
 
   def on_toIdle(self):
     for i in range(0,100):
@@ -83,19 +96,24 @@ class Strategy(object):
 
     dsrv = Server(GameStateConfig, self.Callback)
 
+    TEST_MODE = False
     if SysCheck(argv) == "Native Mode":
       log("Start Native")
       robot = Core(1)
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       robot = Core(1, True)
+    elif SysCheck(argv) == "Test Mode":
+      log("Test Mode")
+      robot = Core(1, True)
+      TEST_MODE = True
 
     while not rospy.is_shutdown():
 
       robot.PubCurrentState()
       targets = robot.GetObjectInfo()
 
-      if targets is not None:
+      if targets is not None and not TEST_MODE:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
@@ -120,6 +138,25 @@ class Strategy(object):
 
         if robot.is_shoot:
           robot.toAttack(targets, self.side)
+        elif robot.is_idle and self.game_start:
+          robot.toChase(targets, self.side)
+        elif robot.is_chase:
+          robot.toChase(targets, self.side)
+
+      ### Test Mode ###
+      else:
+        if not robot.is_idle and not self.game_start:
+          robot.toIdle()
+        elif robot.is_idle and self.game_start:
+          robot.toChase(targets, self.side, "Straight")
+        elif robot.is_chase:
+          robot.toChase(targets, self.side, "Straight")
+
+        if robot.is_chase and abs(targets['ball']['ang']) <= 25 \
+                          and targets['ball']['dis'] <= 50:
+          robot.toOrbit(targets, self.side)
+        elif robot.is_orbit:
+          robot.toOrbit(targets, self.side)
 
       if rospy.is_shutdown():
         log('shutdown')
