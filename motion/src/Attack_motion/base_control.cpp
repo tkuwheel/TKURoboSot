@@ -196,7 +196,8 @@ void BaseControl::McsslSend2FPGA()
     this->base_TX.w2_h = this->w2 >> 8;
     this->base_TX.w3_l = this->w3;
     this->base_TX.w3_h = this->w3 >> 8;
-    this->base_TX.enable_and_stop = (this->en1<<7) + (this->en2<<6) + (this->en3<<5) + (this->stop1<<4) + (this->stop2<<3) + (this->stop3<<2) + (this->hold_ball);
+//    this->base_TX.enable_and_stop = (this->en1<<7) + (this->en2<<6) + (this->en3<<5) + (this->stop1<<4) + (this->stop2<<3) + (this->stop3<<2) + (this->hold_ball);
+    this->base_TX.enable_and_stop = 0;
     this->base_TX.shoot = this->shoot_power;
     uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
         this->base_TX.head1, 
