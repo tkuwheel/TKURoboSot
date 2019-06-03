@@ -59,6 +59,7 @@ int BaseControl::McsslInit()
 		std::cout << "Initialize attack motion with port = "<< this->port << "...\n";
 		cssl_setflowcontrol(serial, 0, 0);
 	}
+    FPGAInit();
 	return 1;
 }
 
@@ -125,6 +126,68 @@ void BaseControl::McsslCallback(int id, uint8_t* buf, int length)
 #endif
 }
 
+void BaseControl::FPGAInit()
+{
+    this->base_TX.w1_l = 0;
+    this->base_TX.w1_h = 0;
+    this->base_TX.w2_l = 0;
+    this->base_TX.w2_h = 0;
+    this->base_TX.w3_l = 0;
+    this->base_TX.w3_h = 0;
+    this->base_TX.enable_and_stop = 0x80;
+    this->base_TX.shoot = 0;
+
+    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot
+    };
+
+//    Crc_16 Crc16(crc_data, TX_PACKAGE_SIZE - 2);
+    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
+//    this->base_TX.crc_16_1 = *(unsigned char*)(&crc_16) + 1;
+//    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
+    this->base_TX.crc_16_1 = crc_16 >> 8;
+    this->base_TX.crc_16_2 = crc_16;
+    uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot,
+        this->base_TX.crc_16_1,
+        this->base_TX.crc_16_2,
+        0
+    };
+#ifdef CSSL
+    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE + 1);
+#ifdef DEBUG
+    printf("**************************\n");
+    printf("* FPGAInit(DEBUG) *\n");
+    printf("**************************\n");
+    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("crc16: %x\n", (crc_16));
+#endif
+#else
+    printf("**************************\n");
+    printf("* FPGAInit(DEBUG) *\n");
+    printf("**************************\n");
+    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("crc16: %x\n", (crc_16));
+#endif
+}
 void BaseControl::McsslSend2FPGA()
 {	
     this->base_TX.w1_l = this->w1;
@@ -386,7 +449,7 @@ void BaseControl::SetSingle(int number, int16_t rpm)
             this->base_TX.w2_h = 0;
             this->base_TX.w3_l = 0;
             this->base_TX.w3_h = 0;
-            this->base_TX.enable_and_stop = 0x80;
+//            this->base_TX.enable_and_stop = 0x80;
             break;
         case 2:
             this->base_TX.w1_l = 0;
@@ -395,7 +458,6 @@ void BaseControl::SetSingle(int number, int16_t rpm)
             this->base_TX.w2_h = rpm >> 8;
             this->base_TX.w3_l = 0;
             this->base_TX.w3_h = 0;
-            this->base_TX.enable_and_stop = 0x40;
             break;
         case 3:
             this->base_TX.w1_l = 0;
@@ -404,20 +466,17 @@ void BaseControl::SetSingle(int number, int16_t rpm)
             this->base_TX.w2_h = 0;
             this->base_TX.w3_l = rpm;
             this->base_TX.w3_h = rpm >> 8;
-            this->base_TX.enable_and_stop = 0x20;
             break;
         default:
+            this->base_TX.w1_l = 0;
+            this->base_TX.w1_h = 0;
+            this->base_TX.w2_l = 0;
+            this->base_TX.w2_h = 0;
+            this->base_TX.w3_l = 0;
+            this->base_TX.w3_h = 0;
             break;
     }
-    if(rpm==0){
-        this->base_TX.enable_and_stop = 0x10;
-        this->enable_flag = false;
-    }else{
-        this->enable_flag = true;
-    }
-    if(rpm!=0 && !enable_flag){
-        this->ReEnable();
-    }
+    this->base_TX.enable_and_stop = 0;
     this->base_TX.shoot = 0;
     uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
         this->base_TX.head1, 
@@ -432,10 +491,7 @@ void BaseControl::SetSingle(int number, int16_t rpm)
         this->base_TX.shoot
     };
 
-//    Crc_16 Crc16(crc_data, TX_PACKAGE_SIZE - 2);
     crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
-//    this->base_TX.crc_16_1 = *(unsigned char*)(&crc_16) + 1;
-//    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
     this->base_TX.crc_16_1 = crc_16 >> 8;
     this->base_TX.crc_16_2 = crc_16;
     uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  

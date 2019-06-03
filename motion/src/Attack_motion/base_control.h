@@ -74,6 +74,7 @@ private:
 	void	ForwardKinematics();	
     void    ReEnable();
     void    Run();
+    void    FPGAInit();
 public:
     static void *pThreadRun(void *p);
 	void 	McsslFinish();

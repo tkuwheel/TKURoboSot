@@ -35,12 +35,19 @@ int main(int argc, char** argv)
             if(Base.GetBaseFlag()){
                 RX = Base.GetPack();
 #ifdef DEBUG
+
+                printf("\n*****motor command******\n");
+
+                std::cout << std::dec;
+                std::cout << "motor number: " << number << "\t";
+                std::cout << "motor target rpm: " << rpm << "\t";
+                std::cout << std::hex;
+                std::cout << "motor target rpm: " << rpm << "\n";
                 printf("\n*****get feedback******\n");
                 std::cout << std::dec;
                 std::cout << "id: " << RX->id << "\t";
                 std::cout << "size: " << RX->size << "\t";
                 std::cout << "duration: " << RX->duration << "\t\n";
-                std::cout << std::dec;
 //                std::cout << "w1: " << RX->w1 * 600  / 2000 << "\t";
 //                std::cout << std::dec << RX->w1 * 600 / 2000 << "\n";
                 std::cout << "w1: " << RX->w1 * FB_FREQUENCY * 60 / 2000<< "\t";
