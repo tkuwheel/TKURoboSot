@@ -30,76 +30,126 @@ output			oPWM_Pulse,
 output			oDIR,		// Direction of motor
 output	[31:0]	oFB,		// Feedback of motor
 output			oDIR_Now,// Direction of motor now
-output			oFB_FREQ// Feedback renew trigger
+output			oFB_FREQ,// Feedback renew trigger
+output			oEN,
+output			oStop,
+output	[5:0]	oStates
+// output			oSampClk
 );
 `include "param.h"
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
-parameter SPD_DIV = 1;
+parameter SPD_DIV = 5;
+parameter DURY_SIZE = 8 + SPD_DIV/2;
 // parameter FB_STREAM_SIZE = TX_MOTOR_SIZE * 8;
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-wire	[1:0]		wDIR;
+wire			wDIR;
 wire	[1:0]	wDIR_DC;
 wire	[1:0]	wDIR_SM;
 wire	[7:0]	wPWM;
 wire	[7:0]	wPWM_MUX;
-wire	[RX_MOTOR_SIZE*8 -2:0]	wSPD;
+wire	[RX_MOTOR_SIZE*8 -1:0]	wSPD;
 wire	[7:0]	wSPD_SM;
 wire			wST;
-wire	[TX_MOTOR_SIZE*8 -1:0]	wDB;
-wire	[RX_MOTOR_SIZE-8 -1:0]	wFB;
+wire	[TX_MOTOR_SIZE*8 -1:0]	wDFB;
+wire	[RX_MOTOR_SIZE*8 -1:0]	wFB;
 wire	[1:0]	wSel;
 wire  	[2:0]	wEN;
 wire			wSTOP;
 
 
-wire  [6:0] wCMD;
-
+wire	[6:0] wCMD;
+wire	[DURY_SIZE-1:0]	wDuty;
+wire	[RX_MOTOR_SIZE*8-1:0]wSPD_C;
+wire	wDIR_C;
 //=======================================================
 //  Structural coding
 //=======================================================
-assign oFB		=	wDB;
+assign oFB		=	wDFB;
 assign oFB_FREQ	=	wST;
 assign oPWM_Pulse =  wPWM;
 assign oDIR			=  wDIR;
 
 
 
-CMDTRAN #(
-	.STEAM_SIZE(RX_MOTOR_SIZE * 8) //bytes -> bits
-)(
-	.iCLK (iCLK),
-	.iCMD (iCMD),
-	.oSPD (wSPD),
-	.oDIR (wDIR)
-);
+// CMDTRAN #(
+// 	.STEAM_SIZE(RX_MOTOR_SIZE * 8) //bytes -> bits
+// )(
+// 	.iCLK (iCLK),
+// 	.iCMD (iCMD),
+// 	.oSPD (wSPD),
+// 	.oDIR (wDIR)
+// );
 
 
-Photo2FB (		// Motor Encoder Feedback
+Photo2FB(		// Motor Encoder Feedback
 	.iCLK	(iCLK),
 	.iRst_n	(iRst_n),
 	.oST	(wST),
 	.iPA	(iPA),
 	.iPB	(iPB),
-	.oDB	(wDB),  //32 bits
+	.oDB	(wDFB),  //32 bits
 	.oDIR	(oDIR_Now)
 );
 
-
-
 Normalize #(	// Normoalize speed and feedback
-	.SPD_DIV	(SPD_DIV),
+	// .SPD_DIV	(SPD_DIV),
 	.CMD_SIZE	(RX_MOTOR_SIZE * 8), //bytes -> bits
 	.FB_SIZE	(TX_MOTOR_SIZE * 8)	//bytes -> bits
 )(
-	.iFB	(wDB),  //32 bits
+	.iFB	(wDFB),  //32 bits
 	.oFB	(wFB)   //16 bits
 );
 
 
+
+SpeedController #(
+	.STREAM_SIZE		(RX_MOTOR_SIZE * 8),
+	.DUTY_SIZE			(DURY_SIZE)
+)(
+	.iCLK	(iCLK),
+	.iRst_n	(iRst_n),
+	.iFREQ	(wST),
+	.iFB	(wFB),
+	.iCMD	(iCMD),
+	.oDuty	(wDuty),
+	.oDIR	(wDIR),
+	.oStates(oStates)
+);
+
+pwmgen #(		// PWM generator
+	.SPD_DIV	(SPD_DIV)
+)pwm(
+	.iClk		(iCLK),
+	.iRst_n		(iRst_n),
+	.iDuty		(wDuty),
+	.oPWM		(wPWM)
+	// .oSampClk	(oSampClk)
+);
+
+MotorStates #(
+	.SIZE(DURY_SIZE),
+	.DUTY_SIZE(DURY_SIZE)
+)(
+	.iCLK	(iCLK),
+	.iRst_n	(iRst_n),
+	.iSPD_C	(wSPD_C),
+	.iDuty(wDuty),
+	.oMotorEnable(oEN),
+	.oMotorStop(oStop)
+);
+
+Absolute #(
+	.SIZE(RX_MOTOR_SIZE * 8)
+	
+)(
+	.iValue(wFB),
+	.oValue(wSPD_C),
+	.oSign(wDIR_C)
+);
 /*
 StateMachine (	// Motor Controller State Machine
 	.iCLK	(iCLK),
@@ -138,29 +188,4 @@ MUX (
 );
 */
 // wire wSampClk;
-pwmgen #(		// PWM generator
-	.SPD_DIV	(SPD_DIV)
-)pwm(
-	.iClk		(iCLK),
-	.iRst_n	(iRst_n),
-	.iDuty	(wSPD),
-	.oPWM		(wPWM)
-	// .oSampClk	(wSampClk)
-);
-
-SpeedMonitor #(
-	.CMD_SIZE	(RX_MOTOR_SIZE * 8), //bytes -> bits
-	.FB_SIZE	(TX_MOTOR_SIZE * 8)	//bytes -> bits
-)SM(
-	.iCLK	(iCLK), 
-	.iRst_n	(iRst_n),
-	.iFB	(wDB),
-	.iNew_FB(wFB),
-	.iPWM	(wPWM),
-	.iCMD	(wSPD)
-	// .oFB	(),
-	// .oNew_FB(),
-	// .oPWM	(),
-	// .oCMD	()
-	);
 endmodule

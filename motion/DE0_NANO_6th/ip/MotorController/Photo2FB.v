@@ -24,7 +24,6 @@ output	reg			oST,	// Feedback renew trigger
 output	reg			oDIR,	// Dircetion of motor
 output	reg	[31:0]	oDB,	// Feedback, 1ms pls
 output	[31:0]	oFB_AllTime	// Feedback sum pluse,until reset signal
-
 );
 
 //===========================================================================
@@ -54,7 +53,7 @@ reg				rDLA, rDLB;
 //Clock Divisor
 `include "param.h"
 Clkdiv #(
-	.EXCEPTCLK	(FEEDBACK_FREQUENCY)
+	.EXPECTCLK	(FEEDBACK_FREQUENCY)
 ) Clk1K (
 	.iClk		(iCLK),	// 50Mhz clock 
 	.iRst_n	(iRst_n),// Reset
@@ -111,10 +110,10 @@ begin : Counter
 	else if (wPLS) begin
 		oDIR	<=	wDIR;
 		if (wDIR) begin
-			rCNT	<=	rCNT - 1;
+			rCNT	<=	rCNT + 1;
 		end
 		else if (~wDIR) begin
-			rCNT	<=	rCNT + 1;
+			rCNT	<=	rCNT - 1;
 		end
 	end
 	else begin
@@ -130,10 +129,10 @@ begin : Counter_AllTime
 		rFB_CNT <= 0;
 	else begin 
 		if (wPLS & wDIR) begin
-			rFB_CNT	<=	rFB_CNT - 1;
+			rFB_CNT	<=	rFB_CNT + 1;
 		end
 		else if (wPLS & ~wDIR) begin
-			rFB_CNT	<=	rFB_CNT + 1;
+			rFB_CNT	<=	rFB_CNT - 1;
 		end
 		else begin
 			rFB_CNT	<=	rFB_CNT;
@@ -151,7 +150,7 @@ begin : DataTran
 		oST	<=	1;
 	end
 	else begin
-		rDB	<=	rDB;
+		// rDB	<=	rDB;
 		oST	<=	0;
 	end
 end

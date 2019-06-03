@@ -171,6 +171,7 @@ input 		     [1:0]		GPIO_1_IN;
 //=======================================================
 wire 			oFLASH_RST_N;
 wire			iReset_n;
+
 wire  		iMotor1_PA;
 wire  		iMotor1_PB;
 wire  		oMotor1_PWM;
@@ -192,8 +193,8 @@ wire 			oMotor5_DIR;
 wire			oTXD;
 wire			iRXD;
 wire			oLight;
-wire			oKick;
-wire	[7:0]	wKick;
+
+wire	[7:0]	wPower;
 wire			wRST1ms_n, wRST2ms_n, wRST3ms_n;
 wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor1;
 wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor2;
@@ -249,7 +250,17 @@ wire			wFB_CNT_FREQ_CD;
 
 wire			wTXD;
 wire			wRXD;
-
+wire			wEN1;
+wire			wEN2;
+wire			wEN3;
+wire			wStop1;
+wire			wStop2;
+wire			wStop3;
+wire			wHoldBall;
+wire			wKick;
+	
+wire	[5:0]	wStates;
+wire	[2:0]	wStop;
 //wire	[7:0]	wCMD_Motor1_Test;
 //wire	[7:0]	wCMD_Motor2_Test;
 //wire	[7:0]	wAX_12_Test;
@@ -261,27 +272,29 @@ wire			wRXD;
 //  Structural coding
 //=======================================================
 //assign GPIO_0_D[] = oFLASH_RST_N;
-assign iReset_n = KEY[0];
+assign iReset_n = KEY[0] & ~wSignal[7];
 assign oFLASH_RST_N = iReset_n;
-
-
+// assign LED = {wEN1, wStop1, wEN2, wStop2, wEN3, wStop3, wHoldBall, wKick};
+assign LED = {wEN1, wStop[2], wStates};
+assign wStop = (wStop1 & wStop2 & wStop3)? 3'b0: {wStop1, wStop2, wStop3};
 wire wclk_50hz;
 Clkdiv #(
-	.EXCEPTCLK	(25000)
+	.EXPECTCLK	(1000000)
 ) Clk1K (
 	.iClk		(CLOCK_50),	// 50Mhz clock 
 	.iRst_n	(iReset_n),// Reset
-  	.oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
-//	.oClk		(wclk_50hz)	// ExpectClk clock
+  	// .oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
+	.oClk		(GPIO_1_D[0])	// ExpectClk clock
 );
 
 assign iMotor1_PA = GPIO_0_D[22];
 assign iMotor1_PB = GPIO_0_D[28];
 assign GPIO_0_D[20] = oMotor1_PWM;
 assign GPIO_0_D[16] = oMotor1_DIR;
-assign GPIO_0_D[18] = wSignal[7];
-assign GPIO_0_D[14] = wSignal[4];
-
+// assign GPIO_0_D[18] = wSignal[7];
+// assign GPIO_0_D[14] = wSignal[4];
+assign GPIO_0_D[18] = wEN1;
+assign GPIO_0_D[14] = wStop[2];
 
 //assign GPIO_0_D[24] = wFB_CNT_Motor1;
 //assign GPIO_0_D[26] = wFB_CNT_Motor2;
@@ -297,16 +310,21 @@ MotorController MotorA (
 	.oDIR		(oMotor1_DIR),		// Direction of motor
 	.oDIR_Now	(wDIR_Motor1),	// Direction of motor now
 	.oFB		(wFB_Motor1),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ1)		
+	.oFB_FREQ	(wFB_FREQ1),
+	.oEN		(wEN1),
+	.oStop		(wStop1),
+	.oStates		(wStates)
+	// .oSampClk	()	
 );
 
 assign iMotor2_PA = GPIO_0_D[30];
 assign iMotor2_PB = GPIO_0_D[32];
 assign GPIO_0_D[21] = oMotor2_PWM;
 assign GPIO_0_D[25] = oMotor2_DIR;
-assign GPIO_0_D[23] = wSignal[6];
-assign GPIO_0_D[27] = wSignal[3];
-
+// assign GPIO_0_D[23] = wSignal[6];
+// assign GPIO_0_D[27] = wSignal[3];
+assign GPIO_0_D[23] = wEN2;
+assign GPIO_0_D[27] = wStop[1];
 
 MotorController MotorB (
 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
@@ -318,16 +336,19 @@ MotorController MotorB (
 	.oDIR		(oMotor2_DIR),		// Direction of motor
 	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
 	.oFB		(wFB_Motor2),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ2)		// Feedback renew trigger
+	.oFB_FREQ	(wFB_FREQ2),		// Feedback renew trigger
+	.oEN		(wEN2),
+	.oStop		(wStop2)
 );
 
 assign iMotor3_PA = GPIO_0_D[17];
 assign iMotor3_PB = GPIO_0_D[19];
 assign GPIO_0_D[1] = oMotor3_PWM;
 assign GPIO_0_D[5] = oMotor3_DIR;
-assign GPIO_0_D[3] = wSignal[5];
-assign GPIO_0_D[7] = wSignal[2];
-
+// assign GPIO_0_D[3] = wSignal[5];
+// assign GPIO_0_D[7] = wSignal[2];
+assign GPIO_0_D[3] = wEN3;
+assign GPIO_0_D[7] = wStop[0];
 
 MotorController MotorC (
 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
@@ -339,7 +360,9 @@ MotorController MotorC (
 	.oDIR		(oMotor3_DIR),		// Direction of motor
 	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
 	.oFB		(wFB_Motor3),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ3)		// Feedback renew trigger
+	.oFB_FREQ	(wFB_FREQ3),		// Feedback renew trigger
+	.oEN		(wEN3),
+	.oStop		(wStop3)
 );
 
 /*
@@ -387,12 +410,13 @@ holdBall(.iC(CLOCK_50),
 			);
 //------------------------------------------------------------------------------------------------------------
 //=======================================================
+assign GPIO_0_D[29] = wKick;
 
 ShootControl (
 			.iClk(CLOCK_50),
 			.iRst_n(iReset_n),
-			.iPower(wKick),
-			.oPower(oKick)
+			.iPower(wPower),
+			.oPower(wKick)
 );
 
 assign GPIO_0_D[33] = oTXD;
@@ -418,10 +442,8 @@ UART_if RS_232 (
 
 //assign LED = SW[0] ? wTx_data : wRx_data;
 //assign GPIO_0_D[] = oLight;
-assign GPIO_0_D[29] = oKick;
-//assign LED[0] = okick;
-assign LED[7:2] = wSignal[7:2];
-assign LED[0] = oKick;
+
+
 	
 // Sperate package to command
 Serial2CMD #(
@@ -435,7 +457,7 @@ Serial2CMD #(
 	.oCMD_Motor2(wCMD_Motor2),		// Command of motor2
 	.oCMD_Motor3(wCMD_Motor3),		// Command of motor3
 	.oSignal	(wSignal),			// Command of Enable & Stop signal
-	.oKick		(wKick),				// shoot a ball at the goal
+	.oPower		(wPower),				// shoot a ball at the goal
 	.oRx_done	(wRx_done)
 );
 

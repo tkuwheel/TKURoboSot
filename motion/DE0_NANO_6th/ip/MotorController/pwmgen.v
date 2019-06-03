@@ -11,15 +11,15 @@
 //    |<----   PWM cycle          ->| 
 //  ->|   |<-pwm_clock
 // 
-//  PWM cycle = 100*pwm_clock*2 ( 2 -> positive and negtive cycle)
+//  PWM cycle = 127*pwm_clock*2 ( 2 -> positive and negtive cycle)
 // --------------------------------------------------------------------
 
 module pwmgen #(
-parameter SPD_DIV = 4
+parameter SPD_DIV = 1
 )(
 			iClk,		// 25Mhz clock
 			iRst_n,	// reset, low active
-			iDuty,	// Range is 0~100
+			iDuty,	// Range is ??~??
 			oPWM,
 			oSampClk,
 			oErrorValue
@@ -30,13 +30,14 @@ parameter SPD_DIV = 4
 //===========================================================================
 //parameter PWMCYCLE=10000;  // PWM cycle = 10Khz
 parameter PWMClk=1000*(127*SPD_DIV);
+parameter DURY_SIZE = 8 + SPD_DIV/2;
 // parameter PWMClk = 10000;       // PWM frequency 10kHz
 //===========================================================================
 // PORT declarations
 //===========================================================================
 input       iClk;
 input       iRst_n;
-input [7:0] iDuty;
+input [DURY_SIZE - 1:0] iDuty;
 output      oPWM;
 output      oSampClk;
 output      oErrorValue;
@@ -44,7 +45,7 @@ output      oErrorValue;
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-reg	[10:0]	rPWMCnt;
+reg	[DURY_SIZE - 1:0]	rPWMCnt;
 wire				wClk;
 wire				wTempPWM;
 
@@ -54,7 +55,7 @@ wire				wTempPWM;
 
 //Clock Divsor
 Clkdiv #(
-	.EXCEPTCLK	(PWMClk)
+	.EXPECTCLK	(PWMClk)
 )(
     .iClk		(iClk),  // 50Mhz clock
     .iRst_n		(iRst_n),// reset

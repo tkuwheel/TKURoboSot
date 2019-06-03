@@ -35,7 +35,7 @@ output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor1,	// Command of motor1
 output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor2,	// Command of motor2
 output	reg	[MOTOR_STREAM_SIZE-1:0]	oCMD_Motor3,	// Command of motor3
 output	reg	[7:0]	oSignal,		// Command of EN&STOP
-output	reg	[7:0]	oKick,			// shoot a ball 
+output	reg	[7:0]	oPower,			// shoot a ball 
 output	reg			oRx_done,
 output 	reg	[15:0]	oCrc,			// CRC debug
 output	reg			oCrcSuccess,
@@ -79,7 +79,7 @@ wire				wCrcFinish;
 wire				wCrcSuccess;
 wire		[15:0]	wCrc;
 wire		[MOTOR_STREAM_SIZE-1:0]	wCMD_Motor1, wCMD_Motor2, wCMD_Motor3;
-wire		[7:0]	wSignal, wKick;
+wire		[7:0]	wSignal, wPower;
 
 //=============================================================================
 // Structural coding
@@ -101,7 +101,7 @@ always @(posedge iCLK) begin
 		oCMD_Motor2	<=	0;
 		oCMD_Motor3	<=	0;
 		oSignal		<=	0;
-		oKick		<=	0;
+		oPower		<=	0;
 
 		oCrcSuccess	<=	0;
 		rPacket		<= 	0;
@@ -220,7 +220,7 @@ always @(posedge iCLK) begin
 			oCMD_Motor2 	<= 	wCMD_Motor2;
 			oCMD_Motor3 	<= 	wCMD_Motor3;
 			oSignal 		<= 	wSignal;
-			oKick			<= 	wKick;
+			oPower			<= 	wPower;
 			oCrcSuccess		<=	wCrcSuccess;
 			debug			<=	wCrcFinish;
 			rCheck 			<=	rCheck;
@@ -255,7 +255,7 @@ Packet2CMD #(
 	.oMotor2(wCMD_Motor2),
 	.oMotor3(wCMD_Motor3),
 	.oEN(wSignal),
-	.oShoot(wKick)
+	.oShoot(wPower)
 );
 
 endmodule

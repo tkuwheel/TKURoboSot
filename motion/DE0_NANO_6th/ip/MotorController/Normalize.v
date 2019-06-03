@@ -36,11 +36,21 @@ output	[FB_SIZE-1:0]	oFB	// Feedback Output
 //  REG/WIRE declarations
 //==================================================================
 wire   [31:0]buffer;
-wire   [31:0]compute;
+wire    sign;
+// wire   [31:0]compute;
 //=============================================================================
 // Structural coding
 //=============================================================================
-assign  buffer  = (iFB[FB_SIZE-1] == 1)? ~iFB+1 : iFB;
-assign  oFB = (iFB[FB_SIZE-1] == 1)? ~(buffer * FEEDBACK_FREQUENCY * 60 / 2000)+1: buffer * FEEDBACK_FREQUENCY * 60 / 2000;
+// assign  buffer  = (iFB[FB_SIZE-1] == 1)? ~iFB+1 : iFB;
+assign  oFB = (sign)? ~(buffer * FEEDBACK_FREQUENCY * 60 / 2000)+1: buffer * FEEDBACK_FREQUENCY * 60 / 2000;
 // iFB[CMD_SIZE-1 :0] *  FEEDBACK_FREQUENCY / 2000 * 60 ;
+
+
+Absolute #(
+    .SIZE (FB_SIZE-1)
+)(
+    .iValue(iFB),
+    .oValue(buffer),
+    .oSign(sign)
+);
 endmodule

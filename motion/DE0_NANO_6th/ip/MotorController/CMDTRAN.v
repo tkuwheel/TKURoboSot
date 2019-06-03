@@ -10,11 +10,11 @@ output	reg			oDIR	// Direction of motor
 always @(posedge iCLK)
 begin
 	if (iCMD[15]) begin		// Is iCMD[7] equal to 0
-		oSPD	<=	iCMD[STEAM_SIZE-2:0];		// give speed iCMD[6:0]
+		oSPD	<=	iCMD[STEAM_SIZE-1:0];		// give speed iCMD[6:0]
 		oDIR	<=	1'b0;			// give Positive direction of motor
 	end
 	else begin
-		oSPD	<= iCMD[STEAM_SIZE-2:0];		// give speed iCMD[6:0]
+		oSPD	<= iCMD[STEAM_SIZE-1:0];		// give speed iCMD[6:0]
 		oDIR	<=	1'b1;			// give Negative direction of motor
 	end
 end

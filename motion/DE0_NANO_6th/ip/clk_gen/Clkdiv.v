@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------
 /*  use follow instruction to call the function
 
-Clkdiv #( .CLKFREQ(50000000), .EXCEPTCLK(10), .multipleX(4) ) UX1
+Clkdiv #( .CLKFREQ(50000000), .EXPECTCLK(10), .multipleX(4) ) UX1
         (   
             .iClk(iCLOCK_50), // 50Mhz clock 
             .oError(oLEDG[0]),  // if CLKFREQ/2 great than ExpectClk, you will get a error
@@ -24,7 +24,7 @@ Clkdiv #( .CLKFREQ(50000000), .EXCEPTCLK(10), .multipleX(4) ) UX1
 `default_nettype none
 module Clkdiv #(
 	parameter CLKFREQ = 50000000, // Input Clock
-	parameter EXCEPTCLK = 1       // Output Clock
+	parameter EXPECTCLK = 1       // Output Clock
 )(
 	iClk, 		// 50Mhz clock 
     iRst_n,		// Reset
@@ -37,7 +37,7 @@ module Clkdiv #(
 // PARAMETER declarations
 //===========================================================================
 parameter multipleX = 100; // generate a multiple number of expect clk
-parameter N = CLKFREQ /EXCEPTCLK;   // multiple number of divider
+parameter N = CLKFREQ /EXPECTCLK;   // multiple number of divider
 
 //===========================================================================
 // PORT declarations
@@ -46,12 +46,12 @@ input      iClk;  // input 50Mhz clock
 input      iRst_n;
 output     oError;   // Error of CLKFREQCNTVALUE input
 output reg oSampClk; // sample clock
-output     oClk;     // output except clock 
+output     oClk;     // output expect clock 
 
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-reg [$clog2((CLKFREQ /(EXCEPTCLK*2*multipleX)))-1:0] rSampClkCnt;
+reg [$clog2((CLKFREQ /(EXPECTCLK*2*multipleX)))-1:0] rSampClkCnt;
 
 
 reg [$clog2(N)-1:0] rCnt_p;
@@ -70,7 +70,7 @@ always@(posedge iClk or negedge iRst_n) begin
   if (!iRst_n)
     rCnt_p <= 0;
   else begin 
-    if (rCnt_p == (N-1))		// rCnt_p range is from 0 to (CLKFREQ /EXCEPTCLK)-1
+    if (rCnt_p == (N-1))		// rCnt_p range is from 0 to (CLKFREQ /EXPECTCLK)-1
       rCnt_p <= 0;
     else
       rCnt_p <= rCnt_p + 1;	//up count
@@ -92,7 +92,7 @@ always@(negedge iClk or negedge iRst_n) begin
   if (!iRst_n)
     rCnt_n <= 0;
   else begin
-      if (rCnt_n == (N-1))		// rCnt_n range is from 0 to (CLKFREQ /EXCEPTCLK)-1
+      if (rCnt_n == (N-1))		// rCnt_n range is from 0 to (CLKFREQ /EXPECTCLK)-1
         rCnt_n <= 0;
       else
         rCnt_n <= rCnt_n + 1;	//up count
@@ -123,7 +123,7 @@ always@(posedge iClk or negedge iRst_n) begin
             oSampClk <= 0;
             rSampClkCnt <= 0;
         end
-        else if( rSampClkCnt >= (CLKFREQ /(EXCEPTCLK*2*multipleX)-1 ) )begin
+        else if( rSampClkCnt >= (CLKFREQ /(EXPECTCLK*2*multipleX)-1 ) )begin
             oSampClk <= ~oSampClk;				// reverse oSampClk
             rSampClkCnt <= 0;
         end 
@@ -134,8 +134,8 @@ always@(posedge iClk or negedge iRst_n) begin
     end
 end
 
-// check except clock small than iClk/2 frequency
-assign oError = ((CLKFREQ/2) <= EXCEPTCLK) ? 1'b1: 1'b0;
+// check expect clock small than iClk/2 frequency
+assign oError = ((CLKFREQ/2) <= EXPECTCLK) ? 1'b1: 1'b0;
 
 endmodule
 
