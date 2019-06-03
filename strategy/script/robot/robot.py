@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
 import rospy
 import math
+from simple_pid import PID
 from nubot_common.msg import OminiVisionInfo
 from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
@@ -30,6 +32,12 @@ class Robot(object):
                    'Cyan':{'dis' : 0, 'ang' : 0},
                    'Magenta':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
+  pid_v = PID(-1.5, 0, 0, setpoint=10)
+  pid_v.output_limits = (0, 100)
+  pid_v.auto_mode = True
+  pid_w = PID(-0.06, -0.0, -0.0, setpoint=0)
+  pid_w.output_limits = (-5, 5)
+  pid_w.auto_mode = True
 
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
@@ -48,7 +56,7 @@ class Robot(object):
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
-      self.MotionCtrl = self.GazeboCtrl
+      self.MotionCtrl = self.RobotCtrlS
 
   def _SimSubscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
@@ -84,16 +92,34 @@ class Robot(object):
     s.data = state
     self.state_pub.publish(s)
 
-  def RobotCtrlS(self, x, y, yaw):
-    msg = VelCmd()
-    msg.Vx = x
-    msg.Vy = y
-    msg.w = yaw
-    self.cmdvel_pub.publish(msg)
+  def RobotCtrlS(self, x, y, yaw, pass_through=False):
+    if pass_through:
+      msg = VelCmd()
+      msg.Vx = x
+      msg.Vy = y
+      msg.w  = yaw
+      self.cmdvel_pub.publish(msg)
+    else:
+      current_vector = math.hypot(x, y)
+      output_v = self.pid_v(current_vector)
+      output_w = self.pid_w(yaw)
+
+      magnitude = math.sqrt(x**2 + y**2)
+      if magnitude == 0:
+        unit_vector = (0, 0)
+      else:
+        unit_vector = (x / magnitude, y / magnitude)
+
+      # print(yaw)
+      # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
+      msg = VelCmd()
+      msg.Vx = unit_vector[0]*output_v
+      msg.Vy = unit_vector[1]*output_v
+      msg.w  = output_w
+      self.cmdvel_pub.publish(msg)
 
   def RobotCtrl(self, x, y, yaw):
     angle = yaw
-   
     velocity = math.hypot(x, y)
     if x != 0:
       alpha = math.degrees(math.atan2(y, x))
@@ -132,14 +158,11 @@ class Robot(object):
     x = velocity * math.cos(math.radians(alpha))
     y = velocity * math.sin(math.radians(alpha))
     yaw = angle_out
-    
 
     msg = Twist()
     msg.linear.x = -y
     msg.linear.y = x
     msg.angular.z = yaw
-
-
 
     self.cmdvel_pub.publish(msg)
 
@@ -184,7 +207,6 @@ class Robot(object):
     x = velocity * math.cos(math.radians(alpha))
     y = velocity * math.sin(math.radians(alpha))
     yaw = angle_out
-    
 
     msg = VelCmd()
     msg.Vx = x
@@ -193,8 +215,6 @@ class Robot(object):
     
     self.cmdvel_pub.publish(msg)
 
-
-  
   def GetObjectInfo(self):
     return self.__object_info
 
@@ -215,4 +235,3 @@ class Robot(object):
       return resp1.BallIsHolding
     except rospy.ServiceException :
       print ("Service call failed")
-  

@@ -22,7 +22,13 @@ def eulerToQuaternion(pitch, roll, yaw):
 
 
 def calAng(x, y, yaw, remainder):
-    return round(math.degrees(math.atan2(y, x))-yaw, remainder)
+    ang = round(math.degrees(math.atan2(y, x))-yaw, remainder)
+    if ang > 180:
+        return ang - 360
+    elif ang < -180:
+        return ang + 360
+    else:
+        return ang
 
 def calDis(x, y, remainder, toCM=True):
     if toCM:
