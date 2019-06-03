@@ -275,7 +275,7 @@ wire	[2:0]	wStop;
 assign iReset_n = KEY[0] & ~wSignal[7];
 assign oFLASH_RST_N = iReset_n;
 // assign LED = {wEN1, wStop1, wEN2, wStop2, wEN3, wStop3, wHoldBall, wKick};
-assign LED = {wEN1, wStop[2], wStates};
+assign LED = {wEN1, wStop[2], wEN2, wStop[1], wEN3, wStop[0], wHoldBall, wKick};
 assign wStop = (wStop1 & wStop2 & wStop3)? 3'b0: {wStop1, wStop2, wStop3};
 wire wclk_50hz;
 Clkdiv #(
