@@ -27,7 +27,7 @@ STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
 
-  __robot_info = {'location' : None}
+  __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'Cyan':{'dis' : 0, 'ang' : 0},
                    'Magenta':{'dis' : 0, 'ang' : 0},
@@ -72,6 +72,9 @@ class Robot(object):
   def _GetSimVision(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
     self.__object_info['ball']['ang'] = math.degrees(vision.ballinfo.real_pos.angle)
+    self.__robot_info['location']['x']   = vision.robotinfo[self.robot_number - 1].pos.x
+    self.__robot_info['location']['y']   = vision.robotinfo[self.robot_number - 1].pos.y
+    self.__robot_info['location']['yaw'] = math.degrees(vision.robotinfo[self.robot_number - 1].heading.theta)
 
   def _GetSimGoalInfo(self, goal_info):
     self.__object_info['Cyan']['dis'] = goal_info.left_radius
@@ -217,6 +220,9 @@ class Robot(object):
 
   def GetObjectInfo(self):
     return self.__object_info
+
+  def GetRobotInfo(self):
+    return self.__robot_info
 
   def RobotShoot(self, power, pos) :
     rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number))

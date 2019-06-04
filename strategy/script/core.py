@@ -9,28 +9,37 @@ from std_msgs.msg import String
 from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
+from methods.behavior import Behavior
 from dynamic_reconfigure.server import Server
 from strategy.cfg import GameStateConfig
 
 class Core(Robot, StateMachine):
   def __init__(self, robot_num, sim = False):
-    self.CC  = Chase()
-    self.AC  = Attack()
-    self.sim = sim
     super(Core, self).__init__(robot_num, sim)
     StateMachine.__init__(self)
+    self.CC  = Chase()
+    self.AC  = Attack()
+    self.BC  = Behavior()
+    self.sim = sim
 
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
   attack = State('Attack')
   shoot  = State('Shoot')
   orbit  = State('Orbit')
+  point  = State('Point')
 
+  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle)
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase)
-  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
   toShoot  = attack.to(shoot)
   toOrbit  = chase.to(orbit) | orbit.to.itself()
+  toPoint  = point.to.itself() | idle.to(point)
+
+  def on_toIdle(self):
+    for i in range(0,100):
+        self.MotionCtrl(0,0,0)
+    log("To Idle")
 
   def on_toChase(self, t, side, method = "Classic"):
     if method == "Classic":
@@ -48,21 +57,20 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
 
-  def on_toOrbit(self, t, side):
-    x, y, yaw = self.CC.Orbit(t[side]['ang'])
-    self.MotionCtrl(x, y, yaw, True)
-
-  def on_toIdle(self):
-    for i in range(0,100):
-        self.MotionCtrl(0,0,0)
-    log("To Idle")
-
   def on_toAttack(self, t, side):
     x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     self.MotionCtrl(x, y, yaw)
 
   def on_toShoot(self, power, pos):
     self.RobotShoot(power, pos)
+
+  def on_toOrbit(self, t, side):
+    x, y, yaw = self.CC.Orbit(t[side]['ang'])
+    self.MotionCtrl(x, y, yaw, True)
+
+  def on_toPoint(self, tx, ty, tyaw):
+    x, y, yaw = self.BC.Go2Point(tx, ty, tyaw)
+    self.MotionCtrl(x, y, yaw)
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -135,12 +143,18 @@ class Strategy(object):
 
       ### Test Mode ###
       else:
+        Points = [{'x':0, 'y':0, 'yaw':0}, \
+                  {'x':100, 'y':100, 'yaw':90}, \
+                  {'x':-100, 'y':-100, 'yaw':-90}]
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          robot.toChase(targets, self.side, "Straight")
+          # robot.toChase(targets, self.side, "Straight")
+          robot.toPoint(Points[0]['x'], Points[0]['y'], Points[0]['yaw'])
         elif robot.is_chase:
           robot.toChase(targets, self.side, "Straight")
+        elif robot.is_point:
+          robot.toPoint(Points[0]['x'], Points[0]['y'], Points[0]['yaw'])
 
         if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
                           and targets['ball']['dis'] <= 42:
@@ -152,7 +166,8 @@ class Strategy(object):
                           and targets['ball']['dis'] > 42:
           robot.toChase(targets, self.side, "Straight")
 
-        if robot.is_orbit and abs(targets[self.side]['ang'] - targets['ball']['ang']) <= 10 and robot.RobotBallHandle():
+        if robot.is_orbit and abs(targets[self.side]['ang'] - targets['ball']['ang']) <= 10 \
+                          and robot.RobotBallHandle():
           robot.toAttack(targets, self.side)
         elif robot.is_attack:
           robot.toAttack(targets, self.side)
