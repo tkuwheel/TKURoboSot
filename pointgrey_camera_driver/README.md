@@ -1,5 +1,4 @@
-pointgrey_camera_driver
-=======================
+
 
 [![Build Status](https://travis-ci.org/ros-drivers/pointgrey_camera_driver.png?branch=master)](https://travis-ci.org/ros-drivers/pointgrey_camera_driver)
 
