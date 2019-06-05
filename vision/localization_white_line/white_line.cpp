@@ -255,8 +255,8 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     line(visual_map, Point(visual_map.cols/2,visual_map.rows/2), Point(visual_map.cols/2+5,visual_map.rows/2), Scalar(0,0,255), 1);
     //cv::imshow("visual_map", visual_map);
 
-    cv::imshow("white_line", oframe);
-    cv::waitKey(10);
+    //cv::imshow("white_line", oframe);
+    //cv::waitKey(10);
 
     return oframe;
 }
