@@ -28,15 +28,24 @@ NodeHandle::NodeHandle():
 	OuterMsg(235),
 	FrontMsg(267),
     FieldMsg(OuterMsg-100),
-	Camera_HighMsg(650)
+	Camera_HighMsg(650),
+    pose_x(0.0),
+    pose_y(0.0),
+    pose_w(0.0)
 {
 	Readyaml();
 	AngleLUT();
     color_map = ColorFile();
 	save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
+    pos_sub = nh.subscribe("/akf_pose", 1000, &NodeHandle::posCallback, this);
     for(int i=0; i<( sizeof(Unscaned_Angle)/sizeof(Unscaned_Angle[0]) ); i++){
         Unscaned_Angle[i]=999;
     }
+    shot_pose[0]=Point(160, -120);
+    shot_pose[1]=Point(160, -40);
+    shot_pose[2]=Point(160,  40);
+    shot_pose[3]=Point(160,  120);
+    
 }
 void NodeHandle::AngleLUT()
 {
@@ -173,6 +182,18 @@ void NodeHandle::SaveButton_setting(const vision::bin msg)
 	//cout<<"Save\n";
 	SaveButton = msg.bin;
 	get_param();
+}
+void NodeHandle::posCallback(const geometry_msgs::PoseWithCovarianceStamped msg){
+    pose_x = msg.pose.pose.position.x*100;
+    pose_y = msg.pose.pose.position.y*100;
+
+    double qx=msg.pose.pose.orientation.x;
+    double qy=msg.pose.pose.orientation.y;
+    double qz=msg.pose.pose.orientation.z;
+    double qw=msg.pose.pose.orientation.w;
+
+    pose_w=atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)/M_PI*180;
+    //cout<<pose_w<<endl;
 }
 //========================distance========================
 double NodeHandle::camera_f(double Omni_pixel)

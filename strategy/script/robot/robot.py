@@ -2,14 +2,10 @@
 import rospy
 import math
 from simple_pid import PID
-from nubot_common.msg import OminiVisionInfo
-from nubot_common.msg import VelCmd
-from nubot_common.srv import Shoot
-from nubot_common.srv import BallHandle
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
-from transfer.msg import PPoint
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 
 # Gazebo Simulator
@@ -54,6 +50,10 @@ class Robot(object):
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.SimShoot
     else:
+      from nubot_common.msg import OminiVisionInfo
+      from nubot_common.msg import VelCmd
+      from nubot_common.srv import Shoot
+      from nubot_common.srv import BallHandle
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
@@ -87,7 +87,7 @@ class Robot(object):
 
   def _GetVision(self, vision):
     self.__object_info['ball']['dis']    = vision.ball_dis
-    self.__object_info['ball']['ang']    = math.degrees(vision.ball_ang)
+    self.__object_info['ball']['ang']    = vision.ball_ang
     self.__object_info['Cyan']['dis']    = vision.blue_fix_dis
     self.__object_info['Cyan']['ang']    = vision.blue_fix_ang
     self.__object_info['Magenta']['dis'] = vision.yellow_fix_dis
@@ -134,7 +134,7 @@ class Robot(object):
 
     dis_max = 2
     dis_min = 0.3
-    velocity_max = 80
+    velocity_max = 40
     velocity_min = 20
     angular_velocity_max = 4.5
     angular_velocity_min = 2

@@ -39,7 +39,7 @@ class Core(Robot, StateMachine):
   def on_toIdle(self):
     for i in range(0,100):
         self.MotionCtrl(0,0,0)
-    log("To Idle")
+    log("To Idle1")
 
   def on_toChase(self, t, side, method = "Classic"):
     if method == "Classic":
@@ -101,8 +101,10 @@ class Strategy(object):
 
     TEST_MODE = False
     if SysCheck(argv) == "Native Mode":
+      
       log("Start Native")
       robot = Core(1)
+      
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       robot = Core(1, True)
@@ -114,6 +116,7 @@ class Strategy(object):
     while not rospy.is_shutdown():
 
       robot.PubCurrentState()
+      
       targets = robot.GetObjectInfo()
 
       if targets is not None and not TEST_MODE:

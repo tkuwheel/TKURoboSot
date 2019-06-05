@@ -1,0 +1,33 @@
+# these files are auto-generated (for in-source build)
+include/freespace/freespace_printers.h
+include/freespace/freespace_codecs.h
+include/freespace_config.h
+gen_src/
+doc/Doxyfile
+doc/mainpage.h
+doc/html/
+doc/latex/
+
+# CMake output (for in-source build)
+CMakeCache.txt
+CMakeFiles
+CPackConfig.cmake
+CPackSourceConfig.cmake
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.so.*
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a

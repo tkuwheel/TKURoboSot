@@ -58,6 +58,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr& msg){
 			//cv::waitKey(10);
 			FrameRate = Rate();
             ObjectProcessing();
+            
 		}else{
             cout<<"Image empty"<<endl;
         }
@@ -75,14 +76,14 @@ void Vision::ObjectProcessing()
     b1.Reset();
     b2.Reset();
     b3.Reset();
-    b4.Reset();
+    //b4.Reset();
     if(init){
         DetectedObject t1,t2,t3,t4;
         objectdet_change(REDITEM, t1);
         objectdet_change(REDITEM, t2);
         objectdet_change(REDITEM, t3);
-        objectdet_change(REDITEM, t4);
-        DetectedObject temp[4]={t1,t2,t3,t4};
+        //objectdet_change(REDITEM, t4);
+        DetectedObject temp[3]={t1,t2,t3};
         int length = sizeof(temp)/sizeof(temp[0]);
         for (int i = length - 1; i > 0; --i){
             for (int j = 0; j < i; ++j){
@@ -94,15 +95,19 @@ void Vision::ObjectProcessing()
         b1=temp[0];
         b2=temp[1];
         b3=temp[2];
-        b4=temp[3];
+        //b4=temp[3];
 
         init = false;
     }else{
         objectdet_change(REDITEM, b1);
         objectdet_change(REDITEM, b2);
         objectdet_change(REDITEM, b3);
-        objectdet_change(REDITEM, b4);
+        
+        //objectdet_change(REDITEM, b4);
     }
+    draw_shotpoint();
+    //Mat rot_mat = getRotationMatrix2D(Point(Monitor.cols/2,Monitor.rows/2), 180, 1);
+    //warpAffine(Monitor, Monitor, rot_mat, Monitor.size());
     imshow("Monitor", Monitor);
     waitKey(10);
 }
@@ -115,7 +120,8 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
 
     Mat frame_(Source.cols, Source.rows, CV_8UC3, Scalar(0, 0, 0));
 
-    DetectedObject FIND_Item;
+    DetectedObject FIND_Item=obj_item;
+    //DetectedObject FIND_Item;
     deque<int> find_point;
 
     int dis_start=Magn_Near_StartMsg;
@@ -125,17 +131,28 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     int search_angle=10;
     int search_dis=20;
     
-    if(!init && obj_item.size!=0){
-        dis_start   = Frame_Area((obj_item.dis_min - search_dis), Magn_Far_EndMsg);
-        dis_end     = Frame_Area((obj_item.dis_max + search_dis), Magn_Far_EndMsg);
-        angle_start = (obj_item.ang_min - search_angle);
-        angle_end   = (obj_item.ang_max + search_angle);
+    if(!init){
+        //dis_start   = Frame_Area((obj_item.dis_min - search_dis), Magn_Far_EndMsg);
+        //dis_end     = Frame_Area((obj_item.dis_max + search_dis), Magn_Far_EndMsg);
+        dis_start   = Frame_Area((obj_item.distance - search_dis), Magn_Far_EndMsg);
+        dis_end     = Frame_Area((obj_item.distance + search_dis), Magn_Far_EndMsg);
+        angle_start = (obj_item.angle - search_angle);
+        angle_end   = (obj_item.angle + search_angle);
+        //cout<<obj_item.angle - search_angle<<endl;
+        //cout<<(obj_item.angle + search_angle)<<endl;
+        //dis_start=Magn_Near_StartMsg;
+        //dis_end=Magn_Far_EndMsg;
+        //angle_start = (obj_item.ang_min - search_angle);
+        //angle_end   = (obj_item.ang_max + search_angle);
+        //angle_start=0;
+        //angle_end=360;
     }
     for (int distance = dis_start; distance <= dis_end; distance += Magn_Near_GapMsg)
     {
-        for (int angle = angle_start; angle < angle_end; angle += Angle_Interval(distance))
+        for (int angle_ = angle_start; angle_ < angle_end; angle_ += Angle_Interval(distance))
         {
-            angle = Angle_Adjustment(angle);
+            int angle = Angle_Adjustment(angle_);
+            //cout<<angle<<" "<<Angle_cos[angle]<<endl;
             if ((angle >= Unscaned_Angle[0] && angle <= Unscaned_Angle[1]) ||
                 (angle >= Unscaned_Angle[2] && angle <= Unscaned_Angle[3]) ||
                 (angle >= Unscaned_Angle[4] && angle <= Unscaned_Angle[5]) ||
@@ -145,7 +162,7 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
             }
             object_size = 0;
             FIND_Item.size = 0;
-
+            //if(angle>360||angle<0)cout<<angle<<" "<<Angle_cos[angle]<<endl;
             x_ = distance * Angle_cos[angle];
             y_ = distance * Angle_sin[angle];
 
@@ -195,13 +212,14 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     circle(Source, Point(center_x, center_y), center_r, Scalar(255, 255, 255), -1);
     circle(Monitor, Point(center_x, center_y), center_r, Scalar(255, 255, 255), -1);
 
-    //int SizeFilter=20;
+    int SizeFilter=20;
     //if (obj_item.size > SizeFilter)
     //{
         find_object_point(obj_item, color);
-        draw_ellipse(Monitor, obj_item, color);
+        if (obj_item.size > SizeFilter)
+            draw_ellipse(Monitor, obj_item, color);
         if (color == REDITEM){
-            draw_point(Monitor, b1, "R", Scalar(0, 0, 255));  
+            draw_point(Monitor, obj_item, "R", Scalar(0, 0, 255));  
         }
     //}
 
@@ -314,11 +332,15 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
 
         x = Frame_Area(CenterXMsg + x_, Source.cols);
         y = Frame_Area(CenterYMsg - y_, Source.rows);    
-
-        obj_.x = x;
-        obj_.y = y;
-        obj_.distance = distance_;
-        obj_.angle = find_angle;
+        if(obj_.size>20){
+            if(obj_.x==0){
+                //cout<<"fuck"<<endl<<x<<endl;
+            }
+            obj_.x = x;
+            obj_.y = y;
+            obj_.distance = distance_;
+            obj_.angle = find_angle;
+        }
     }
 
     if (Angle_Adjustment(angle_ - FrontMsg) < 180)
@@ -368,18 +390,53 @@ void Vision::draw_point(cv::Mat &frame_, DetectedObject &obj_, string color, Sca
     std::stringstream Y_out;
 
     //==========中心點繪製===============
-    circle(frame_, Point(obj_.x, obj_.y), 2, Scalar(0, 0, 255), -1);
+    circle(frame_, Point(obj_.x, obj_.y), 5, Scalar(255, 0, 0), -1);
     X_out << obj_.x - CenterXMsg;
     Y_out << 0 - (obj_.y - CenterYMsg);
     X = X_out.str();
     Y = Y_out.str();
     //cv::putText(frame_, color + "(" + X + "," + Y + ")", Point(obj_.x, obj_.y), 0, 0.5, Textcolor, 1);
 
-    cv::putText(frame_, "b1", Point(b1.x, b1.y), 0, 0.5, Textcolor, 1);
-    cv::putText(frame_, "b2", Point(b2.x, b2.y), 0, 0.5, Textcolor, 1);
-    cv::putText(frame_, "b3", Point(b3.x, b3.y), 0, 0.5, Textcolor, 1);
-    cv::putText(frame_, "b4", Point(b4.x, b4.y), 0, 0.5, Textcolor, 1);
+    cv::putText(frame_, "b1", Point(b1.x, b1.y), 0, 1, Textcolor, 2);
+    cv::putText(frame_, "b2", Point(b2.x, b2.y), 0, 1, Textcolor, 2);
+    cv::putText(frame_, "b3", Point(b3.x, b3.y), 0, 1, Textcolor, 2);
+    //cv::putText(frame_, "b4", Point(b4.x, b4.y), 0, 1, Textcolor, 2);
+    //cout<<b1.x<<endl<<b1.y<<endl;
+}
+void Vision::draw_shotpoint()
+{
+    int x, y;
+    circle(Monitor, Point(CenterXMsg, CenterYMsg), 1, Scalar(0, 255, 0), 1);
+    circle(Monitor, Point(CenterXMsg, CenterYMsg), InnerMsg, Scalar(0, 0, 255), 1);
+    circle(Monitor, Point(CenterXMsg, CenterYMsg), OuterMsg, Scalar(0, 255, 0), 1);
+    x = CenterXMsg + InnerMsg * cos(FrontMsg * PI / 180);
+    y = CenterYMsg - InnerMsg * sin(FrontMsg * PI / 180);
+    line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(255, 0, 255), 1);
 
+    int a1,a2,a3,a4;
+    
+    a1=atan2(-shot_pose[0].y-pose_y,shot_pose[0].x-pose_x)*180/PI-pose_w;
+    a2=atan2(-shot_pose[1].y-pose_y,shot_pose[1].x-pose_x)*180/PI-pose_w;
+    a3=atan2(-shot_pose[2].y-pose_y,shot_pose[2].x-pose_x)*180/PI-pose_w;
+    a4=atan2(-shot_pose[3].y-pose_y,shot_pose[3].x-pose_x)*180/PI-pose_w;
+    //cout<<a1<<endl;
+    //cout<<FrontMsg<<endl;
+    //cout<<FrontMsg+a1<<endl;
+    x = CenterXMsg + OuterMsg * cos(Angle_Adjustment(FrontMsg+a1) * PI / 180);
+    y = CenterYMsg - OuterMsg * sin(Angle_Adjustment(FrontMsg+a1) * PI / 180);
+    line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(0, 0, 255), 3);
+    
+    x = CenterXMsg + OuterMsg * cos(Angle_Adjustment(FrontMsg+a2) * PI / 180);
+    y = CenterYMsg - OuterMsg * sin(Angle_Adjustment(FrontMsg+a2) * PI / 180);
+    line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(255, 0, 0), 3);
 
+    x = CenterXMsg + OuterMsg * cos(Angle_Adjustment(FrontMsg+a3) * PI / 180);
+    y = CenterYMsg - OuterMsg * sin(Angle_Adjustment(FrontMsg+a3) * PI / 180);
+    line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(255, 255, 255), 3);
 
+    x = CenterXMsg + OuterMsg * cos(Angle_Adjustment(FrontMsg+a4) * PI / 180);
+    y = CenterYMsg - OuterMsg * sin(Angle_Adjustment(FrontMsg+a4) * PI / 180);
+    line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(0, 255, 255), 3);
+    
+    
 }
