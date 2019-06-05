@@ -36,8 +36,8 @@ class Robot(object):
   pid_v = PID(-1.5, 0, 0, setpoint=10)
   pid_v.output_limits = (0, 100)
   pid_v.auto_mode = True
-  pid_w = PID(-0.06, -0.0, -0.0, setpoint=0)
-  pid_w.output_limits = (-5, 5)
+  pid_w = PID(0.5, 0.0, 0.0, setpoint=0) # Motor: 241370
+  pid_w.output_limits = (-60, 60)
   pid_w.auto_mode = True
 
   def ShowRobotInfo(self):
@@ -51,7 +51,7 @@ class Robot(object):
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
-      self.MotionCtrl = self.RobotCtrl
+      self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.SimShoot
     else:
@@ -99,17 +99,26 @@ class Robot(object):
     s.data = state
     self.state_pub.publish(s)
 
+  def _Rotate(self, x, y, theta):
+    _x = x*cos(math.radians(theta)) - y*sin(math.radians(theta))
+    _y = x*sin(math.radians(theta)) + y*cos(math.radians(theta))
+    return _x, _y
+
   def RobotCtrlS(self, x, y, yaw, pass_through=False):
     if pass_through:
-      msg = VelCmd()
-      msg.Vx = x
-      msg.Vy = y
-      msg.w  = yaw
+      msg = Twist()
+      msg.linear.x = -y
+      msg.linear.y = x
+      msg.angular.z  = yaw
+      #msg = VelCmd()
+      #msg.Vx = x
+      #msg.Vy = y
+      #msg.w  = yaw
       self.cmdvel_pub.publish(msg)
     else:
       current_vector = math.hypot(x, y)
       output_v = self.pid_v(current_vector)
-      output_w = self.pid_w(yaw)
+      output_w = self.pid_w(yaw) * -1
 
       magnitude = math.sqrt(x**2 + y**2)
       if magnitude == 0:
@@ -119,10 +128,16 @@ class Robot(object):
 
       # print(yaw)
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
-      msg = VelCmd()
-      msg.Vx = unit_vector[0]*output_v
-      msg.Vy = unit_vector[1]*output_v
-      msg.w  = output_w
+      #msg = VelCmd()
+      #msg.Vx = unit_vector[1]*output_v * -1
+      #msg.Vy = unit_vector[0]*output_v
+      #msg.Vx = 0
+      #msg.Vy = 0
+      #msg.w  = output_w
+      msg = Twist()
+      msg.linear.x = 0
+      msg.linear.y = 0
+      msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
 
   def RobotCtrl(self, x, y, yaw):
