@@ -297,6 +297,8 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
 
     if (color == REDITEM)
     {
+        //cout<<obj_.dis_max<<"  "<<obj_.dis_max-obj_.dis_min<<endl;
+        //fix catch ball distance        
         if(obj_.dis_max<70){
             obj_.dis_min = obj_.dis_max - 26;
         }

@@ -4,7 +4,7 @@
 #include <ros/package.h>
 #include <signal.h>
 
-#define TEST ros::package::getPath("vision")+"/image_publisher/1.jpg"
+#define TEST ros::package::getPath("vision")+"/image_publisher/image.png"
 
 using namespace cv;
 using namespace std;
@@ -32,9 +32,9 @@ int main(int argc, char **argv)
         img_pub.publish(msg);
         if (!img.empty())
         {
-            // cout<<img.size()<<endl;
-            // imshow("Publisher window", img);
-            // waitKey(10);
+            //cout<<img.size()<<endl;
+            //imshow("Publisher window", img);
+            //waitKey(10);
         }
         else
         {

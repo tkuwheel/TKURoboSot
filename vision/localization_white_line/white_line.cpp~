@@ -85,7 +85,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     cv::Mat edge;
     cv::Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
     Mat visual_map(550, 750, CV_8UC3, Scalar(0,0,0));
-    int ground = OuterMsg-100;
+    int ground = OuterMsg-90;
     vector<int> white_dis;
     whitedis.data.clear();
     //======================threshold===================
@@ -186,17 +186,26 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     Mat input = edge.clone();
     oframe = edge.clone();
     //oframe = threshold.clone();
+    int line_count = 0;
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + WhiteAngleMsg)
     {
         int count = 0;
         for (int r = InnerMsg; r <= ground; r++)
         {
+
+            if(line_count%2==0&&r<(InnerMsg+ground)/2){
+                r=(InnerMsg+ground)/2;
+            }
             int angle_be = Angle_Adjustment(angle);
 
             int x_ = r * Angle_cos[angle_be];
             int y_ = r * Angle_sin[angle_be];
             int x = Frame_Area(CenterXMsg + x_, oframe.cols);
             int y = Frame_Area(CenterYMsg - y_, oframe.rows);
+            if(green_range[angle_be] < r){
+                //cout<<"fuck"<<endl;
+                break;
+            }
             if (input.data[(y * input.cols + x) * 3 + 0] != 255)
             {
                 if (angle_be == FrontMsg)
@@ -226,16 +235,14 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
                 whitedis.data.push_back(y);
                 
                 count++;
-                if(count>10)break;
+                //if(count>10)break;
                 
                 //white_dis.push_back(Omni_distance(r));
-                //break;
-            }
-            if(green_range[angle_be] < r){
-                //cout<<"fuck"<<endl;
                 break;
-           }
+            }
+
         }
+        line_count++;
     }
     line(oframe, Point(CenterXMsg, CenterYMsg - InnerMsg), Point(CenterXMsg, CenterYMsg + InnerMsg), Scalar(0, 255, 0), 1);
     line(oframe, Point(CenterXMsg - InnerMsg, CenterYMsg), Point(CenterXMsg + InnerMsg, CenterYMsg), Scalar(0, 255, 0), 1);
@@ -248,8 +255,8 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     line(visual_map, Point(visual_map.cols/2,visual_map.rows/2), Point(visual_map.cols/2+5,visual_map.rows/2), Scalar(0,0,255), 1);
     //cv::imshow("visual_map", visual_map);
 
-    //cv::imshow("white_line", oframe);
-    //cv::waitKey(10);
+    cv::imshow("white_line", oframe);
+    cv::waitKey(10);
 
     return oframe;
 }

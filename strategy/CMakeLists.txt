@@ -13,10 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
 # catkin_python_setup()
 
 # add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+#    FILES
+#  )
 
 # add_service_files(
 #   FILES

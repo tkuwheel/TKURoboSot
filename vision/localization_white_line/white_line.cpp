@@ -85,7 +85,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     cv::Mat edge;
     cv::Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
     Mat visual_map(550, 750, CV_8UC3, Scalar(0,0,0));
-    int ground = OuterMsg-100;
+    int ground = OuterMsg-90;
     vector<int> white_dis;
     whitedis.data.clear();
     //======================threshold===================
@@ -177,7 +177,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
             int y = Frame_Area(CenterYMsg - y_, oframe.rows);
             if (mask.data[(y * mask.cols + x)*3 + 0] == 255)
             {
-                green_range[angle_be] = r-3;
+                green_range[angle_be] = r-1;
                 break;
             }
         }
@@ -202,6 +202,10 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
             int y_ = r * Angle_sin[angle_be];
             int x = Frame_Area(CenterXMsg + x_, oframe.cols);
             int y = Frame_Area(CenterYMsg - y_, oframe.rows);
+            if(green_range[angle_be] < r){
+                //cout<<"fuck"<<endl;
+                break;
+            }
             if (input.data[(y * input.cols + x) * 3 + 0] != 255)
             {
                 if (angle_be == FrontMsg)
@@ -236,10 +240,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
                 //white_dis.push_back(Omni_distance(r));
                 break;
             }
-            if(green_range[angle_be] < r){
-                //cout<<"fuck"<<endl;
-                break;
-           }
+
         }
         line_count++;
     }
@@ -252,10 +253,10 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     //draw the robot
     circle(visual_map, Point(visual_map.cols/2, visual_map.rows/2), 5, Scalar(0, 0, 255), 1);
     line(visual_map, Point(visual_map.cols/2,visual_map.rows/2), Point(visual_map.cols/2+5,visual_map.rows/2), Scalar(0,0,255), 1);
-    cv::imshow("visual_map", visual_map);
+    //cv::imshow("visual_map", visual_map);
 
-    cv::imshow("white_line", oframe);
-    cv::waitKey(10);
+    //cv::imshow("white_line", oframe);
+    //cv::waitKey(10);
 
     return oframe;
 }
