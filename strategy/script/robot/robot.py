@@ -95,12 +95,12 @@ class Robot(object):
 
     dis_max = 2
     dis_min = 0.3
-    velocity_max = 40
-    velocity_min = 20
-    angular_velocity_max = 4.5
-    angular_velocity_min = 2
+    velocity_max = 35
+    velocity_min = 10
+    angular_velocity_max = 18
+    angular_velocity_min = 5
     angle_max = 144
-    angle_min = 20
+    angle_min = 5
     angle_out = angle
     if velocity == 0:
       pass
@@ -147,12 +147,12 @@ class Robot(object):
 
     dis_max = 2
     dis_min = 0.3
-    velocity_max = 80
-    velocity_min = 20
-    angular_velocity_max = 4.5
-    angular_velocity_min = 2
+    velocity_max = 35
+    velocity_min = 10
+    angular_velocity_max = 3
+    angular_velocity_min = 1
     angle_max = 144
-    angle_min = 20
+    angle_min = 10
     angle_out = angle
     if velocity == 0:
       pass

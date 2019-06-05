@@ -102,20 +102,19 @@ class Strategy(object):
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          
           robot.toChase(targets, self.side)
-        elif robot.is_chase:
+        elif robot.is_chase and targets['ball']['dis'] >20:
           robot.toChase(targets, self.side)
           #robot.toIdle()
 
-        if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
-                          and targets['ball']['dis'] <= 50:
+        if robot.is_chase and abs(targets['ball']['ang']) <= 8 \
+                          and targets['ball']['dis'] <= 41:
           robot.toAttack(targets, self.side)
-        elif robot.is_attack:
+        elif robot.is_attack  and targets['ball']['dis']<=41 and targets ['ball']['ang'] <6:
           robot.toAttack(targets, self.side)
 
-        if robot.is_attack and abs(targets['ball']['ang']) > 20 \
-                           and targets['ball']['dis'] > 50:
+        if robot.is_attack and abs(targets['ball']['ang']) > 8 \
+                           and targets['ball']['dis'] > 41:
           robot.toChase(targets, self.side)
 
         #if robot.is_attack and abs(targets[self.side]['ang']) < 10:

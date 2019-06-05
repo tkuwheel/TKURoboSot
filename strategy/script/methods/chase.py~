@@ -20,8 +20,8 @@ class Chase(object):
 
     br_x = ball_dis * math.cos(math.radians(ball_ang))
     br_y = ball_dis * math.sin(math.radians(ball_ang))
-    self.__pub_info['v_x']   = br_x  * math.cos(alpha) - br_y * math.sin(alpha)
-    self.__pub_info['v_y']   = br_y  * math.sin(alpha) + br_y * math.cos(alpha)
+    self.__pub_info['v_x']   = br_x  #* math.cos(alpha) - br_y * math.sin(alpha)
+    self.__pub_info['v_y']   = br_y  #* math.sin(alpha) + br_y * math.cos(alpha)
     self.__pub_info['v_yaw'] = ball_ang
 
     return self.__pub_info
