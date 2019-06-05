@@ -1,3 +1,5 @@
 python-statemachine==0.7.1
 future==0.17.1
 six==1.12.0
+catkin-tools==0.4.5
+rospkg==1.1.7
