@@ -51,12 +51,15 @@ class Robot(object):
       self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
       self.MotionCtrl = self.RobotCtrl
-
+      self.RobotBallHandle = self.RealBallHandle
+      self.RobotShoot = self.SimShoot
     else:
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
       self.MotionCtrl = self.RobotCtrlS
+      self.RobotBallHandle = self.SimBallHandle
+      self.RobotShoot = self.RealShoot
 
   def _SimSubscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
@@ -224,7 +227,7 @@ class Robot(object):
   def GetRobotInfo(self):
     return self.__robot_info
 
-  def RobotShoot(self, power, pos) :
+  def SimShoot(self, power, pos) :
     rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number))
     try:
       client = rospy.ServiceProxy(SIM_SHOOT_SRV.format(self.robot_number), Shoot)
@@ -233,7 +236,10 @@ class Robot(object):
     except rospy.ServiceException :
       print ("Service call failed")
 
-  def RobotBallHandle(self):
+  def RealShoot(self, power, pos) :
+    pass
+
+  def SimBallHandle(self):
     rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))
     try:
       client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
@@ -241,3 +247,10 @@ class Robot(object):
       return resp1.BallIsHolding
     except rospy.ServiceException :
       print ("Service call failed")
+
+  def RealBallHandle(self):
+    if self.__object_info['ball']['dis'] < 30:
+      print("Ball Handled")
+      return True
+    else:
+      return False
