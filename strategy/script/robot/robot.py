@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import rospy
 import math
+from nubot_common.msg import OminiVisionInfo
+from nubot_common.msg import VelCmd
+from nubot_common.srv import Shoot
+from nubot_common.srv import BallHandle
+from transfer.msg import PPoint
 from simple_pid import PID
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
@@ -50,10 +55,6 @@ class Robot(object):
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.SimShoot
     else:
-      from nubot_common.msg import OminiVisionInfo
-      from nubot_common.msg import VelCmd
-      from nubot_common.srv import Shoot
-      from nubot_common.srv import BallHandle
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)

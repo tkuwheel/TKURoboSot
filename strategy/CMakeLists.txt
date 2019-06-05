@@ -14,7 +14,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
    FILES
-   PPoint.msg
  )
 
 # add_service_files(
