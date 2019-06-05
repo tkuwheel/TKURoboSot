@@ -16,8 +16,8 @@ include_directories(${INCLUDE_DIR})
 add_executable(Attack_motion_node 
 				motion.cpp 
 				motion_nodeHandle.cpp
-				base_control.cpp 
+                base_control.cpp 
 				#CTest.cpp
 )
-target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib motorDataLib)
+target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib motorDataLib crcLib)
 
