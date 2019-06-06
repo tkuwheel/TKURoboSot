@@ -119,7 +119,7 @@ class Strategy(object):
       
       targets = robot.GetObjectInfo()
 
-      if targets is not None and not TEST_MODE and targets['ball']['dis'] is not 999:
+      if targets is not None and not TEST_MODE and targets['ball']['ang'] is not 999:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:

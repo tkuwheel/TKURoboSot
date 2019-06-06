@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import math
+import numpy as np
 from nubot_common.msg import OminiVisionInfo
 from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
@@ -12,6 +13,10 @@ from geometry_msgs.msg import Twist
 from vision.msg import Object
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
+
+# General Configs
+MINIMUM_W = 0.2
+MAXIMUM_W = 100
 
 # Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -36,8 +41,8 @@ class Robot(object):
   pid_v = PID(-1.5, 0, 0, setpoint=10)
   pid_v.output_limits = (0, 100)
   pid_v.auto_mode = True
-  pid_w = PID(0.5, 0.0, 0.0, setpoint=0) # Motor: 241370
-  pid_w.output_limits = (-60, 60)
+  pid_w = PID(0.4, 0.0, 0.0, setpoint=0) # Motor: 241370
+  pid_w.output_limits = (-1*MAXIMUM_W, MAXIMUM_W)
   pid_w.auto_mode = True
 
   def ShowRobotInfo(self):
@@ -119,6 +124,7 @@ class Robot(object):
       current_vector = math.hypot(x, y)
       output_v = self.pid_v(current_vector)
       output_w = self.pid_w(yaw) * -1
+      output_w = output_w if abs(output_w) > MINIMUM_W else MINIMUM_W * np.sign(output_w)
 
       magnitude = math.sqrt(x**2 + y**2)
       if magnitude == 0:
