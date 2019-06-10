@@ -1,22 +1,14 @@
-#!/usr/bin/env python3
 import rospy
 import math
-import numpy as np
-from nubot_common.msg import OminiVisionInfo
-from nubot_common.msg import VelCmd
-from nubot_common.srv import Shoot
-from nubot_common.srv import BallHandle
-from transfer.msg import PPoint
-from simple_pid import PID
+#from nubot_common.msg import OminiVisionInfo
+#from nubot_common.msg import VelCmd
+#from nubot_common.srv import Shoot
+#from nubot_common.srv import BallHandle
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
-
-# General Configs
-MINIMUM_W = 0.2
-MAXIMUM_W = 100
 
 # Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -33,17 +25,11 @@ STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
 
-  __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
+  __robot_info = {'location' : None}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'Cyan':{'dis' : 0, 'ang' : 0},
                    'Magenta':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
-  pid_v = PID(-1.5, 0, 0, setpoint=10)
-  pid_v.output_limits = (0, 100)
-  pid_v.auto_mode = True
-  pid_w = PID(0.4, 0.0, 0.0, setpoint=0) # Motor: 241370
-  pid_w.output_limits = (-1*MAXIMUM_W, MAXIMUM_W)
-  pid_w.auto_mode = True
 
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
@@ -56,16 +42,13 @@ class Robot(object):
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
-      self.MotionCtrl = self.RobotCtrlS
-      self.RobotBallHandle = self.RealBallHandle
-      self.RobotShoot = self.SimShoot
+      self.MotionCtrl = self.RobotCtrl
+
     else:
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.cmdvel_pub = self._Publisher(SIM_CMDVEL_TOPIC.format(self.robot_number), VelCmd)
       self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
-      self.MotionCtrl = self.RobotCtrlS
-      self.RobotBallHandle = self.SimBallHandle
-      self.RobotShoot = self.RealShoot
+      self.MotionCtrl = self.GazeboCtrl
 
   def _SimSubscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
@@ -81,9 +64,6 @@ class Robot(object):
   def _GetSimVision(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
     self.__object_info['ball']['ang'] = math.degrees(vision.ballinfo.real_pos.angle)
-    self.__robot_info['location']['x']   = vision.robotinfo[self.robot_number - 1].pos.x
-    self.__robot_info['location']['y']   = vision.robotinfo[self.robot_number - 1].pos.y
-    self.__robot_info['location']['yaw'] = math.degrees(vision.robotinfo[self.robot_number - 1].heading.theta)
 
   def _GetSimGoalInfo(self, goal_info):
     self.__object_info['Cyan']['dis'] = goal_info.left_radius
@@ -104,50 +84,9 @@ class Robot(object):
     s.data = state
     self.state_pub.publish(s)
 
-  def _Rotate(self, x, y, theta):
-    _x = x*cos(math.radians(theta)) - y*sin(math.radians(theta))
-    _y = x*sin(math.radians(theta)) + y*cos(math.radians(theta))
-    return _x, _y
-
-  def RobotCtrlS(self, x, y, yaw, pass_through=False):
-    if pass_through:
-      msg = Twist()
-      msg.linear.x = -y
-      msg.linear.y = x
-      msg.angular.z  = yaw
-      #msg = VelCmd()
-      #msg.Vx = x
-      #msg.Vy = y
-      #msg.w  = yaw
-      self.cmdvel_pub.publish(msg)
-    else:
-      current_vector = math.hypot(x, y)
-      output_v = self.pid_v(current_vector)
-      output_w = self.pid_w(yaw) * -1
-      output_w = output_w if abs(output_w) > MINIMUM_W else MINIMUM_W * np.sign(output_w)
-
-      magnitude = math.sqrt(x**2 + y**2)
-      if magnitude == 0:
-        unit_vector = (0, 0)
-      else:
-        unit_vector = (x / magnitude, y / magnitude)
-
-      # print(yaw)
-      # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
-      #msg = VelCmd()
-      #msg.Vx = unit_vector[1]*output_v * -1
-      #msg.Vy = unit_vector[0]*output_v
-      #msg.Vx = 0
-      #msg.Vy = 0
-      #msg.w  = output_w
-      msg = Twist()
-      msg.linear.x = 0
-      msg.linear.y = 0
-      msg.angular.z  = output_w
-      self.cmdvel_pub.publish(msg)
-
   def RobotCtrl(self, x, y, yaw):
     angle = yaw
+   
     velocity = math.hypot(x, y)
     if x != 0:
       alpha = math.degrees(math.atan2(y, x))
@@ -186,11 +125,14 @@ class Robot(object):
     x = velocity * math.cos(math.radians(alpha))
     y = velocity * math.sin(math.radians(alpha))
     yaw = angle_out
+    
 
     msg = Twist()
     msg.linear.x = -y
     msg.linear.y = x
     msg.angular.z = yaw
+
+
 
     self.cmdvel_pub.publish(msg)
 
@@ -235,6 +177,7 @@ class Robot(object):
     x = velocity * math.cos(math.radians(alpha))
     y = velocity * math.sin(math.radians(alpha))
     yaw = angle_out
+    
 
     msg = VelCmd()
     msg.Vx = x
@@ -243,36 +186,26 @@ class Robot(object):
     
     self.cmdvel_pub.publish(msg)
 
+
+  
   def GetObjectInfo(self):
     return self.__object_info
 
-  def GetRobotInfo(self):
-    return self.__robot_info
-
-  def SimShoot(self, power, pos) :
+  '''def RobotShoot(self, power, pos) :
     rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number))
     try:
       client = rospy.ServiceProxy(SIM_SHOOT_SRV.format(self.robot_number), Shoot)
       resp1 = client(power, pos)
       return resp1
     except rospy.ServiceException :
-      print ("Service call failed")
+      print ("Service call failed")'''
 
-  def RealShoot(self, power, pos) :
-    pass
-
-  def SimBallHandle(self):
+  '''def RobotBallHandle(self):
     rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))
     try:
       client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
       resp1 = client(1)
       return resp1.BallIsHolding
     except rospy.ServiceException :
-      print ("Service call failed")
-
-  def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] < 30:
-      print("Ball Handled")
-      return True
-    else:
-      return False
+      print ("Service call failed")'''
+  

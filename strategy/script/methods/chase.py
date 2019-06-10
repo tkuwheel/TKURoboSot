@@ -19,6 +19,7 @@ class Chase(object):
 
     br_x = ball_dis * math.cos(math.radians(ball_ang))
     br_y = ball_dis * math.sin(math.radians(ball_ang))
+
     v_x   = br_x * math.cos(alpha) - br_y * math.sin(alpha)
     v_y   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
     v_yaw = goal_ang
@@ -35,6 +36,7 @@ class Chase(object):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang * -1.5
     w = velocity / orbit_radius
+
 
     v_x   = 0
     v_y   = velocity
