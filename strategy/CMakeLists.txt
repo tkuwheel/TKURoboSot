@@ -12,9 +12,9 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 # catkin_python_setup()
 
-add_message_files(
-   FILES
- )
+# add_message_files(
+#    FILES
+#  )
 
 # add_service_files(
 #   FILES

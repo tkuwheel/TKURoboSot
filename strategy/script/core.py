@@ -110,7 +110,7 @@ class Strategy(object):
       robot = Core(1, True)
     elif SysCheck(argv) == "Test Mode":
       log("Test Mode")
-      robot = Core(1, True)
+      robot = Core(1)
       TEST_MODE = True
 
     while not rospy.is_shutdown():
@@ -119,13 +119,13 @@ class Strategy(object):
       
       targets = robot.GetObjectInfo()
 
-      if targets is not None and not TEST_MODE:
+      if targets is not None and not TEST_MODE and targets['ball']['ang'] is not 999:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          robot.toChase(targets, self.side)
+          robot.toChase(targets, self.side, "Straight")
         elif robot.is_chase:
-          robot.toChase(targets, self.side)
+          robot.toChase(targets, self.side, "Straight")
 
         if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
                           and targets['ball']['dis'] <= 50:
@@ -152,8 +152,7 @@ class Strategy(object):
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          # robot.toChase(targets, self.side, "Straight")
-          robot.toPoint(Points[0]['x'], Points[0]['y'], Points[0]['yaw'])
+          robot.toChase(targets, self.side, "Straight")
         elif robot.is_chase:
           robot.toChase(targets, self.side, "Straight")
         elif robot.is_point:
