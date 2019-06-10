@@ -1,8 +1,0 @@
-Strategy:
-  Behavior: {aa: 55}
-  Pathplan: {beta_const: 0.73, close_ball_dis_const: 1, close_ball_speed_const: 3,
-    far_ball_speed_const: 1, goalkeeper_front_angle: 30, goalkeeper_front_dis: 2,
-    goalkeeper_front_speed: 8, goalkeeper_mid_angle: 60, goalkeeper_mid_dis: 1.75,
-    goalkeeper_mid_speed: 5, goalkeeper_radius: 0.5, goalkeeper_side_dis: 1.5, goalkeeper_side_speed: 4,
-    head2ball_speed: 5, long_rush_alpha: 5, long_rush_dis_br: 0.5, long_rush_speed_const: 3,
-    short_rush_alpha: 30, short_rush_dis_br: 0.5, short_rush_dis_dr: 2.5, short_rush_speed_const: 4}
