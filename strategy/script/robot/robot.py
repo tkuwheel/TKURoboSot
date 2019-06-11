@@ -13,6 +13,7 @@ from geometry_msgs.msg import Twist
 from vision.msg import Object
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
+from std_msgs.msg import Int32
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -23,6 +24,7 @@ SIM_HANDLE_SRV = "nubot{}/BallHandle"
 ## Real Robot
 VISION_TOPIC = "vision/object"
 CMDVEL_TOPIC = "motion/cmd_vel"
+SHOOT_TOPIC  = "motion/shoot"
 
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
@@ -45,9 +47,9 @@ class Robot(object):
   Ki_v = 0.0
   Kd_v = 0.1
   Cp_v = 20
-  Kp_w = 0.35
+  Kp_w = 0.25
   Ki_w = 0.0
-  Kd_w = 0.03
+  Kd_w = 0.0
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
@@ -98,6 +100,7 @@ class Robot(object):
 
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
     self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
+    self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
   def _SimSubscriber(self, topic):
     rospy.Subscriber(topic.format(self.robot_number), \
@@ -108,7 +111,8 @@ class Robot(object):
                       self._GetSimGoalInfo)
 
   def _Publisher(self, topic, mtype):
-    return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
+    #return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
+    return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetSimVision(self, vision):
     self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
@@ -163,10 +167,10 @@ class Robot(object):
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate -90 for 6th robot
-      # output_x, output_y = self._Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      output_x = unit_vector[0]*output_v
-      output_y = unit_vector[1]*output_v
-      # print("output_x: {}, output_y: {}, current_v: {}, output_v: {}".format(output_x, output_y, current_vector, output_v))
+      output_x, output_y = self._Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
+      # output_x = unit_vector[0]*output_v
+      # output_y = unit_vector[1]*output_v
+      #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))
 
       msg.linear.x = output_x
       msg.linear.y = output_y
@@ -237,7 +241,9 @@ class Robot(object):
       print ("Service call failed")
 
   def RealShoot(self, power, pos) :
-    pass
+    msg = Int32()
+    msg.data = 100
+    self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
     rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))

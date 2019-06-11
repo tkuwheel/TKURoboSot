@@ -29,7 +29,7 @@ class Core(Robot, StateMachine):
   orbit  = State('Orbit')
   point  = State('Point')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle)
+  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle) | idle.to.itself()
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
   toShoot  = attack.to(shoot)
@@ -112,14 +112,17 @@ class Strategy(Robot):
       
       targets = robot.GetObjectInfo()
 
-      if targets is None or targets['ball']['ang'] is 999: # Can not find ball
+      if targets is None or targets['ball']['ang'] == 999: # Can not find ball
+        logInOne("Can not find ball")
         robot.toIdle()
       else:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
+          #robot.toChase(targets, self.opp_side, "Straight")
           robot.toChase(targets, self.opp_side)
         elif robot.is_chase:
+          #robot.toChase(targets, self.opp_side, "Straight")
           robot.toChase(targets, self.opp_side)
 
         if robot.is_chase and robot.CheckBallHandle():
