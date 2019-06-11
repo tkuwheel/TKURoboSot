@@ -7,10 +7,12 @@ import numpy as np
 class Chase(object):
   def ClassicRounding(self, goal_ang, ball_dis, ball_ang):
     alpha = ball_ang - goal_ang
-    if ball_dis > 120:
+    if ball_dis > 100:
       beta = 15
-    else:
+    elif ball_dis > 50:
       beta = 45
+    else:
+      beta = 70
 
     if abs(alpha) > beta:
       alpha = beta * np.sign(alpha)

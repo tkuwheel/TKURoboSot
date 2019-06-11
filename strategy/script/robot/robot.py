@@ -31,8 +31,8 @@ class Robot(object):
 
   __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
-                   'Cyan':{'dis' : 0, 'ang' : 0},
-                   'Magenta':{'dis' : 0, 'ang' : 0},
+                   'Blue':{'dis' : 0, 'ang' : 0},
+                   'Yellow':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
   ## Configs
   __minimum_w = 0.2
@@ -41,13 +41,29 @@ class Robot(object):
   __maximum_v = 50
   __handle_dis = 25
   __handle_ang = 5
+  Kp_v = 1.5
+  Ki_v = 0.0
+  Kd_v = 0.1
+  Cp_v = 20
+  Kp_w = 0.35
+  Ki_w = 0.0
+  Kd_w = 0.03
+  Cp_w = 0
 
-  pid_v = PID(1.5, 0, 0.1, setpoint=20)
+  pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
   pid_v.output_limits = (__minimum_v, __maximum_v)
   pid_v.auto_mode = True
-  pid_w = PID(0.35, 0.0, 0.03, setpoint=0) # Motor: 241370
+  pid_w = PID(Kp_w, Ki_w, Kd_w, setpoint=Cp_w)
   pid_w.output_limits = (-1*__maximum_w, __maximum_w)
   pid_w.auto_mode = True
+
+  def TuningVelocityContorller(self, p, i, d, cp = 20):
+    self.pid_v.setpoint = cp
+    self.pid_v.tunings = (p, i, d)
+
+  def TuningAngularVelocityContorller(self, p, i, d, cp = 0):
+    self.pid_w.setpoint = cp
+    self.pid_w.tunings = (p, i, d)
 
   def ChangeVelocityRange(self, m, M):
     self.pid_v.output_limits = (-1*M, M)
@@ -71,12 +87,14 @@ class Robot(object):
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.RealBallHandle
-      self.RobotShoot = self.SimShoot
+      self.RobotShoot = self.RealShoot
     else:
       self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.SimBallHandle
-      self.RobotShoot = self.RealShoot
+      self.RobotShoot = self.SimShoot
+      self.TuningVelocityContorller(1, 0, 0)
+      self.TuningAngularVelocityContorller(0.1, 0, 0)
 
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
     self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
@@ -100,18 +118,18 @@ class Robot(object):
     self.__robot_info['location']['yaw'] = math.degrees(vision.robotinfo[self.robot_number - 1].heading.theta)
 
   def _GetSimGoalInfo(self, goal_info):
-    self.__object_info['Cyan']['dis'] = goal_info.left_radius
-    self.__object_info['Cyan']['ang'] = goal_info.left_angle
-    self.__object_info['Magenta']['dis'] = goal_info.right_radius
-    self.__object_info['Magenta']['ang'] = goal_info.right_angle
+    self.__object_info['Blue']['dis'] = goal_info.right_radius
+    self.__object_info['Blue']['ang'] = goal_info.right_angle
+    self.__object_info['Yellow']['dis']  = goal_info.left_radius
+    self.__object_info['Yellow']['ang']  = goal_info.left_angle
 
   def _GetVision(self, vision):
     self.__object_info['ball']['dis']    = vision.ball_dis
     self.__object_info['ball']['ang']    = vision.ball_ang
-    self.__object_info['Cyan']['dis']    = vision.blue_fix_dis
-    self.__object_info['Cyan']['ang']    = vision.blue_fix_ang
-    self.__object_info['Magenta']['dis'] = vision.yellow_fix_dis
-    self.__object_info['Magenta']['ang'] = vision.yellow_fix_ang
+    self.__object_info['Blue']['dis']    = vision.blue_fix_dis
+    self.__object_info['Blue']['ang']    = vision.blue_fix_ang
+    self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
+    self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
 
   def RobotStatePub(self, state):
     s = String()
@@ -144,10 +162,14 @@ class Robot(object):
 
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
-      rx, ry = self._Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      print("rx: {}, ry: {}, current_v: {}, output_v: {}".format(rx, ry, current_vector, output_v))
-      msg.linear.x = rx
-      msg.linear.y = ry
+      ## Rotate -90 for 6th robot
+      # output_x, output_y = self._Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
+      output_x = unit_vector[0]*output_v
+      output_y = unit_vector[1]*output_v
+      # print("output_x: {}, output_y: {}, current_v: {}, output_v: {}".format(output_x, output_y, current_vector, output_v))
+
+      msg.linear.x = output_x
+      msg.linear.y = output_y
       msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
 

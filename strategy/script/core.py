@@ -76,14 +76,14 @@ class Strategy(Robot):
   def __init__(self):
     self.game_start = False
     self.game_state = "Kick_Off"
-    self.side       = "Cyan"
-    self.opp_side   = 'Cyan' if self.side == 'Magenta' else 'Magenta'
+    self.side       = "Yellow"
+    self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
-    self.side       = config['side']
-    self.opp_side   = 'Cyan' if config['side'] == 'Magenta' else 'Magenta'
+    self.side       = config['our_goal']
+    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -105,10 +105,6 @@ class Strategy(Robot):
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       robot = Core(1, True)
-    elif SysCheck(argv) == "Test Mode":
-      log("Test Mode")
-      robot = Core(1)
-      TEST_MODE = True
 
     while not rospy.is_shutdown():
 
@@ -116,43 +112,29 @@ class Strategy(Robot):
       
       targets = robot.GetObjectInfo()
 
-      if targets is not None and not TEST_MODE and targets['ball']['ang'] is not 999:
+      if targets is None or targets['ball']['ang'] is 999: # Can not find ball
+        robot.toIdle()
+      else:
         if not robot.is_idle and not self.game_start:
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          robot.toChase(targets, self.side)
+          robot.toChase(targets, self.opp_side)
         elif robot.is_chase:
-          robot.toChase(targets, self.side)
+          robot.toChase(targets, self.opp_side)
 
         if robot.is_chase and robot.CheckBallHandle():
-          robot.toAttack(targets, self.side)
-        elif robot.is_attack  and targets['ball']['dis']<=41 and targets ['ball']['ang'] <6:
-          robot.toAttack(targets, self.side)
+          robot.toAttack(targets, self.opp_side)
+        elif robot.is_attack:
+          robot.toAttack(targets, self.opp_side)
 
         if robot.is_attack and not robot.CheckBallHandle():
-          robot.toChase(targets, self.side)
+          robot.toChase(targets, self.opp_side)
 
-        if robot.is_attack and abs(targets[self.side]['ang']) < 10:
-          pass
-          # robot.toShoot(3, 1)
+        if robot.is_attack and abs(targets[self.opp_side]['ang']) < 10:
+          robot.toShoot(3, 1)
 
         if robot.is_shoot:
-          robot.toAttack(targets, self.side)
-
-      ### Test Mode ###
-      else:
-        if targets is not None and targets['ball']['ang'] is not 999:
-          if not robot.is_idle and not self.game_start:
-            robot.toIdle()
-          elif robot.is_idle and self.game_start:
-            robot.toChase(targets, self.side)
-          elif robot.is_chase:
-            robot.toChase(targets, self.side)
-
-          if robot.is_chase and robot.CheckBallHandle():
-            robot.toAttack(targets, self.side)
-          elif robot.is_attack:
-            robot.toAttack(targets, self.side)
+          robot.toAttack(targets, self.opp_side)
 
       if rospy.is_shutdown():
         log('shutdown')
