@@ -184,12 +184,7 @@ wire  		iMotor3_PA;
 wire  		iMotor3_PB;
 wire 			oMotor3_PWM;
 wire  		oMotor3_DIR;
-wire  		iMotor4_PA;
-wire  		iMotor4_PB;
-wire 			oMotor4_PWM;
-wire  		oMotor4_DIR;
-wire 			oMotor5_PWM;
-wire 			oMotor5_DIR;
+
 wire			oTXD;
 wire			iRXD;
 wire			oLight;
@@ -200,8 +195,6 @@ wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor1;
 wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor2;
 wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor3;
 wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor4;
-wire	[7:0]	wAX_12;
-wire			wBrush;
 
 wire			wTx_send;
 wire	[7:0]	wTx_data;
@@ -221,32 +214,19 @@ wire			wTx_AX_12_send;
 wire	[7:0]	wTx_AX_12_data;
 wire			wTx_AX_12_busy;
 
-wire	[31:0]	wFB_Motor1;
-wire	[31:0]	wFB_Motor2;
-wire	[31:0]	wFB_Motor3;
-wire	[31:0]	wFB_Motor4;
+wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor1;
+wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor2;
+wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor3;
 wire	 		wDIR_Motor1;
 wire			wDIR_Motor2;
 wire			wDIR_Motor3;
 wire			wDIR_Motor4;
 wire	[7:0]	wSignal;
 
+wire			wFB_FREQ;
 wire			wFB_FREQ1;
 wire			wFB_FREQ2;
 wire			wFB_FREQ3;
-wire			wFB_FREQ4;
-
-wire	[14:0]wFB_CNT_Motor1;
-wire	[14:0]wFB_CNT_Motor2;
-wire	[14:0]wFB_CNT_Motor3;
-wire	[14:0]wFB_CNT_Motor4;
-wire			wFB_CNT_FREQ;
-wire			wFB_CNT_FREQ1;
-wire			wFB_CNT_FREQ2;
-wire			wFB_CNT_FREQ3;
-wire			wFB_CNT_FREQ4;
-wire			wFB_CNT_FREQ_AB;
-wire			wFB_CNT_FREQ_CD;
 
 wire			wTXD;
 wire			wRXD;
@@ -261,44 +241,78 @@ wire			wKick;
 	
 wire	[5:0]	wStates;
 wire	[2:0]	wStop;
-//wire	[7:0]	wCMD_Motor1_Test;
-//wire	[7:0]	wCMD_Motor2_Test;
-//wire	[7:0]	wAX_12_Test;
-//wire			wBrush_Test;
-//wire			wRx_done_Test;
-//wire			wTest_Done;
+
 
 //=======================================================
 //  Structural coding
 //=======================================================
-//assign GPIO_0_D[] = oFLASH_RST_N;
 assign iReset_n = KEY[0] & ~wSignal[7];
-assign oFLASH_RST_N = iReset_n;
-// assign LED = {wEN1, wStop1, wEN2, wStop2, wEN3, wStop3, wHoldBall, wKick};
-assign LED = {wEN1, wStop[2], wEN2, wStop[1], wEN3, wStop[0], wHoldBall, wKick};
+assign GPIO_0_D[33] = wTXD;
+assign wRXD = GPIO_0_D[11];
+
+assign LED = {wEN1, wStop[2], wStates};
 assign wStop = (wStop1 & wStop2 & wStop3)? 3'b0: {wStop1, wStop2, wStop3};
-wire wclk_50hz;
+wire wClk_100hz;
+
 Clkdiv #(
-	.EXPECTCLK	(1000000)
+	.EXPECTCLK	(100)
 ) Clk1K (
 	.iClk		(CLOCK_50),	// 50Mhz clock 
 	.iRst_n	(iReset_n),// Reset
   	// .oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
-	.oClk		(GPIO_1_D[0])	// ExpectClk clock
+	.oClk		(wClk_100hz)	// ExpectClk clock
 );
+ sopc u0 (
+	  .clk_clk                         (CLOCK_50),                         //                      clk.clk
+	  .reset_reset_n                   (iReset_n),                   //                    reset.reset_n
 
+	  .sdram_clk_clk                   (DRAM_CLK),                    //                sdram_clk.clk
+	  .sdram_wire_addr                 (DRAM_ADDR),                 //               sdram_wire.addr
+	  .sdram_wire_ba                   (DRAM_BA),                   //                         .ba
+	  .sdram_wire_cas_n                (DRAM_CAS_N),                //                         .cas_n
+	  .sdram_wire_cke                  (DRAM_CKE),                  //                         .cke
+	  .sdram_wire_cs_n                 (DRAM_CS_N),                 //                         .cs_n
+	  .sdram_wire_dq                   (DRAM_DQ),                   //                         .dq
+	  .sdram_wire_dqm                  (DRAM_DQM),                  //                         .dqm
+	  .sdram_wire_ras_n                (DRAM_RAS_N),                //                         .ras_n
+	  .sdram_wire_we_n                 (DRAM_WE_N),                 //                         .we_n
+	  .rs232_rxd                       (wRXD),                       //                    rs232.rxd
+	  .rs232_txd                       (wTXD),                       //                         .txd
+
+	  .motor1_export                   (wCMD_Motor1),                   //                   motor1.export
+	  .motor2_export                   (wCMD_Motor2),                   //                   motor2.export	  
+	  .motor3_export                   (wCMD_Motor3),                   //                   motor3.export
+	  .motor1_fb_export                (wFB_Motor1),                //                motor1_fb.export
+	  .motor2_fb_export                (wFB_Motor2),                //                motor2_fb.export
+	  .motor3_fb_export                (wFB_Motor3),                //                motor3_fb.export
+	  .tx_export                       (wFB_FREQ),                        //                       tx.export
+	  //	  .altpll_phasedone_conduit_export (), // altpll_phasedone_conduit.export
+//	  .altpll_locked_conduit_export    (),    //    altpll_locked_conduit.export
+	  .altpll_areset_conduit_export    (0)    //    altpll_areset_conduit.export
+ );
+
+
+
+assign wFB_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
+
+wire wclk_1hz;
+/*
+Clkdiv #(
+	.EXPECTCLK	(1)
+) Clk1K (
+	.iClk		(CLOCK_50),	// 50Mhz clock 
+	.iRst_n	(iReset_n),// Reset
+  	// .oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
+	.oClk		(wclk_1hz)	// ExpectClk clock
+);
+*/
 assign iMotor1_PA = GPIO_0_D[22];
 assign iMotor1_PB = GPIO_0_D[28];
 assign GPIO_0_D[20] = oMotor1_PWM;
 assign GPIO_0_D[16] = oMotor1_DIR;
-// assign GPIO_0_D[18] = wSignal[7];
-// assign GPIO_0_D[14] = wSignal[4];
 assign GPIO_0_D[18] = wEN1;
 assign GPIO_0_D[14] = wStop[2];
 
-//assign GPIO_0_D[24] = wFB_CNT_Motor1;
-//assign GPIO_0_D[26] = wFB_CNT_Motor2;
-//assign GPIO_0_D[31] = wFB_Motor3;
 
 MotorController MotorA (
 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
@@ -308,21 +322,19 @@ MotorController MotorA (
 	.iPB		(iMotor1_PB),		// Encoder Channel B
 	.oPWM_Pulse	(oMotor1_PWM),	// PWM of motor
 	.oDIR		(oMotor1_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor1),	// Direction of motor now
+//	.oDIR_Now	(wDIR_Motor1),	// Direction of motor now
 	.oFB		(wFB_Motor1),		// Feedback of motor
 	.oFB_FREQ	(wFB_FREQ1),
 	.oEN		(wEN1),
 	.oStop		(wStop1),
-	.oStates		(wStates)
-	// .oSampClk	()	
+	.oStates	(wStates),
+	.oSampClk	(GPIO_1_D[0])	
 );
 
 assign iMotor2_PA = GPIO_0_D[30];
 assign iMotor2_PB = GPIO_0_D[32];
 assign GPIO_0_D[21] = oMotor2_PWM;
 assign GPIO_0_D[25] = oMotor2_DIR;
-// assign GPIO_0_D[23] = wSignal[6];
-// assign GPIO_0_D[27] = wSignal[3];
 assign GPIO_0_D[23] = wEN2;
 assign GPIO_0_D[27] = wStop[1];
 
@@ -334,7 +346,7 @@ MotorController MotorB (
 	.iPB		(iMotor2_PB),		// Encoder Channel B
 	.oPWM_Pulse	(oMotor2_PWM),	// PWM of motor
 	.oDIR		(oMotor2_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
+//	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
 	.oFB		(wFB_Motor2),		// Feedback of motor
 	.oFB_FREQ	(wFB_FREQ2),		// Feedback renew trigger
 	.oEN		(wEN2),
@@ -345,8 +357,6 @@ assign iMotor3_PA = GPIO_0_D[17];
 assign iMotor3_PB = GPIO_0_D[19];
 assign GPIO_0_D[1] = oMotor3_PWM;
 assign GPIO_0_D[5] = oMotor3_DIR;
-// assign GPIO_0_D[3] = wSignal[5];
-// assign GPIO_0_D[7] = wSignal[2];
 assign GPIO_0_D[3] = wEN3;
 assign GPIO_0_D[7] = wStop[0];
 
@@ -358,47 +368,13 @@ MotorController MotorC (
 	.iPB		(iMotor3_PB),		// Encoder Channel B
 	.oPWM_Pulse	(oMotor3_PWM),	// PWM of motor
 	.oDIR		(oMotor3_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
+//	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
 	.oFB		(wFB_Motor3),		// Feedback of motor
 	.oFB_FREQ	(wFB_FREQ3),		// Feedback renew trigger
 	.oEN		(wEN3),
 	.oStop		(wStop3)
 );
-
-/*
-assign iMotor4_PA = GPIO_0_D[22];
-assign iMotor4_PB = GPIO_0_D[24];
-assign GPIO_1_D[13] = oMotor4_PWM;
-assign GPIO_1_D[15] = oMotor4_DIR[0];
-assign GPIO_1_D[11] = oMotor4_DIR[1];
-
-MotorController MotorD (
-	.iCLK		(CLOCK_50),			// 50MHz, System Clock
-	.iRst_n		(iReset_n),		// Reset
-	.iCMD		(wCMD_Motor4),		// Command, SPD + DIR
-	.iPA		(iMotor4_PA),		// Encoder Channel A
-	.iPB		(iMotor4_PB),		// Encoder Channel B
-	.oPWM_Pulse	(oMotor4_PWM), // PWM of motor
-	.oDIR		(oMotor4_DIR),		// Direction of motor
-	.oDIR_Now	(wDIR_Motor4),	// Direction of motor now
-	.oFB		(wFB_Motor4),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ4)		// Feedback renew trigger
-);
-*/
-
-//assign GPIO_0_D[] = oMotor5_DIR;
-//assign GPIO_0_D[] = oMotor5_PWM;
-//assign oMotor5_DIR	=	2'b01;
-//assign oMotor5_PWM	=	wBrush ? 1'b1 : 1'b0;
-
-//蹓---------------------------------------------------------------------------------------------------------
-
-/*wire 			oRH;
-wire			oLH;
-
-assign GPIO_0_D[4] = oRH;
-assign GPIO_0_D[6] = oLH;*/
-
+/* hold ball and shoot control
 holdBall(.iC(CLOCK_50),
 			.oL(GPIO_0_D[4]),
 			.oR(GPIO_0_D[6]),
@@ -408,8 +384,7 @@ holdBall(.iC(CLOCK_50),
 			.iS(wSignal[0])
 //			.oLED(LED[1])
 			);
-//------------------------------------------------------------------------------------------------------------
-//=======================================================
+
 assign GPIO_0_D[29] = wKick;
 
 ShootControl (
@@ -418,9 +393,12 @@ ShootControl (
 			.iPower(wPower),
 			.oPower(wKick)
 );
+*/
 
-assign GPIO_0_D[33] = oTXD;
-assign iRXD = GPIO_0_D[11];
+
+// Combine feedbacks to package
+
+/*
 //RS-232 Module
 UART_if RS_232 (
 	.iClk		(CLOCK_50),		// Clock Input
@@ -445,7 +423,7 @@ UART_if RS_232 (
 
 
 	
-// Sperate package to command
+// Sperate packet to command
 Serial2CMD #(
 	.MOTOR_STREAM_SIZE(RX_MOTOR_SIZE*8)
 )(
@@ -461,55 +439,7 @@ Serial2CMD #(
 	.oRx_done	(wRx_done)
 );
 
-
-// FB_Counter Motor_A (
-// 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-// 	.iRst_n		(iReset_n),			// Reset
-// 	.iSend		(wRx_done),
-// 	.iFB_FREQ	(wFB_FREQ1),		// Feedback frequency Input
-// 	.iFB		(wFB_Motor1),			// Feedback of motor1 Input
-// 	.oFB		(wFB_CNT_Motor1),		// Feedback of motor1 Output
-// 	.oFB_FREQ	(wFB_CNT_FREQ1)	// Feedback frequency Output
-// );
-
-// FB_Counter Motor_B (
-// 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-// 	.iRst_n		(iReset_n),			// Reset
-// 	.iSend		(wRx_done),
-// 	.iFB_FREQ	(wFB_FREQ2),		// Feedback frequency Input
-// 	.iFB		(wFB_Motor2),			// Feedback of motor2 Input
-// 	.oFB		(wFB_CNT_Motor2),		// Feedback of motor2 Output
-// 	.oFB_FREQ	(wFB_CNT_FREQ2)	// Feedback frequency Output
-// );
-
-// FB_Counter Motor_C (
-// 	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-// 	.iRst_n		(iReset_n),			// Reset
-// 	.iSend		(wRx_done),
-// 	.iFB_FREQ	(wFB_FREQ3),		// Feedback frequency Input
-// 	.iFB		(wFB_Motor3),			// Feedback of motor3 Input
-// 	.oFB		(wFB_CNT_Motor3),		// Feedback of motor3 Output
-// 	.oFB_FREQ	(wFB_CNT_FREQ3)	// Feedback frequency Output
-// );
-
-
-/*
-FB_Counter Motor_D (
-	.iCLK		(CLOCK_50),				// 50MHz, System Clock
-	.iRst_n		(iReset_n),			// Reset
-	.iSend		(wRx_done),
-	.iFB_FREQ	(wFB_FREQ4),		// Feedback frequency Input
-	.iFB		(wFB_Motor4),			// Feedback of motor4 Input
-	.oFB		(wFB_CNT_Motor4),		// Feedback of motor4 Output
-	.oFB_FREQ	(wFB_CNT_FREQ4)	// Feedback frequency Output
-);
-*/
-
-
-assign wFB_CNT_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
-// assign wFB_CNT_FREQ = wFB_FREQ1;
-
-// Combine feedbacks to package
+// Combine command to serial
 CMD2Serial (
 	.iCLK			(CLOCK_50),				// 50MHz, System Clock	
 	.iRst_n			(iReset_n),			// Reset
@@ -525,30 +455,6 @@ CMD2Serial (
 //	.iDIR_Motor4	(wDIR_Motor4),		// Direction of motor4
 	.oTx_send		(wTx_send), //Send trigger
 	.oTx_data		(wTx_data)  //Send data
-);
-
-/*
-AX_12_Package (
-	.iCLK			(iClk_50M),
-	.iRst_n			(iReset_n),
-	.iSend_Ready	(wRx_done),
-	.iTx_busy		(wTx_AX_12_busy),
-	.iAX_12_CMD		(wAX_12),
-	.oTx_data		(wTx_AX_12_data),
-	.oTx_send		(wTx_AX_12_send)
-);
-
-UART_if AX_12_TXD (
-	.iClk		(iClk_50M),  // Clock Input
-	.iRst_n		(iReset_n),  // Reset Input
-
-	// RS232 control signal
-	.iTX_send	(wTx_AX_12_send),
-	.iTX_data	(wTx_AX_12_data),
-	.oTX_busy	(wTx_AX_12_busy),
-	
-	// RS232 interface
-	.oRs232_tx	(oTXD_AX_12),
 );
 */
 endmodule

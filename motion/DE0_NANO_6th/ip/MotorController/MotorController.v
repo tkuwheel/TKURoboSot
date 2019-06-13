@@ -29,42 +29,46 @@ input			iRst_n,		// Reset
 output			oPWM_Pulse,
 output			oDIR,		// Direction of motor
 output	[31:0]	oFB,		// Feedback of motor
-output			oDIR_Now,// Direction of motor now
-output			oFB_FREQ,// Feedback renew trigger
+output			oFB_FREQ,	// Feedback renew trigger
 output			oEN,
 output			oStop,
-output	[5:0]	oStates
-// output			oSampClk
+output	[5:0]	oStates,
+output			oSampClk
 );
 `include "param.h"
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
-parameter SPD_DIV = 5;
-parameter DURY_SIZE = 8 + SPD_DIV/2;
+parameter SPD_DIV = 4;
+parameter DURY_SIZE = 9;
 // parameter FB_STREAM_SIZE = TX_MOTOR_SIZE * 8;
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-wire			wDIR;
-wire	[1:0]	wDIR_DC;
-wire	[1:0]	wDIR_SM;
-wire	[7:0]	wPWM;
-wire	[7:0]	wPWM_MUX;
-wire	[RX_MOTOR_SIZE*8 -1:0]	wSPD;
-wire	[7:0]	wSPD_SM;
-wire			wST;
-wire	[TX_MOTOR_SIZE*8 -1:0]	wDFB;
-wire	[RX_MOTOR_SIZE*8 -1:0]	wFB;
-wire	[1:0]	wSel;
-wire  	[2:0]	wEN;
-wire			wSTOP;
+wire			wPWM;	//output pwm pulse
+wire			wDIR;	//output direction CW:1 CCW:0
+wire			wST;	//feedback frequency
+
+wire	[31:0]	wDFB;		//current speed	(signed) for transmit to PC
+wire	[15:0]	wFB;		//current speed	(signed)
+wire	[8:0]			wDuty;		//target duty cycle
+
+wire	[15:0]	wSPD_T;		//currnet speed	(unsigned)
+wire	wDIR_C;								//current direction
+wire	wDIR_T;
+
+wire	[5:0]	wSel;
+// wire	[RX_MOTOR_SIZE*8-1:0]	wSPD;		
+// wire	[1:0]	wSel;
+// wire  	[2:0]	wEN;
+// wire			wSTOP;
+// wire	[7:0]	wSPD_SM;
+// wire	[1:0]	wDIR_DC;
+// wire	[1:0]	wDIR_SM;
+// wire	[7:0]	wPWM_MUX;
+// wire	[6:0] wCMD;
 
 
-wire	[6:0] wCMD;
-wire	[DURY_SIZE-1:0]	wDuty;
-wire	[RX_MOTOR_SIZE*8-1:0]wSPD_C;
-wire	wDIR_C;
 //=======================================================
 //  Structural coding
 //=======================================================
@@ -72,8 +76,7 @@ assign oFB		=	wDFB;
 assign oFB_FREQ	=	wST;
 assign oPWM_Pulse =  wPWM;
 assign oDIR			=  wDIR;
-
-
+assign oStates = wSel;
 
 // CMDTRAN #(
 // 	.STEAM_SIZE(RX_MOTOR_SIZE * 8) //bytes -> bits
@@ -91,9 +94,10 @@ Photo2FB(		// Motor Encoder Feedback
 	.oST	(wST),
 	.iPA	(iPA),
 	.iPB	(iPB),
-	.oDB	(wDFB),  //32 bits
-	.oDIR	(oDIR_Now)
+	.oDB	(wDFB)  //32 bits
+//	.oDIR	(oDIR_Now)
 );
+
 
 Normalize #(	// Normoalize speed and feedback
 	// .SPD_DIV	(SPD_DIV),
@@ -106,42 +110,57 @@ Normalize #(	// Normoalize speed and feedback
 
 
 
-SpeedController #(
-	.STREAM_SIZE		(RX_MOTOR_SIZE * 8),
-	.DUTY_SIZE			(DURY_SIZE)
-)(
-	.iCLK	(iCLK),
+StateMachine (
+	.iCLK		(iCLK),
 	.iRst_n	(iRst_n),
-	.iFREQ	(wST),
-	.iFB	(wFB),
-	.iCMD	(iCMD),
-	.oDuty	(wDuty),
-	.oDIR	(wDIR),
-	.oStates(oStates)
+	.iFREQ  	(wST),    
+	.iCMD		(iCMD),
+	.iFB		(wFB),
+	
+	.oSel		(wSel),
+	.oDIR		(wDIR)
+);
+
+ SpeedController (
+	.iCLK(iCLK),       // 50MHz system clock
+	.iRst_n(iRst_n),
+	.iFREQ(wST),
+//	.iFB(),
+	.iSPD_T(wSPD_T),
+	.iSel(wSel),
+
+//	.oDIR(wDIR),
+	.oDuty(wDuty)
 );
 
 pwmgen #(		// PWM generator
-	.SPD_DIV	(SPD_DIV)
+	.SPD_DIV	(SPD_DIV),
+	.DURY_SIZE	(DURY_SIZE)
 )pwm(
 	.iClk		(iCLK),
 	.iRst_n		(iRst_n),
 	.iDuty		(wDuty),
-	.oPWM		(wPWM)
-	// .oSampClk	(oSampClk)
+	.oPWM		(wPWM),
+	.oSampClk	(oSampClk)
 );
 
-MotorStates #(
-	.SIZE(DURY_SIZE),
-	.DUTY_SIZE(DURY_SIZE)
-)(
+MotorStates (
 	.iCLK	(iCLK),
 	.iRst_n	(iRst_n),
-	.iSPD_C	(wSPD_C),
-	.iDuty(wDuty),
+	.iDuty	(wDuty),
+	.iSel(wSel),
 	.oMotorEnable(oEN),
 	.oMotorStop(oStop)
 );
 
+Absolute #(
+	.SIZE(RX_MOTOR_SIZE*8)
+)TaregetVelocity(
+	.iValue(iCMD),
+	.oValue(wSPD_T),
+	.oSign(wDIR_T)
+);
+/*
 Absolute #(
 	.SIZE(RX_MOTOR_SIZE * 8)
 	
@@ -150,42 +169,5 @@ Absolute #(
 	.oValue(wSPD_C),
 	.oSign(wDIR_C)
 );
-/*
-StateMachine (	// Motor Controller State Machine
-	.iCLK	(iCLK),
-	.iSPD	(wSPD),
-	.iDIR	(wDIR),
-	.iFB	(wFB),
-	.iRst_n	(iRst_n),
-	.oSel	(wSel),
-	.oDIR	(wDIR_SM),
-	.oSPD	(wSPD_SM)
-);
-
-AccelController (
-	.iCLK	(iCLK),
-	.iRst_n	(iRst_n),
-	.iFREQ	(wST),
-	.iSPD	(wSPD_SM),
-	.iFB	(wFB),
-	.oPWM	(wPWM_MUX)
-);
-
-DecelController (
-	.iCLK	(iCLK),
-	.iRst_n	(iRst_n),
-	.iDIR	(wDIR_SM),
-	.oDIR	(wDIR_DC)
-);
-
-MUX (
-	.iSel	(wSel),
-	.iPWM0	(wPWM),
-	.iDIR0	(wDIR_SM),
-	.iDIR1	(wDIR_DC),
-	.oDIR	(oDIR),
-	.oPWM	(oPWM_Pulse)
-);
 */
-// wire wSampClk;
 endmodule

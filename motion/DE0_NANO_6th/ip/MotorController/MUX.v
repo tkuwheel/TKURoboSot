@@ -17,22 +17,20 @@
 //   1.0  :| Chun-Jui Huang    :| 2019/05/31 :|  New Version
 // --------------------------------------------------------------------
 `default_nettype none
-module MUX #(
-parameter DUTY_SIZE = 8,
-parameter SEL_SIZE = 1
-)(
+module MUX (
 //===========================================================================
 // PORT declarations
 //===========================================================================
 input   iClk,
 input   iRst_n,
-input	[SEL_SIZE-1:0]  iSel,
-input	[DUTY_SIZE-1:0] iDuty_0,
-input	[DUTY_SIZE-1:0] iDuty_1,
-input	[DUTY_SIZE-1:0] iDuty_2,
-input	[DUTY_SIZE-1:0] iDuty_3,
-output reg [DUTY_SIZE-1:0] oDuty
+input	[5:0]  iSel,
+input	[8:0] iDuty_0,
+input	[8:0] iDuty_1,
+input	[8:0] iDuty_2,
+input	[8:0] iDuty_3,
+output reg [8:0] oDuty
 );
+`include "param.h"
 parameter	ACCEL		=	6'b000001;	// Accelerate
 parameter	DECEL		=	6'b000010;	// Decelerate
 parameter	CONST_SPD	=	6'b000100;	// Keep Speed
@@ -51,9 +49,9 @@ always @(posedge iClk) begin
         CONST_SPD:
             oDuty <= iDuty_2;
         START:
-            oDuty <= 0;
+            oDuty <= MIN_DUTY;
         STOP:
-            oDuty <= 0;
+            oDuty <= MIN_DUTY;
         default:
             oDuty <= 0;
         endcase

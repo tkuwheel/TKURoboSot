@@ -6,10 +6,10 @@ parameter SIZE = 1
 input iClk,
 input iRst_n,
 input iFREQ,
-input [SIZE-1 : 0] iFB,
-input [SIZE-1 : 0] iCMD,
+input [15 : 0] iFB,
+input [15 : 0] iCMD,
 
-output [SIZE-1 : 0] oSpeedErrVal,
+output [15 : 0] oSpeedErrVal,
 output oSmaller
 );
 

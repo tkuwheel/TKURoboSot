@@ -178,7 +178,7 @@ always @(posedge iCLK) begin
 					end
 				DATA8:
 					begin
-						rData_8	<=	iData;		//enable+stop//crc_2
+						rData_8	<=	iData;		//enable+stop
 						rCheck <= 0;
 						state	<=	DATA9;
 					end
