@@ -70,6 +70,12 @@ class Core(Robot, StateMachine):
     self.RobotStatePub(self.current_state.identifier)
 
   def CheckBallHandle(self):
+
+    '''i = self.RobotBallHandle()
+    if i == True:
+      log("Ballhandle")
+    else :
+      log("not Ballhandle")'''
     return self.RobotBallHandle()
 
 class Strategy(Robot):
@@ -111,6 +117,8 @@ class Strategy(Robot):
       robot.PubCurrentState()
       
       targets = robot.GetObjectInfo()
+      position = robot.GetRobotInfo()
+      log(position)
 
       if targets is None or targets['ball']['ang'] == 999: # Can not find ball
         logInOne("Can not find ball")
@@ -120,7 +128,9 @@ class Strategy(Robot):
           robot.toIdle()
         elif robot.is_idle and self.game_start:
           #robot.toChase(targets, self.opp_side, "Straight")
+          
           robot.toChase(targets, self.opp_side)
+          
         elif robot.is_chase:
           #robot.toChase(targets, self.opp_side, "Straight")
           robot.toChase(targets, self.opp_side)
