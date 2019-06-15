@@ -34,6 +34,7 @@
 #define DISTANCE_MATRIX_HEIGHT 551
 
 #define YAML_PATH ros::package::getPath("self_localization")+"/config/localization.yaml"
+#define STRATEGY_PATH ros::package::getPath("self_localization")+"/config/strategy.yaml"
 Localization::Localization()
 {
     //Readyaml();
@@ -76,9 +77,10 @@ void Localization::Readyaml()
 void Localization::Saveyaml()
 {
     std::string param = YAML_PATH;
-    std::string temp = "rosparam dump " + param + " /mcl";
+    std::string temp = "rosparam dump " + param + " /FIRA";
     const char *save = temp.c_str();
     system(save);
+
     cout << "Save the yaml file" << endl;
     get_parameter();
 }
@@ -87,9 +89,9 @@ void Localization::get_parameter()
     cout << "get parameter" << endl;
     double a_fast,a_slow,wcmps;
     //===================FPS參數==========================
-    nh.getParam("/mcl/a_fast", a_fast);
-    nh.getParam("/mcl/a_slow", a_slow);
-    nh.getParam("/mcl/wcmps", wcmps);
+    nh.getParam("/FIRA/mcl/a_fast", a_fast);
+    nh.getParam("/FIRA/mcl/a_slow", a_slow);
+    nh.getParam("/FIRA/mcl/wcmps", wcmps);
     mcl.setAugmentParam(a_fast, a_slow);
     mcl.setCmpsWeight(wcmps);
 }
@@ -101,7 +103,9 @@ void Localization::sensorCallback(const std_msgs::Int32MultiArray msg)
     for(int i = 0; i<point.size()/2;i+=2){
         mcl_sensor_data.push_back(MCL::SensorData(point[i],point[i+1]));
     }
-    mcl.updateSensor(mcl_sensor_data);
+    if(mcl_sensor_data.size()>2){
+        mcl.updateSensor(mcl_sensor_data);
+    }
     //mcl.updateMotion(0,0,0);
     
 }
@@ -323,7 +327,7 @@ void Localization::draw_particles()
     //cout<<"estimation:("<<x<<", "<<y<<") angle:"<<w<<endl;
     x_= x+20 * cos(w * TO_RAD);
     y_= y-20 * sin(w * TO_RAD);
-    pos_publisher(x_, -y_, w);
+    pos_publisher(x, -y, w);
 
     x+=particles_map.cols/2;
     y+=particles_map.rows/2;
@@ -353,7 +357,7 @@ void Localization::draw_particles()
     }
 
     image_publisher(particles_map);
-    //imshow("particles_map",particles_map);
+    imshow("particles_map",particles_map);
     waitKey(10);
 }
 void Localization::pos_publisher(int x,int y, double w)
