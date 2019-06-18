@@ -30,7 +30,7 @@ class Core(Robot, StateMachine):
   point  = State('Point')
 
   toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase)
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
   toShoot  = attack.to(shoot)
   toOrbit  = chase.to(orbit) | orbit.to.itself()
@@ -63,8 +63,9 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw, True)
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw = self.BC.Go2Point(tx, ty, tyaw)
+    x, y, yaw,gp = self.BC.Go2Point(tx, ty, tyaw)
     self.MotionCtrl(x, y, yaw)
+    return gp
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -84,12 +85,18 @@ class Strategy(Robot):
     self.game_state = "Kick_Off"
     self.side       = "Yellow"
     self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
+    self.get_the_point = 0
+    
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
+    self.run_point  = config['run_point']
     self.side       = config['our_goal']
     self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -118,22 +125,34 @@ class Strategy(Robot):
       
       targets = robot.GetObjectInfo()
       position = robot.GetRobotInfo()
-      log(position)
+      
+      #log(position)
 
       if targets is None or targets['ball']['ang'] == 999: # Can not find ball
         logInOne("Can not find ball")
         robot.toIdle()
       else:
         if not robot.is_idle and not self.game_start:
+          self.get_the_point = 0
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          #robot.toChase(targets, self.opp_side, "Straight")
+          if self.run_point and not self.get_the_point:
+            robot.toPoint(self.run_x,self.run_y,0)
+          else :
+            robot.toChase(targets, self.opp_side, "Straight")
           
-          robot.toChase(targets, self.opp_side)
+        if robot.is_point :
+          self.get_the_point = robot.toPoint(self.run_x,self.run_y,0)
+          log("Start move")
+          if self.get_the_point:
+            log("Got it")
+            robot.toIdle()
+            #robot.toChase(targets, self.opp_side)
           
         elif robot.is_chase:
           #robot.toChase(targets, self.opp_side, "Straight")
           robot.toChase(targets, self.opp_side)
+        
 
         if robot.is_chase and robot.CheckBallHandle():
           robot.toAttack(targets, self.opp_side)

@@ -357,7 +357,7 @@ void Localization::draw_particles()
     }
 
     image_publisher(particles_map);
-    imshow("particles_map",particles_map);
+    //imshow("particles_map",particles_map);
     waitKey(10);
 }
 void Localization::pos_publisher(int x,int y, double w)
