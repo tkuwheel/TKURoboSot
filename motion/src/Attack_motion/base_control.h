@@ -4,6 +4,8 @@
   * Include system header
   ******************************/
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
@@ -22,7 +24,7 @@
 /*******************************
   * Define 
   ******************************/
-#define DEBUG
+//#define DEBUG
 #define CSSL
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
@@ -30,6 +32,7 @@ typedef void * (*THREADFUNCPTR)(void *);
 class BaseControl{
 public:
 	BaseControl();
+	BaseControl(int, char**, bool);
 	~BaseControl();
 
 private:
@@ -43,6 +46,8 @@ private:
     const char *port = "/dev/communication/motion";
 //    const int package_size = RX_PACKAGE_SIZE;
 
+    std::fstream fp;
+    std::string record_name;
     RX_DATA_TYPE package_daga[RX_PACKAGE_SIZE];
     pthread_t tid;
 	cssl_t *serial;
@@ -50,9 +55,18 @@ private:
 	robot_command base_robotCMD;
 	robot_command base_robotFB;
 	serial_tx base_TX;
-	static serial_rx base_RX;
-    static bool base_flag;
-    static struct timeval last_time;
+	serial_rx base_RX;
+	serial_rx odometry;
+    bool record;
+    bool clear_odo;
+    bool base_flag;
+    bool error_flag;
+    struct timeval last_time;
+/* for serial callback*/
+	static uint8_t serial_data[RX_PACKAGE_SIZE];
+    static bool decoder_flag;
+    static bool serial_flag;
+    static int length;
 
 	double x_CMD, y_CMD, yaw_CMD;
     int16_t w1, w2, w3;
@@ -75,13 +89,17 @@ private:
     void    ReEnable();
     void    Run();
     void    FPGAInit();
+    bool    SerialDecoder();
 public:
     static void *pThreadRun(void *p);
 	void 	McsslFinish();
     bool    GetBaseFlag();
-    serial_rx* GetPack();
+    bool    GetErrFlag();
+    uint8_t* GetPacket();
+    serial_rx GetOdo();
 	void Send(const robot_command &);
 	robot_command *GetFeedback();
     void SetSingle(int, int16_t);
+    void SetTriple(int16_t, int16_t, int16_t);
 };
 #endif

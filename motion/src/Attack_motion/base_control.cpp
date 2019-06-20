@@ -1,16 +1,51 @@
 #include "base_control.h"
 
-//#include "../common/cssl/cssl.h"
-serial_rx BaseControl::base_RX = {0,0,0,0,0,0};
-struct timeval BaseControl::last_time = {0,0};
-bool BaseControl::base_flag = false;
+uint8_t BaseControl::serial_data[RX_PACKAGE_SIZE]={0};
+bool BaseControl::serial_flag = false;
+bool BaseControl::decoder_flag = false;
+int BaseControl::length = 0;
 BaseControl::BaseControl()
 {
-//    this->base_robotCMD = {0, 0, 0, 0, 0, 0};
-    this->base_robotFB = {0, 0, 0, 0, 0, 0};
-    this->base_TX = {0xff,0xfa,0,0,0,0,0,0,0,0,0};
+    this->base_robotFB = {0};
+    this->base_TX = {0};
+    this->base_TX.head1 = 0xff;
+    this->base_TX.head2 = 0xfa;
+
+    this->base_RX = {0};
+    this->last_time = {0};
+    this->record = false;
+
+    this->base_flag = false;
 	this->serial = NULL;
-    this->enable_flag = false;
+#ifdef DEBUG
+    std::cout << "BaseControl(DEBUG)\n";
+#endif
+#ifdef CSSL
+	McsslInit();
+#endif
+    int p = pthread_create(&tid, NULL, (THREADFUNCPTR)&BaseControl::pThreadRun, this);
+    if(p != 0){
+        printf("base thread error\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+BaseControl::BaseControl(int argc, char** argv, bool record = false): record(record)
+{
+    printf("name%s\n", argv[0]);
+    if(this->record){
+        this->record_name = this->record_name.assign(argv[0])  + "_record.txt";
+    }
+    this->base_robotFB = {0};
+    this->base_TX = {0};
+    this->base_TX.head1 = 0xff;
+    this->base_TX.head2 = 0xfa;
+
+    this->base_RX = {0};
+    this->last_time = {0};
+
+    this->base_flag = false;
+	this->serial = NULL;
 #ifdef DEBUG
     std::cout << "BaseControl(DEBUG)\n";
 #endif
@@ -32,8 +67,6 @@ BaseControl::~BaseControl()
     }
 #ifdef DEBUG
 	std::cout << "~BaseControl(DEBUG)\n";
-//    printf("tid : %d\n", tid);
-//    printf("serial : %d\n", serial);
     std::cout << "tid: " << tid << std::endl;
     std::cout << "serial: " << serial << std::endl;
 #endif
@@ -59,16 +92,14 @@ int BaseControl::McsslInit()
 		std::cout << "Initialize attack motion with port = "<< this->port << "...\n";
 		cssl_setflowcontrol(serial, 0, 0);
 	}
-    FPGAInit();
+//    FPGAInit();
 	return 1;
 }
 
 void BaseControl::McsslFinish()
 {
-    if(this->tid){
-        pthread_cancel(tid);
-        tid = NULL;
-    }
+    fp.close();
+    pthread_cancel(tid);
 #ifdef CSSL
 	cssl_close(serial);
 	cssl_stop();
@@ -79,51 +110,73 @@ void BaseControl::McsslFinish()
 #endif
 }
 
-void BaseControl::McsslCallback(int id, uint8_t* buf, int length)
+void BaseControl::McsslCallback(int id, uint8_t* buf, int len)
 {
+//    printf("duration: %f %f\n", now.tv_usec, now.tv_sec);
+    serial_flag = true;
+//    printf("%d\n\n", len);
+    length = len;
+    if(!decoder_flag){
+        if((*buf == 0xff) && (*(buf + 1) == 0xfa)){
+            for(int i=0; i<RX_PACKAGE_SIZE; i++){
+                serial_data[i] = *(buf + i);
+            }
+        }
+
+    }
+
+}
+
+bool BaseControl::SerialDecoder()
+{
+    serial_flag = false;
+    decoder_flag = true;
+    uint8_t data[RX_PACKAGE_SIZE];
+    for(int i=0; i<RX_PACKAGE_SIZE; i++){
+        data[i] = serial_data[i];
+    }
+    decoder_flag = false;
     struct timeval now;
     gettimeofday(&now, 0);
-//    printf("duration: %f %f\n", now.tv_usec, now.tv_sec);
+    if((data[0] == 0xff) && (data[1] == 0xfa)){
 
-    uint8_t data[RX_PACKAGE_SIZE];
-    if((*(buf + 0) == 0xff) && (*(buf + 1) == 0xfa)){
-
-        for(int i=0; i<RX_PACKAGE_SIZE; i++){
-            data[i] = *(buf + i);
-//            printf("data[i]= %x, buf[i] = %x", data[i], *(buf + i));
-//            printf("\n");
-        } 
-//       uint8_t data = {  *(buf + 0), *(buf + 1), *(buf + 2), *(buf + 3), *(buf + 4), 
-//                            *(buf + 5), *(buf + 6), *(buf + 7), *(buf + 8), *(buf +9)};
         Crc_16 Crc16(data, sizeof(data)/sizeof(uint8_t));
         unsigned short crc_16 = Crc16.getCrc(data, sizeof(data)/sizeof(uint8_t));
+//        printf("crc %d\n", crc_16);
         if(crc_16 == 0){
             long duration_s = now.tv_sec - last_time.tv_sec;
             long duration_us = now.tv_usec - last_time.tv_usec;
             base_RX.duration = duration_s * 1000000 + duration_us;
             
-            base_RX.id = id;
             base_RX.size = length;
-            base_RX.w1 = (data[2] << 24) + (data[3] << 16) + (data[4] << 8) + data[5];
             base_RX.w1 = (data[2] << 24) + (data[3] << 16) + (data[4] << 8) + data[5];
             base_RX.w2 = (data[6] << 24) + (data[7] << 16) + (data[8] << 8) + data[9];
             base_RX.w3 = (data[10] << 24) + (data[11] << 16) + (data[12] << 8) + data[13];
-            base_flag = true;
+            base_RX.error = "no error";
+            error_flag = false;
             last_time = now;
+//            printf("decoer correct\n");
         }else{
-            base_flag = false;
+            base_RX.w1 = 0;
+            base_RX.w2 = 0;
+            base_RX.w3 = 0;
+            base_RX.error = "error";
+            error_flag = true;
+//            printf("decoer error\n");
         }
     }
 #ifdef DEBUG_CSSLCALLBACK
-    for(int i = 0; i < length; i++){
-        printf("%x ",*(buf + i));
+    if(error_flag){
+        printf("length %d \n", length);
+        for(int i = 0; i < RX_PACKAGE_SIZE; i++){
+            printf("%x ", data[i]);
+        }
+        printf("\n");
+
     }
-    printf("1 \n");
-//    for(int i = 0; i < RX_PACKAGE_SIZE; i++){
-//        printf("%x ", data[i]);
-//    }
-//    printf("\n");
 #endif
+    return this->error_flag;
+
 }
 
 void BaseControl::FPGAInit()
@@ -156,7 +209,7 @@ void BaseControl::FPGAInit()
 //    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
     this->base_TX.crc_16_1 = crc_16 >> 8;
     this->base_TX.crc_16_2 = crc_16;
-    uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  
+    uint8_t cssl_data[TX_PACKAGE_SIZE] = {  
         this->base_TX.head1, 
         this->base_TX.head2, 
         this->base_TX.w1_h, 
@@ -169,10 +222,9 @@ void BaseControl::FPGAInit()
         this->base_TX.shoot,
         this->base_TX.crc_16_1,
         this->base_TX.crc_16_2,
-        0
     };
 #ifdef CSSL
-    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE + 1);
+    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
 #ifdef DEBUG
     printf("**************************\n");
     printf("* FPGAInit(DEBUG) *\n");
@@ -393,10 +445,62 @@ void BaseControl::ReEnable()
 
 void BaseControl::Run()
 {
-    printf("in the run\n");
-    while(true){
+    std::stringstream fss;
+    std::stringstream fduration;
+    std::stringstream fw1, fw2, fw3;
+    std::stringstream ftest;
+    if(record){
+        fp.open(this->record_name, std::ios::out);
+        if(fp.is_open())
+            printf("open record file\n");
+        else
+            printf("file open failed\n");
 
+    }else{
+        printf("do not record file\n");
     }
+//    printf("in the run\n");
+    while(true){
+        if(this->serial_flag){
+            this->base_flag = true;
+            bool err = this->SerialDecoder();
+            if(err){
+#ifdef DEBUG_CSSLCALLBACK
+                printf("serial decode fail\n");
+#endif
+            }else{
+                if(record && (this->base_RX.duration < 10000000)){
+
+                    fss << this->base_RX.duration << " "
+                        << this->base_RX.w1 * FB_FREQUENCY * 60 / 2000 << " "
+                        << this->base_RX.w2 * FB_FREQUENCY * 60 / 2000 << " "
+                        << this->base_RX.w3 * FB_FREQUENCY * 60 / 2000 << " "
+                        << std::endl;
+                    fp << fss.str();
+                    fss.str(std::string());
+
+                }
+                if(this->clear_odo){
+                    this->clear_odo = false;
+                    this->odometry.duration = 0;
+                    this->odometry.w1 = 0;
+                    this->odometry.w2 = 0;
+                    this->odometry.w3 = 0;
+
+                }
+
+                this->odometry.duration += this->base_RX.duration;
+                this->odometry.w1 += this->base_RX.w1;
+                this->odometry.w2 += this->base_RX.w2;
+                this->odometry.w3 += this->base_RX.w3;
+
+            }
+        }else{
+//            printf("cannot get serial\n");
+
+        }
+    }
+    printf("close base thread\n");
 }
 
 void* BaseControl::pThreadRun(void* p)
@@ -407,14 +511,29 @@ void* BaseControl::pThreadRun(void* p)
 
 bool BaseControl::GetBaseFlag()
 {
-//    std::cout << base_flag << std::endl;
-    return base_flag;
+    if(base_flag){
+        base_flag = false;
+        return true;
+
+    }else
+        return false;
 }
 
-serial_rx* BaseControl::GetPack()
+bool BaseControl::GetErrFlag()
 {
-    base_flag = false;
-    return &base_RX;
+    return error_flag;
+}
+
+uint8_t* BaseControl::GetPacket()
+{
+    return serial_data;
+}
+
+serial_rx BaseControl::GetOdo()
+{
+
+    this->clear_odo = true;
+    return odometry;
 }
 
 void BaseControl::Send(const robot_command &CMD)
@@ -495,7 +614,7 @@ void BaseControl::SetSingle(int number, int16_t rpm)
     crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
     this->base_TX.crc_16_1 = crc_16 >> 8;
     this->base_TX.crc_16_2 = crc_16;
-    uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  
+    uint8_t cssl_data[TX_PACKAGE_SIZE] = {  
         this->base_TX.head1, 
         this->base_TX.head2, 
         this->base_TX.w1_h, 
@@ -508,13 +627,13 @@ void BaseControl::SetSingle(int number, int16_t rpm)
         this->base_TX.shoot,
         this->base_TX.crc_16_1,
         this->base_TX.crc_16_2,
-        0
     };
 #ifdef CSSL
-    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE + 1);
+    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
 #endif
+#ifdef DEBUG
     printf("**************************\n");
-    printf("* mcssl_send(DEBUG) *\n");
+    printf("* Single motor(DEBUG) *\n");
     printf("**************************\n");
     printf("head1: %x\n", (this->base_TX.head1));
     printf("head2: %x\n", (this->base_TX.head2));
@@ -532,5 +651,73 @@ void BaseControl::SetSingle(int number, int16_t rpm)
     printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
     printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
     printf("w3: %x\n", ((this->base_TX.w3_h) << 8) + (this->base_TX.w3_l));
+#endif
+
+}
+
+void BaseControl::SetTriple(int16_t rpm1, int16_t rpm2, int16_t rpm3)
+{
+    this->base_TX.w1_l = rpm1;
+    this->base_TX.w1_h = rpm1 >> 8;
+    this->base_TX.w2_l = rpm2;
+    this->base_TX.w2_h = rpm2 >> 8;
+    this->base_TX.w3_l = rpm3;
+    this->base_TX.w3_h = rpm3 >> 8;
+    this->base_TX.enable_and_stop = 0;
+    this->base_TX.shoot = 0;
+    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot
+    };
+
+    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
+    this->base_TX.crc_16_1 = crc_16 >> 8;
+    this->base_TX.crc_16_2 = crc_16;
+    uint8_t cssl_data[TX_PACKAGE_SIZE] = {  
+        this->base_TX.head1, 
+        this->base_TX.head2, 
+        this->base_TX.w1_h, 
+        this->base_TX.w1_l, 
+        this->base_TX.w2_h, 
+        this->base_TX.w2_l, 
+        this->base_TX.w3_h, 
+        this->base_TX.w3_l, 
+        this->base_TX.enable_and_stop, 
+        this->base_TX.shoot,
+        this->base_TX.crc_16_1,
+        this->base_TX.crc_16_2,
+    };
+#ifdef CSSL
+    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
+#endif
+#ifdef DEBUG
+    printf("**************************\n");
+    printf("* Triple motor(DEBUG) *\n");
+    printf("**************************\n");
+    printf("head1: %x\n", (this->base_TX.head1));
+    printf("head2: %x\n", (this->base_TX.head2));
+    printf("w1_h: %x\n", (this->base_TX.w1_h));
+    printf("w1_l: %x\n", (this->base_TX.w1_l));
+    printf("w2_h: %x\n", (this->base_TX.w2_h));
+    printf("w2_l: %x\n", (this->base_TX.w2_l));
+    printf("w3_h: %x\n", (this->base_TX.w3_h));
+    printf("w3_l: %x\n", (this->base_TX.w3_l));
+    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
+    printf("shoot: %x\n", (this->base_TX.shoot));
+    printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
+    printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
+    printf("crc16: %x\n", (crc_16));
+    printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
+    printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
+    printf("w3: %x\n", ((this->base_TX.w3_h) << 8) + (this->base_TX.w3_l));
+#endif
 
 }

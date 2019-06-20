@@ -2,6 +2,7 @@
 #define MOTOR_DATA_H
 #include <stdint.h>
 #include <sys/time.h>
+#include <string>
 
 #define TX_DATA_TYPE uint8_t 
 #define RX_DATA_TYPE uint8_t 
@@ -36,6 +37,7 @@ typedef struct{
 typedef struct{
 	int id;
     int size;
+    std::string error;
     suseconds_t duration;
 	MOTOR_DATA_TYPE w1;
 	MOTOR_DATA_TYPE w2;

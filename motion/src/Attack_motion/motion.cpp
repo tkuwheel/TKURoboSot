@@ -32,20 +32,9 @@ int main(int argc, char **argv)
 //    ros::NodeHandle n;
 	BaseControl Base;
 
-//    pthread_t tid1, tid2;
-//    int p1= pthread_create(&tid1, NULL, &Node.pThreadRun, &Node);
-//    int p2= pthread_create(&tid2, NULL, &Base->run, Base);
-////    int p2 = pthread_create(&tid, NULL, &nodeHandle->run, NULL);
-//    if(p1 != 0){
-//        printf("p1 error");
-//    }
-//    if(p2 != 0){
-//        printf("p2 error");
-//    }
-//	BaseControl main_Base_Control;
-
 	robot_command robotCMD;
-    serial_rx* RX;
+    serial_rx rx;
+    serial_rx* RX = &rx;
 //	robot_command main_robotFB;
 //	int count = 0;
 	//while(ros::ok()){
@@ -62,20 +51,6 @@ int main(int argc, char **argv)
         if(flag){
             break;
         }
-//		main_robotCMD = nodeHandle.getMotion();
-//		main_Base_Control.send(main_robotCMD);
-//		if(*main_robotCMD->shoot_power > 0){
-//			count++;
-//			if(count>10){
-//				main_nodeHandle.clear();
-//				count = 0;
-//			}
-//		}else{
-//			main_nodeHandle.clear();
-//			count = 0;
-//		}
-//		main_robotFB = main_Base_Control.get_feedback();
-//		main_nodeHandle.pub_robotFB(main_robotFB);
         if(Node.getMotionFlag()){
             robotCMD = Node.getMotion();
 #ifdef DEBUG
@@ -91,7 +66,7 @@ int main(int argc, char **argv)
             Base.Send(robotCMD);
         }
         if(Base.GetBaseFlag()){
-            RX = Base.GetPack();
+            rx = Base.GetOdo();
 #ifdef DEBUG
             printf("\n*****get feedback******\n");
             std::cout << std::dec;
