@@ -5,8 +5,6 @@
  *********************/
 #include <iostream>
 #include <cstring>
-#include <pthread.h>
-//#include <signal.h>
 /*********************
  ** Include ROS
  *********************/
@@ -30,11 +28,10 @@
 #define remote_topic_name "/motion/remote"
 #define holdBall_topic_name "/motion/hold_ball"
 
-typedef void * (*THREADFUNCPTR)(void *);
 //#define DEBUG 
 class Motion_nodeHandle{
 public:
-	Motion_nodeHandle(int, char **);
+	Motion_nodeHandle(int argc, char **argv);
 	virtual ~Motion_nodeHandle();
 	
 private:
@@ -44,26 +41,20 @@ private:
 	ros::Subscriber shoot_sub;
 	ros::Subscriber remote_sub;
     ros::Subscriber holdBall_sub;
-	robot_command robotCMD;
-	serial_rx RX;
-    pthread_t tid;
+	robot_command *node_robotCMD;
+	serial_rx* node_RX;
 	bool remote;
     bool holdBall;
-    bool motion_flag;
 private:
-    static void* pThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
 	void remoteCallback(const std_msgs::Bool::ConstPtr &);
     void holdBallCallback(const std_msgs::Bool::ConstPtr &);
 	void pub(const geometry_msgs::Twist &);
-    void run();
 public:
-//    void *run();
-	robot_command getMotion();
-	void pub_robotFB(robot_command &);
+	robot_command* getMotion();
+	void pub_robotFB(robot_command*);
 	void clear();
-	bool getMotionFlag();
 };
 #endif

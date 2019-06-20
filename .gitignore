@@ -17,3 +17,4 @@ output_files
 *.stp
 *.qdf
 *.bak
+.DS_Store

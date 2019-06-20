@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 
-add_message_files(DIRECTORY msgs FILES Angle.msg
+add_message_files(DIRECTORY msg FILES Angle.msg
 Point2d.msg
 PPoint.msg
 Point3d.msg
