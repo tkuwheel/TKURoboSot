@@ -140,7 +140,7 @@ class Robot(object):
     s.data = state
     self.state_pub.publish(s)
 
-  def _Rotate(self, x, y, theta):
+  def Rotate(self, x, y, theta):
     _x = x*math.cos(math.radians(theta)) - y*math.sin(math.radians(theta))
     _y = x*math.sin(math.radians(theta)) + y*math.cos(math.radians(theta))
     return _x, _y
@@ -167,9 +167,9 @@ class Robot(object):
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate -90 for 6th robot
-      output_x, output_y = self._Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      # output_x = unit_vector[0]*output_v
-      # output_y = unit_vector[1]*output_v
+      # output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
+      output_x = unit_vector[0]*output_v
+      output_y = unit_vector[1]*output_v
       #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))
 
       msg.linear.x = output_x
