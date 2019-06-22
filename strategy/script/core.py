@@ -69,10 +69,17 @@ class Core(Robot, StateMachine):
 
   def RunStatePoint(self, state):
     if state == "Kick_Off" :
-      print("kick off")
       self.on_toPoint(0, 0, 0)
     elif state == "Free_Kick" :
       self.on_toPoint(100, 100, 90)
+    elif state == "Free_Ball" :
+      self.on_toPoint(100, -100, 180)
+    elif state == "Throw_In" :
+      self.on_toPoint(-100, -100, 270)
+    elif state == "Coner_Kick":
+      self.on_toPoint(300, 200, 45)
+    elif state == "Penalty_Kick" :
+      self.on_toPoint(-100, 100, 135)
     else:
       print("ummmm")
 
