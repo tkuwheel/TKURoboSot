@@ -17,7 +17,7 @@ class Behavior(Robot):
     v_y   = ty - robot_info['location']['y']
     v_yaw = tyaw - robot_info['location']['yaw']
     
-    if abs(v_x) < 10 and abs(v_y) < 10 :
+    if sqrt(v_x**2 + v_y**2) < 50:
       get_the_point = 1
 
     return v_x, v_y, v_yaw, get_the_point
