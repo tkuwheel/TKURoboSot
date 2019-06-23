@@ -31,7 +31,7 @@ class Core(Robot, StateMachine):
   point  = State('Point')
 
   toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase)
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
   toShoot  = attack.to(shoot)
   toOrbit  = chase.to(orbit) | orbit.to.itself()
@@ -64,24 +64,9 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw, True)
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw = self.BC.Go2Point(tx, ty, tyaw)
+    x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
     self.MotionCtrl(x, y, yaw)
-
-  def RunStatePoint(self, state):
-    if state == "Kick_Off" :
-      self.on_toPoint(0, 0, 0)
-    elif state == "Free_Kick" :
-      self.on_toPoint(100, 100, 90)
-    elif state == "Free_Ball" :
-      self.on_toPoint(100, -100, 180)
-    elif state == "Throw_In" :
-      self.on_toPoint(-100, -100, 270)
-    elif state == "Coner_Kick":
-      self.on_toPoint(300, 200, 45)
-    elif state == "Penalty_Kick" :
-      self.on_toPoint(-100, 100, 135)
-    else:
-      print("ummmm")
+    print("Remaining: ", remaining)
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -96,11 +81,40 @@ class Strategy(Robot):
     self.side       = "Yellow"
     self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
 
+  def RunStatePoint(self, state):
+    if state == "Kick_Off" :
+      #self.on_toPoint(0, 0, 0)
+      self.robot.toPoint(0, 0, 0)
+    elif state == "Free_Kick" :
+      #self.on_toPoint(100, 100, 90)
+      self.robot.toPoint(100, 100, 90)
+    elif state == "Free_Ball" :
+      #self.on_toPoint(100, -100, 180)
+      self.robot.toPoint(100, -100, 180)
+    elif state == "Throw_In" :
+      #self.on_toPoint(-100, -100, 270)
+      self.robot.toPoint(-100, -100, 270)
+    elif state == "Coner_Kick":
+      #self.on_toPoint(300, 200, 45)
+      self.robot.toPoint(300, 200, 45)
+    elif state == "Penalty_Kick" :
+      #self.on_toPoint(-100, 100, 135)
+      self.robot.toPoint(-100, 100, 135)
+    elif state == "Run_Specific_Point" :
+      #self.on_toPoint(self.run_x, self.run_y, 0)
+      self.robot.toPoint(self.run_x, self.run_y, 0)
+    else:
+      print("ummmm")
+
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
+    self.run_point  = config['run_point']
     self.side       = config['our_goal']
     self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -119,7 +133,6 @@ class Strategy(Robot):
 
     TEST_MODE = True
     if SysCheck(argv) == "Native Mode":
-      
       log("Start Native")
       self.robot = Core(1)
       
@@ -131,13 +144,16 @@ class Strategy(Robot):
 
       self.robot.PubCurrentState()
       
+      # targets = self.robot.GetObjectInfo()
       targets = self.robot.GetObjectInfo()
+      position = self.robot.GetRobotInfo()
+      #log(position)
 
       if targets is None or targets['ball']['ang'] == 999: # Can not find ball
         print("Can not find ball")
         self.robot.toIdle()
       else:
-        if not self.robot.is_idle and not self.game_start:
+        if not self.robot.is_idle and not self.run_point and not self.game_start:
           self.robot.toIdle()
         elif self.robot.is_idle and self.game_start:
           dclient.update_configuration({"run_point": False})
@@ -163,9 +179,9 @@ class Strategy(Robot):
 
       ## Run point
       if self.run_point and not self.game_start:
-        self.robot.RunStatePoint(self.game_state)
+        self.RunStatePoint(self.game_state)
         if self.robot.is_point:
-          self.robot.RunStatePoint(self.game_state)
+          self.RunStatePoint(self.game_state)
 
       if rospy.is_shutdown():
         log('shutdown')
