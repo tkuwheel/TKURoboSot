@@ -38,7 +38,7 @@ class Core(Robot, StateMachine):
   toPoint  = point.to.itself() | idle.to(point)
 
   def on_toIdle(self):
-    for i in range(0,100):
+    for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
@@ -134,7 +134,7 @@ class Strategy(Robot):
       targets = self.robot.GetObjectInfo()
 
       if targets is None or targets['ball']['ang'] == 999: # Can not find ball
-        logInOne("Can not find ball")
+        print("Can not find ball")
         self.robot.toIdle()
       else:
         if not self.robot.is_idle and not self.game_start:

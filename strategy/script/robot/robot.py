@@ -167,9 +167,9 @@ class Robot(object):
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate -90 for 6th robot
-      # output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      output_x = unit_vector[0]*output_v
-      output_y = unit_vector[1]*output_v
+      output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
+      # output_x = unit_vector[0]*output_v
+      # output_y = unit_vector[1]*output_v
       #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))
 
       msg.linear.x = output_x
@@ -256,7 +256,6 @@ class Robot(object):
 
   def RealBallHandle(self):
     if self.__object_info['ball']['dis'] < self.__handle_dis and self.__object_info['ball']['ang'] < self.__handle_ang:
-      print("Ball Handled")
       return True
     else:
       return False
