@@ -1,0 +1,14 @@
+If the RS-232 open fail, add the dialout group into the user.
+$ sudo usermod -a -G dialout [username]
+Then restart the PC.
+or
+
+open the MotorControl.h program, then modify the port name.
+dev = "[port name]"
+
+To check the RS232 port name
+$ cd /dev
+$ ls 
+The RS232 port may be ttyUSB*.
+to change the rs232 port permissions
+$ chmod 777 /dev/ttyUSB*

@@ -1,1 +1,21 @@
-{game_start: false, game_state: Kick_Off, side: Cyan}
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  game_start: false
+  game_state: Kick_Off
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      game_start: false
+      game_state: Kick_Off
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      side: Cyan
+      state: true
+      type: ''
+    state: []
+  side: Cyan
+state: []

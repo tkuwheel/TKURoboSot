@@ -9,10 +9,17 @@ class Behavior(Robot):
     pass
 
   def Go2Point(self, tx, ty, tyaw):
-    # print(self.robot.GetRobotInfo())
     robot_info = self.GetRobotInfo()
     v_x   = tx - robot_info['location']['x']
     v_y   = ty - robot_info['location']['y']
-    v_yaw = tyaw - robot_info['location']['yaw']
+    o_x, o_y = self.Rotate(v_x, v_y, robot_info['location']['yaw'] * -1)
 
-    return v_x, v_y, v_yaw
+    v_yaw = tyaw - robot_info['location']['yaw']
+    if abs(v_yaw - 360) < abs(v_yaw):
+      o_yaw = v_yaw - 360
+    elif abs(v_yaw + 360) < abs(v_yaw):
+      o_yaw = v_yaw + 360
+    else:
+      o_yaw = v_yaw
+
+    return o_x, o_y, o_yaw
