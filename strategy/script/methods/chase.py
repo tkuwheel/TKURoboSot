@@ -6,11 +6,13 @@ import numpy as np
 
 class Chase(object):
   def ClassicRounding(self, goal_ang, ball_dis, ball_ang):
-    alpha = math.radians(ball_ang - goal_ang)
-    if ball_dis > 120:
-      beta = 0.7
+    alpha = ball_ang - goal_ang
+    if ball_dis > 100:
+      beta = 15
+    elif ball_dis > 50:
+      beta = 45
     else:
-      beta = 1
+      beta = 70
 
     if abs(alpha) > beta:
       alpha = beta * np.sign(alpha)
@@ -19,8 +21,9 @@ class Chase(object):
 
     br_x = ball_dis * math.cos(math.radians(ball_ang))
     br_y = ball_dis * math.sin(math.radians(ball_ang))
-    v_x   = br_x * math.cos(alpha) - br_y * math.sin(alpha)
-    v_y   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
+
+    v_x   = br_x * math.cos(math.radians(alpha)) - br_y * math.sin(math.radians(alpha))
+    v_y   = br_x * math.sin(math.radians(alpha)) + br_y * math.cos(math.radians(alpha))
     v_yaw = goal_ang
 
     return v_x, v_y, v_yaw
@@ -35,6 +38,7 @@ class Chase(object):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang * -1.5
     w = velocity / orbit_radius
+
 
     v_x   = 0
     v_y   = velocity

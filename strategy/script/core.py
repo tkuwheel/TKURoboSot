@@ -11,7 +11,7 @@ from methods.chase import Chase
 from methods.attack import Attack
 from methods.behavior import Behavior
 from dynamic_reconfigure.server import Server
-from strategy.cfg import GameStateConfig
+from strategy.cfg import StrategyConfig
 
 class Core(Robot, StateMachine):
   def __init__(self, robot_num, sim = False):
@@ -29,8 +29,8 @@ class Core(Robot, StateMachine):
   orbit  = State('Orbit')
   point  = State('Point')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle)
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase)
+  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle) | idle.to.itself()
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
   toShoot  = attack.to(shoot)
   toOrbit  = chase.to(orbit) | orbit.to.itself()
@@ -47,12 +47,6 @@ class Core(Robot, StateMachine):
                                           t['ball']['dis'],\
                                           t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
-
-      if self.RobotBallHandle():
-        self.toAttack(t, side)
-      else:
-        pass
-
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
@@ -69,37 +63,53 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw, True)
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw = self.BC.Go2Point(tx, ty, tyaw)
+    x, y, yaw,gp = self.BC.Go2Point(tx, ty, tyaw)
     self.MotionCtrl(x, y, yaw)
+    return gp
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
 
   def CheckBallHandle(self):
+
+    '''i = self.RobotBallHandle()
+    if i == True:
+      log("Ballhandle")
+    else :
+      log("not Ballhandle")'''
     return self.RobotBallHandle()
 
-class Strategy(object):
+class Strategy(Robot):
   def __init__(self):
-    gains = rospy.get_param("/core")
-    self.game_start = gains['game_start']
-    self.game_state = gains['game_state']
-    self.side       = gains['side']
-    self.opp_side   = 'Cyan' if gains['side'] == 'Magenta' else 'Magenta'
+    self.game_start = False
+    self.game_state = "Kick_Off"
+    self.side       = "Yellow"
+    self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
+    self.get_the_point = 0
+    
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
-    self.side       = config['side']
-    self.opp_side   = 'Cyan' if config['side'] == 'Magenta' else 'Magenta'
+    self.run_point  = config['run_point']
+    self.side       = config['our_goal']
+    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    
+
+    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
     return config
 
   def main(self, argv):
     rospy.init_node('core', anonymous=True)
     rate = rospy.Rate(1000)
 
-    dsrv = Server(GameStateConfig, self.Callback)
+    dsrv = Server(StrategyConfig, self.Callback)
 
-    TEST_MODE = False
+    TEST_MODE = True
     if SysCheck(argv) == "Native Mode":
       
       log("Start Native")
@@ -108,75 +118,55 @@ class Strategy(object):
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       robot = Core(1, True)
-    elif SysCheck(argv) == "Test Mode":
-      log("Test Mode")
-      robot = Core(1)
-      TEST_MODE = True
 
     while not rospy.is_shutdown():
 
       robot.PubCurrentState()
       
       targets = robot.GetObjectInfo()
+      position = robot.GetRobotInfo()
+      
+      #log(position)
 
-      if targets is not None and not TEST_MODE and targets['ball']['ang'] is not 999:
+      if targets is None or targets['ball']['ang'] == 999: # Can not find ball
+        logInOne("Can not find ball")
+        robot.toIdle()
+      else:
         if not robot.is_idle and not self.game_start:
+          self.get_the_point = 0
           robot.toIdle()
         elif robot.is_idle and self.game_start:
-          robot.toChase(targets, self.side, "Straight")
+          if self.run_point and not self.get_the_point:
+            robot.toPoint(self.run_x,self.run_y,0)
+          else :
+            robot.toChase(targets, self.opp_side, "Straight")
+          
+        if robot.is_point :
+          self.get_the_point = robot.toPoint(self.run_x,self.run_y,0)
+          log("Start move")
+          if self.get_the_point:
+            log("Got it")
+            robot.toIdle()
+            #robot.toChase(targets, self.opp_side)
+          
         elif robot.is_chase:
-          robot.toChase(targets, self.side, "Straight")
+          #robot.toChase(targets, self.opp_side, "Straight")
+          robot.toChase(targets, self.opp_side)
+        
 
-        if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
-                          and targets['ball']['dis'] <= 50:
-          robot.toAttack(targets, self.side)
+        if robot.is_chase and robot.CheckBallHandle():
+          robot.toAttack(targets, self.opp_side)
         elif robot.is_attack:
-          robot.toAttack(targets, self.side)
+          robot.toAttack(targets, self.opp_side)
 
-        if robot.is_attack and abs(targets['ball']['ang']) > 20 \
-                           and targets['ball']['dis'] > 50:
-          robot.toChase(targets, self.side)
+        if robot.is_attack and not robot.CheckBallHandle():
+          robot.toChase(targets, self.opp_side)
 
-        if robot.is_attack and abs(targets[self.side]['ang']) < 10:
-          pass
-          # robot.toShoot(3, 1)
+        if robot.is_attack and abs(targets[self.opp_side]['ang']) < 10:
+          robot.toShoot(3, 1)
 
         if robot.is_shoot:
-          robot.toAttack(targets, self.side)
-
-      ### Test Mode ###
-      else:
-        Points = [{'x':0, 'y':0, 'yaw':0}, \
-                  {'x':100, 'y':100, 'yaw':90}, \
-                  {'x':-100, 'y':-100, 'yaw':-90}]
-        if not robot.is_idle and not self.game_start:
-          robot.toIdle()
-        elif robot.is_idle and self.game_start:
-          robot.toChase(targets, self.side, "Straight")
-        elif robot.is_chase:
-          robot.toChase(targets, self.side, "Straight")
-        elif robot.is_point:
-          robot.toPoint(Points[0]['x'], Points[0]['y'], Points[0]['yaw'])
-
-        if robot.is_chase and abs(targets['ball']['ang']) <= 20 \
-                          and targets['ball']['dis'] <= 42:
-          robot.toOrbit(targets, self.side)
-        elif robot.is_orbit:
-          robot.toOrbit(targets, self.side)
-
-        if robot.is_orbit and abs(targets['ball']['ang']) > 20 \
-                          and targets['ball']['dis'] > 42:
-          robot.toChase(targets, self.side, "Straight")
-
-        if robot.is_orbit and abs(targets[self.side]['ang'] - targets['ball']['ang']) <= 10 \
-                          and robot.RobotBallHandle():
-          robot.toAttack(targets, self.side)
-        elif robot.is_attack:
-          robot.toAttack(targets, self.side)
-
-        if robot.is_attack and abs(targets['ball']['ang']) > 20 \
-                           and targets['ball']['dis'] > 50:
-          robot.toChase(targets, self.side)
+          robot.toAttack(targets, self.opp_side)
 
       if rospy.is_shutdown():
         log('shutdown')
