@@ -14,7 +14,6 @@ from vision.msg import Object
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
-from imu_3d.msg import inertia
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -27,7 +26,6 @@ VISION_TOPIC = "vision/object"
 CMDVEL_TOPIC = "motion/cmd_vel"
 SHOOT_TOPIC  = "motion/shoot"
 POSITION_TOPIC = "akf_pose"
-YAW_TOPIC    = "imu_3d"
 
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
@@ -91,7 +89,6 @@ class Robot(object):
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
-      rospy.Subscriber(YAW_TOPIC,inertia,self._GetYaw)
       self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.RealShoot
@@ -143,12 +140,12 @@ class Robot(object):
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
-  def _GetYaw(self,loc):
-    self.__robot_info['location']['yaw'] = math.degrees(loc.yaw)
-
-
-    
-
+    qx = loc.pose.pose.orientation.x
+    qy = loc.pose.pose.orientation.y
+    qz = loc.pose.pose.orientation.z
+    qw = loc.pose.pose.orientation.w
+    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), \
+                                                      qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180)
 
   def RobotStatePub(self, state):
     s = String()
