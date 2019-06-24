@@ -1,3 +1,43 @@
+//shoot
+var TopicShoot1 = new ROSLIB.Topic({
+    ros: ros,
+    name: '/motion/shoot',
+    messageType: 'std_msgs/Int32'
+});
+//shoot
+function PublishTopicShoot(size) {
+   // console.log(size);
+    var Shoot = new ROSLIB.Message({
+        data: size
+    });
+    if (RemoteState) {
+        TopicShoot1.publish(Shoot);
+    }
+}
+//=====================================================================================
+// hold ball
+var HoldBall1 = new ROSLIB.Topic({
+    ros: ros,
+    name: '/motion/hold_ball',
+    messageType: 'std_msgs/Bool'
+});
+
+function HoldBallSwitch(state,robot) {
+    var check;
+    if (state) {
+        console.log(robot,"hold ball :",state);
+        check = new ROSLIB.Message({
+            data: true
+        });
+    } else {
+        console.log(robot,"hold ball :",state);
+        check = new ROSLIB.Message({
+            data: false
+        });
+    }
+    HoldBall1.publish(check);
+}
+
 /*========================================================*/
 //MotionRemote
 var Remote = new ROSLIB.Topic({

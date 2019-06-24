@@ -171,6 +171,7 @@
                                                 value="100" oninput="rangeValue(this.value,'CenterElement',3);topicCenterTransfer()" />
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td class="Slider1Label">
                                             <label>Front</label>
@@ -182,6 +183,19 @@
                                         <td>
                                             <input name="CenterLabel" type="number" class="RBS2" min="0" max="360"
                                                 value="0" oninput="rangeValue(this.value,'CenterElement',4);topicCenterTransfer()" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="Slider1Label">
+                                            <label>Horizon</label>
+                                        </td>
+                                        <td class="Slider1Input">
+                                            <input name="HorizonElement" type="range" min="100" max="300" value="1"
+                                                oninput="showValue(this.value,'HorizonLabel',0);topicCenterTransfer()" />
+                                        </td>
+                                        <td>
+                                            <input name="HorizonLabel" type="number" class="RBS2" min="100" max="300"
+                                                value="1" oninput="rangeValue(this.value,'HorizonElement',0);topicCenterTransfer()" />
                                         </td>
                                     </tr>
                                 </table>
@@ -840,3 +854,4 @@
 </body>
 
 </html>
+

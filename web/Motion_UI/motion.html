@@ -5,7 +5,7 @@
     <title>motion UI</title>
     <meta charset="UTF-8">
     <!--Font-->
-    <link rel="shortcut icon" href="img/icon.png" />
+    <link rel="shortcut icon" href="img/setting.png" />
     <link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
@@ -48,6 +48,13 @@
             <div id="SpeedDiv">
                 <table>
                     <tr>
+                        <td>
+                            <div id="HoldBallDiv1" vlaue="0">
+                                <i id="HoldBallButton1" class="fa fa-futbol-o fa-2x" aria-hidden="true"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td colspan="2">
                             <label id="SpeedLabel">Speed&nbsp;<i class="fa fa-bolt "></i></label>
                         </td>
@@ -63,7 +70,20 @@
                         </td>
                     </tr>
                 </table>
+                <div id="ShootDiv"  >
+                    <table style="align:center;">
+                        <tr >
+                            <td>
+                                <input id="ShootInput" name="ShootElement" placeholder="Shoot" value="70" type="number" min="0" max="100" oninput="JudgeShootInput(this.name,this.value);" />
+                            </td>
+                            <td>
+                                <input id="ShootButton" type="button" value="Shoot" onclick="PublishTopicShoot(parseInt(document.getElementById('ShootInput').value))">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
+
             <div id="Joystick">
                 <canvas id="Joystick_Canvas">
                     Your browser does not support the HTML5 canvas tag.
@@ -75,14 +95,14 @@
                     <tr>
                         <div style="width:140px;">
                             <input autocomplete="on" id="KeyboardControlButton" type="checkbox" name="KeyboardControl" onclick="KeyboardState(this.checked)" />
-                            <label id="KeyboardControlButton" for="KeyboardControlButton">Keyboard Control</label>
+                            <label id="KeyboardControlLable" for="KeyboardControlButton">Keyboard Control</label>
                         </div>
                     </tr>
 
                     <tr>
                         <div style="width:140px;">
                             <input autocomplete="on" id="StandbyButton" type="checkbox" name="RobotRemoteButton" onclick="RemoteSwitch(this.checked);" />
-                            <label id="StandbyButton" for="StandbyButton">&nbsp;&nbsp;&nbsp;Stand by&nbsp;&nbsp;&nbsp;</label>
+                            <label id="StandbyLable" for="StandbyButton">&nbsp;&nbsp;&nbsp;Stand by&nbsp;&nbsp;&nbsp;</label>
                         </div>
                     </tr>
                 </table>
@@ -122,6 +142,7 @@
 <script src="js/Joystick.js"></script>
 <script src="js/RosTopic.js"></script>
 <script src="js/RosParam.js"></script>
+<script src="js/HoldBall.js"></script>
 <script src="js/KeyboardControl.js"></script>
 <script src="js/SendMsgs.js"></script>
 <script type="text/javascript">

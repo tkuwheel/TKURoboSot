@@ -81,6 +81,7 @@ function topicCenterTransfer() {
     for (var i = 0; i < 6; i++) {
         box[i] = parseInt(document.getElementsByName('CenterElement')[i].value);
     }
+    box[6] = parseInt(document.getElementsByName('HorizonElement')[0].value);
     topicROSCenter(box);
 }
 
@@ -92,7 +93,8 @@ function topicROSCenter(box) {
         Inner: box[2],
         Outer: box[3],
         Front: box[4],
-        Camera_High: box[5]
+        Camera_High: box[5],
+        Horizon: box[6]
     });
     TopicCenter.publish(Center);
 }
