@@ -144,7 +144,7 @@ class Robot(object):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
   def _GetYaw(self,loc):
-    self.__robot_info['location']['yaw'] = loc.yaw
+    self.__robot_info['location']['yaw'] = math.degrees(loc.yaw)
 
 
     
