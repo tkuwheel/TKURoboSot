@@ -107,20 +107,32 @@ ParameterCenter_Camera_high.get(function(value) {
         obj[5].value = value;
     }
 });
+//ParameterCenter_Horizon
+var ParameterCenter_Horizon = new ROSLIB.Param({
+    ros: ros,
+    name: '/FIRA/vision/Center/Horizon',
+});
 
+ParameterCenter_Horizon.get(function(value) {
+    if (value != null) {
+        var obj = document.getElementsByName("HorizonElement");
+        obj[0].value = value;
+        document.getElementsByName("HorizonLabel")[0].value = value;
+    }
+});
 function ParameterCenterTransfer() {
     let value = new Array();
     for(let i=0; i<6; i++){
         value[i] = parseInt(document.getElementsByName('CenterElement')[i].value);
     }
-   
+    let horizonmsg = parseInt(document.getElementsByName('HorizonElement')[0].value);
     ParameterCenter_X.set(value[0]);
     ParameterCenter_Y.set(value[1]);
     ParameterCenter_Inner.set(value[2]);
     ParameterCenter_Outer.set(value[3]);
     ParameterCenter_Front.set(value[4]);
     ParameterCenter_Camera_high.set(value[5]);
-
+    ParameterCenter_Horizon.set(horizonmsg);
     let str = "Sent Center Parameter: ";
     for(let i=0; i<6; i++){
         str += value[i];
@@ -128,6 +140,7 @@ function ParameterCenterTransfer() {
             str +=", ";        
         }
     }
+    str+=", "+horizonmsg;
     console.log(str);
     SendMsgs(str);
 }
@@ -616,3 +629,4 @@ function ParameterBlackTransfer2() {
     //SendMsgs(str);
     
 }
+

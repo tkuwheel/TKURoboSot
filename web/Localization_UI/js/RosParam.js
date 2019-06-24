@@ -93,3 +93,30 @@ SPlanningVelocityBox.get(function(value) {
         }
     }
 });
+HoldConditionBox.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("BallElement");
+        for (var i = 0; i < obj.length; i++) {
+            obj[i].value = value[i];
+        }
+    }
+});
+param_afast.get(function(value) {
+    
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[0].value = value;
+    }
+});
+param_aslow.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[1].value = value;
+    }
+});
+param_wcmps.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[2].value = value;   
+    }
+});

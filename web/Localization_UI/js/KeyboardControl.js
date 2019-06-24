@@ -14,31 +14,49 @@ function keysdown(e) {
         var speed = document.getElementById("SpeedInput").value;
         keys[e.keyCode] = true;
 
-        //Strategy_Choose
-        if (keys[32] && keys[49]) {
-            SetBehaviorKeyborard([0, 1, 1, 0, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[50]) {
-            SetBehaviorKeyborard([1, 0, 1, 0, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[51]) {
-            SetBehaviorKeyborard([0, 1, 0, 0, 1, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[52]) {
-            SetBehaviorKeyborard([1, 0, 0, 0, 1, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[53]) {
-            SetBehaviorKeyborard([0, 1, 0, 0, 0, 1, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[54]) {
-            SetBehaviorKeyborard([1, 0, 0, 0, 0, 1, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[55]) {
-            SetBehaviorKeyborard([0, 1, 0, 1, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[56]) {
-            SetBehaviorKeyborard([1, 0, 0, 1, 0, 0, 0]);
-            e.preventDefault();
+        // m imu reset
+        if (keys[77]) {
+            ImuReset();
+        }
+       
+        // , hold ball
+        if (keys[188]) {
+            //console.log(e.keyCode);
+            let hold_ball_checked = document.getElementById("HoldBallButton1").checked;
+            //console.log(hold_ball_checked);
+
+           if (hold_ball_checked) {
+                $("#HoldBallButton1").remove();
+                var holdball_i = $(document.createElement('i'))
+                    .attr("class", "fa fa-futbol-o fa-2x")
+                    .attr("aria-hidden", "true")
+                    .attr("id", "HoldBallButton1")
+                holdball_i.appendTo("#HoldBallDiv1");
+                this.value = 0;
+                HoldBallSwitch(0,1);
+                $('#HoldBallButton1').prop('checked',false);
+                $('#HoldBallButton1').change();
+            } else {
+                $("#HoldBallButton1").remove();
+                var holdball_i = $(document.createElement('i'))
+                    .attr("class", "fa fa-futbol-o fa-2x fa-spin")
+                    .attr("aria-hidden", "true")
+                    .attr("id", "HoldBallButton1")
+                    .attr("style","color: #FFCC00;")
+                holdball_i.appendTo("#HoldBallDiv1");
+                this.value = 1;
+                HoldBallSwitch(1,1);
+                $('#HoldBallButton1').prop('checked',true);
+                $('#HoldBallButton1').change();
+            }
+        }
+        // . start
+        if (keys[190]) {
+            topicROSGameState(9);
+        }
+        // / stop
+        if (keys[191]) {
+            topicROSGameState(0);
         }
         //RobotControl
         if (keys[87] && keys[68]) {
@@ -106,22 +124,30 @@ function keysdown(e) {
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[69]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.6;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: -parseFloat(speed)
+                z: -parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[81]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.6;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: parseFloat(speed)
+                z: parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
@@ -138,7 +164,7 @@ function keysdown(e) {
 }
 
 function releasebutton(state) {
-    let vec3_ = new ROSLIB.Message({
+    let vec3 = new ROSLIB.Message({
         x: 0,
         y: 0,
         z: 0
@@ -167,13 +193,16 @@ function releasebutton(state) {
         vec3.y = 0;
         vec3.Z = 0;
     }
-    PublishTopicCmdVel(vec3);
-    //PublishTopicCmdVel(vec3);
+    if(state==81||state==69||state==87||state==65||state==83||state==68){
+        console.log("stop");
+        PublishTopicCmdVel(vec3);
+        //PublishTopicCmdVel(vec3);
+    }
 }
 
 function keyuped(e) {
     if (start) {
-      console.log(1111);
+        //console.log(1111);
         if (keys[e.keyCode] == true) releasebutton(e.keyCode);
         //else if (keys[69] == true) releasebutton(69);
         //else if (keys[87] == true) releasebutton(87);

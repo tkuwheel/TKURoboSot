@@ -115,15 +115,15 @@ function RegionLocation() {
     for (i = 0; i < 5; i++) {
         switch (Order[i]) {
             case 1:
-                Box[++j] = parseFloat(-280);
+                Box[++j] = parseFloat(-285);
                 Box[++j] = parseFloat(180);
                 break;
             case 2:
-                Box[++j] = parseFloat(-72.5);
+                Box[++j] = parseFloat(-81);
                 Box[++j] = parseFloat(180);
                 break;
             case 3:
-                Box[++j] = parseFloat(72.5);
+                Box[++j] = parseFloat(78);
                 Box[++j] = parseFloat(180);
                 break;
             case 4:
@@ -132,19 +132,19 @@ function RegionLocation() {
                 break;
             case 5:
                 Box[++j] = parseFloat(-225);
-                Box[++j] = parseFloat(100);
+                Box[++j] = parseFloat(105);
                 break;
             case 6:
-                Box[++j] = parseFloat(-122.5);
-                Box[++j] = parseFloat(100);
+                Box[++j] = parseFloat(-128);
+                Box[++j] = parseFloat(85);
                 break;
             case 7:
                 Box[++j] = parseFloat(0);
                 Box[++j] = parseFloat(100);
                 break;
             case 8:
-                Box[++j] = parseFloat(122.5);
-                Box[++j] = parseFloat(100);
+                Box[++j] = parseFloat(128);
+                Box[++j] = parseFloat(85);
                 break;
             case 9:
                 Box[++j] = parseFloat(225);
@@ -167,24 +167,24 @@ function RegionLocation() {
                 Box[++j] = parseFloat(0);
                 break;
             case 14:
-                Box[++j] = parseFloat(-225);
-                Box[++j] = parseFloat(-100);
+                Box[++j] = parseFloat(-230);
+                Box[++j] = parseFloat(-105);
                 break;
             case 15:
-                Box[++j] = parseFloat(-122.5);
-                Box[++j] = parseFloat(-100);
+                Box[++j] = parseFloat(-128);
+                Box[++j] = parseFloat(-85);
                 break;
             case 16:
                 Box[++j] = parseFloat(0);
                 Box[++j] = parseFloat(-100);
                 break;
             case 17:
-                Box[++j] = parseFloat(122.5);
-                Box[++j] = parseFloat(-100);
+                Box[++j] = parseFloat(128);
+                Box[++j] = parseFloat(-85);
                 break;
             case 18:
-                Box[++j] = parseFloat(225);
-                Box[++j] = parseFloat(-100);
+                Box[++j] = parseFloat(230);
+                Box[++j] = parseFloat(-105);
                 break;
             case 19:
                 Box[++j] = parseFloat(-280);
@@ -210,15 +210,22 @@ function RegionLocation() {
         Box[i] = -Box[i + 1];
         Box[i + 1] = temp;
     }
-    console.log(Order);
-    console.log(Box);
-    DrawOrderRectangle();
-    TopicRegion(Box);
-  }
-
-
-
-
+    let all_checked = true;
+    for(let i=0; i<Order.length; i++){
+        if(Order[i]==0){
+            all_checked = false;
+        }
+    }
+    if(all_checked==false){
+        alert("部份區域未選取");
+    }else{
+        console.log(Order);
+        console.log(Box);
+        DrawOrderRectangle();
+        TopicRegion(Box);
+        setTimeout(function(){ get_path=true; }, 500);
+    }
+}
 // function cnvs_getCoordinates(e){
 //     x=e.clientX;
 //     y=e.clientY;
