@@ -144,8 +144,7 @@ class Robot(object):
     qy = loc.pose.pose.orientation.y
     qz = loc.pose.pose.orientation.z
     qw = loc.pose.pose.orientation.w
-    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), \
-                                                      qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180)
+    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180
 
   def RobotStatePub(self, state):
     s = String()

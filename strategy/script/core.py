@@ -65,9 +65,9 @@ class Core(Robot, StateMachine):
 
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
-    #self.MotionCtrl(x, y, yaw)
-    self.MotionCtrl(0, 0, yaw)
-    # print("Remaining: ", remaining)
+    self.MotionCtrl(x, y, yaw)
+    print("Remaining: ", remaining)
+    return remaining
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -84,28 +84,24 @@ class Strategy(Robot):
 
   def RunStatePoint(self, state):
     if state == "Kick_Off" :
-      #self.on_toPoint(0, 0, 0)
-      self.robot.toPoint(0, 0, 0)
+      r = self.robot.toPoint(0, 0, 0)
     elif state == "Free_Kick" :
-      #self.on_toPoint(100, 100, 90)
-      self.robot.toPoint(100, 100, 90)
+      r = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
-      #self.on_toPoint(100, -100, 180)
-      self.robot.toPoint(100, -100, 180)
+      r = self.robot.toPoint(100, -100, 180)
     elif state == "Throw_In" :
-      #self.on_toPoint(-100, -100, 270)
-      self.robot.toPoint(-100, -100, 270)
+      r = self.robot.toPoint(-100, -100, 270)
     elif state == "Coner_Kick":
-      #self.on_toPoint(300, 200, 45)
-      self.robot.toPoint(300, 200, 45)
+      r = self.robot.toPoint(300, 200, 45)
     elif state == "Penalty_Kick" :
-      #self.on_toPoint(-100, 100, 135)
-      self.robot.toPoint(-100, 100, 135)
+      r = self.robot.toPoint(-100, 100, 135)
     elif state == "Run_Specific_Point" :
-      #self.on_toPoint(self.run_x, self.run_y, 0)
-      self.robot.toPoint(self.run_x, self.run_y, 0)
+      r = self.robot.toPoint(self.run_x, self.run_y, 0)
     else:
       print("ummmm")
+
+    if r < 40:
+      self.robot.toIdle()
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
