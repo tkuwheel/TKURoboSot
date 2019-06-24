@@ -182,7 +182,7 @@ class Robot(object):
       # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate 90 for 6th robot
-      output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 0)
+      output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
       # output_x = unit_vector[0]*output_v
       # output_y = unit_vector[1]*output_v
       #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))

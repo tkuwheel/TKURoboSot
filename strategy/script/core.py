@@ -65,8 +65,9 @@ class Core(Robot, StateMachine):
 
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
-    self.MotionCtrl(x, y, yaw)
-    print("Remaining: ", remaining)
+    #self.MotionCtrl(x, y, yaw)
+    self.MotionCtrl(0, 0, yaw)
+    # print("Remaining: ", remaining)
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -149,7 +150,7 @@ class Strategy(Robot):
       position = self.robot.GetRobotInfo()
       #log(position)
 
-      if targets is None or targets['ball']['ang'] == 999: # Can not find ball
+      if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
         print("Can not find ball")
         self.robot.toIdle()
       else:

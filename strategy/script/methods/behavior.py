@@ -17,6 +17,7 @@ class Behavior(Robot):
     o_x, o_y = self.Rotate(v_x, v_y, robot_info['location']['yaw'] * -1)
 
     v_yaw = tyaw - robot_info['location']['yaw']
+    print("{} - {} = {}".format(tyaw, robot_info['location']['yaw'], v_yaw))
     if abs(v_yaw - 360) < abs(v_yaw):
       o_yaw = v_yaw - 360
     elif abs(v_yaw + 360) < abs(v_yaw):
