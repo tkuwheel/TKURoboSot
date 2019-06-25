@@ -19,7 +19,7 @@ input			iRst_n,				// Reset
 input			iFREQ,				// Frequence
 //input	[15:0]	iSPD,	// Speed of motor
 //input	[15:0]	iFB,	// Feedback of motor
-//input	[8:0]		iDuty_C,	// Currnt Pulse Width Modulation
+input	[8:0]		iDuty_Curr,	// Currnt Pulse Width Modulation
 output	reg [8:0]		oDuty	// Pulse Width Modulation
 );
 reg				rFREQ;
@@ -30,7 +30,8 @@ always @(posedge iCLK)begin
     else begin
 		rFREQ <= iFREQ;
 		if(~rFREQ & iFREQ)
-			oDuty <= MIN_DUTY;
+			
+			oDuty <= iDuty_Curr - 4'hf;
 		else
 			oDuty <= oDuty;
     end

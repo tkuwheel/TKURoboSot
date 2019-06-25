@@ -22,18 +22,17 @@ module MotorController (
 // PORT declarations
 //===========================================================================
 input			iCLK,			// 50MHz, System Clock
-input	[15:0]	iCMD,			// Command
+input			iRst_n,		// Reset
 input			iPA,			// Motor Channel A
 input			iPB,			// Motor Channel B
-input			iRst_n,		// Reset
-output			oPWM_Pulse,
-output			oDIR,		// Direction of motor
-output	[31:0]	oFB,		// Feedback of motor
-output			oFB_FREQ,	// Feedback renew trigger
-output			oEN,
-output			oStop,
-output	[5:0]	oStates,
-output			oSampClk
+input [15:0] iCMD,		// Command
+
+output oPWM_Pulse,
+output oDIR,				// Direction of motor
+output oFB_FREQ,			// Feedback renew trigger
+output [31:0]	oFB,		// Feedback of motor
+output [5:0]	oStates,
+output oSampClk
 );
 `include "param.h"
 //===========================================================================
@@ -58,15 +57,6 @@ wire	wDIR_C;								//current direction
 wire	wDIR_T;
 
 wire	[5:0]	wSel;
-// wire	[RX_MOTOR_SIZE*8-1:0]	wSPD;		
-// wire	[1:0]	wSel;
-// wire  	[2:0]	wEN;
-// wire			wSTOP;
-// wire	[7:0]	wSPD_SM;
-// wire	[1:0]	wDIR_DC;
-// wire	[1:0]	wDIR_SM;
-// wire	[7:0]	wPWM_MUX;
-// wire	[6:0] wCMD;
 
 
 //=======================================================
@@ -78,15 +68,25 @@ assign oPWM_Pulse =  wPWM;
 assign oDIR			=  wDIR;
 assign oStates = wSel;
 
-// CMDTRAN #(
-// 	.STEAM_SIZE(RX_MOTOR_SIZE * 8) //bytes -> bits
-// )(
-// 	.iCLK (iCLK),
-// 	.iCMD (iCMD),
-// 	.oSPD (wSPD),
-// 	.oDIR (wDIR)
-// );
+ CMDTRAN #(
+ 	.SIZE(RX_MOTOR_SIZE * 8) //bytes -> bits
+ )(
+ 	.iCLK (iCLK),
+ 	.iCMD (iCMD),
+ 	.oSPD (wSPD_T),
+ 	.oDIR (wDIR)
+ );
 
+pwmgen#(
+	.SPD_DIV(SPD_DIV)
+)(
+	.iClk(iCLK),		// 25Mhz clock
+	.iRst_n(iRst_n),	// reset, low active
+	.iDuty(wSPD_T),	// Range is 0~128*SPD_DIV
+	.oPWM(wPWM),
+	.oSampClk(oSampClk),
+	.oErrorValue()
+);
 
 Photo2FB(		// Motor Encoder Feedback
 	.iCLK	(iCLK),
@@ -99,75 +99,5 @@ Photo2FB(		// Motor Encoder Feedback
 );
 
 
-Normalize #(	// Normoalize speed and feedback
-	// .SPD_DIV	(SPD_DIV),
-	.CMD_SIZE	(RX_MOTOR_SIZE * 8), //bytes -> bits
-	.FB_SIZE	(TX_MOTOR_SIZE * 8)	//bytes -> bits
-)(
-	.iFB	(wDFB),  //32 bits
-	.oFB	(wFB)   //16 bits
-);
 
-
-
-StateMachine (
-	.iCLK		(iCLK),
-	.iRst_n	(iRst_n),
-	.iFREQ  	(wST),    
-	.iCMD		(iCMD),
-	.iFB		(wFB),
-	
-	.oSel		(wSel),
-	.oDIR		(wDIR)
-);
-
- SpeedController (
-	.iCLK(iCLK),       // 50MHz system clock
-	.iRst_n(iRst_n),
-	.iFREQ(wST),
-//	.iFB(),
-	.iSPD_T(wSPD_T),
-	.iSel(wSel),
-
-//	.oDIR(wDIR),
-	.oDuty(wDuty)
-);
-
-pwmgen #(		// PWM generator
-	.SPD_DIV	(SPD_DIV),
-	.DURY_SIZE	(DURY_SIZE)
-)pwm(
-	.iClk		(iCLK),
-	.iRst_n		(iRst_n),
-	.iDuty		(wDuty),
-	.oPWM		(wPWM),
-	.oSampClk	(oSampClk)
-);
-
-MotorStates (
-	.iCLK	(iCLK),
-	.iRst_n	(iRst_n),
-	.iDuty	(wDuty),
-	.iSel(wSel),
-	.oMotorEnable(oEN),
-	.oMotorStop(oStop)
-);
-
-Absolute #(
-	.SIZE(RX_MOTOR_SIZE*8)
-)TaregetVelocity(
-	.iValue(iCMD),
-	.oValue(wSPD_T),
-	.oSign(wDIR_T)
-);
-/*
-Absolute #(
-	.SIZE(RX_MOTOR_SIZE * 8)
-	
-)(
-	.iValue(wFB),
-	.oValue(wSPD_C),
-	.oSign(wDIR_C)
-);
-*/
 endmodule

@@ -15,8 +15,7 @@
 // --------------------------------------------------------------------
 
 module pwmgen #(
-parameter SPD_DIV = 1,
-parameter DURY_SIZE = 7
+parameter SPD_DIV = 1
 )(
 			iClk,		// 25Mhz clock
 			iRst_n,	// reset, low active
@@ -37,7 +36,7 @@ parameter DUTY_CYCLE = 128*SPD_DIV-1;
 //===========================================================================
 input       iClk;
 input       iRst_n;
-input [DURY_SIZE - 1:0] iDuty;
+input [8:0] iDuty;
 output      oPWM;
 output      oSampClk;
 output      oErrorValue;
@@ -45,7 +44,7 @@ output      oErrorValue;
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
-reg	[DURY_SIZE - 1:0]	rPWMCnt;
+reg	[8:0]	rPWMCnt;
 wire				wClk;
 wire				wTempPWM;
 

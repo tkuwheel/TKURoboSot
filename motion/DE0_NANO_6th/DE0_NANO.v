@@ -191,10 +191,9 @@ wire			oLight;
 
 wire	[7:0]	wPower;
 wire			wRST1ms_n, wRST2ms_n, wRST3ms_n;
-wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor1;
-wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor2;
-wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor3;
-wire	[RX_MOTOR_SIZE*8-1:0]	wCMD_Motor4;
+wire	[15:0]	wCMD_Motor1;
+wire	[15:0]	wCMD_Motor2;
+wire	[15:0]	wCMD_Motor3;
 
 wire			wTx_send;
 wire	[7:0]	wTx_data;
@@ -214,9 +213,9 @@ wire			wTx_AX_12_send;
 wire	[7:0]	wTx_AX_12_data;
 wire			wTx_AX_12_busy;
 
-wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor1;
-wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor2;
-wire	[TX_MOTOR_SIZE*8-1:0]	wFB_Motor3;
+wire	[31:0]	wFB_Motor1;
+wire	[31:0]	wFB_Motor2;
+wire	[31:0]	wFB_Motor3;
 wire	 		wDIR_Motor1;
 wire			wDIR_Motor2;
 wire			wDIR_Motor3;
@@ -246,72 +245,65 @@ wire	[2:0]	wStop;
 //=======================================================
 //  Structural coding
 //=======================================================
-assign iReset_n = KEY[0] & ~wSignal[7];
+assign iReset_n = KEY[0];
 assign GPIO_0_D[33] = wTXD;
 assign wRXD = GPIO_0_D[11];
 
-assign LED = {wEN1, wStop[2], wStates};
-assign wStop = (wStop1 & wStop2 & wStop3)? 3'b0: {wStop1, wStop2, wStop3};
+assign LED[7:2] = wSignal[7:2];
+
 wire wClk_100hz;
 
 Clkdiv #(
-	.EXPECTCLK	(100)
+	.EXPECTCLK	(100000)
 ) Clk1K (
 	.iClk		(CLOCK_50),	// 50Mhz clock 
 	.iRst_n	(iReset_n),// Reset
   	// .oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
-	.oClk		(wClk_100hz)	// ExpectClk clock
+	.oClk		(GPIO_1_D[0])	// ExpectClk clock
 );
  sopc u0 (
-	  .clk_clk                         (CLOCK_50),                         //                      clk.clk
-	  .reset_reset_n                   (iReset_n),                   //                    reset.reset_n
+	  .clk_clk                         (CLOCK_50),           //                      clk.clk
+	  .reset_reset_n                   (iReset_n),           //                    reset.reset_n
 
-	  .sdram_clk_clk                   (DRAM_CLK),                    //                sdram_clk.clk
-	  .sdram_wire_addr                 (DRAM_ADDR),                 //               sdram_wire.addr
-	  .sdram_wire_ba                   (DRAM_BA),                   //                         .ba
-	  .sdram_wire_cas_n                (DRAM_CAS_N),                //                         .cas_n
-	  .sdram_wire_cke                  (DRAM_CKE),                  //                         .cke
-	  .sdram_wire_cs_n                 (DRAM_CS_N),                 //                         .cs_n
-	  .sdram_wire_dq                   (DRAM_DQ),                   //                         .dq
-	  .sdram_wire_dqm                  (DRAM_DQM),                  //                         .dqm
-	  .sdram_wire_ras_n                (DRAM_RAS_N),                //                         .ras_n
-	  .sdram_wire_we_n                 (DRAM_WE_N),                 //                         .we_n
-	  .rs232_rxd                       (wRXD),                       //                    rs232.rxd
-	  .rs232_txd                       (wTXD),                       //                         .txd
+	  .sdram_clk_clk                   (DRAM_CLK),           //                sdram_clk.clk
+	  .sdram_wire_addr                 (DRAM_ADDR),          //               sdram_wire.addr
+	  .sdram_wire_ba                   (DRAM_BA),            //                         .ba
+	  .sdram_wire_cas_n                (DRAM_CAS_N),         //                         .cas_n
+	  .sdram_wire_cke                  (DRAM_CKE),           //                         .cke
+	  .sdram_wire_cs_n                 (DRAM_CS_N),          //                         .cs_n
+	  .sdram_wire_dq                   (DRAM_DQ),            //                         .dq
+	  .sdram_wire_dqm                  (DRAM_DQM),           //                         .dqm
+	  .sdram_wire_ras_n                (DRAM_RAS_N),         //                         .ras_n
+	  .sdram_wire_we_n                 (DRAM_WE_N),          //                         .we_n
+	  .rs232_rxd                       (wRXD),               //                    rs232.rxd
+	  .rs232_txd                       (wTXD),               //                         .txd
 
-	  .motor1_export                   (wCMD_Motor1),                   //                   motor1.export
-	  .motor2_export                   (wCMD_Motor2),                   //                   motor2.export	  
-	  .motor3_export                   (wCMD_Motor3),                   //                   motor3.export
-	  .motor1_fb_export                (wFB_Motor1),                //                motor1_fb.export
-	  .motor2_fb_export                (wFB_Motor2),                //                motor2_fb.export
-	  .motor3_fb_export                (wFB_Motor3),                //                motor3_fb.export
-	  .tx_export                       (wFB_FREQ),                        //                       tx.export
+	  .motor1_export                   (wCMD_Motor1),        //                   motor1.export
+	  .motor2_export                   (wCMD_Motor2),        //                   motor2.export	  
+	  .motor3_export                   (wCMD_Motor3),        //                   motor3.export
+	  .motor1_fb_export                (wFB_Motor1),         //                motor1_fb.export
+	  .motor2_fb_export                (wFB_Motor2),         //                motor2_fb.export
+	  .motor3_fb_export                (wFB_Motor3),         //                motor3_fb.export
+	  .tx_export                       (wFB_FREQ),           //                       tx.export
 	  //	  .altpll_phasedone_conduit_export (), // altpll_phasedone_conduit.export
 //	  .altpll_locked_conduit_export    (),    //    altpll_locked_conduit.export
-	  .altpll_areset_conduit_export    (0)    //    altpll_areset_conduit.export
+	  .altpll_areset_conduit_export    (0),    //    altpll_areset_conduit.export
+	  .epcs_flash_controller_0_external_dclk  (EPCS_DCLK),   // epcs_flash_controller_0_external.dclk
+     .epcs_flash_controller_0_external_sce   (EPCS_NCSO),   //                                 .sce
+     .epcs_flash_controller_0_external_sdo   (EPCS_ASDO),   //                                 .sdo
+     .epcs_flash_controller_0_external_data0 (EPCS_DATA0),  //                                 .data0
+	  .led_export                             (LED[1:0]),    //                              led.export
+	  .sig_export                             (wSignal)      //                              sig.export
  );
-
-
 
 assign wFB_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
 
-wire wclk_1hz;
-/*
-Clkdiv #(
-	.EXPECTCLK	(1)
-) Clk1K (
-	.iClk		(CLOCK_50),	// 50Mhz clock 
-	.iRst_n	(iReset_n),// Reset
-  	// .oSampClk(GPIO_1_D[0]),  // multipleX expect clock, for SignalTap use
-	.oClk		(wclk_1hz)	// ExpectClk clock
-);
-*/
 assign iMotor1_PA = GPIO_0_D[22];
 assign iMotor1_PB = GPIO_0_D[28];
 assign GPIO_0_D[20] = oMotor1_PWM;
 assign GPIO_0_D[16] = oMotor1_DIR;
-assign GPIO_0_D[18] = wEN1;
-assign GPIO_0_D[14] = wStop[2];
+assign GPIO_0_D[18] = wSignal[7];
+assign GPIO_0_D[14] = wSignal[4];
 
 
 MotorController MotorA (
@@ -324,19 +316,15 @@ MotorController MotorA (
 	.oDIR		(oMotor1_DIR),		// Direction of motor
 //	.oDIR_Now	(wDIR_Motor1),	// Direction of motor now
 	.oFB		(wFB_Motor1),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ1),
-	.oEN		(wEN1),
-	.oStop		(wStop1),
-	.oStates	(wStates),
-	.oSampClk	(GPIO_1_D[0])	
+	.oFB_FREQ	(wFB_FREQ1)		// Feedback renew trigger
 );
 
 assign iMotor2_PA = GPIO_0_D[30];
 assign iMotor2_PB = GPIO_0_D[32];
 assign GPIO_0_D[21] = oMotor2_PWM;
 assign GPIO_0_D[25] = oMotor2_DIR;
-assign GPIO_0_D[23] = wEN2;
-assign GPIO_0_D[27] = wStop[1];
+assign GPIO_0_D[23] = wSignal[6];
+assign GPIO_0_D[27] = wSignal[3];
 
 MotorController MotorB (
 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
@@ -348,17 +336,15 @@ MotorController MotorB (
 	.oDIR		(oMotor2_DIR),		// Direction of motor
 //	.oDIR_Now	(wDIR_Motor2),	// Direction of motor now
 	.oFB		(wFB_Motor2),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ2),		// Feedback renew trigger
-	.oEN		(wEN2),
-	.oStop		(wStop2)
+	.oFB_FREQ	(wFB_FREQ2)		// Feedback renew trigger
 );
 
 assign iMotor3_PA = GPIO_0_D[17];
 assign iMotor3_PB = GPIO_0_D[19];
 assign GPIO_0_D[1] = oMotor3_PWM;
 assign GPIO_0_D[5] = oMotor3_DIR;
-assign GPIO_0_D[3] = wEN3;
-assign GPIO_0_D[7] = wStop[0];
+assign GPIO_0_D[3] = wSignal[5];
+assign GPIO_0_D[7] = wSignal[2];
 
 MotorController MotorC (
 	.iCLK		(CLOCK_50),			// 50MHz, System Clock
@@ -370,9 +356,7 @@ MotorController MotorC (
 	.oDIR		(oMotor3_DIR),		// Direction of motor
 //	.oDIR_Now	(wDIR_Motor3),	// Direction of motor now
 	.oFB		(wFB_Motor3),		// Feedback of motor
-	.oFB_FREQ	(wFB_FREQ3),		// Feedback renew trigger
-	.oEN		(wEN3),
-	.oStop		(wStop3)
+	.oFB_FREQ	(wFB_FREQ3)		// Feedback renew trigger
 );
 /* hold ball and shoot control
 holdBall(.iC(CLOCK_50),

@@ -84,7 +84,7 @@ DecelController (
 	.iCLK(iCLK),		// 50MHz, System Clock
 	.iRst_n(iRst_n),	// Reset
    .iFREQ(iFREQ),		// Frequence
-//    .iDuty_C(wDuty),
+   .iDuty_Curr(wDuty),
 	.oDuty(wDeccelDuty),
 );
 
@@ -101,6 +101,7 @@ ConstSpdController(
 MUX (
    .iClk  	(iCLK),
    .iRst_n	(iRst_n),
+	.iFREQ	(iFREQ),
 	.iSel		(iSel),
 	.iDuty_0 (wAccelDuty),
    .iDuty_1 (wDeccelDuty),

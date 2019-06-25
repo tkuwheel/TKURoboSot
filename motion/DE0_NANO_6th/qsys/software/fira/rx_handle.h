@@ -15,7 +15,7 @@
 #include "alt_types.h"
 
 #include "altera_avalon_pio_regs.h"
-
+//#define _DEBUG
 #ifdef UART_RS232_BASE
 	alt_u8 rx_data[12];
 	int i;
@@ -99,7 +99,7 @@
     {
     	alt_u8 crc_data[12];
     	alt_u8 data[12];
-    	alt_u16 motor1, motor2, motor3;
+    	alt_16 motor1, motor2, motor3;
     	std::copy(rx_data, rx_data+12, data);
 //    	for(int head=0; head<12; head++){
 		if((data[0] == 0xff) && (data[1] == 0xfa)){
@@ -108,20 +108,27 @@
 			}
 			alt_u16 crc_16 = Crc.getCrc(crc_data, 12);
 			if(crc_16 == 0){
+				IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,2);
 				motor1 = ((data[2] << 8) + data[3]) & 0xffff;
 				motor2 = ((data[4] << 8) + data[5]) & 0xffff;
 				motor3 = ((data[6] << 8) + data[7]) & 0xffff;
 				IOWR_ALTERA_AVALON_PIO_DATA(MOTOR1_BASE, motor1);
 				IOWR_ALTERA_AVALON_PIO_DATA(MOTOR2_BASE, motor2);
 				IOWR_ALTERA_AVALON_PIO_DATA(MOTOR3_BASE, motor3);
+				IOWR_ALTERA_AVALON_PIO_DATA(MOTORSIG_BASE, data[8]);
+				IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,0);
+#ifdef _DEBUG
 				printf("motor1 %d motor2 %d motor3 %d\n ", motor1, motor2, motor3);
+#endif
 			}else{
 				error_count++;
+#ifdef _DEBUG
 				printf("get %d wrong packet\n ", error_count);
+#endif
 			}
 
 		}
-//    	}
+
 
 		receive = false;
 

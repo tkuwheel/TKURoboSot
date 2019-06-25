@@ -4,6 +4,7 @@
 __pycache__
 *.pyc
 .vscode
+.qsys_edit
 *.swp
 
 # fpga
@@ -11,9 +12,21 @@ db
 export_db
 incremental_db
 output_files
-work]
+work
+sopc
 signaltap
+obj
+*_bsp
 
 *.stp
 *.qdf
 *.bak
+*.qws
+*.rpt
+*.elf
+*.map
+*.objdump
+Makefile
+.cproject
+.force_relink
+.project

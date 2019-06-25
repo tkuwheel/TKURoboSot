@@ -29,129 +29,138 @@ parameter DUTY_SIZE 	= 7
 input				iCLK,				// 50MHz, System Clock
 input				iRst_n,				// Reset
 input				iFREQ,
-input	[MOTOR_SIZE-1:0]	iCMD,
-input	[MOTOR_SIZE-1:0]	iFB,
-output		[5:0]		oSel,
-output	reg			oDIR				// Direction of motor Output
-
+input	[15:0]	iCMD,
+input	[15:0]	iFB,
+output[5:0]		oSel,
+output	reg	oDIR				// Direction of motor Output
 );
 
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
 `include "param.h"
-parameter	SIZE		=	6;
-parameter	ACCEL		=	6'b000001;	// Accelerate
-parameter	DECEL		=	6'b000010;	// Decelerate
-parameter	CONST_SPD	=	6'b000100;	// Keep Speed
-parameter	START		=	6'b001000;	// Start
-// parameter	DIFF_DIR	=	6'b010000;	// Change direction
-parameter	STOP		=	6'b100000;	// Stop
 
-// parameter	Threshold_Start	=	0;	// let Threshold of start = 50
-// parameter	Threshold_Stop	=	16'hF;	// let Threshold of start = 50
-// parameter	Threshold_Diff	=	16'hFF;
+reg [5:0]	states;
 
 //=======================================================
 //  REG/WIRE declarations
 //=======================================================
-wire [MOTOR_SIZE-1:0]wSPD_T;
-wire [MOTOR_SIZE-1:0]wSPD_C;
-wire 						wDIR_T;
-wire 						wDIR_C;
-wire [MOTOR_SIZE-1:0]wSpdErrVal;
-wire                 wErr_S;
-reg [SIZE-1:0]			state;
-reg						rFREQ;
-// reg		[7:0]	rSPD_O;	// old speed
-// reg		[1:0]	rDIR_O;	// old direction
-
-// reg		[7:0]	rSPD_N;	// now speed
-// reg		[1:0]	rDIR_N;	// now direction
-
+wire [15:0]	wSPD_Tar;
+wire 			wDIR_Tar;
+wire [15:0]	wSPD_Curr;
+wire 			wDIR_Curr;
+wire [15:0]	wSpdErrVal;
+wire        wErr_S;
+reg			rFREQ;
+reg			rDiff_DIR;
+reg			rSPD_Valid;
+reg			rSPD_Curr_Valid;
 //=======================================================
 //  Structural coding
 //=======================================================
-assign 	oSel	=	state;
+assign oSel = states;
 
+always@(posedge iCLK)begin
+	if(!iRst_n)begin
+		rDiff_DIR <= 0;
+		rSPD_Valid = 0;
+	end
+	else begin
+		rDiff_DIR <= wDIR_Tar ^ wDIR_Curr;
+		if(wSPD_Tar > MIN_DUTY)
+			rSPD_Valid <= 1;
+		else 
+			rSPD_Valid <= 0;
+		if(wSPD_Curr > MIN_VELOCITY )
+			rSPD_Curr_Valid <= 1;
+		else
+			rSPD_Curr_Valid <= 0;
+	end
+
+end
 
 always @(posedge iCLK) begin
 	if (!iRst_n) begin
-		state	<=	STOP;
+		states	<=	IDLE;
+		oDIR	<= 0;
 	end
 	else begin
 		rFREQ <= iFREQ;
-		if(~rFREQ & iFREQ) begin
-			case(state)
-			STOP:	begin	// Stop Speed of motor
-				oDIR	<=	0;
-				if (wSPD_T > MIN_VELOCITY) 		// Is now speed greater than zero
-					state	<=	START;			// let state is equal to START
+		if(~rFREQ & iFREQ)begin
+			case(states)
+			IDLE:begin
+				oDIR	<=	oDIR;
+				if (rSPD_Valid) 		// Is now speed greater than zero
+					states	<=	START;			// let state is equal to START
 				else
-					state	<=	STOP;
-			end
+					states	<=	IDLE;
+				end
+			STOP:	begin	// Stop Speed of motor
+				oDIR	<=	oDIR;
+				if(rSPD_Valid) 		// Is now speed greater than zero
+					states	<=	IDLE;			// let state is equal to START
+				else
+					states	<=	STOP;
+				end
 			START:	begin
-				oDIR		<=	~wDIR_T;			// let Direction of motor Output is equal to old Direction
-				state	<=	ACCEL;			// let state is equal to ACCEL
-			end
+				oDIR		<=	~wDIR_Tar;			// let Direction of motor Output is equal to old Direction
+				if(!rSPD_Valid)
+					states	<=	STOP;
+				else 
+					states	<=	ACCEL;
+				end
 			ACCEL:	begin	// Accelerate Speed of motor
-				if(wSPD_T == 0)
-					state <= DECEL;
-				else if(wDIR_C != wDIR_T && wSPD_C != 0)
-					state <= DECEL;
-				else if(wSPD_T < MIN_VELOCITY && wSPD_C < MIN_VELOCITY) 
-					state <= STOP;
-				else if(wSpdErrVal < Threshold_Diff_Vel || wSPD_C >= MAX_VELOCITY)
-					state <= CONST_SPD;
+				oDIR	<=	oDIR;
+				if(!rSPD_Curr_Valid)
+					states	<=	IDLE;
+				else if(!rSPD_Valid)
+					states <= DECEL;
+				else if(rDiff_DIR && rSPD_Curr_Valid)
+					states <= DECEL;
+				/*else if(wSpdErrVal < Threshold_Diff_Vel || wSPD_Curr >= MAX_VELOCITY)
+					oSel <= CONST_SPD;*/
 				else 
-					state <= ACCEL;
-			end
-			CONST_SPD:	begin// Keep Speed of motor
-				if(wDIR_C != wDIR_T)
-					state <= DECEL;
-				else if(wSPD_T < MIN_VELOCITY && wSPD_C < MIN_VELOCITY) 
-					state <= STOP;
-				else if(wSpdErrVal > Threshold_Diff_Vel)
-					state <= ACCEL;
-				else 
-					state <= CONST_SPD;
-
-			end
+					states <= ACCEL;
+				end
+			CONST:	begin// Keep Speed of motor
+				end
 			DECEL:	begin	// Decelerate Speed of motor
-				if(wDIR_C == wDIR_T && wSPD_T != 0)
-					state <= ACCEL;
-				else if(wSPD_C < MIN_VELOCITY)
-					state <= STOP;
+				oDIR	<=	oDIR;
+				if(!rSPD_Curr_Valid)
+					states <= STOP;
 				else 
-					state <= DECEL;
-				
-				
-			end
+					states <= DECEL;
+				end
 			default: begin
-				state <= STOP;
-			end
+			
+				states <= IDLE;
+				
+				end
 			endcase
 		end
 		else 
-			state <= state;
+			states <= states;
 	end
+
 end
 
 Absolute #(
 	.SIZE(MOTOR_SIZE)
 )TaregetVelocity(
 	.iValue(iCMD),
-	.oValue(wSPD_T),
-	.oSign(wDIR_T)
+	.oValue(wSPD_Tar),
+	.oSign(wDIR_Tar)
 );
 
 Absolute #(
 	.SIZE(MOTOR_SIZE)
 )CurrentVelocity(
 	.iValue(iFB),
-	.oValue(wSPD_C),
-	.oSign(wDIR_C)
+	.oValue(wSPD_Curr),
+	.oSign(wDIR_Curr)
 );
+
+/*
 SpeedErrorVal #(
 	.SIZE(MOTOR_SIZE)
 )(
@@ -163,4 +172,5 @@ SpeedErrorVal #(
 	.oSpeedErrVal(wSpdErrVal),
 	.oSmaller(wErr_S)
 );
+*/
 endmodule

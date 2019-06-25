@@ -23,6 +23,7 @@ module MUX (
 //===========================================================================
 input   iClk,
 input   iRst_n,
+input   iFREQ,
 input	[5:0]  iSel,
 input	[8:0] iDuty_0,
 input	[8:0] iDuty_1,
@@ -30,32 +31,57 @@ input	[8:0] iDuty_2,
 input	[8:0] iDuty_3,
 output reg [8:0] oDuty
 );
-`include "param.h"
-parameter	ACCEL		=	6'b000001;	// Accelerate
-parameter	DECEL		=	6'b000010;	// Decelerate
-parameter	CONST_SPD	=	6'b000100;	// Keep Speed
-parameter	START		=	6'b001000;	// Start
-parameter	STOP		=	6'b100000;	// Stop
 
+`include "param.h"
+reg rFREQ;
 always @(posedge iClk) begin
-    if(!iRst_n)
+   if(!iRst_n)
         oDuty <= 0;
-    else begin
-        case(iSel)
-        ACCEL:
-            oDuty <= iDuty_0;
-        DECEL:
-            oDuty <= iDuty_1;
-        CONST_SPD:
-            oDuty <= iDuty_2;
-        START:
-            oDuty <= MIN_DUTY;
-        STOP:
-            oDuty <= MIN_DUTY;
-        default:
+   else begin
+		rFREQ <= iFREQ;
+		if(~rFREQ & iFREQ)begin
+			case(iSel)
+			IDLE: begin
+				oDuty <= 0;
+				end
+		   ACCEL: begin
+				if(iDuty_0 > MAX_DUTY)
+					oDuty <= MAX_DUTY;
+				else if(iDuty_0 < MIN_DUTY)
+					oDuty <= MIN_DUTY;
+				else
+					oDuty <= iDuty_0;
+				end
+		   DECEL: begin
+				if(iDuty_1 > MAX_DUTY)
+					oDuty <= MAX_DUTY;
+				else if(iDuty_1 < MIN_DUTY)
+					oDuty <= MIN_DUTY;
+				else
+					oDuty <= iDuty_1;
+				end
+		   CONST: begin
+				if(iDuty_2 > MAX_DUTY)
+					oDuty <= MAX_DUTY;
+				else if(iDuty_2 < MIN_DUTY)
+					oDuty <= MIN_DUTY;
+				else
+					oDuty <= iDuty_2;
+				end
+		   START: begin
+				oDuty <= MIN_DUTY;
+				end
+		   STOP: begin
+				oDuty <= MIN_DUTY;
+				end
+		   default:
             oDuty <= 0;
-        endcase
-    end
+         endcase
+		end
+		else begin
+			oDuty <= oDuty;
+		end
+   end
 end
 
 endmodule

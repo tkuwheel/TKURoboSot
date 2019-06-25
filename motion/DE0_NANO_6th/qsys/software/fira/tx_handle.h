@@ -66,6 +66,7 @@ int tx_count = 0;
     }
     void send(bool &transmit)
     {
+    	IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,1);
     	int j = 0;
     	int motor1_fb = IORD_ALTERA_AVALON_PIO_DATA(MOTOR1_FB_BASE);
     	int motor2_fb = IORD_ALTERA_AVALON_PIO_DATA(MOTOR2_FB_BASE);
@@ -103,7 +104,7 @@ int tx_count = 0;
 				}
 			}
 		}
-		transmit = false;
+		IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,0);
 //		printf("transmit finished\n");
     }
 #endif
