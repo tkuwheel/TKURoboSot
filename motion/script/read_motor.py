@@ -12,28 +12,37 @@ def Read_File(filename):
         w1 = []
         w2 = []
         w3 = []
+        tar1 = []
+        tar2 = []
+        tar3 = []
         for line in f.readlines():
             line = line.strip("\n,' '")
             line_list = line.split(' ')
             time.append(int(line_list[0]))
-            w1.append(int(line_list[1]))
-            w2.append(int(line_list[2]))
-            w3.append(int(line_list[3]))
+            w1.append(float(line_list[1]))
+            w2.append(float(line_list[2]))
+            w3.append(float(line_list[3]))
+            tar1.append(float(line_list[4]))
+            tar2.append(float(line_list[5]))
+            tar3.append(float(line_list[6]))
                 
-        return time,w1,w2,w3
+        return time,w1,w2,w3,tar1,tar2,tar3
 
-def Plot_Trend(time,w1,w2,w3):
+def Plot_Trend(time,w1,w2,w3,tar1,tar2,tar3):
 
     x = np.zeros(len(time))
     total_time = 0
     for i in range(len(time)):
-        total_time += time[i]
+        total_time += time[i] * 0.001
         x[i] = total_time
     
     fig, ax = plt.subplots()
-    ax.plot(x,w1,'r',label='w1')
-    ax.plot(x,w2,'g',label='w2')
-    ax.plot(x,w3,'b',label='w3')
+    ax.plot(x,w1,'r',label='w1',linestyle='-')
+    ax.plot(x,w2,'g',label='w2',linestyle='-')
+    ax.plot(x,w3,'b',label='w3',linestyle='-')
+    ax.plot(x,tar1,'r',label='target1',linestyle='--')
+    ax.plot(x,tar2,'g',label='target2',linestyle='--')
+    ax.plot(x,tar3,'b',label='target3',linestyle='--')
 
     ax.legend(loc = 'upper right')
     plt.xlabel('time')
@@ -43,8 +52,7 @@ def Plot_Trend(time,w1,w2,w3):
     
 
 def main():
-    time,w1,w2,w3 = Read_File(sys.argv[1])
-    Plot_Trend(time,w1,w2,w3)
+    Plot_Trend(*Read_File(sys.argv[1]))
 
 if __name__ == '__main__':
     main()

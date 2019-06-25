@@ -39,8 +39,8 @@ private:
 	const double m1_Angle = -M_PI/6;
 	const double m2_Angle = -5*M_PI/6;
 	const double m3_Angle = M_PI/2;
-	const double robot_radius = 1;
-	//const double robot_radius = 0.15;
+//	const double robot_radius = 1;
+	const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;
 	const double yaw_inv = 2.3251;
     const char *port = "/dev/communication/motion";
@@ -53,10 +53,10 @@ private:
 	cssl_t *serial;
 
 	robot_command base_robotCMD;
-	robot_command base_robotFB;
+	robot_command odometry_robot;
 	serial_tx base_TX;
 	serial_rx base_RX;
-	serial_rx odometry;
+	serial_rx odometry_motor;
     bool record;
     bool clear_odo;
     bool base_flag;
@@ -83,6 +83,7 @@ private:
 	void 	McsslSend2FPGA();
 	int 	McsslInit();
 	void	ShootRegularization();
+	void	PWMRegularization(int, int, int);
 	void	SpeedRegularization(double, double, double);
 	void	InverseKinematics();
 	void	ForwardKinematics();	
@@ -96,9 +97,9 @@ public:
     bool    GetBaseFlag();
     bool    GetErrFlag();
     uint8_t* GetPacket();
-    serial_rx GetOdo();
+    serial_rx GetOdoMotor();
+    robot_command GetOdoRobot();
 	void Send(const robot_command &);
-	robot_command *GetFeedback();
     void SetSingle(int, int16_t);
     void SetTriple(int16_t, int16_t, int16_t);
 };

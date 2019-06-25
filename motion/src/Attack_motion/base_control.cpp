@@ -6,7 +6,7 @@ bool BaseControl::decoder_flag = false;
 int BaseControl::length = 0;
 BaseControl::BaseControl()
 {
-    this->base_robotFB = {0};
+    this->odometry_robot = {0};
     this->base_TX = {0};
     this->base_TX.head1 = 0xff;
     this->base_TX.head2 = 0xfa;
@@ -36,7 +36,7 @@ BaseControl::BaseControl(int argc, char** argv, bool record = false): record(rec
     if(this->record){
         this->record_name = this->record_name.assign(argv[0])  + "_record.txt";
     }
-    this->base_robotFB = {0};
+    this->odometry_robot = {0};
     this->base_TX = {0};
     this->base_TX.head1 = 0xff;
     this->base_TX.head2 = 0xfa;
@@ -100,6 +100,7 @@ void BaseControl::McsslFinish()
 {
     fp.close();
     pthread_cancel(tid);
+    printf("close base thread\n");
 #ifdef CSSL
 	cssl_close(serial);
 	cssl_stop();
@@ -248,8 +249,7 @@ void BaseControl::McsslSend2FPGA()
     this->base_TX.w2_h = this->w2 >> 8;
     this->base_TX.w3_l = this->w3;
     this->base_TX.w3_h = this->w3 >> 8;
-//    this->base_TX.enable_and_stop = (this->en1<<7) + (this->en2<<6) + (this->en3<<5) + (this->stop1<<4) + (this->stop2<<3) + (this->stop3<<2) + (this->hold_ball);
-    this->base_TX.enable_and_stop = 0;
+    this->base_TX.enable_and_stop = (this->en1<<7) + (this->en2<<6) + (this->en3<<5) + (this->stop1<<4) + (this->stop2<<3) + (this->stop3<<2) + (this->hold_ball);
     this->base_TX.shoot = this->shoot_power;
     uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
         this->base_TX.head1, 
@@ -338,19 +338,9 @@ void BaseControl::ForwardKinematics()
 	double x,y;
 	double yaw=0;
 	int round=0;
-	this->base_robotFB.x_speed = ( base_RX.w1 * (-0.3333) + base_RX.w2 * (-0.3333) + base_RX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	this->base_robotFB.y_speed = ( base_RX.w1 * (0.5774) + base_RX.w2 * (-0.5774) + base_RX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	yaw = (base_RX.w1 * yaw_inv + base_RX.w2 * yaw_inv + base_RX.w3 * yaw_inv) * 2 * M_PI * wheel_radius / 2000 / 26;
-	round = yaw/(2*M_PI);
-	double yaw_degree;
-	yaw_degree = (yaw - round*2*M_PI)*180/M_PI;
-	if(yaw_degree>180){
-		this->base_robotFB.yaw_speed = yaw_degree-360;
-	}else if(yaw_degree<(-180)){
-		this->base_robotFB.yaw_speed = yaw_degree+360;
-	}else{
-		this->base_robotFB.yaw_speed = yaw_degree;
-	}
+	this->odometry_robot.x_speed = ( base_RX.w1 * (0.5774) + base_RX.w2 * (-0.5774) + base_RX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	this->odometry_robot.y_speed = ( base_RX.w1 * (-0.3333) + base_RX.w2 * (-0.3333) + base_RX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	this->odometry_robot.yaw_speed = (base_RX.w1 * yaw_inv + base_RX.w2 * yaw_inv + base_RX.w3 * yaw_inv)  * wheel_radius / 2000 / 26 / robot_radius ;
 }
 
 void BaseControl::InverseKinematics()
@@ -376,6 +366,19 @@ void BaseControl::InverseKinematics()
 	std::cout << std::endl;
 #endif
 	SpeedRegularization(w1_speed, w2_speed, w3_speed);
+}
+
+void BaseControl::PWMRegularization(int w1_pwm, int w2_pwm, int w3_pwm)
+{
+	this->en1 = (fabs(w1_pwm) > 0)? 1 : 0;
+	this->en2 = (fabs(w2_pwm) > 0)? 1 : 0;
+	this->en3 = (fabs(w3_pwm) > 0)? 1 : 0;
+	this->stop1 = 0;
+	this->stop2 = 0;
+	this->stop3 = 0;
+    this->w1 = (int16_t)w1_pwm;
+    this->w2 = (int16_t)w2_pwm;
+    this->w3 = (int16_t)w3_pwm;
 }
 
 void BaseControl::SpeedRegularization(double w1_p, double w2_p, double w3_p)
@@ -447,8 +450,6 @@ void BaseControl::Run()
 {
     std::stringstream fss;
     std::stringstream fduration;
-    std::stringstream fw1, fw2, fw3;
-    std::stringstream ftest;
     if(record){
         fp.open(this->record_name, std::ios::out);
         if(fp.is_open())
@@ -460,6 +461,10 @@ void BaseControl::Run()
         printf("do not record file\n");
     }
 //    printf("in the run\n");
+    int16_t tar1, tar2, tar3;
+    double tar1_rpm, tar2_rpm, tar3_rpm;
+    double real_rpm1, real_rpm2, real_rpm3;
+    double scale;
     while(true){
         if(this->serial_flag){
             this->base_flag = true;
@@ -469,12 +474,40 @@ void BaseControl::Run()
                 printf("serial decode fail\n");
 #endif
             }else{
-                if(record && (this->base_RX.duration < 10000000)){
+                ForwardKinematics();
+                if(record && (this->base_RX.duration < 1000000)){
+                    scale =  1/(0.000001 * base_RX.duration);
+
+                    tar1 = this->w1;
+                    tar2 = this->w2;
+                    tar3 = this->w3;
+                    if(tar1>=0){
+                        tar1_rpm = (tar1 - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }else{
+                        tar1_rpm = -(fabs(tar1) - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }
+                    if(tar2>=0){
+                        tar2_rpm = (tar2 - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }else{
+                        tar2_rpm = -(fabs(tar2) - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }
+                    if(tar3>=0){
+                        tar3_rpm = (tar3 - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }else{
+                        tar3_rpm = -(fabs(tar3) - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+                    }
+
+                    real_rpm1 = base_RX.w1 * scale * 60 / 2000;
+                    real_rpm2 = base_RX.w2 * scale * 60 / 2000;
+                    real_rpm3 = base_RX.w3 * scale * 60 / 2000;
 
                     fss << this->base_RX.duration << " "
-                        << this->base_RX.w1 * FB_FREQUENCY * 60 / 2000 << " "
-                        << this->base_RX.w2 * FB_FREQUENCY * 60 / 2000 << " "
-                        << this->base_RX.w3 * FB_FREQUENCY * 60 / 2000 << " "
+                        << real_rpm1 << " "
+                        << real_rpm2 << " "
+                        << real_rpm3 << " "
+                        << tar1_rpm  << " " 
+                        << tar2_rpm  << " " 
+                        << tar3_rpm  << " " 
                         << std::endl;
                     fp << fss.str();
                     fss.str(std::string());
@@ -482,17 +515,17 @@ void BaseControl::Run()
                 }
                 if(this->clear_odo){
                     this->clear_odo = false;
-                    this->odometry.duration = 0;
-                    this->odometry.w1 = 0;
-                    this->odometry.w2 = 0;
-                    this->odometry.w3 = 0;
+                    this->odometry_motor.duration = 0;
+                    this->odometry_motor.w1 = 0;
+                    this->odometry_motor.w2 = 0;
+                    this->odometry_motor.w3 = 0;
 
                 }
 
-                this->odometry.duration += this->base_RX.duration;
-                this->odometry.w1 += this->base_RX.w1;
-                this->odometry.w2 += this->base_RX.w2;
-                this->odometry.w3 += this->base_RX.w3;
+                this->odometry_motor.duration += this->base_RX.duration;
+                this->odometry_motor.w1 += this->base_RX.w1;
+                this->odometry_motor.w2 += this->base_RX.w2;
+                this->odometry_motor.w3 += this->base_RX.w3;
 
             }
         }else{
@@ -500,7 +533,6 @@ void BaseControl::Run()
 
         }
     }
-    printf("close base thread\n");
 }
 
 void* BaseControl::pThreadRun(void* p)
@@ -529,11 +561,16 @@ uint8_t* BaseControl::GetPacket()
     return serial_data;
 }
 
-serial_rx BaseControl::GetOdo()
+serial_rx BaseControl::GetOdoMotor()
 {
 
     this->clear_odo = true;
-    return odometry;
+    return odometry_motor;
+}
+
+robot_command BaseControl::GetOdoRobot()
+{
+	return odometry_robot;
 }
 
 void BaseControl::Send(const robot_command &CMD)
@@ -553,171 +590,31 @@ void BaseControl::Send(const robot_command &CMD)
 	McsslSend2FPGA();
 }
 
-robot_command *BaseControl::GetFeedback()
-{
-	ForwardKinematics();
-	return &base_robotFB;
-}
-
-void BaseControl::SetSingle(int number, int16_t rpm)
+void BaseControl::SetSingle(int number, int16_t pwm)
 {
     switch(number){
         case 1:
-            this->base_TX.w1_l = rpm;
-            this->base_TX.w1_h = rpm >> 8;
-            this->base_TX.w2_l = 0;
-            this->base_TX.w2_h = 0;
-            this->base_TX.w3_l = 0;
-            this->base_TX.w3_h = 0;
-//            this->base_TX.enable_and_stop = 0x80;
             break;
         case 2:
-            this->base_TX.w1_l = 0;
-            this->base_TX.w1_h = 0;
-            this->base_TX.w2_l = rpm;
-            this->base_TX.w2_h = rpm >> 8;
-            this->base_TX.w3_l = 0;
-            this->base_TX.w3_h = 0;
+            PWMRegularization(0, pwm, 0);
             break;
         case 3:
-            this->base_TX.w1_l = 0;
-            this->base_TX.w1_h = 0;
-            this->base_TX.w2_l = 0;
-            this->base_TX.w2_h = 0;
-            this->base_TX.w3_l = rpm;
-            this->base_TX.w3_h = rpm >> 8;
+            PWMRegularization(0, 0, pwm);
             break;
         default:
-            this->base_TX.w1_l = 0;
-            this->base_TX.w1_h = 0;
-            this->base_TX.w2_l = 0;
-            this->base_TX.w2_h = 0;
-            this->base_TX.w3_l = 0;
-            this->base_TX.w3_h = 0;
+            PWMRegularization(0, 0, 0);
             break;
     }
-    this->base_TX.enable_and_stop = 0;
     this->base_TX.shoot = 0;
-    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot
-    };
+	McsslSend2FPGA();
 
-    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
-    this->base_TX.crc_16_1 = crc_16 >> 8;
-    this->base_TX.crc_16_2 = crc_16;
-    uint8_t cssl_data[TX_PACKAGE_SIZE] = {  
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot,
-        this->base_TX.crc_16_1,
-        this->base_TX.crc_16_2,
-    };
-#ifdef CSSL
-    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
-#endif
-#ifdef DEBUG
-    printf("**************************\n");
-    printf("* Single motor(DEBUG) *\n");
-    printf("**************************\n");
-    printf("head1: %x\n", (this->base_TX.head1));
-    printf("head2: %x\n", (this->base_TX.head2));
-    printf("w1_h: %x\n", (this->base_TX.w1_h));
-    printf("w1_l: %x\n", (this->base_TX.w1_l));
-    printf("w2_h: %x\n", (this->base_TX.w2_h));
-    printf("w2_l: %x\n", (this->base_TX.w2_l));
-    printf("w3_h: %x\n", (this->base_TX.w3_h));
-    printf("w3_l: %x\n", (this->base_TX.w3_l));
-    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
-    printf("shoot: %x\n", (this->base_TX.shoot));
-    printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
-    printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
-    printf("crc16: %x\n", (crc_16));
-    printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
-    printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
-    printf("w3: %x\n", ((this->base_TX.w3_h) << 8) + (this->base_TX.w3_l));
-#endif
 
 }
 
-void BaseControl::SetTriple(int16_t rpm1, int16_t rpm2, int16_t rpm3)
+void BaseControl::SetTriple(int16_t pwm1, int16_t pwm2, int16_t pwm3)
 {
-    this->base_TX.w1_l = rpm1;
-    this->base_TX.w1_h = rpm1 >> 8;
-    this->base_TX.w2_l = rpm2;
-    this->base_TX.w2_h = rpm2 >> 8;
-    this->base_TX.w3_l = rpm3;
-    this->base_TX.w3_h = rpm3 >> 8;
-    this->base_TX.enable_and_stop = 0;
+    PWMRegularization(pwm1, pwm2, pwm3);
     this->base_TX.shoot = 0;
-    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot
-    };
-
-    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
-    this->base_TX.crc_16_1 = crc_16 >> 8;
-    this->base_TX.crc_16_2 = crc_16;
-    uint8_t cssl_data[TX_PACKAGE_SIZE] = {  
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot,
-        this->base_TX.crc_16_1,
-        this->base_TX.crc_16_2,
-    };
-#ifdef CSSL
-    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
-#endif
-#ifdef DEBUG
-    printf("**************************\n");
-    printf("* Triple motor(DEBUG) *\n");
-    printf("**************************\n");
-    printf("head1: %x\n", (this->base_TX.head1));
-    printf("head2: %x\n", (this->base_TX.head2));
-    printf("w1_h: %x\n", (this->base_TX.w1_h));
-    printf("w1_l: %x\n", (this->base_TX.w1_l));
-    printf("w2_h: %x\n", (this->base_TX.w2_h));
-    printf("w2_l: %x\n", (this->base_TX.w2_l));
-    printf("w3_h: %x\n", (this->base_TX.w3_h));
-    printf("w3_l: %x\n", (this->base_TX.w3_l));
-    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
-    printf("shoot: %x\n", (this->base_TX.shoot));
-    printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
-    printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
-    printf("crc16: %x\n", (crc_16));
-    printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
-    printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
-    printf("w3: %x\n", ((this->base_TX.w3_h) << 8) + (this->base_TX.w3_l));
-#endif
+	McsslSend2FPGA();
 
 }

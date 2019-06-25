@@ -9,20 +9,25 @@ find_package(catkin REQUIRED COMPONENTS
  std_msgs
  roscpp
 )
+
 set(INCLUDE_DIR
     ${PROJECT_SOURCE_DIR}/include
 # common/
 # common/cssl
 )
+set(BASE_CONTROL_DIR
+    ${PROJECT_SOURCE_DIR}/src/Attack_motion)
 # message(FIND PATH ${PROJECT_SOURCE_DIR})
 # message(FIND INCLUDE ${INCLUDE_DIR})
-include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
+
+include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR} ${BASE_CONTROL_DIR})
 
 catkin_package(CATKIN_DEPENDS
  message_runtime
  std_msgs
  roscpp
 )
+
 add_library(csslLib src/cssl/cssl.c)
 add_library(crcLib src/crc_16.cpp)
 # foreach(subdir

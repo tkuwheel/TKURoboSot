@@ -66,7 +66,7 @@ int main(int argc, char **argv)
             Base.Send(robotCMD);
         }
         if(Base.GetBaseFlag()){
-            rx = Base.GetOdo();
+            rx = Base.GetOdoMotor();
 #ifdef DEBUG
             printf("\n*****get feedback******\n");
             std::cout << std::dec;
