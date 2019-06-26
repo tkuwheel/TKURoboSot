@@ -14,6 +14,9 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
 
+## Rotate 90 for 6th robot
+ROTATE_V_ANG = 0
+
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
@@ -44,25 +47,26 @@ class Robot(object):
   __handle_ang = 5
   Kp_v = 1.5
   Ki_v = 0.0
-  Kd_v = 0.1
-  Cp_v = 20
+  Kd_v = 0.15
+  Cp_v = 0
   Kp_w = 0.25
   Ki_w = 0.0
   Kd_w = 0.0
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
-  pid_v.output_limits = (__minimum_v, __maximum_v)
+  # pid_v.output_limits = (__minimum_v, __maximum_v)
+  pid_v.output_limits = (-1*__maximum_v, __maximum_v)
   pid_v.auto_mode = True
   pid_w = PID(Kp_w, Ki_w, Kd_w, setpoint=Cp_w)
   pid_w.output_limits = (-1*__maximum_w, __maximum_w)
   pid_w.auto_mode = True
 
-  def TuningVelocityContorller(self, p, i, d, cp = 20):
+  def TuningVelocityContorller(self, p, i, d, cp = Cp_v):
     self.pid_v.setpoint = cp
     self.pid_v.tunings = (p, i, d)
 
-  def TuningAngularVelocityContorller(self, p, i, d, cp = 0):
+  def TuningAngularVelocityContorller(self, p, i, d, cp = Cp_w):
     self.pid_w.setpoint = cp
     self.pid_w.tunings = (p, i, d)
 
@@ -172,8 +176,7 @@ class Robot(object):
         unit_vector = (x / magnitude, y / magnitude)
 
       msg = Twist()
-      ## Rotate 90 for 6th robot
-      output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
+      output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, ROTATE_V_ANG)
 
       msg.linear.x   = output_x
       msg.linear.y   = output_y
@@ -187,7 +190,7 @@ class Robot(object):
     return self.__robot_info
 
   def SimShoot(self, power, pos) :
-    rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number))
+    rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number), 1)
     try:
       client = rospy.ServiceProxy(SIM_SHOOT_SRV.format(self.robot_number), Shoot)
       resp1 = client(power, pos)
@@ -201,7 +204,7 @@ class Robot(object):
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
-    rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number))
+    rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number), 1)
     try:
       client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
       resp1 = client(1)

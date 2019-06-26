@@ -80,27 +80,34 @@ class Strategy(Robot):
     self.game_state = "Kick_Off"
     self.side       = "Yellow"
     self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
+    rospy.init_node('core', anonymous=True)
+    self.rate = rospy.Rate(1000)
+
+    dsrv = Server(StrategyConfig, self.Callback)
+    self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
+
 
   def RunStatePoint(self, state):
     if state == "Kick_Off" :
-      r = self.robot.toPoint(0, 0, 0)
+      c = self.robot.toPoint(0, 0, 0)
     elif state == "Free_Kick" :
-      r = self.robot.toPoint(100, 100, 90)
+      c = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
-      r = self.robot.toPoint(100, -100, 180)
+      c = self.robot.toPoint(100, -100, 180)
     elif state == "Throw_In" :
-      r = self.robot.toPoint(-100, -100, 270)
+      c = self.robot.toPoint(-100, -100, 270)
     elif state == "Coner_Kick":
-      r = self.robot.toPoint(300, 200, 45)
+      c = self.robot.toPoint(300, 200, 45)
     elif state == "Penalty_Kick" :
-      r = self.robot.toPoint(-100, 100, 135)
+      c = self.robot.toPoint(-100, 100, 135)
     elif state == "Run_Specific_Point" :
-      r = self.robot.toPoint(self.run_x, self.run_y, 0)
+      c = self.robot.toPoint(self.run_x, self.run_y, self.run_yaw)
     else:
       print("ummmm")
 
-    if r < 40:
+    if c:
       self.robot.toIdle()
+      self.dclient.update_configuration({"run_point": False})
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
@@ -110,7 +117,7 @@ class Strategy(Robot):
     self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
     self.run_x      = config['run_x']
     self.run_y      = config['run_y']
-    
+    self.run_yaw    = config['run_yaw']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -121,12 +128,6 @@ class Strategy(Robot):
     return config
 
   def main(self, argv):
-    rospy.init_node('core', anonymous=True)
-    rate = rospy.Rate(1000)
-
-    dsrv = Server(StrategyConfig, self.Callback)
-    dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
-
     TEST_MODE = True
     if SysCheck(argv) == "Native Mode":
       log("Start Native")
@@ -150,7 +151,7 @@ class Strategy(Robot):
         if not self.robot.is_idle and not self.run_point and not self.game_start:
           self.robot.toIdle()
         elif self.robot.is_idle and self.game_start:
-          dclient.update_configuration({"run_point": False})
+          self.dclient.update_configuration({"run_point": False})
           #self.robot.toChase(targets, self.opp_side, "Straight")
           self.robot.toChase(targets, self.opp_side)
         elif self.robot.is_chase:
@@ -181,7 +182,7 @@ class Strategy(Robot):
         log('shutdown')
         break
 
-      rate.sleep()
+      self.rate.sleep()
 
 if __name__ == '__main__':
   try:
