@@ -42,7 +42,7 @@ class Robot(object):
   __minimum_w = 0.2
   __maximum_w = 100
   __minimum_v = 0
-  __maximum_v = 50
+  __maximum_v = 100
   __handle_dis = 25
   __handle_ang = 5
   Kp_v = 1.5
@@ -159,8 +159,9 @@ class Robot(object):
   def RobotCtrlS(self, x, y, yaw, pass_through=False):
     if pass_through:
       msg = Twist()
-      msg.linear.x = -y
-      msg.linear.y = x
+      output_x, output_y = self.Rotate(x, y, ROTATE_V_ANG)
+      msg.linear.x   = output_x
+      msg.linear.y   = output_y
       msg.angular.z  = yaw
       self.cmdvel_pub.publish(msg)
     else:

@@ -41,9 +41,9 @@ class Chase(object):
   def Orbit(self, goal_ang):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang * -1.5
-    w = velocity / orbit_radius
+    w = (velocity / orbit_radius) * np.sign(velocity)
 
     v_x   = 0
     v_y   = velocity
-    v_yaw = w * np.sign(velocity) * -1
+    v_yaw = w
     return v_x, v_y, v_yaw
