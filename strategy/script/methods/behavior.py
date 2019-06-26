@@ -9,7 +9,6 @@ class Behavior(Robot):
     pass
 
   def Go2Point(self, tx, ty, tyaw):
-    # print(self.robot.GetRobotInfo())
     robot_info = self.GetRobotInfo()
    
     v_x   = tx - robot_info['location']['x']

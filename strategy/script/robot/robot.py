@@ -3,7 +3,6 @@ import rospy
 import math
 import numpy as np
 from nubot_common.msg import OminiVisionInfo
-# from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
 from transfer.msg import PPoint
@@ -17,7 +16,6 @@ from std_msgs.msg import Int32
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
-# SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
 SIM_HANDLE_SRV = "nubot{}/BallHandle"
 
@@ -72,7 +70,6 @@ class Robot(object):
     self.pid_v.output_limits = (-1*M, M)
 
   def ChangeAngularVelocityRange(self, m, M):
-    # print("Change W {}, {}".format(m, M))
     self.pid_w.output_limits = (-1*M, M)
 
   def ChangeBallhandleCondition(self, dis, ang):
@@ -113,7 +110,6 @@ class Robot(object):
                       self._GetSimGoalInfo)
 
   def _Publisher(self, topic, mtype):
-    #return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
     return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetSimVision(self, vision):
@@ -175,66 +171,14 @@ class Robot(object):
       else:
         unit_vector = (x / magnitude, y / magnitude)
 
-      # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate 90 for 6th robot
       output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      # output_x = unit_vector[0]*output_v
-      # output_y = unit_vector[1]*output_v
-      #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))
 
-      msg.linear.x = output_x
-      msg.linear.y = output_y
+      msg.linear.x   = output_x
+      msg.linear.y   = output_y
       msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
-
-  def RobotCtrl(self, x, y, yaw):
-    angle = yaw
-    velocity = math.hypot(x, y)
-    if x != 0:
-      alpha = math.degrees(math.atan2(y, x))
-    else:
-      alpha = 0
-
-    dis_max = 2
-    dis_min = 0.3
-    velocity_max = 35
-    velocity_min = 10
-    angular_velocity_max = 18
-    angular_velocity_min = 5
-    angle_max = 144
-    angle_min = 5
-    angle_out = angle
-    if velocity == 0:
-      pass
-    elif velocity > dis_max:
-      velocity = velocity_max
-    elif velocity < dis_min:
-      velocity = velocity_min
-    else:
-      velocity = (velocity_max - velocity_min) * \
-                 (math.cos((((velocity - dis_min) / (dis_max-dis_min) - 1) * math.pi)) + 1 )/ 2 + velocity_min
-    if angle == 0:
-      pass
-    elif abs(angle) > angle_max:
-      angle_out = angular_velocity_max
-    elif abs(angle) < angle_min:
-      angle_out = angular_velocity_min
-    else:
-      angle_out = (angular_velocity_max - angular_velocity_min) * \
-                  (math.cos((((angle - angle_min) / (angle_max-angle_min) - 1) * math.pi)) + 1 )/ 2 + angular_velocity_min
-    if angle < 0:
-      angle_out = -angle_out
-    x = velocity * math.cos(math.radians(alpha))
-    y = velocity * math.sin(math.radians(alpha))
-    yaw = angle_out
-
-    msg = Twist()
-    msg.linear.x = -y
-    msg.linear.y = x
-    msg.angular.z = yaw
-
-    self.cmdvel_pub.publish(msg)
 
   def GetObjectInfo(self):
     return self.__object_info
