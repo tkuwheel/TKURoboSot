@@ -85,6 +85,7 @@ class Core(Robot, StateMachine):
 
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
+
     print("Remaining: ", remaining)
     if remaining >= 40:
       self.MotionCtrl(x, y, yaw)
@@ -169,11 +170,9 @@ class Strategy(Robot):
     while not rospy.is_shutdown():
 
       self.robot.PubCurrentState()
-      
-      
+
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
-      #log(position)
 
       if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
         print("Can not find ball")

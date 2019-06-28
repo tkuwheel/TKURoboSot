@@ -4,7 +4,6 @@ import math
 import numpy as np
 import time
 from nubot_common.msg import OminiVisionInfo
-# from nubot_common.msg import VelCmd
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
 from transfer.msg import PPoint
@@ -18,7 +17,6 @@ from std_msgs.msg import Int32
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
-# SIM_CMDVEL_TOPIC = "nubot{}/nubotcontrol/velcmd"
 SIM_SHOOT_SRV  = "nubot{}/Shoot"
 SIM_HANDLE_SRV = "nubot{}/BallHandle"
 
@@ -73,7 +71,6 @@ class Robot(object):
     self.pid_v.output_limits = (-1*M, M)
 
   def ChangeAngularVelocityRange(self, m, M):
-    # print("Change W {}, {}".format(m, M))
     self.pid_w.output_limits = (-1*M, M)
 
   def ChangeBallhandleCondition(self, dis, ang):
@@ -114,7 +111,6 @@ class Robot(object):
                       self._GetSimGoalInfo)
 
   def _Publisher(self, topic, mtype):
-    #return rospy.Publisher(topic.format(self.robot_number), mtype, queue_size=1)
     return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetSimVision(self, vision):
@@ -176,20 +172,14 @@ class Robot(object):
       else:
         unit_vector = (x / magnitude, y / magnitude)
 
-      # print("Output: ",(unit_vector[0]*output_v, unit_vector[1]*output_v, output_w))
       msg = Twist()
       ## Rotate 90 for 6th robot
       output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, 90)
-      # output_x = unit_vector[0]*output_v
-      # output_y = unit_vector[1]*output_v
-      #print("output_x: {}, output_y: {}, output_w:{}, current_v: {}, output_v: {}".format(output_x, output_y, output_w, current_vector, output_v))
 
-      msg.linear.x = output_x
-      msg.linear.y = output_y
+      msg.linear.x   = output_x
+      msg.linear.y   = output_y
       msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
-
-  
 
   def GetObjectInfo(self):
     self.__object_info['time'] = time.time()
