@@ -57,6 +57,7 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
     
     if self.goal_dis == 0:
+      print('goal into')
       self.tStart = t['time']
       self.goal_dis = t['ball']['dis']
     elif t['ball']['dis'] < self.goal_dis:
@@ -64,10 +65,11 @@ class Core(Robot, StateMachine):
       self.goal_dis = t['ball']['dis']
     elif t['ball']['dis'] >= self.goal_dis :
       a = self.Calculate(t['time'])
-      if a >= 3:
+      print("time:",a)
+      if a >= 1.5:
         x, y, yaw = self.Accelerate(x, y, yaw)
-        self.tStart = t['time']
         self.goal_dis = t['ball']['dis']
+     
 
     self.MotionCtrl(x, y, yaw)
 
@@ -101,6 +103,7 @@ class Core(Robot, StateMachine):
     return ntime - self.tStart
   
   def Accelerate(self,x, y, yaw):
+    print('accelerating')
     return x*1.5, y*1.5, yaw
 
 class Strategy(Robot):
@@ -119,8 +122,8 @@ class Strategy(Robot):
       r = self.robot.toPoint(100, -100, 180)
     elif state == "Throw_In" :
       r = self.robot.toPoint(-100, -100, 270)
-    elif state == "Coner_Kick":< self.goal_dis:
-      r = self.robot.toPoint(30< self.goal_dis:
+    elif state == "Coner_Kick":
+      r = self.robot.toPoint(300, 200, 45)
     elif state == "Penalty_Kick" :
       r = self.robot.toPoint(-100, 100, 135)
     elif state == "Run_Specific_Point" :
