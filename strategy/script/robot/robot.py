@@ -39,23 +39,22 @@ class Robot(object):
                    'Yellow':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
   ## Configs
-  __minimum_w = 0.2
-  __maximum_w = 100
+  __minimum_w = 0
+  __maximum_w = 0
   __minimum_v = 0
-  __maximum_v = 100
-  __handle_dis = 25
-  __handle_ang = 5
-  Kp_v = 1.5
+  __maximum_v = 0
+  __handle_dis = 0
+  __handle_ang = 0
+  Kp_v = 0.0
   Ki_v = 0.0
-  Kd_v = 0.15
+  Kd_v = 0.0
   Cp_v = 0
-  Kp_w = 0.25
+  Kp_w = 0.0
   Ki_w = 0.0
   Kd_w = 0.0
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
-  # pid_v.output_limits = (__minimum_v, __maximum_v)
   pid_v.output_limits = (-1*__maximum_v, __maximum_v)
   pid_v.auto_mode = True
   pid_w = PID(Kp_w, Ki_w, Kd_w, setpoint=Cp_w)
@@ -71,9 +70,11 @@ class Robot(object):
     self.pid_w.tunings = (p, i, d)
 
   def ChangeVelocityRange(self, m, M):
+    self.__minimum_v = m
     self.pid_v.output_limits = (-1*M, M)
 
   def ChangeAngularVelocityRange(self, m, M):
+    self.__minimum_w = m
     self.pid_w.output_limits = (-1*M, M)
 
   def ChangeBallhandleCondition(self, dis, ang):
