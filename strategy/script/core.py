@@ -67,7 +67,7 @@ class Core(Robot, StateMachine):
       a = self.Calculate(t['time'])
       print("time:",a)
       if a >= 1.5:
-        x, y, yaw = self.Accelerate(x, y, yaw)
+        self.Accelerate()
         self.goal_dis = t['ball']['dis']
      
 
@@ -102,9 +102,10 @@ class Core(Robot, StateMachine):
   def Calculate(self,ntime):
     return ntime - self.tStart
   
-  def Accelerate(self,x, y, yaw):
+  def Accelerate(self):
     print('accelerating')
-    return x*1.5, y*1.5, yaw
+    self.ChangeVelocityRange(0,100)
+    
 
 class Strategy(Robot):
   def __init__(self):
