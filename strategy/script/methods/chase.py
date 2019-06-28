@@ -26,6 +26,8 @@ class Chase(object):
     v_y   = br_x * math.sin(math.radians(alpha)) + br_y * math.cos(math.radians(alpha))
     v_yaw = goal_ang
 
+
+
     return v_x, v_y, v_yaw
 
   def StraightForward(self, ball_dis, ball_ang):
@@ -38,8 +40,6 @@ class Chase(object):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang * -1.5
     w = velocity / orbit_radius
-
-
     v_x   = 0
     v_y   = velocity
     v_yaw = w * np.sign(velocity) * -1
