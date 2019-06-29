@@ -16,15 +16,17 @@
 /*******************************
   * Include header
   ******************************/
+#include "motor_control.h"
 #include "parameter.h"
 #include "motor_data.h"
 #include "cssl.h"
-#include "port.h"
+//#include "port.h"
 #include "crc_16.h"
 /*******************************
   * Define 
   ******************************/
-//#define DEBUG
+#define DEBUG
+#define _RECORD
 #define CSSL
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
@@ -36,13 +38,12 @@ public:
 	~BaseControl();
 
 private:
-	const double m1_Angle = -M_PI/6;
-	const double m2_Angle = -5*M_PI/6;
-	const double m3_Angle = M_PI/2;
+	const double m1_Angle = -5*M_PI/6;
+	const double m2_Angle = -M_PI/6;
+	const double m3_Angle = M_PI;
 //	const double robot_radius = 1;
 	const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;
-	const double yaw_inv = 2.3251;
     const char *port = "/dev/communication/motion";
 //    const int package_size = RX_PACKAGE_SIZE;
 
@@ -54,6 +55,7 @@ private:
 
 	robot_command base_robotCMD;
 	robot_command odometry_robot;
+    Odo odo;
 	serial_tx base_TX;
 	serial_rx base_RX;
 	serial_rx odometry_motor;
@@ -61,15 +63,34 @@ private:
     bool clear_odo;
     bool base_flag;
     bool error_flag;
+    bool clock;
+    bool send_flag;
     struct timeval last_time;
-/* for serial callback*/
-	static uint8_t serial_data[RX_PACKAGE_SIZE];
+    /* for serial callback*/
+    static uint8_t serial_data[RX_PACKAGE_SIZE];
     static bool decoder_flag;
     static bool serial_flag;
     static int length;
 
-	double x_CMD, y_CMD, yaw_CMD;
-    int16_t w1, w2, w3;
+    double x_CMD, y_CMD, yaw_CMD;
+    int16_t tar_w1_pwm;
+    int16_t tar_w2_pwm; 
+    int16_t tar_w3_pwm;
+    int16_t w1_pwm;
+    int16_t w2_pwm; 
+    int16_t w3_pwm;
+    double w1_cos_value; 
+    double w2_cos_value; 
+    double w3_cos_value; 
+    double tar_w1;
+    double tar_w2;
+    double tar_w3;
+    double curr_w1;
+    double curr_w2;
+    double curr_w3;
+    double w1_spd_err;
+    double w2_spd_err;
+    double w3_spd_err;
     uint8_t shoot_power;
 	bool en1,en2,en3,stop1,stop2,stop3;
     bool hold_ball;
@@ -83,14 +104,19 @@ private:
 	void 	McsslSend2FPGA();
 	int 	McsslInit();
 	void	ShootRegularization();
-	void	PWMRegularization(int, int, int);
+	void	DriverSetting(int16_t, int16_t, int16_t);
 	void	SpeedRegularization(double, double, double);
 	void	InverseKinematics();
 	void	ForwardKinematics();	
-    void    ReEnable();
+    void    Trajectory();
     void    Run();
     void    FPGAInit();
     bool    SerialDecoder();
+    void    Filter();
+    void    SpeedControl();
+    double  PWM2RPM(int16_t);
+    int16_t RPM2PWM(double);
+    double    CalSpdErr(double, double);    //calculate the motor speed error
 public:
     static void *pThreadRun(void *p);
 	void 	McsslFinish();
@@ -99,8 +125,10 @@ public:
     uint8_t* GetPacket();
     serial_rx GetOdoMotor();
     robot_command GetOdoRobot();
+    robot_command GetTraj();
 	void Send(const robot_command &);
     void SetSingle(int, int16_t);
     void SetTriple(int16_t, int16_t, int16_t);
+    void SetClock();
 };
 #endif

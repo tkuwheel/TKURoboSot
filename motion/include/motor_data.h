@@ -9,13 +9,18 @@
 #define MOTOR_DATA_TYPE int
 //extern "C"{
 typedef struct{
-	double x_speed;
-	double y_speed;
-	double yaw_speed;
+	double x;
+	double y;
+	double yaw;
 	uint8_t shoot_power;
     bool hold_ball;
     bool remote;
 }robot_command;
+
+typedef struct{
+    robot_command vel;
+    robot_command traj;
+}Odo;
 
 typedef struct{
 	TX_DATA_TYPE head1;

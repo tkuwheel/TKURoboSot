@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cp ../../../devel/lib/motion/*.txt ./
-python read_motor.py Single_record.txt
+python read_single.py Single_record.txt

@@ -6,19 +6,58 @@ bool BaseControl::decoder_flag = false;
 int BaseControl::length = 0;
 BaseControl::BaseControl()
 {
-    this->odometry_robot = {0};
-    this->base_TX = {0};
     this->base_TX.head1 = 0xff;
     this->base_TX.head2 = 0xfa;
+    this->base_TX.w1_l = 0;
+    this->base_TX.w1_h = 0;
+    this->base_TX.w2_l = 0;
+    this->base_TX.w2_h = 0;
+    this->base_TX.w3_l = 0;
+    this->base_TX.w3_h = 0;
+    this->base_TX.enable_and_stop = 0;
+    this->base_TX.shoot = 0;
+    this->en1 = false;
+    this->en2 = false;
+    this->en3 = false;
+    this->stop1 = false;
+    this->stop2 = false;
+    this->stop3 = false;
+    this->hold_ball = false;
+    this->odometry_robot = {0};
+    this->odometry_motor = {0};
 
     this->base_RX = {0};
     this->last_time = {0};
     this->record = false;
 
     this->base_flag = false;
+    this->send_flag = false;
+    this->clock = false;
 	this->serial = NULL;
+    this->odo.vel = {0};
+    this->odo.traj = {0};
+    x_CMD, y_CMD, yaw_CMD;
+    tar_w1_pwm = 0;
+    tar_w2_pwm = 0; 
+    tar_w3_pwm = 0;
+    w1_pwm = 0;
+    w2_pwm = 0; 
+    w3_pwm = 0;
+    w1_cos_value = 0; 
+    w2_cos_value = 0; 
+    w3_cos_value = 0; 
+    tar_w1 = 0;
+    tar_w2 = 0;
+    tar_w3 = 0;
+    curr_w1 = 0;
+    curr_w2 = 0;
+    curr_w3 = 0;
+    w1_spd_err = 0;
+    w2_spd_err = 0;
+    w3_spd_err = 0;
+    shoot_power = 0;
 #ifdef DEBUG
-    std::cout << "BaseControl(DEBUG)\n";
+    std::cout << "\nBaseControl(DEBUG)\n";
 #endif
 #ifdef CSSL
 	McsslInit();
@@ -47,7 +86,7 @@ BaseControl::BaseControl(int argc, char** argv, bool record = false): record(rec
     this->base_flag = false;
 	this->serial = NULL;
 #ifdef DEBUG
-    std::cout << "BaseControl(DEBUG)\n";
+    std::cout << "\nBaseControl(DEBUG)\n";
 #endif
 #ifdef CSSL
 	McsslInit();
@@ -66,7 +105,7 @@ BaseControl::~BaseControl()
         this->serial = NULL;
     }
 #ifdef DEBUG
-	std::cout << "~BaseControl(DEBUG)\n";
+	std::cout << "\n~BaseControl(DEBUG)\n";
     std::cout << "tid: " << tid << std::endl;
     std::cout << "serial: " << serial << std::endl;
 #endif
@@ -182,15 +221,18 @@ bool BaseControl::SerialDecoder()
 
 void BaseControl::FPGAInit()
 {
-    this->base_TX.w1_l = 0;
-    this->base_TX.w1_h = 0;
-    this->base_TX.w2_l = 0;
-    this->base_TX.w2_h = 0;
-    this->base_TX.w3_l = 0;
-    this->base_TX.w3_h = 0;
-    this->base_TX.enable_and_stop = 0x80;
-    this->base_TX.shoot = 0;
+}
 
+void BaseControl::McsslSend2FPGA()
+{	
+    this->base_TX.w1_l = this->w1_pwm;
+    this->base_TX.w1_h = this->w1_pwm >> 8;
+    this->base_TX.w2_l = this->w2_pwm;
+    this->base_TX.w2_h = this->w2_pwm >> 8;
+    this->base_TX.w3_l = this->w3_pwm;
+    this->base_TX.w3_h = this->w3_pwm >> 8;
+    this->base_TX.enable_and_stop = (this->en1 << 7) + (this->en2 << 6) + (this->en3 << 5) + (this->stop1 << 4) + (this->stop2 << 3) + (this->stop3 << 2) + (this->hold_ball); 
+    this->base_TX.shoot = this->shoot_power;
     uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
         this->base_TX.head1, 
         this->base_TX.head2, 
@@ -228,67 +270,6 @@ void BaseControl::FPGAInit()
     cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
 #ifdef DEBUG
     printf("**************************\n");
-    printf("* FPGAInit(DEBUG) *\n");
-    printf("**************************\n");
-    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
-    printf("crc16: %x\n", (crc_16));
-#endif
-#else
-    printf("**************************\n");
-    printf("* FPGAInit(DEBUG) *\n");
-    printf("**************************\n");
-    printf("enable_and_stop: %x\n", (this->base_TX.enable_and_stop));
-    printf("crc16: %x\n", (crc_16));
-#endif
-}
-void BaseControl::McsslSend2FPGA()
-{	
-    this->base_TX.w1_l = this->w1;
-    this->base_TX.w1_h = this->w1 >> 8;
-    this->base_TX.w2_l = this->w2;
-    this->base_TX.w2_h = this->w2 >> 8;
-    this->base_TX.w3_l = this->w3;
-    this->base_TX.w3_h = this->w3 >> 8;
-    this->base_TX.enable_and_stop = (this->en1<<7) + (this->en2<<6) + (this->en3<<5) + (this->stop1<<4) + (this->stop2<<3) + (this->stop3<<2) + (this->hold_ball);
-    this->base_TX.shoot = this->shoot_power;
-    uint8_t crc_data[TX_PACKAGE_SIZE - 2] = {
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot
-    };
-
-//    Crc_16 Crc16(crc_data, TX_PACKAGE_SIZE - 2);
-    crc_16 = Crc.getCrc(crc_data, TX_PACKAGE_SIZE -2);
-//    this->base_TX.crc_16_1 = *(unsigned char*)(&crc_16) + 1;
-//    this->base_TX.crc_16_2 = *(unsigned char*)(&crc_16) + 0;
-    this->base_TX.crc_16_1 = crc_16 >> 8;
-    this->base_TX.crc_16_2 = crc_16;
-    uint8_t cssl_data[TX_PACKAGE_SIZE + 1] = {  
-        this->base_TX.head1, 
-        this->base_TX.head2, 
-        this->base_TX.w1_h, 
-        this->base_TX.w1_l, 
-        this->base_TX.w2_h, 
-        this->base_TX.w2_l, 
-        this->base_TX.w3_h, 
-        this->base_TX.w3_l, 
-        this->base_TX.enable_and_stop, 
-        this->base_TX.shoot,
-        this->base_TX.crc_16_1,
-        this->base_TX.crc_16_2,
-        0
-    };
-#ifdef CSSL
-    cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE + 1);
-#ifdef DEBUG
-    printf("**************************\n");
     printf("* mcssl_send(DEBUG) *\n");
     printf("**************************\n");
     printf("head1: %x\n", (this->base_TX.head1));
@@ -303,6 +284,7 @@ void BaseControl::McsslSend2FPGA()
     printf("shoot: %x\n", (this->base_TX.shoot));
     printf("crc16-1: %x\n", (this->base_TX.crc_16_1));
     printf("crc16-2: %x\n", (this->base_TX.crc_16_2));
+    printf("en1 en2 en3 stop1 stop2 stop3: %x%x%x%x%x%x%x\n", this->en1,this->en2,this->en3,this->stop1,this->stop2,this->stop3, this->hold_ball);
     printf("crc16: %x\n", (crc_16));
     printf("w1: %x\n", ((this->base_TX.w1_h) << 8) + (this->base_TX.w1_l));
     printf("w2: %x\n", ((this->base_TX.w2_h) << 8) + (this->base_TX.w2_l));
@@ -338,9 +320,16 @@ void BaseControl::ForwardKinematics()
 	double x,y;
 	double yaw=0;
 	int round=0;
-	this->odometry_robot.x_speed = ( base_RX.w1 * (0.5774) + base_RX.w2 * (-0.5774) + base_RX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	this->odometry_robot.y_speed = ( base_RX.w1 * (-0.3333) + base_RX.w2 * (-0.3333) + base_RX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	this->odometry_robot.yaw_speed = (base_RX.w1 * yaw_inv + base_RX.w2 * yaw_inv + base_RX.w3 * yaw_inv)  * wheel_radius / 2000 / 26 / robot_radius ;
+	this->odometry_robot.x = ( base_RX.w1 * (-0.5774) + base_RX.w2 * (0.5774) + base_RX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	this->odometry_robot.y = ( base_RX.w1 * (-0.3333) + base_RX.w2 * (-0.3333) + base_RX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	this->odometry_robot.yaw = (-1) * (base_RX.w1 * (1.6667) + base_RX.w2 * (1.6667) + base_RX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;
+}
+
+void BaseControl::Trajectory()
+{
+    odo.traj.x += odo.vel.x*cos(odo.vel.yaw)-odo.vel.y*sin(odo.vel.yaw);
+    odo.traj.y += odo.vel.x*sin(odo.vel.yaw)+odo.vel.y*cos(odo.vel.yaw);
+    odo.traj.yaw += odo.vel.yaw;
 }
 
 void BaseControl::InverseKinematics()
@@ -351,75 +340,99 @@ void BaseControl::InverseKinematics()
 	double w1_speed, w2_speed, w3_speed;
 
 
-	w1_speed = -this->x_CMD*cos(m1_Angle)+this->y_CMD*sin(m1_Angle)+this->yaw_CMD*robot_radius*(-1);
-	w2_speed = -this->x_CMD*cos(m2_Angle)+this->y_CMD*sin(m2_Angle)+this->yaw_CMD*robot_radius*(-1);
-	w3_speed = -this->x_CMD*cos(m3_Angle)+this->y_CMD*sin(m3_Angle)+this->yaw_CMD*robot_radius*(-1);
+	w1_speed = this->x_CMD*(-1)+this->y_CMD*(-0.5)+this->yaw_CMD*(-1);
+	w2_speed = this->x_CMD*(1)+this->y_CMD*(-0.5)+this->yaw_CMD*(-1);
+	w3_speed = this->x_CMD*(0)+this->y_CMD*(1)+this->yaw_CMD*(-1);
 #ifdef DEBUG
-	std::cout << "Inverse kinematics(DEBUG)\n";
-	std::cout << std::dec;
-	std::cout << "x_speed CMD: " << (this->x_CMD) << std::endl;
-	std::cout << "y_speed CMD: " << (this->y_CMD) << std::endl;
-	std::cout << "yaw_speed CMD: " << (this->yaw_CMD) << std::endl;
-	std::cout << "w1_speed(%): " << w1_speed << std::endl;
-	std::cout << "w2_speed(%): " << w2_speed << std::endl;
-	std::cout << "w3_speed(%): " << w3_speed << std::endl;
-	std::cout << std::endl;
+    printf("\nInverse kinematics(DEBUG)\n");
+    printf("x speed CMD: %f\n", x_CMD);
+    printf("y speed CMD: %f\n", y_CMD);
+    printf("yaw speed CMD: %f\n", yaw_CMD);
+    printf("w1_speed(%%): %f\n", w1_speed);
+    printf("w2_speed(%%): %f\n", w2_speed);
+    printf("w3_speed(%%): %f\n", w3_speed);
 #endif
-	SpeedRegularization(w1_speed, w2_speed, w3_speed);
+	DriverSetting((int16_t)w1_speed, (int16_t)w2_speed, (int16_t)w3_speed);
 }
 
-void BaseControl::PWMRegularization(int w1_pwm, int w2_pwm, int w3_pwm)
+void BaseControl::DriverSetting(int16_t w1_pwm, int16_t w2_pwm, int16_t w3_pwm)
 {
+#ifdef DEBUG
+    printf("PWM Regularization(DEBUG)\n");
+    printf("w1 pwm: %d, w2 pwm: %d, w3 pwm: %d\n", w1_pwm, w2_pwm, w3_pwm);
+#endif
 	this->en1 = (fabs(w1_pwm) > 0)? 1 : 0;
 	this->en2 = (fabs(w2_pwm) > 0)? 1 : 0;
 	this->en3 = (fabs(w3_pwm) > 0)? 1 : 0;
 	this->stop1 = 0;
 	this->stop2 = 0;
 	this->stop3 = 0;
-    this->w1 = (int16_t)w1_pwm;
-    this->w2 = (int16_t)w2_pwm;
-    this->w3 = (int16_t)w3_pwm;
+    this->tar_w1_pwm = (w1_pwm>=0)? (MAX_PWM-MAX_PWM*0.2)*w1_pwm/100+MIN_PWM: (MAX_PWM-MAX_PWM*0.2)*w1_pwm/100-MIN_PWM;
+    this->tar_w2_pwm = (w2_pwm>=0)? (MAX_PWM-MAX_PWM*0.2)*w2_pwm/100+MIN_PWM: (MAX_PWM-MAX_PWM*0.2)*w2_pwm/100-MIN_PWM;
+    this->tar_w3_pwm = (w3_pwm>=0)? (MAX_PWM-MAX_PWM*0.2)*w3_pwm/100+MIN_PWM: (MAX_PWM-MAX_PWM*0.2)*w3_pwm/100-MIN_PWM;
+}
+
+void BaseControl::SpeedControl()
+{
+    double scale = 1/(0.000001 * this->base_RX.duration);
+    this->tar_w1 = (this->tar_w1_pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+    this->tar_w2 = (this->tar_w2_pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+    this->tar_w3 = (this->tar_w3_pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+    this->curr_w1 = this->base_RX.w1 * scale * 60 / 2000;
+    this->curr_w2 = this->base_RX.w2 * scale * 60 / 2000;
+    this->curr_w3 = this->base_RX.w3 * scale * 60 / 2000;
+    w1_spd_err = this->CalSpdErr(tar_w1, curr_w1);
+    w2_spd_err = this->CalSpdErr(tar_w2, curr_w2);
+    w3_spd_err = this->CalSpdErr(tar_w3, curr_w3);
+    if(CalSpdErr((double)tar_w1_pwm, (double)w1_pwm) >= 1){
+        w1_cos_value += 0.02;
+        std::min(M_PI/2, w1_cos_value);
+        this->w1_pwm = MAX_PWM * sin(w1_cos_value);
+    }else{
+        w1_cos_value -= 0.02;
+        std::max(-M_PI/2, w1_cos_value);
+        this->w1_pwm = MAX_PWM * sin(w1_cos_value);
+
+    }
+    if(w2_spd_err>=0){
+        w2_cos_value += 0.02;
+        std::min(M_PI/2, w2_cos_value);
+        this->w2_pwm = MAX_PWM * sin(w2_cos_value);
+    }else{
+        w2_cos_value -= 0.02;
+        std::max(-M_PI/2, w2_cos_value);
+        this->w2_pwm = MAX_PWM * sin(w2_cos_value);
+
+    }
+    if(w3_spd_err>=0){
+        w3_cos_value += 0.02;
+        std::min(M_PI/2, w3_cos_value);
+        this->w3_pwm = MAX_PWM * sin(w3_cos_value);
+    }else{
+        w3_cos_value -= 0.02;
+        std::max(-M_PI/2, w3_cos_value);
+        this->w3_pwm = MAX_PWM * sin(w3_cos_value);
+
+    }
+}
+double BaseControl::PWM2RPM(int16_t pwm)
+{
+    return (pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+}
+
+int16_t BaseControl::RPM2PWM(double rpm)
+{
+    return rpm * (MAX_PWM - MAX_PWM * 0.2) / MAX_MOTOR_RPM + MIN_PWM;
+}
+
+double BaseControl::CalSpdErr(double target, double current)    //calculate the motor speed error
+{
+    return target - current;
+
 }
 
 void BaseControl::SpeedRegularization(double w1_p, double w2_p, double w3_p)
 {
-//	unsigned char w1_dir = (w1>0)? 0x80 : 0;
-//	unsigned char w2_dir = (w2>0)? 0x80 : 0;
-//	unsigned char w3_dir = (w3>0)? 0x80 : 0;
-
-	w1_p = (fabs(w1_p)<0.001)? 0 : w1_p;
-	w2_p = (fabs(w2_p)<0.001)? 0 : w2_p;
-	w3_p = (fabs(w3_p)<0.001)? 0 : w3_p;
-	w1_p = (w1_p < -100)? -100 : (w1_p > 100)? 100 : w1_p;
-	w2_p = (w2_p < -100)? -100 : (w2_p > 100)? 100 : w2_p;
-	w3_p = (w3_p < -100)? -100 : (w3_p > 100)? 100 : w3_p;
-//	if(w1_speed_percent >= 100)w1_speed_percent = 100;
-//	if(w2_speed_percent >= 100)w2_speed_percent = 100;
-//	if(w3_speed_percent >= 100)w3_speed_percent = 100;
-//	enable
-	this->en1 = (fabs(w1_p) > 0)? 1 : 0;
-	this->en2 = (fabs(w2_p) > 0)? 1 : 0;
-	this->en3 = (fabs(w3_p) > 0)? 1 : 0;
-	this->stop1 = 0;
-	this->stop2 = 0;
-	this->stop3 = 0;
-//	real motor speed(rpm)
-    this->w1 = (int16_t)w1_p * MAX_MOTOR_RPM / 100;
-    this->w2 = (int16_t)w2_p * MAX_MOTOR_RPM / 100;
-    this->w3 = (int16_t)w3_p * MAX_MOTOR_RPM / 100;
-//	this->base_TX.w1 = (w1_speed_percent>0)? (unsigned char)((127*0.85*w1_speed_percent/100) + 12.7 + w1_dir) : 0x80;
-//	this->base_TX.w2 = (w2_speed_percent>0)? (unsigned char)((127*0.85*w2_speed_percent/100) + 12.7 + w2_dir) : 0x80;
-//	this->base_TX.w3 = (w3_speed_percent>0)? (unsigned char)((127*0.85*w3_speed_percent/100) + 12.7 + w3_dir) : 0x80;
-#ifdef DEBUG
-	std::cout << "speed_regularization(DEBUG)\n";
-	std::cout << std::hex;
-	std::cout << "motor1 speed(hex): " << (this->w1) << std::endl;
-	std::cout << "motor2 speed(hex): " << (this->w2) << std::endl;
-	std::cout << "motor3 speed(hex): " << (this->w3) << std::endl;
-	std::cout << std::hex;
-	std::cout << "enable&stop(hex): "  << (this->base_TX.enable_and_stop) << std::endl;
-	std::cout << std::endl;
-#endif
 
 }
 
@@ -439,11 +452,6 @@ void BaseControl::ShootRegularization()
 	std::cout << "shoot byte(hex): " << (this->shoot_power) << std::endl;
 	std::cout << std::endl;
 #endif
-}
-
-void BaseControl::ReEnable()
-{
-    this->base_TX.enable_and_stop = 0;
 }
 
 void BaseControl::Run()
@@ -468,19 +476,36 @@ void BaseControl::Run()
     while(true){
         if(this->serial_flag){
             this->base_flag = true;
-            bool err = this->SerialDecoder();
-            if(err){
+            if(this->SerialDecoder()){
 #ifdef DEBUG_CSSLCALLBACK
                 printf("serial decode fail\n");
 #endif
             }else{
+                SpeedControl();
+                McsslSend2FPGA();
                 ForwardKinematics();
+                this->Trajectory();
+                odo.vel = this->odometry_robot;
+                if(this->clear_odo){
+                    this->clear_odo = false;
+                    this->odometry_motor.duration = 0.0;
+                    this->odometry_motor.w1 = 0.0;
+                    this->odometry_motor.w2 = 0.0;
+                    this->odometry_motor.w3 = 0.0;
+
+                }
+
+                this->odometry_motor.duration += this->base_RX.duration;
+                this->odometry_motor.w1 += this->base_RX.w1;
+                this->odometry_motor.w2 += this->base_RX.w2;
+                this->odometry_motor.w3 += this->base_RX.w3;
+#ifdef _RECORD  // record 
                 if(record && (this->base_RX.duration < 1000000)){
                     scale =  1/(0.000001 * base_RX.duration);
 
-                    tar1 = this->w1;
-                    tar2 = this->w2;
-                    tar3 = this->w3;
+                    tar1 = this->w1_pwm;
+                    tar2 = this->w2_pwm;
+                    tar3 = this->w3_pwm;
                     if(tar1>=0){
                         tar1_rpm = (tar1 - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
                     }else{
@@ -508,24 +533,18 @@ void BaseControl::Run()
                         << tar1_rpm  << " " 
                         << tar2_rpm  << " " 
                         << tar3_rpm  << " " 
+                        << odo.vel.x << " "
+                        << odo.vel.y << " "
+                        << odo.vel.yaw << " "
+                        << odo.traj.x << " "
+                        << odo.traj.y << " "
+                        << odo.traj.yaw << " "
                         << std::endl;
                     fp << fss.str();
                     fss.str(std::string());
+#endif
 
                 }
-                if(this->clear_odo){
-                    this->clear_odo = false;
-                    this->odometry_motor.duration = 0;
-                    this->odometry_motor.w1 = 0;
-                    this->odometry_motor.w2 = 0;
-                    this->odometry_motor.w3 = 0;
-
-                }
-
-                this->odometry_motor.duration += this->base_RX.duration;
-                this->odometry_motor.w1 += this->base_RX.w1;
-                this->odometry_motor.w2 += this->base_RX.w2;
-                this->odometry_motor.w3 += this->base_RX.w3;
 
             }
         }else{
@@ -573,48 +592,63 @@ robot_command BaseControl::GetOdoRobot()
 	return odometry_robot;
 }
 
+robot_command BaseControl::GetTraj()
+{
+	return odo.traj;
+}
+
 void BaseControl::Send(const robot_command &CMD)
 {
 #ifdef DEBUG
-	std::cout << "BaseControl::send(DEBUG)\n";
+	std::cout << "\nSend(DEBUG)\n";
+    printf("x command: %x", CMD.x);
+    printf("y command: %x", CMD.y);
+    printf("yaw command: %x", CMD.yaw);
+    printf("shoot power: %x\n", CMD.shoot_power);
+    printf("hold ball: %x\n", CMD.hold_ball);
+    printf("remote: %x\n", CMD.remote);
 #endif
 //	this->base_robotCMD = CMD;
-    this->x_CMD = CMD.x_speed;
-	this->y_CMD = CMD.y_speed;
-	this->yaw_CMD = CMD.yaw_speed;
+    this->x_CMD = CMD.x;
+	this->y_CMD = CMD.y;
+	this->yaw_CMD = CMD.yaw;
     this->shoot_power = CMD.shoot_power;
     this->hold_ball = CMD.hold_ball;
     this->remote = CMD.remote;
-	ShootRegularization();
-	InverseKinematics();
-	McsslSend2FPGA();
+//	ShootRegularization();
+    this->InverseKinematics();
+    this->send_flag = true;
 }
 
 void BaseControl::SetSingle(int number, int16_t pwm)
 {
     switch(number){
         case 1:
+            DriverSetting(pwm, 0, 0);
             break;
         case 2:
-            PWMRegularization(0, pwm, 0);
+            DriverSetting(0, pwm, 0);
             break;
         case 3:
-            PWMRegularization(0, 0, pwm);
+            DriverSetting(0, 0, pwm);
             break;
         default:
-            PWMRegularization(0, 0, 0);
+            DriverSetting(0, 0, 0);
             break;
     }
     this->base_TX.shoot = 0;
-	McsslSend2FPGA();
-
-
+    this->send_flag = true;
 }
 
 void BaseControl::SetTriple(int16_t pwm1, int16_t pwm2, int16_t pwm3)
 {
-    PWMRegularization(pwm1, pwm2, pwm3);
+    DriverSetting(pwm1, pwm2, pwm3);
     this->base_TX.shoot = 0;
-	McsslSend2FPGA();
+    this->send_flag = true;
+}
+
+void BaseControl::SetClock()
+{
+    this->clock = true;
 
 }

@@ -57,7 +57,7 @@ int main(int argc, char** argv)
                 printf("\n*****get feedback******\n");
                 printf("id: %d\t", RX.id);
                 printf("size: %d\t", RX.size);
-                printf("duration: %d\t\n", RX.duration);
+                printf("duration: %d\t\n", (int)RX.duration);
                 printf("w1 ticks: %d\t w1 rpm: %f\n", RX.w1, real_rpm1);
                 printf("w2 ticks: %d\t w2 rpm: %f\n", RX.w2, real_rpm2);
                 printf("w3 ticks: %d\t w3 rpm: %f\n", RX.w3, real_rpm3);

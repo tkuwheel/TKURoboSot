@@ -55,9 +55,9 @@ int main(int argc, char **argv)
             robotCMD = Node.getMotion();
 #ifdef DEBUG
             printf("\n*****get motion******\n");
-            std::cout << "x: " << robotCMD.x_speed << "\t";
-            std::cout << "y: " << robotCMD.y_speed << "\t";
-            std::cout << "yaw: " << robotCMD.yaw_speed << "\t";
+            std::cout << "x: " << robotCMD.x << "\t";
+            std::cout << "y: " << robotCMD.y << "\t";
+            std::cout << "yaw: " << robotCMD.yaw << "\t";
             std::cout << "\nshoot power: " << robotCMD.shoot_power << "\t";
             std::cout << "hold: " << robotCMD.hold_ball << "\t";
             std::cout << "remote: " << robotCMD.remote;

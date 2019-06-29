@@ -4,25 +4,13 @@ Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
     this->robotCMD = {0, 0, 0, 0, 0};
     this->RX = {0, 0, 0, 0, 0, 0};
     this->motion_flag = false;
-//    this->node_robotCMD = new robot_command;
-//    this->node_robotCMD->x_speed = new double;
-//    this->node_robotCMD->y_speed = new double;
-//    this->node_robotCMD->yaw_speed = new double;
-//    this->node_robotCMD->shoot_power = new int;
-//    this->node_robotCMD->hold_ball = new unsigned char;
-//    this->node_RX = new serial_rx;
-//    std::memset(this->node_robotCMD->x_speed, 0, sizeof(double));
-//    std::memset(this->node_robotCMD->y_speed, 0, sizeof(double));
-//    std::memset(this->node_robotCMD->yaw_speed, 0, sizeof(double));
-//    std::memset(this->node_robotCMD->shoot_power, 0, sizeof(int));
-//    std::memset(this->node_robotCMD->hold_ball, 0, sizeof(unsigned char));
     this->remote = false;
     this->holdBall = false;
 #ifdef DEBUG
     std::cout << "Motion_nodeHandle(DEBUG)\n";
-    std::cout << "x_speed: " << this->robotCMD.x_speed << std::endl;
-    std::cout << "y_speed: " << this->robotCMD.y_speed << std::endl;
-    std::cout << "yaw_speed: " << this->robotCMD.yaw_speed << std::endl;
+    std::cout << "x_speed: " << this->robotCMD.x << std::endl;
+    std::cout << "y_speed: " << this->robotCMD.y << std::endl;
+    std::cout << "yaw_speed: " << this->robotCMD.yaw << std::endl;
     std::cout << "shoot_power: " << this->robotCMD.shoot_power << std::endl;
 #endif
     init(argc, argv);
@@ -61,16 +49,16 @@ void Motion_nodeHandle::init(int argc, char **argv)
 
 void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &motion_msg)
 {
-    this->robotCMD.x_speed = motion_msg->linear.x;
-    this->robotCMD.y_speed = motion_msg->linear.y;
-    this->robotCMD.yaw_speed = motion_msg->angular.z;
+    this->robotCMD.x = motion_msg->linear.x;
+    this->robotCMD.y = motion_msg->linear.y;
+    this->robotCMD.yaw = motion_msg->angular.z;
     this->motion_flag = true;
 #ifdef DEBUG
     std::cout << "motionCallback(DEBUG)\n";
     std::cout << std::dec;
-    std::cout << "X axis speed(%): " << this->robotCMD.x_speed << std::endl;
-    std::cout << "Y axis speed(%): " << this->robotCMD.y_speed << std::endl;
-    std::cout << "yaw speed(%): " << this->robotCMD.yaw_speed << std::endl;
+    std::cout << "X axis speed(%): " << this->robotCMD.x << std::endl;
+    std::cout << "Y axis speed(%): " << this->robotCMD.y << std::endl;
+    std::cout << "yaw speed(%): " << this->robotCMD.yaw << std::endl;
     std::cout << std::endl;
 #endif
 }
@@ -143,18 +131,18 @@ void Motion_nodeHandle::pub_robotFB(robot_command &robotFB)
 {
     geometry_msgs::Twist FB;
 
-    FB.linear.x = robotFB.x_speed;
-    FB.linear.y = robotFB.y_speed;
-    FB.angular.z = robotFB.yaw_speed;
+    FB.linear.x = robotFB.x;
+    FB.linear.y = robotFB.y;
+    FB.angular.z = robotFB.yaw;
     pub(FB);
 }
 
 void Motion_nodeHandle::clear()
 {
     if(this->remote == false){
-        this->robotCMD.x_speed = 0;
-        this->robotCMD.y_speed = 0;
-        this->robotCMD.yaw_speed = 0;
+        this->robotCMD.x = 0;
+        this->robotCMD.y = 0;
+        this->robotCMD.yaw = 0;
     }
     this->robotCMD.shoot_power = 0;
 }

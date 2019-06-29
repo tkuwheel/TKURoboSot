@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
-#include "base_control.h"
+#include "motor_control.h"
 #include "ros/ros.h"
 #define DEBUG
 bool flag = false;
@@ -15,61 +15,54 @@ int main(int argc, char** argv)
 
     if(argc == 3){
         int number = strtol(argv[1], NULL, 10);
-        int16_t pwm = strtol(argv[2], NULL, 10);
+        double p = strtof(argv[2], NULL);
+        int16_t pwm = p*(MAX_PWM-0.2*MAX_PWM)/100+MIN_PWM;
         ros::init(argc, argv, "Single");
         ros::NodeHandle n;
-        BaseControl Base(argc, argv, true);
+        MotorController Motor(argc, argv, true);
 
 
-        serial_rx RX;
         std::cout << "motor number: " << number;
-        std::cout << "\t pwm " << pwm <<std::endl;
+        std::cout << "\t speed " << p <<std::endl;
 
         signal(SIGINT, inturrupt);
-        Base.SetSingle(number, pwm);
         ros::Rate loop_rate(1);
-        double scale;
-        double real_rpm1, real_rpm2, real_rpm3;
-        double target_rpm1, target_rpm2, target_rpm3, target_rpm;
+        double real_rpm;
+        double target_rpm;
+        long duration;
         while(true){
             if(flag){
                 break;
             }
-            Base.SetSingle(number, pwm);
-            if(Base.GetBaseFlag()){
-                RX = Base.GetOdoMotor();
+            Motor.SetSpeed(number, p);
+            if(Motor.GetMotorFlag()){
+                duration = Motor.GetDuration();
+                real_rpm = Motor.GetSpeed();
 #ifdef DEBUG
 
-                scale = 1/(0.000001 * RX.duration);
-                real_rpm1 = RX.w1 * scale * 60 / 2000;
-                real_rpm2 = RX.w2 * scale * 60 / 2000;
-                real_rpm3 = RX.w3 * scale * 60 / 2000;
-                if(pwm>=0){
+                if(p>0){
                     target_rpm = (pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
 
-                }else{
+                }else if(p<0){
                     target_rpm = -(fabs(pwm) - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+
+                }else{
+                    target_rpm = 0;
 
                 }
                 printf("\n*****motor command******\n");
 
                 printf("motor number: %d\t\n", number);
-                printf("motor target pwm: %d\t, target rpm: %f\n", pwm, target_rpm);
-                printf("motor target pwm: %x\t, target rpm: %f\n", pwm, target_rpm);
+                printf("target pwm: %d(dec) %x(hex) target rpm: %f\n", (int16_t)pwm, (int16_t)pwm, target_rpm);
                 printf("\n*****get feedback******\n");
-                printf("id: %d\t", RX.id);
-                printf("size: %d\t", RX.size);
-                printf("duration: %d\t\n", RX.duration);
-                printf("w1 ticks: %d\t w1 rpm: %f\n", RX.w1, real_rpm1);
-                printf("w2 ticks: %d\t w2 rpm: %f\n", RX.w2, real_rpm2);
-                printf("w3 ticks: %d\t w3 rpm: %f\n", RX.w3, real_rpm3);
+                printf("duration: %d\t\n", (int)duration);
+                printf("motor speed(rpm): %f\n", real_rpm);
 //                printf("error message: %s\n", RX.error);
 #endif
             }
             loop_rate.sleep();
         }
-        Base.SetSingle(number, 0);
-        Base.McsslFinish();
+        Motor.McsslFinish();
         std::cout << "Close Attack Motion\n";
 
 
