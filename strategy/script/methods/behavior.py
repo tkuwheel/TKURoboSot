@@ -4,13 +4,16 @@ import rospy
 import math
 from robot.robot import Robot
 
+REMAINING_RANGE_V = 5
+REMAINING_RANGE_YAW = 2
+
 class Behavior(Robot):
   def __init__(self):
     pass
 
   def Go2Point(self, tx, ty, tyaw):
     robot_info = self.GetRobotInfo()
-   
+
     v_x   = tx - robot_info['location']['x']
     v_y   = ty - robot_info['location']['y']
     o_x, o_y = self.Rotate(v_x, v_y, robot_info['location']['yaw'] * -1)
@@ -23,6 +26,11 @@ class Behavior(Robot):
     else:
       o_yaw = v_yaw
 
-    remaining = math.sqrt(o_x**2 + o_y**2)
+    remaining_v   = math.sqrt(o_x**2 + o_y**2)
+    remaining_yaw = o_yaw
+    if abs(remaining_v) < REMAINING_RANGE_V and abs(remaining_yaw) < REMAINING_RANGE_YAW:
+      arrived = True
+    else:
+      arrived = False
 
-    return o_x, o_y, o_yaw, remaining
+    return o_x, o_y, o_yaw, arrived
