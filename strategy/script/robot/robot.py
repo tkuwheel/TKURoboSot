@@ -71,9 +71,11 @@ class Robot(object):
     self.pid_w.tunings = (p, i, d)
 
   def ChangeVelocityRange(self, m, M):
+    self.__minimum_v = m
     self.pid_v.output_limits = (-1*M, M)
 
   def ChangeAngularVelocityRange(self, m, M):
+    self.__minimum_w = m
     self.pid_w.output_limits = (-1*M, M)
 
   def ChangeBallhandleCondition(self, dis, ang):

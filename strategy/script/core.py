@@ -76,10 +76,6 @@ class Core(Robot, StateMachine):
 
 class Strategy(Robot):
   def __init__(self):
-    # self.game_start = False
-    # self.game_state = "Kick_Off"
-    # self.side       = "Yellow"
-    # self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
 
