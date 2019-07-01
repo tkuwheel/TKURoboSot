@@ -15,7 +15,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int32
 
 ## Rotate 90 for 6th robot
-ROTATE_V_ANG = 0
+ROTATE_V_ANG = 90
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -163,6 +163,7 @@ class Robot(object):
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = yaw
+      #print(output_x, output_y, yaw)
       self.cmdvel_pub.publish(msg)
     else:
       current_vector = math.hypot(x, y)
