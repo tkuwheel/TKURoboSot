@@ -44,6 +44,6 @@ class Chase(object):
     w = (velocity / orbit_radius)
 
     v_x   = 0
-    v_y   = velocity * -1.5 # V * Kp
-    v_yaw = w
+    v_y   = velocity * -0.5 # Kp
+    v_yaw = w * 3.5 # Kp
     return v_x, v_y, v_yaw
