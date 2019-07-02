@@ -105,57 +105,43 @@ class Core(Robot, StateMachine):
 
 class Strategy(Robot):
   def __init__(self):
-    self.game_start = False
-    self.game_state = "Kick_Off"
-    self.side       = "Yellow"
-    self.opp_side   = 'Yellow' if self.side == 'Blue' else 'Blue'
+    rospy.init_node('core', anonymous=True)
+    self.rate = rospy.Rate(1000)
+
+    dsrv = Server(StrategyConfig, self.Callback)
+    self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
 
   def RunStatePoint(self, state):
     if state == "Kick_Off" :
-      r = self.robot.toPoint(0, 0, 0)
+      c = self.robot.toPoint(0, 0, 0)
     elif state == "Free_Kick" :
-      r = self.robot.toPoint(100, 100, 90)
+      c = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
-      r = self.robot.toPoint(100, -100, 180)
+      c = self.robot.toPoint(100, -100, 180)
     elif state == "Throw_In" :
-      r = self.robot.toPoint(-100, -100, 270)
-    elif state == "Coner_Kick":< self.goal_dis:
-      r = self.robot.toPoint(30< self.goal_dis:
+      c = self.robot.toPoint(-100, -100, 270)
+    elif state == "Coner_Kick":
+      c = self.robot.toPoint(300, 200, 45)
     elif state == "Penalty_Kick" :
-      r = self.robot.toPoint(-100, 100, 135)
+      c = self.robot.toPoint(-100, 100, 135)
     elif state == "Run_Specific_Point" :
-      r = self.robot.toPoint(self.run_x, self.run_y, 0)
+      c = self.robot.toPoint(self.run_x, self.run_y, self.run_yaw)
     else:
       print("ummmm")
 
-    if r < 40:
+    if c:
       self.robot.toIdle()
+      self.dclient.update_configuration({"run_point": False})
 
-  def Callback(self, config, level):
-    self.game_start = config['game_start']
-    self.game_state = config['game_state']
-    self.run_point  = config['run_point']
-    self.side       = config['our_goal']
-    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
-    self.run_x      = config['run_x']
-    self.run_y      = config['run_y']
-    
-
-    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
-    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
-    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
-
-    self.run_point = config['run_point']
-
-    return config
+  def Chase(self, t):
+    if self.strategy_mode == "Defense":
+      return self.robot.toChase(t, self.opp_side, "Classic")
+    elif self.strategy_mode == "Attack":
+      return self.robot.toChase(t, self.opp_side, "Straight")
 
   
 
   def main(self, argv):
-    rospy.init_node('core', anonymous=True)
-    rate = rospy.Rate(1000)
-    dsrv = Server(StrategyConfig, self.Callback)
-    dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
     TEST_MODE = True
     if SysCheck(argv) == "Native Mode":
       log("Start Native")
@@ -181,41 +167,68 @@ class Strategy(Robot):
         
         if not self.robot.is_idle and not self.run_point and not self.game_start:
           self.robot.toIdle()
-        elif self.robot.is_idle and self.game_start:
-          dclient.update_configuration({"run_point": False})
-          #self.robot.toChase(targets, self.opp_side, "Straight")
-      
-          self.robot.toChase(targets, self.opp_side)
-        elif self.robot.is_chase:
-          #self.robot.toChase(targets, self.opp_side, "Straight")
-          self.robot.toChase(targets, self.opp_side)
+        if self.robot.is_idle:
+          if self.game_start:
+            self.Chase(targets)
+          elif self.run_point:
+            self.RunStatePoint(self.game_state)
 
-        if self.robot.is_chase and self.robot.CheckBallHandle():
-          self.robot.toAttack(targets, self.opp_side)
-        elif self.robot.is_attack:
-          self.robot.toAttack(targets, self.opp_side)
+        if self.robot.is_chase:
+          if self.robot.CheckBallHandle():
+            if self.strategy_mode == "Attack":
+              self.robot.toOrbit(targets, self.opp_side)
+            elif self.strategy_mode == "Defense":
+              self.robot.toAttack(targets, self.opp_side)
+          else:
+            self.Chase(targets)
 
-        if self.robot.is_attack and not self.robot.CheckBallHandle():
-          
-          self.robot.toChase(targets, self.opp_side)
+        if self.robot.is_orbit:
+          if abs(targets[self.opp_side]['ang']) < 10:
+            self.robot.toAttack(targets, self.opp_side)
+          elif not self.robot.CheckBallHandle():
+            self.Chase(targets)
+          else:
+            self.robot.toOrbit(targets, self.opp_side)
 
-        if self.robot.is_attack and abs(targets[self.opp_side]['ang']) < 10:
-          self.robot.toShoot(3, 1)
+        if self.robot.is_attack:
+          if not self.robot.CheckBallHandle():
+            self.Chase(targets)
+          elif abs(targets[self.opp_side]['ang']) < 5:
+            self.robot.toShoot(3, 1)
+          else:
+            self.robot.toAttack(targets, self.opp_side)
 
         if self.robot.is_shoot:
           self.robot.toAttack(targets, self.opp_side)
 
       ## Run point
-      if self.run_point and not self.game_start:
+      if self.robot.is_point:
         self.RunStatePoint(self.game_state)
-        if self.robot.is_point:
-          self.RunStatePoint(self.game_state)
 
       if rospy.is_shutdown():
         log('shutdown')
         break
 
-      rate.sleep()
+      self.rate.sleep()
+
+  def Callback(self, config, level):
+    self.game_start = config['game_start']
+    self.game_state = config['game_state']
+    self.run_point  = config['run_point']
+    self.side       = config['our_goal']
+    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    self.run_yaw    = config['run_yaw']
+    self.strategy_mode = config['strategy_mode']
+
+    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+
+    self.run_point = config['run_point']
+
+    return config
 
 if __name__ == '__main__':
   try:
