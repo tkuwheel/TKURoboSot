@@ -348,6 +348,7 @@ counter_en3 =  counter_en3 + 1;
     if(w1_speed_percent >= 0)this->en1=1;
     if(w2_speed_percent >= 0)this->en2=1;
     if(w3_speed_percent >= 0)this->en3=1;
+    
     if(stop1 && w1_speed_percent!=0){
     //if(stop1 && counter_en1>=5 && w1_speed_percent!=0){
         this->stop1 = 0;
@@ -379,6 +380,14 @@ counter_en3 =  counter_en3 + 1;
     if(w3_speed_percent <= 0){
         this->stop3 = 1;
          w3_speed_percent = 1;
+    }
+    if(stop1 && stop2 && stop3){
+        this->stop1 = 0;
+        this->en1 = 0;
+        this->stop2 = 0;
+        this->en2 = 0;
+        this->stop3 = 0;
+        this->en3 = 0;
     }
 //    static int counter = 0;
 //    if(stop1 & stop2 & stop3){

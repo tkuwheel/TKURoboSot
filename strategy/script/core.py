@@ -74,10 +74,12 @@ class Core(Robot, StateMachine):
   def CheckBallHandle(self):
     return self.RobotBallHandle()
 
-class Strategy(Robot):
-  def __init__(self):
+class Strategy(object):
+  def __init__(self, num, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
+
+    self.robot = Core(num, sim)
 
     dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
@@ -110,15 +112,7 @@ class Strategy(Robot):
     elif self.strategy_mode == "Attack":
       return self.robot.toChase(t, self.opp_side, "Straight")
 
-  def main(self, argv):
-    TEST_MODE = True
-    if SysCheck(argv) == "Native Mode":
-      log("Start Native")
-      self.robot = Core(1)
-      
-    elif SysCheck(argv) == "Simulative Mode":
-      log("Start Sim")
-      self.robot = Core(1, True)
+  def main(self):
 
     while not rospy.is_shutdown():
 
@@ -189,9 +183,9 @@ class Strategy(Robot):
     self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
 
-    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
-    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
-    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+    self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.robot.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
 
     self.run_point = config['run_point']
 
@@ -199,7 +193,13 @@ class Strategy(Robot):
 
 if __name__ == '__main__':
   try:
-    s = Strategy()
-    s.main(sys.argv[1:])
+    if SysCheck(sys.argv[1:]) == "Native Mode":
+      log("Start Native")
+      s = Strategy(1, False)
+    elif SysCheck(sys.argv[1:]) == "Simulative Mode":
+      log("Start Sim")
+      s = Strategy(1, True)
+    # s.main(sys.argv[1:])
+    s.main()
   except rospy.ROSInterruptException:
     pass
