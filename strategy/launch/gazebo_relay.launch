@@ -1,0 +1,4 @@
+<launch>
+<node name="gazebo_relay" pkg="strategy" type="gazebo_relay_node"
+      args="$(env ROBOT_NUM)" output="screen"/>
+</launch>

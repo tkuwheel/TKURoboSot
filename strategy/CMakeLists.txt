@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   dynamic_reconfigure
+  image_transport
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -70,6 +71,11 @@ include_directories(
 # set_target_properties(${PROJECT_NAME}_node PROPERTIES OUTPUT_NAME node PREFIX "")
 
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(gazebo_relay_node src/gazebo_relay_node.cpp)
+#target_link_libraries(gazebo_relay_node ${catkin_LIBRARIES} /opt/ros/kinetic/lib/libmessage_filters.so)
+target_link_libraries(gazebo_relay_node ${catkin_LIBRARIES})
+add_dependencies(gazebo_relay_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}

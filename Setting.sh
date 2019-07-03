@@ -4,6 +4,7 @@
 # History:
 # 2019/3/19 NEET First Edit
 # 2019/5/10 NEET Add Camera serial setting
+# 2019/7/3  NEET Add Robot number setting
 
 SCRIPT_PATH=`cd "$( dirname ${BASH_SOURCE[0]})" && pwd`
 
@@ -30,14 +31,14 @@ function Change() {
     echo "Select the NUMBER below: "
     select ns in "/robot1" "/robot2" "/robot3" "other"; do
       case $ns in
-        /robot1) export ROBOT_NS=$ns;break;;
-        /robot2) export ROBOT_NS=$ns;break;;
-        /robot3) export ROBOT_NS=$ns;break;;
+        /robot1) export ROBOT_NS=$ns;export ROBOT_NUM=1;break;;
+        /robot2) export ROBOT_NS=$ns;export ROBOT_NUM=2;break;;
+        /robot3) export ROBOT_NS=$ns;export ROBOT_NUM=3;break;;
         other)  read -p "Enter the NAMESPACE below:" ns
-                export ROBOT_NS=$ns;break;;
+                export ROBOT_NS=$ns;export ROBOT_NUM=${ns: -1};break;;
       esac
     done
-    echo "\$ROBOT_NS was already setting by '$ROBOT_NS'"
+    echo "\$ROBOT_NS was already setting by '$ROBOT_NS', and NUMBER is '$ROBOT_NUM'"
     Check
   elif [ $1 == "CHANGE_CAMERA_SERIAL" ]
   then
