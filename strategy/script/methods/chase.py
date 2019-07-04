@@ -49,3 +49,8 @@ class Chase(object):
     v_y   = velocity * -0.5 # Kp
     v_yaw = w * 3.5 # Kp
     return v_x, v_y, v_yaw
+
+  def TeamWork(self, goal_ang, ball_dis, ball_ang):
+    
+    
+    return v_x, v_y, v_yaw

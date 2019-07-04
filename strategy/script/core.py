@@ -55,6 +55,8 @@ class Core(Robot, StateMachine):
       
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
+    elif method == "Team":
+      x, y, yaw = self.CC.TeamWork(t['ball']['dis'], t['ball']['ang'])
     
     if self.goal_dis == 0:
       print('goal into')
@@ -73,10 +75,17 @@ class Core(Robot, StateMachine):
 
     self.MotionCtrl(x, y, yaw)
 
-  def on_toAttack(self, t, side):
-    self.goal_dis = 0 
-    x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-    self.MotionCtrl(x, y, yaw)
+  def on_toAttack(self, t, side, method = "Classic"):
+    if method == "Classic":
+      self.goal_dis = 0 
+      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
+      self.MotionCtrl(x, y, yaw)
+
+    elif method == "zone":
+      self.goal_dis = 0 
+      x, y, yaw = self.AC.zoneAttacking(t[side]['dis'], t[side]['ang'])
+      self.MotionCtrl(x, y, yaw)
+
 
   def on_toShoot(self, power, pos):
     self.RobotShoot(power, pos)
@@ -87,10 +96,8 @@ class Core(Robot, StateMachine):
 
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
-
-    print("Remaining: ", remaining)
-    if remaining >= 40:
-      self.MotionCtrl(x, y, yaw)
+    print("got it: ", remaining)
+    self.MotionCtrl(x, y, yaw)
     return remaining
 
   def PubCurrentState(self):
@@ -141,7 +148,16 @@ class Strategy(Robot):
     if self.strategy_mode == "Defense":
       return self.robot.toChase(t, self.opp_side, "Classic")
     elif self.strategy_mode == "Attack":
-      return self.robot.toChase(t, self.opp_side, "Straight")
+      #return self.robot.toChase(t, self.opp_side, "Straight")
+      return self.robot.toChase(t, self.opp_side, "Teamwork")
+
+      
+
+  def Attack(self, t):
+    if self.strategy_mode == "Defense":
+      return self.robot.toAttack(t, self.opp_side, "Classic")
+    elif self.strategy_mode == "zone":
+      return self.robot.toChase(t, self.opp_side, "zone")
 
   
 
