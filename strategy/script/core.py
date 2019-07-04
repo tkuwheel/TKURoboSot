@@ -82,9 +82,11 @@ class Strategy(Robot):
     dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
 
-  def RunStatePoint(self, state):
-    if state == "Kick_Off" :
-      c = self.robot.toPoint(0, 0, 0)
+  def RunStatePoint(self, state ,side):
+    if state == "Kick_Off" and side == "Yellow" :
+      c = self.robot.toPoint(-60, 0, 0)
+    elif state == "Kick_Off" and side == "Blue" :
+      c = self.robot.toPoint(60, 0, 180)
     elif state == "Free_Kick" :
       c = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
@@ -126,6 +128,8 @@ class Strategy(Robot):
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
+      orb_shoot_ang = 10
+      atk_shoot_ang = 5
 
       if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
         print("Can not find ball")
@@ -138,7 +142,7 @@ class Strategy(Robot):
           if self.game_start:
             self.Chase(targets)
           elif self.run_point:
-            self.RunStatePoint(self.game_state)
+            self.RunStatePoint(self.game_state , self.side)
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
@@ -150,7 +154,7 @@ class Strategy(Robot):
             self.Chase(targets)
 
         if self.robot.is_orbit:
-          if abs(targets[self.opp_side]['ang']) < 10:
+          if abs(targets[self.opp_side]['ang']) < orb_shoot_ang :
             self.robot.toAttack(targets, self.opp_side)
           elif not self.robot.CheckBallHandle():
             self.Chase(targets)
@@ -160,7 +164,7 @@ class Strategy(Robot):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.Chase(targets)
-          elif abs(targets[self.opp_side]['ang']) < 5:
+          elif abs(targets[self.opp_side]['ang']) < atk_shoot_ang :
             self.robot.toShoot(3, 1)
           else:
             self.robot.toAttack(targets, self.opp_side)
@@ -170,7 +174,7 @@ class Strategy(Robot):
 
       ## Run point
       if self.robot.is_point:
-        self.RunStatePoint(self.game_state)
+        self.RunStatePoint(self.game_state , self.side)
 
       if rospy.is_shutdown():
         log('shutdown')
@@ -188,6 +192,11 @@ class Strategy(Robot):
     self.run_y      = config['run_y']
     self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
+    self.orb_shoot_ang  = config['orb_shoot_ang']
+    self.atk_shoot_ang  = config['atk_shoot_ang']
+   #self.ROTATE_V_ang   = config['ROTATE_V_ang']
+    self.remaining_range_v   = config['remaining_range_v']
+    self.remaining_range_yaw = config['remaining_range_yaw']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
