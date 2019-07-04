@@ -28,18 +28,17 @@ target_link_libraries(Single  ${catkin_LIBRARIES} crcLib csslLib)
 #)
 #target_link_libraries(Triple  ${catkin_LIBRARIES} crcLib csslLib)
 #
-#add_executable(Step
-#                test/test_motor_step.cpp
-#                ${BASE_CONTROL}
-#)
-#target_link_libraries(Step ${catkin_LIBRARIES} crcLib csslLib)
-#
-add_executable(Cos
-                test/test_motor_cos.cpp
+add_executable(Step
+                test/test_motor_step.cpp
                 ${MOTOR_CONTROL}
 )
-target_link_libraries(Cos  ${catkin_LIBRARIES} crcLib csslLib)
+target_link_libraries(Step ${catkin_LIBRARIES} crcLib csslLib)
 
+add_executable(Sin
+                test/test_motor_sin.cpp
+                ${MOTOR_CONTROL}
+)
+target_link_libraries(Sin  ${catkin_LIBRARIES} crcLib csslLib)
 #add_executable(Robot_Test
 #                test/robot_test.cpp
 #                ${BASE_CONTROL}

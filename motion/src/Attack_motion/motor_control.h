@@ -24,69 +24,91 @@
   * Define 
   ******************************/
 //#define DEBUG
-#define _RECORD
+#define RECORD
 #define CSSL
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
-
+typedef struct{
+    uint8_t data[BUFFER_SIZE];
+    int head, rear;
+}SerialData;
+typedef struct{
+    int w1;
+    int w2;
+    int w3;
+}MotorSpeed;
 class MotorController{
 public:
-	MotorController();
-	MotorController(int, char**, bool);
+	MotorController(int, char**, bool, int number, std::string name);
+//	MotorController(int, char**, bool);
 	~MotorController();
 
 private:
-    const char *port = "/dev/communication/motion";
+    int m_number;
+    std::string m_name;
+    const std::string port = "/dev/communication/motion";
 
     std::fstream fp;
     std::string record_name;
-//    RX_DATA_TYPE package_data[RX_PACKAGE_SIZE];
     pthread_t tid;
 	cssl_t *serial;
 
-	serial_tx motor_TX;
-	serial_rx motor_RX;
-	int motor_odometry;
+	SerialTX motor_TX;
+	SerialRX motor_RX;
+//    MotorSpeed motorCommand;
+    MotorSpeed motorPWM;
+	double motor_odometry;
     long duration;
     bool record;
     bool motor_flag;
-    bool error_flag;
-    bool send_flag;
+    bool decoder_error;
+    bool bdecoder_success;
+//    bool bsend;
+    bool benable;
     bool clear_odo;
+    bool close;
+    bool get_target;
     struct timeval last_time;
+    struct timeval now;
     /* for serial callback*/
-    static uint8_t serial_data[RX_PACKAGE_SIZE];
+//    static SerialData serialData;
+    static SerialData serialData;
     static bool decoder_flag;
     static bool serial_flag;
     static int length;
+//    static int rear;
+//    static int head;
 
-    int16_t w1_pwm, w2_pwm, w3_pwm;
-    int *pmotor_speed;
+//    int16_t w1_pwm, w2_pwm, w3_pwm;
+    int *pmotor_feedback;
+    int *pmotor_pwm;
     int16_t tar_pwm;
     int16_t curr_pwm;
     double tar_rpm;
     double curr_rpm;
-    double pre_rpm;
-    double cos_value; 
-    double spd_err;
-	bool enable;
-    bool stop;
+    double avg_rpm;
+    double sin_value; 
+    double error_rpm;
+    double pre_error_rpm;
+//    double delta_error_rpm;
+	bool motor_enable;
+    bool motor_stop;
+    int max_rpm;
 
     Crc_16 Crc;
-    uint8_t crc_data[TX_PACKAGE_SIZE-2];
+//    uint8_t crc_data[TX_PACKAGE_SIZE-2];
     uint8_t cssl_data[TX_PACKAGE_SIZE];
+    uint8_t serial_data[RX_PACKAGE_SIZE];
     unsigned short crc_16;
 private:
 	static void	McsslCallback(int, uint8_t*, int);
 	int 	McsslInit();
 	void 	McsslSend2FPGA();
-    void    McsslSend2FPGA(
-            bool, bool, bool, 
-            bool, bool, bool); 
+    void    McsslSend2FPGA(bool, bool, bool, bool, bool, bool); 
 	void	DriverSetting();
     void    DriverSetting(int16_t, int16_t, int16_t);
     bool    SerialDecoder();
-	void	SpeedRegularization(double, double, double);
+//	void	SpeedRegularization(double, double, double);
     void    Run();
     void    FPGAInit();
     void    Filter();
@@ -94,15 +116,30 @@ private:
     double  PWM2RPM(int16_t);
     int16_t RPM2PWM(double);
     double  SpdErr(double, double);    //calculate the motor speed error
-    bool    GetErrFlag();
+    bool    GetDecoderErrFlag();
+    double  GetSinValue();
 public:
     static void *pThreadRun(void *p);
 	void 	McsslFinish();
-    bool    GetMotorFlag();
-    uint8_t* GetPacket();
-    double GetSpeed();
-    long GetDuration();
 
-    void SetSpeed(int, double);
+    bool    GetMotorFlag();
+    double  GetTarRPM();
+    double  GetCurrRPM();
+    double  GetOdometry();
+    int16_t GetTarPWM();
+    int16_t GetCurrPWM();
+    long    GetDuration();
+    bool    GetMotorEnable(){return motor_enable;}
+    bool    GetMotorStop(){return motor_stop;}
+    int     GetNumber(){return m_number;}
+    std::string GetName(){return m_name;}
+    uint8_t* GetPacket();
+
+    void SetMotor(int, std::string);
+    void SetSpeed(double);
+    void SetTarRPM(int);
+    void SetEnable();
+    void ClearOdo();
+    void Close();
 };
-#endif
+#endif //MotorControl_H

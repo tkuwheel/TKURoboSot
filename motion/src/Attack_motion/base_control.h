@@ -33,7 +33,6 @@ typedef void * (*THREADFUNCPTR)(void *);
 
 class BaseControl{
 public:
-	BaseControl();
 	BaseControl(int, char**, bool);
 	~BaseControl();
 
@@ -47,18 +46,19 @@ private:
     const char *port = "/dev/communication/motion";
 //    const int package_size = RX_PACKAGE_SIZE;
 
-    std::fstream fp;
-    std::string record_name;
-    RX_DATA_TYPE package_daga[RX_PACKAGE_SIZE];
+    std::fstream fp1;
+    std::fstream fp2;
+    std::fstream fp3;
+    std::string record_name1;
+    std::string record_name2;
+    std::string record_name3;
     pthread_t tid;
 	cssl_t *serial;
 
-	robot_command base_robotCMD;
-	robot_command odometry_robot;
-    Odo odo;
-	serial_tx base_TX;
-	serial_rx base_RX;
-	serial_rx odometry_motor;
+	RobotCommand baseCommand;
+	RobotCommand baseOdometry;
+	SerialTX baseTX;
+	SerialRX baseRX;
     bool record;
     bool clear_odo;
     bool base_flag;

@@ -12,41 +12,32 @@ void inturrupt(int signal)
 int main(int argc, char** argv)
 {
     std::cout << "argc " << argc << std::endl;
-
-    int16_t max;
     int number;
-
-    if(argc == 3){
-        if(argv[1] == "-h"){
-            printf("usage: [motor number][pwm percent]\n");
-            exit(EXIT_FAILURE);
-        }
-        max = strtol(argv[2], NULL, 10);
+    if(argc == 2){
         number = strtol(argv[1], NULL, 10);
     }else{
-        printf("usage: [motor number][pwm percent]\n");
+        std::cout << "usage: [motor number]\n";
         exit(EXIT_FAILURE);
     }
-    ros::init(argc, argv, "Step");
+    double p = 0;
+    double P = 0;
+    double pwm;
+    ros::init(argc, argv, "Sin");
     ros::NodeHandle n;
+
     std::stringstream ss;
     ss << number;
     std::string name = "Motor" + ss.str();
     MotorController MC(argc, argv, true, number, name);
 
-
-    std::cout << "\t max pwm value " << max <<std::endl;
-
     signal(SIGINT, inturrupt);
-    ros::Rate loop_rate(100);
-    int count = 0;
-    bool turn = true;
+    ros::Rate loop_rate(200);
     double real_rpm = 0;
     double target_rpm = 0;
-    int16_t real_pwm = 0;
-    int16_t target_pwm = 0;
     long duration = 0;
-
+    
+    bool turn = false;
+    int counter = 0;
     while(true){
         if(flag){
             MC.Close();
@@ -54,35 +45,32 @@ int main(int argc, char** argv)
                 if(MC.GetCurrRPM() == 0)break;
             continue;
         }
-        if((count % 10) == 0){
-            MC.SetSpeed(max);
+        if(counter % 7 == 0){
+            P = sin(p)*100;
+            MC.SetSpeed(P);
+            p+=0.03;
+            counter = 0;
         }
+        counter++;
+        if(p>=2 * M_PI)p=0;
+
         MC.SetEnable();
-        count++;
+        pwm = MC.GetTarPWM();
+
         if(MC.GetMotorFlag()){
 #ifdef DEBUG
             real_rpm = MC.GetCurrRPM();
             duration = MC.GetDuration();
             target_rpm = MC.GetTarRPM();
-            real_pwm = MC.GetCurrPWM();
-            target_pwm = MC.GetTarPWM();
             printf("\n*****motor command******\n");
 
-            printf("motor: %d real pwm: %dtarget pwm: %d target rpm: %f\n", number, (int16_t)real_pwm, target_pwm, target_rpm);
+            printf("target pwm: %d(dec) %x(hex) target rpm: %f, p: %f\n", (int16_t)pwm, (int16_t)pwm, target_rpm, p);
             printf("\n*****get feedback******\n");
             printf("duration: %d\t\n", (int)duration);
-                printf("motor speed(rpm): %f\n", real_rpm);
+            printf("motor speed(rpm): %f\n", real_rpm);
 #endif
         }
         loop_rate.sleep();
-        if(count > 300){
-            count = 0;
-            max = -max;
-        }
-//        if(max>300)turn = false;
-//        if(max<80)turn = true;
-//        if(turn)max = max + 1;
-//        else max = max - 1;
     }
 //    MC.McsslFinish();
     std::cout << "Close Attack Motion\n";

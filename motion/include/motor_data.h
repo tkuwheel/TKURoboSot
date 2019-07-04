@@ -15,11 +15,11 @@ typedef struct{
 	uint8_t shoot_power;
     bool hold_ball;
     bool remote;
-}robot_command;
+}RobotCommand;
 
 typedef struct{
-    robot_command vel;
-    robot_command traj;
+    RobotCommand vel;
+    RobotCommand traj;
 }Odo;
 
 typedef struct{
@@ -37,7 +37,7 @@ typedef struct{
 	TX_DATA_TYPE crc_16_1;
 	TX_DATA_TYPE crc_16_2;
 	TX_DATA_TYPE checksum;
-}serial_tx;
+}SerialTX;
 
 typedef struct{
 	int id;
@@ -47,7 +47,7 @@ typedef struct{
 	MOTOR_DATA_TYPE w1;
 	MOTOR_DATA_TYPE w2;
     MOTOR_DATA_TYPE w3;
-}serial_rx;
+}SerialRX;
 
 //typedef struct MOTOR_FEEDBACK motor_feedback;
 //typedef struct MOTOR_COMMAND motor_command;
