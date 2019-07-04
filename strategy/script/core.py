@@ -128,8 +128,6 @@ class Strategy(Robot):
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
-      orb_shoot_ang = 10
-      atk_shoot_ang = 5
 
       if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
         print("Can not find ball")
@@ -142,7 +140,7 @@ class Strategy(Robot):
           if self.game_start:
             self.Chase(targets)
           elif self.run_point:
-            self.RunStatePoint(self.game_state , self.side)
+            self.RunStatePoint(self.game_state)
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
@@ -154,7 +152,7 @@ class Strategy(Robot):
             self.Chase(targets)
 
         if self.robot.is_orbit:
-          if abs(targets[self.opp_side]['ang']) < orb_attack_ang :
+          if abs(targets[self.opp_side]['ang']) < self.orb_attack_ang :
             self.robot.toAttack(targets, self.opp_side)
           elif not self.robot.CheckBallHandle():
             self.Chase(targets)
@@ -164,7 +162,7 @@ class Strategy(Robot):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.Chase(targets)
-          elif abs(targets[self.opp_side]['ang']) < atk_shoot_ang :
+          elif abs(targets[self.opp_side]['ang']) < self.atk_shoot_ang :
             self.robot.toShoot(3, 1)
           else:
             self.robot.toAttack(targets, self.opp_side)
