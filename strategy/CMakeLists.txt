@@ -7,7 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   dynamic_reconfigure
-  image_transport
+#  image_transport
+  message_filters
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -50,7 +51,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
 # INCLUDE_DIRS include
   LIBRARIES strategy
-  CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs # dynamic_tutorials 
+  CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs message_filters# dynamic_tutorials 
   DEPENDS system_lib
 )
 
