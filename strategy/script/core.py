@@ -83,8 +83,10 @@ class Strategy(Robot):
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
 
   def RunStatePoint(self, state):
-    if state == "Kick_Off" :
-      c = self.robot.toPoint(0, 0, 0)
+    if state == "Kick_Off" and self.side == "Yellow" :
+      c = self.robot.toPoint(-60, 0, 0)
+    elif state == "Kick_Off" and self.side == "Blue" :
+      c = self.robot.toPoint(60, 0, 180)
     elif state == "Free_Kick" :
       c = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
@@ -150,7 +152,7 @@ class Strategy(Robot):
             self.Chase(targets)
 
         if self.robot.is_orbit:
-          if abs(targets[self.opp_side]['ang']) < 10:
+          if abs(targets[self.opp_side]['ang']) < self.orb_attack_ang :
             self.robot.toAttack(targets, self.opp_side)
           elif not self.robot.CheckBallHandle():
             self.Chase(targets)
@@ -160,7 +162,7 @@ class Strategy(Robot):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.Chase(targets)
-          elif abs(targets[self.opp_side]['ang']) < 5:
+          elif abs(targets[self.opp_side]['ang']) < self.atk_shoot_ang :
             self.robot.toShoot(3, 1)
           else:
             self.robot.toAttack(targets, self.opp_side)
@@ -188,6 +190,11 @@ class Strategy(Robot):
     self.run_y      = config['run_y']
     self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
+    self.orb_attack_ang  = config['orb_attack_ang']
+    self.atk_shoot_ang  = config['atk_shoot_ang']
+   #self.ROTATE_V_ang   = config['ROTATE_V_ang']
+    self.remaining_range_v   = config['remaining_range_v']
+    self.remaining_range_yaw = config['remaining_range_yaw']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])

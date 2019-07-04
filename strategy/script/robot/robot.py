@@ -15,7 +15,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int32
 
 ## Rotate 90 for 6th robot
-ROTATE_V_ANG = 90
+ROTATE_V_ANG = 0
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
