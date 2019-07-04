@@ -2,6 +2,7 @@
 import rospy
 import math
 import numpy as np
+import time
 from nubot_common.msg import OminiVisionInfo
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
@@ -38,7 +39,7 @@ class Robot(object):
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
-                   'velocity' : 0 }
+                   'time' : 0 }
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -46,11 +47,11 @@ class Robot(object):
   __maximum_v = 0
   __handle_dis = 0
   __handle_ang = 0
-  Kp_v = 0.0
+  Kp_v = 1.5
   Ki_v = 0.0
-  Kd_v = 0.0
-  Cp_v = 0
-  Kp_w = 0.0
+  Kd_v = 0.1
+  Cp_v = 20
+  Kp_w = 0.25
   Ki_w = 0.0
   Kd_w = 0.0
   Cp_w = 0
@@ -88,6 +89,7 @@ class Robot(object):
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
+
 
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
@@ -188,6 +190,7 @@ class Robot(object):
       self.cmdvel_pub.publish(msg)
 
   def GetObjectInfo(self):
+    self.__object_info['time'] = time.time()
     return self.__object_info
 
   def GetRobotInfo(self):
