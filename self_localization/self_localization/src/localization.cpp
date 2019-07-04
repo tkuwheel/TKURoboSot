@@ -103,7 +103,7 @@ void Localization::sensorCallback(const std_msgs::Int32MultiArray msg)
     for(int i = 0; i<point.size()/2;i+=2){
         mcl_sensor_data.push_back(MCL::SensorData(point[i],point[i+1]));
     }
-    if(mcl_sensor_data.size()>2){
+    if(mcl_sensor_data.size()>0){
         mcl.updateSensor(mcl_sensor_data);
     }
     //mcl.updateMotion(0,0,0);
@@ -185,14 +185,14 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
                 vy=vy_;
                 vw=vw_;
             }
-            if(fabs(vx_)<0.4||fabs(vy_)<0.4){
+            if(fabs(vx_)<0.6||fabs(vy_)<0.6){
                 vx=vx_;
                 vy=vy_;
             }
-            if(fabs(vw_)<5){
+            if(fabs(vw_)<15){
                 vw=vw_;
             }
-            if(abs(vx)>8||abs(vy)>8||abs(vw)>20){
+            if(abs(vx)>8||abs(vy)>8||abs(vw)>35){
                 //cout<<"vw>30";
                 vx=0;
                 vy=0;
@@ -358,7 +358,7 @@ void Localization::draw_particles()
 
     image_publisher(particles_map);
     //imshow("particles_map",particles_map);
-    waitKey(10);
+    //waitKey(10);
 }
 void Localization::pos_publisher(int x,int y, double w)
 {

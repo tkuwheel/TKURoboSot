@@ -3,7 +3,7 @@
 
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
+  <arg name="use_sim_time" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/> 
@@ -15,6 +15,7 @@
     <arg name="gui" default="true"/>
     <arg name="verbose"  value="true"/>
     <arg name="paused"   value="false"/>
+    <arg name="use_sim_time" default="true"/>
   </include>
 
   <!-- <node name="robot_up" pkg="nubot_gazebo" type="robot_up.sh"/> -->
