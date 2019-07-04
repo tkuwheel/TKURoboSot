@@ -129,11 +129,7 @@ class Strategy(object):
     self.rate = rospy.Rate(1000)
     self.run = {'point' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
     self.side = {'opponent' : '0', 'teamate' : '0', 'pos' : '0'}
-
-
-
     self.robot = Core(num, sim)
-
     dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
 
@@ -203,7 +199,7 @@ class Strategy(object):
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
             self.robot.goal_dis = 0
-            self.robot.Accelerate(0,self.maximum_v) 
+            #self.robot.Accelerate(0,targets,self.maximum_v) 
             if self.strategy_mode == "Attack":
               self.robot.toOrbit(targets, self.side['opponet'])
             elif self.strategy_mode == "Defense":
