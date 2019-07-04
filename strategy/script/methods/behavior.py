@@ -4,8 +4,6 @@ import rospy
 import math
 from robot.robot import Robot
 
-remaining_range_v = 5
-remaining_range_yaw = 2
 REMAINING_RANGE_V = remaining_range_v
 REMAINING_RANGE_YAW = remaining_range_yaw
 
