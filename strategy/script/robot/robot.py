@@ -88,7 +88,7 @@ class Robot(object):
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
-    ROTATE_V_ANG = 0 
+
 
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
