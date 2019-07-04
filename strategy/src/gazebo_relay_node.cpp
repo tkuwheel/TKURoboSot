@@ -33,8 +33,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "gazebo_relay_node");
 
   ros::NodeHandle nh;
-  // message_filters::Subscriber<nubot_common::OminiVisionInfo> omni_sub(nh, ss1.str(), 1);
-  // message_filters::Subscriber<transfer::PPoint> goal_sub(nh, ss2.str(), 1);
+  message_filters::Subscriber<nubot_common::OminiVisionInfo> omni_sub(nh, ss1.str(), 1);
+  message_filters::Subscriber<transfer::PPoint> goal_sub(nh, ss2.str(), 1);
 
   // typedef sync_policies::ExactTime<nubot_common::OminiVisionInfo, transfer::PPoint> MySyncPolicy;
   // typedef message_filters::sync_policies::ApproximateTime<nubot_common::OminiVisionInfo, transfer::PPoint> MySyncPolicy;
