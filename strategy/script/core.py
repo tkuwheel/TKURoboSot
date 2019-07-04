@@ -22,6 +22,8 @@ class Core(Robot, StateMachine):
     self.AC  = Attack()
     self.BC  = Behavior()
     self.sim = sim
+    self.goal_dis = 0
+    self.tStart = time.time()
 
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
@@ -38,23 +40,50 @@ class Core(Robot, StateMachine):
   toPoint  = point.to.itself() | idle.to(point)
 
   def on_toIdle(self):
+    self.goal_dis = 0
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
   def on_toChase(self, t, side, method = "Classic"):
+     
+    
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           t['ball']['dis'],\
                                           t['ball']['ang'])
-      self.MotionCtrl(x, y, yaw)
+      
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
+    elif method == "Team":
+      x, y, yaw = self.CC.TeamWork(t['ball']['dis'], t['ball']['ang'])
+    
+    if self.goal_dis == 0:
+      self.tStart = t['time']
+      self.goal_dis = t['ball']['dis']
+    elif t['ball']['dis'] < self.goal_dis:
+      self.tStart = t['time']
+      self.goal_dis = t['ball']['dis']
+    elif t['ball']['dis'] >= self.goal_dis :
+      a = self.Calculate(t['time'])
+      if a >= 3:
+        x, y, yaw = self.Accelerate(x, y, yaw)
+        self.tStart = t['time']
+        self.goal_dis = t['ball']['dis']
+
+    self.MotionCtrl(x, y, yaw)
+
+  def on_toAttack(self, t, side, method = "Classic"):
+    if method == "Classic":
+      self.goal_dis = 0 
+      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
       self.MotionCtrl(x, y, yaw)
 
-  def on_toAttack(self, t, side):
-    x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-    self.MotionCtrl(x, y, yaw)
+    elif method == "zone":
+      self.goal_dis = 0 
+      x, y, yaw = self.AC.zoneAttacking(t[side]['dis'], t[side]['ang'])
+      self.MotionCtrl(x, y, yaw)
+
 
   def on_toShoot(self, power, pos):
     self.RobotShoot(power, pos)
@@ -65,6 +94,7 @@ class Core(Robot, StateMachine):
 
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
+    print("got it: ", remaining)
     self.MotionCtrl(x, y, yaw)
     return remaining
 
@@ -73,6 +103,12 @@ class Core(Robot, StateMachine):
 
   def CheckBallHandle(self):
     return self.RobotBallHandle()
+  
+  def Calculate(self,ntime):
+    return ntime - self.tStart
+  
+  def Accelerate(self,x, y, yaw):
+    return x*1.5, y*1.5, yaw
 
 class Strategy(Robot):
   def __init__(self):
@@ -108,7 +144,18 @@ class Strategy(Robot):
     if self.strategy_mode == "Defense":
       return self.robot.toChase(t, self.opp_side, "Classic")
     elif self.strategy_mode == "Attack":
-      return self.robot.toChase(t, self.opp_side, "Straight")
+      #return self.robot.toChase(t, self.opp_side, "Straight")
+      return self.robot.toChase(t, self.opp_side, "Teamwork")
+
+      
+
+  def Attack(self, t):
+    if self.strategy_mode == "Defense":
+      return self.robot.toAttack(t, self.opp_side, "Classic")
+    elif self.strategy_mode == "zone":
+      return self.robot.toChase(t, self.opp_side, "zone")
+
+  
 
   def main(self, argv):
     TEST_MODE = True
@@ -119,6 +166,8 @@ class Strategy(Robot):
     elif SysCheck(argv) == "Simulative Mode":
       log("Start Sim")
       self.robot = Core(1, True)
+    
+     
 
     while not rospy.is_shutdown():
 
@@ -131,9 +180,9 @@ class Strategy(Robot):
         print("Can not find ball")
         self.robot.toIdle()
       else:
+        
         if not self.robot.is_idle and not self.run_point and not self.game_start:
           self.robot.toIdle()
-
         if self.robot.is_idle:
           if self.game_start:
             self.Chase(targets)

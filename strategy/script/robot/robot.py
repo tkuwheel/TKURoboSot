@@ -2,6 +2,7 @@
 import rospy
 import math
 import numpy as np
+import time
 from nubot_common.msg import OminiVisionInfo
 from nubot_common.srv import Shoot
 from nubot_common.srv import BallHandle
@@ -15,7 +16,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int32
 
 ## Rotate 90 for 6th robot
-ROTATE_V_ANG = 90
+ROTATE_V_ANG = 0
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -37,7 +38,7 @@ class Robot(object):
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
-                   'velocity' : 0 }
+                   'time' : 0 }
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -87,6 +88,7 @@ class Robot(object):
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
+    ROTATE_V_ANG = 0 
 
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
@@ -187,6 +189,7 @@ class Robot(object):
       self.cmdvel_pub.publish(msg)
 
   def GetObjectInfo(self):
+    self.__object_info['time'] = time.time()
     return self.__object_info
 
   def GetRobotInfo(self):

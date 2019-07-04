@@ -29,6 +29,8 @@ class Chase(object):
     v_y   = br_x * math.sin(math.radians(alpha)) + br_y * math.cos(math.radians(alpha))
     v_yaw = goal_ang
 
+
+
     return v_x, v_y, v_yaw
 
   def StraightForward(self, ball_dis, ball_ang):
@@ -46,4 +48,9 @@ class Chase(object):
     v_x   = 0
     v_y   = velocity * -0.5 # Kp
     v_yaw = w * 3.5 # Kp
+    return v_x, v_y, v_yaw
+
+  def TeamWork(self, goal_ang, ball_dis, ball_ang):
+    
+    
     return v_x, v_y, v_yaw

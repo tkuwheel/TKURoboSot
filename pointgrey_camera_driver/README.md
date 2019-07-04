@@ -42,6 +42,7 @@ $ sudo reboot  # 重開機
 $ cat /sys/module/usbcore/parameters/usbfs_memory_mb # 檢查是否成功，應顯示1000
 ```
 ## 到[FLEA官網](https://www.ptgrey.com/support/downloads)下載SDK並解壓縮
+[備用載點](https://drive.google.com/file/d/1_CFO2-nNe7urR_1hvsWBPZNZuqKSTozK/view?usp=sharing)
 ```bash
 $ cd <Path to flycapture2-2.13.3.31-amd64>
 $ sudo ./install_flycapture.sh
