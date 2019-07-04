@@ -16,7 +16,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int32
 
 ## Rotate 90 for 6th robot
-ROTATE_V_ANG = 90
+ROTATE_V_ANG = 0
 
 ## Gazebo Simulator
 SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
@@ -89,6 +89,7 @@ class Robot(object):
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
+    ROTATE_V_ANG = 0 
 
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
