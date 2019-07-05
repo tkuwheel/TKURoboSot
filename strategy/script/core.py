@@ -64,7 +64,7 @@ class Core(Robot, StateMachine):
 
     
 
-    self.Accelerate(1,t)
+    self.Accelerate(1,t,80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, t, side,  run, method = "Classic"):
@@ -128,7 +128,7 @@ class Core(Robot, StateMachine):
        
       elif t['ball']['dis'] >= self.goal_dis :
         a = self.Calculate(t['time'])  
-        if a > 1.5    
+        if a >= 0.8:    
           print('accelerating')
           self.ChangeVelocityRange(0,maximum_v)
       
@@ -221,7 +221,7 @@ class Strategy(object):
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
             self.robot.goal_dis = 0
-            #self.robot.Accelerate(0,targets,self.maximum_v) 
+            self.robot.Accelerate(0,targets,self.maximum_v) 
             self.Attack(targets)
           else:
             self.Chase(targets)
