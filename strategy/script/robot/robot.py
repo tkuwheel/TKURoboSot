@@ -15,6 +15,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Int32
 
 ## Rotate 90 for 6th robot
+## DO NOT CHANGE THIS VALUE
 ROTATE_V_ANG = 90
 
 ## Gazebo Simulator
