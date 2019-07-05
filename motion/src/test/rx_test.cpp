@@ -23,10 +23,12 @@ int main(int argc, char** argv)
 {
     signal(SIGINT, inturrupt);
     cssl_t *serial = NULL;
-    std::string port = "/dev/ttyUSB0";
+    std::string port = "/dev/communication/motion";
     cssl_start();
+    printf("serial %d\n", serial);
     if(!serial)
         serial = cssl_open(port.c_str(), CallBack, 0, 115200, 8, 0, 1);
+    printf("serial %d\n", serial);
     if(!serial){
         std::cout << cssl_geterrormsg << std::endl;
         exit(EXIT_FAILURE);

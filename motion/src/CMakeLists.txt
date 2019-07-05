@@ -16,11 +16,13 @@ add_executable(Crc
 )
 target_link_libraries(Crc  crcLib)
 
-add_executable(Single
+add_executable(Single_n
                 test/single_motor.cpp
+                ${BASE_CONTROL}
                 ${MOTOR_CONTROL}
+#${ROBOT_CONTROL}
 )
-target_link_libraries(Single  ${catkin_LIBRARIES} crcLib csslLib)
+target_link_libraries(Single_n  ${catkin_LIBRARIES} crcLib csslLib)
 
 #add_executable(Triple
 #                test/three_motor.cpp
@@ -28,17 +30,17 @@ target_link_libraries(Single  ${catkin_LIBRARIES} crcLib csslLib)
 #)
 #target_link_libraries(Triple  ${catkin_LIBRARIES} crcLib csslLib)
 #
-add_executable(Step
-                test/test_motor_step.cpp
-                ${MOTOR_CONTROL}
-)
-target_link_libraries(Step ${catkin_LIBRARIES} crcLib csslLib)
-
-add_executable(Sin
-                test/test_motor_sin.cpp
-                ${MOTOR_CONTROL}
-)
-target_link_libraries(Sin  ${catkin_LIBRARIES} crcLib csslLib)
+#add_executable(Step_n
+#                test/test_motor_step.cpp
+#                ${MOTOR_CONTROL}
+#)
+#target_link_libraries(Step_n ${catkin_LIBRARIES} crcLib csslLib)
+#
+#add_executable(Sin_n
+#                test/test_motor_sin.cpp
+#                ${MOTOR_CONTROL}
+#)
+#target_link_libraries(Sin_n  ${catkin_LIBRARIES} crcLib csslLib)
 #add_executable(Robot_Test
 #                test/robot_test.cpp
 #                ${BASE_CONTROL}
