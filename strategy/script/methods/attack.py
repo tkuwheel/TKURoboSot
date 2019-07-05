@@ -23,7 +23,7 @@ class Attack(Robot):
     return v_x, v_y, v_yaw
 
 
-  def block_attack(self, t, side, run):
+  def cross_over(self, t, side, run):
     robot_info = self.GetRobotInfo()
     shoot = 0
 
@@ -40,20 +40,4 @@ class Attack(Robot):
             
     return v_x, v_y, v_yaw, shoot
 
-  def block_attack52(self, t, side):
-    robot_info = self.GetRobotInfo()
-    shoot = 0
- 
-    go_x = t[side]['dis'] * math.cos(math.radians(t[side]['ang']))
-    go_y = t[side]['dis'] * math.sin(math.radians(t[side]['ang']))
-    
-    v_x   = go_x  * math.cos(math.radians(t[side]['ang']-30)) - go_y  * math.sin(math.radians(t[side]['ang']-30))
-    v_y   = go_x  * math.sin(math.radians(t[side]['ang']-30)) + go_y  * math.cos(math.radians(t[side]['ang']-30)) 
-    v_yaw = t[side]['ang']
-      
-    if t[side]['dis'] <= 150:
-      shoot = 1
-            
-      
-
-    return v_x, v_y, v_yaw, shoot
+  

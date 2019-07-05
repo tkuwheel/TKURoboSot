@@ -61,12 +61,13 @@ class Core(Robot, StateMachine):
                                           t['ball']['ang'])
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
-    elif method == "Team":
-      x, y, yaw = self.CC.TeamWork(t['ball']['dis'], t['ball']['ang']) 
-    # self.Accelerate(1,t)
+
+    
+
+    self.Accelerate(1,t)
     self.MotionCtrl(x, y, yaw)
 
-  def on_toAttack(self, t, side,  run, method = "block"):
+  def on_toAttack(self, t, side,  run, method = "Classic"):
     robot_info = self.GetRobotInfo()
     
     if method == "Classic":
@@ -74,9 +75,8 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw)
       if abs(t[side]['ang']) < 5 :
         self.shoot = 1
-    elif method == "block":
-     
-      x, y, yaw, self.shoot= self.AC.block_attack(t, side, run)
+    elif method == "Cross_Over":     
+      x, y, yaw, self.shoot= self.AC.cross_over(t, side, run)
     
       '''if side == "Blue" :
         if run['yaw'] < 0:
@@ -122,15 +122,18 @@ class Core(Robot, StateMachine):
       if self.goal_dis == 0:
         print('goal into')
         self.tStart = t['time']
-        self.goal_dis = t['ball']['dis']
+        
       elif t['ball']['dis'] < self.goal_dis:
         self.tStart = t['time']
-        self.goal_dis = t['ball']['dis']
+       
       elif t['ball']['dis'] >= self.goal_dis :
-        a = self.Calculate(t['time'])       
-        self.goal_dis = t['ball']['dis']
-        print('accelerating')
-        self.ChangeVelocityRange(0,maximum_v)
+        a = self.Calculate(t['time'])  
+        if a > 1.5    
+          print('accelerating')
+          self.ChangeVelocityRange(0,maximum_v)
+      
+      self.goal_dis = t['ball']['dis']
+        
     else :
       self.ChangeVelocityRange(0,maximum_v)
       print('back to normal')
@@ -174,16 +177,22 @@ class Strategy(object):
     if self.strategy_mode == "Defense":
       return self.robot.toChase(t, self.side['opponet'], "Classic")
     elif self.strategy_mode == "Attack":
-      return self.robot.toChase(t, self.side['opponet'], "Classic")
+      return self.robot.toChase(t, self.side['opponet'], "Straight")
       #return self.robot.toChase(t, self.side['opponet'], "Teamwork")
+    else: 
+      return self.robot.toChase(t, self.side['opponet'], "Classic")
+
+
 
       
 
-  '''def Attack(self, t):
+  def Attack(self, t):
+    if self.strategy_mode == "Attack":
+      return self.robot.toAttack(t, self.side['opponet'],self.run,  "Classic")
     if self.strategy_mode == "Defense":
-      return self.robot.toAttack(t, self.side['opponet'], "Classic")
-    elif self.strategy_mode == "Attack":
-      return self.robot.toAttack(t, self.side['opponet'], "block")'''
+              self.robot.toOrbit(targets, self.side['opponet'])
+    elif self.strategy_mode == "cross_over":
+      return self.robot.toAttack(t, self.side['opponet'],self.run, "Cross_Over")
 
   
 
@@ -213,11 +222,7 @@ class Strategy(object):
           if self.robot.CheckBallHandle():
             self.robot.goal_dis = 0
             #self.robot.Accelerate(0,targets,self.maximum_v) 
-            if self.strategy_mode == "Defense":
-              #self.robot.toOrbit(targets, self.side['opponet'])
-              self.robot.toAttack(targets, self.side['opponet'], self.run, "Classic")
-            elif self.strategy_mode == "Attack":
-              self.robot.toAttack(targets, self.side['opponet'], self.run )
+            self.Attack(targets)
           else:
             self.Chase(targets)
 
@@ -235,11 +240,7 @@ class Strategy(object):
           elif  self.robot.shoot:
             self.robot.toShoot(3, 1)
           else:
-            if self.strategy_mode == "Defense":
-              #self.robot.toOrbit(targets, self.side['opponet'])
-              self.robot.toAttack(targets, self.side['opponet'], self.run,  "Classic")
-            elif self.strategy_mode == "Attack":
-              self.robot.toAttack(targets, self.side['opponet'], self.run)
+            self.Attack(targets)
 
             
 
