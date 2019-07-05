@@ -1,11 +1,13 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
+  atk_shoot_ang: 3.0
   ballhandle_ang: 3
   ballhandle_dis: 28
   game_start: false
   game_state: Kick_Off
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
     dictitems:
+      atk_shoot_ang: 3.0
       ballhandle_ang: 3
       ballhandle_dis: 28
       game_start: false
@@ -18,10 +20,13 @@ dictitems:
       minimum_v: 0.2
       minimum_w: 0.2
       name: Default
+      orb_attack_ang: 10.0
       our_goal: Yellow
       parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       parent: 0
+      remaining_range_v: 5.0
+      remaining_range_yaw: 2.0
       run_point: false
       run_x: 0.0
       run_y: 0.0
@@ -34,7 +39,10 @@ dictitems:
   maximum_w: 50.0
   minimum_v: 0.2
   minimum_w: 0.2
+  orb_attack_ang: 10.0
   our_goal: Yellow
+  remaining_range_v: 5.0
+  remaining_range_yaw: 2.0
   run_point: false
   run_x: 0.0
   run_y: 0.0
