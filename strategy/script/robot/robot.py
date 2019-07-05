@@ -45,13 +45,13 @@ class Robot(object):
   __maximum_v = 0
   __handle_dis = 0
   __handle_ang = 0
-  Kp_v = 0.0
+  Kp_v = 1.5
   Ki_v = 0.0
-  Kd_v = 0.0
+  Kd_v = 0.1
   Cp_v = 0
-  Kp_w = 0.0
+  Kp_w = 0.25
   Ki_w = 0.0
-  Kd_w = 0.0
+  Kd_w = 0.1
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)

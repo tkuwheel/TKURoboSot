@@ -1,20 +1,20 @@
 !!python/object/new:dynamic_reconfigure.encoding.Config
 dictitems:
-  ballhandle_ang: 10
-  ballhandle_dis: 30
+  ballhandle_ang: 3
+  ballhandle_dis: 28
   game_start: false
   game_state: Kick_Off
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
     dictitems:
-      ballhandle_ang: 10
-      ballhandle_dis: 30
+      ballhandle_ang: 3
+      ballhandle_dis: 28
       game_start: false
       game_state: Kick_Off
       groups: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       id: 0
-      maximum_v: 100.0
-      maximum_w: 100.0
+      maximum_v: 50.0
+      maximum_w: 50.0
       minimum_v: 0.2
       minimum_w: 0.2
       name: Default
@@ -23,13 +23,21 @@ dictitems:
         state: []
       parent: 0
       run_point: false
+      run_x: 0.0
+      run_y: 0.0
+      run_yaw: 0.0
       state: true
+      strategy_mode: Defense
       type: ''
     state: []
-  maximum_v: 100.0
-  maximum_w: 100.0
+  maximum_v: 50.0
+  maximum_w: 50.0
   minimum_v: 0.2
   minimum_w: 0.2
   our_goal: Yellow
   run_point: false
+  run_x: 0.0
+  run_y: 0.0
+  run_yaw: 0.0
+  strategy_mode: Defense
 state: []
