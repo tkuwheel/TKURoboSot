@@ -13,6 +13,7 @@ from vision.msg import Object
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
+from std_msgs.msg import Bool 
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -39,6 +40,7 @@ class Robot(object):
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
+  __ball_is_handled = False
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -46,13 +48,13 @@ class Robot(object):
   __maximum_v = 0
   __handle_dis = 0
   __handle_ang = 0
-  Kp_v = 0.0
+  Kp_v = 1.5
   Ki_v = 0.0
-  Kd_v = 0.0
+  Kd_v = 0.1
   Cp_v = 0
-  Kp_w = 0.0
+  Kp_w = 0.25
   Ki_w = 0.0
-  Kd_w = 0.0
+  Kd_w = 0.1
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
@@ -96,10 +98,14 @@ class Robot(object):
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.RealShoot
     else:
-      self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
+      # self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
+      rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       self.MotionCtrl = self.RobotCtrlS
+      # self.RobotBallHandle = self.SimBallHandle
+      # self.RobotShoot = self.SimShoot
       self.RobotBallHandle = self.SimBallHandle
-      self.RobotShoot = self.SimShoot
+      self.RobotShoot = self.RealShoot
+      rospy.Subscriber("/robot1/BallIsHandle", Bool, self._CheckBallHandle)
       self.TuningVelocityContorller(1, 0, 0)
       self.TuningAngularVelocityContorller(0.1, 0, 0)
 
@@ -208,13 +214,19 @@ class Robot(object):
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
-    rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number), 1)
-    try:
-      client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
-      resp1 = client(1)
-      return resp1.BallIsHolding
-    except rospy.ServiceException :
-      print ("Service call failed")
+    # rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number), 1)
+    # try:
+    #   client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
+    #   resp1 = client(1)
+    #   return resp1.BallIsHolding
+    # except rospy.ServiceException :
+    #   print ("Service call failed")
+    pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
+    pub.publish(True)
+    return self.__ball_is_handled
+
+  def _CheckBallHandle(self, data):
+    self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
     if self.__object_info['ball']['dis'] < self.__handle_dis and self.__object_info['ball']['ang'] < self.__handle_ang:
