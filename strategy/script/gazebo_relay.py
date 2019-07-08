@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import roslib
+import tf
 import rospy
 import math
 import numpy as np
@@ -9,6 +11,7 @@ from transfer.msg import PPoint
 from vision.msg import Object
 from std_msgs.msg import Int32
 from std_msgs.msg import Bool
+from geometry_msgs.msg import PoseWithCovarianceStamped
 
 ROBOT_NUM = 1
 BLUE_GOAL = {'x': 300, 'y': 0}
@@ -16,11 +19,22 @@ YELLOW_GOAL = {'x': -300, 'y': 0}
 
 handle_pub = rospy.Publisher('/robot1/BallIsHandle', Bool, queue_size=1)
 vision_pub = rospy.Publisher('/vision/object', Object, queue_size=1)
+location_pub = rospy.Publisher('/akf_pose', PoseWithCovarianceStamped, queue_size=1) 
 
 def OmniVisionCallback(data):
-    rx = data.robotinfo[1 -1].pos.x
-    ry = data.robotinfo[1 -1].pos.y
+    rx = data.robotinfo[1 -1].pos.x * 0.01
+    ry = data.robotinfo[1 -1].pos.y * 0.01
     ra = data.robotinfo[1 -1].heading.theta
+    q = PoseWithCovarianceStamped()
+    q.pose.pose.position.x = rx
+    q.pose.pose.position.y = ry
+    qn = tf.transformations.quaternion_from_euler(0, 0, ra)
+    q.pose.pose.orientation.x = qn[0]
+    q.pose.pose.orientation.y = qn[1]
+    q.pose.pose.orientation.z = qn[2]
+    q.pose.pose.orientation.w = qn[3]
+    location_pub.publish(q)
+
     m = Object()
     m.ball_dis = data.ballinfo.real_pos.radius
     m.ball_ang = math.degrees(data.ballinfo.real_pos.angle)

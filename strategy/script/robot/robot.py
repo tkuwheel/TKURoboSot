@@ -100,6 +100,7 @@ class Robot(object):
     else:
       # self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
+      rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
       self.MotionCtrl = self.RobotCtrlS
       # self.RobotBallHandle = self.SimBallHandle
       # self.RobotShoot = self.SimShoot
