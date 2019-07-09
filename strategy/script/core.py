@@ -188,9 +188,9 @@ class Strategy(object):
 
   def Attack(self, t):
     if self.strategy_mode == "Attack":
-      return self.robot.toAttack(t, self.side['opponet'],self.run,  "Classic")
+      return self.robot.toAttack(t, self.side['opponet'],self.run,  "Cross_Over")
     if self.strategy_mode == "Defense":
-              self.robot.toOrbit(targets, self.side['opponet'])
+      self.robot.toOrbit(t, self.side['opponet'])
     elif self.strategy_mode == "cross_over":
       return self.robot.toAttack(t, self.side['opponet'],self.run, "Cross_Over")
 
