@@ -519,3 +519,30 @@ table.RobotInformationTable tfoot td {
 }
 
 /*==========================================================*/
+#locTable {
+    width: 450px;
+    height: 80px;
+    z-index: 2;
+    /*border: 1px solid black;*/
+    position: relative;
+    top: 73.5%;
+    left: 20%;
+    /*overflow: scroll;*/
+}
+#RobotInformationDiv table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 10px;
+}
+.localization_info{
+    width: 25px;
+    font-size: 13px;
+    text-align: left;
+    color: #fff;
+}
+.localization_info2{
+    font-size: 13px;
+    color: #fff;
+}

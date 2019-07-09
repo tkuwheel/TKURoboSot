@@ -146,7 +146,7 @@ function keysdown(e) {
 }
 
 function releasebutton(state) {
-    let vec3_ = new ROSLIB.Message({
+    let vec3 = new ROSLIB.Message({
         x: 0,
         y: 0,
         z: 0
@@ -175,8 +175,11 @@ function releasebutton(state) {
         vec3.y = 0;
         vec3.Z = 0;
     }
-    PublishTopicCmdVel(vec3);
-    //PublishTopicCmdVel(vec3);
+    if(state==81||state==69||state==87||state==65||state==83||state==68){
+        console.log("stop");
+        PublishTopicCmdVel(vec3);
+        //PublishTopicCmdVel(vec3);
+    }
 }
 
 function keyuped(e) {

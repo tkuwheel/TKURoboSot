@@ -573,7 +573,7 @@ function ParameterBlackTransfer() {
     let str = "";
     value[0]=parseInt(document.getElementsByName('BlackElement')[0].value);
     value[1]=parseInt(document.getElementsByName('BlackElement')[1].value);
-    ParameterWhite_gray.set(value[0]);
+    ParameterBlack_gray.set(value[0]);
     ParameterBlack_angle.set(value[1]);
     str += "Sent Black_Item Parameter: ";
     for(let i=0; i<2; i++){
@@ -617,7 +617,7 @@ function ParameterBlackTransfer2() {
     let str = "";
     value[0]=parseInt(document.getElementsByName('BlackElement')[0].value);
     value[1]=parseInt(document.getElementsByName('BlackElement')[1].value);
-    ParameterWhite_gray2.set(value[0]);
+    ParameterBlack_gray2.set(value[0]);
     ParameterBlack_angle2.set(value[1]);
     str += "Sent Black_Item Parameter: ";
     for(let i=0; i<2; i++){
