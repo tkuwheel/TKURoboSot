@@ -103,17 +103,21 @@ class Core(Robot, StateMachine):
   def Accelerate(self,x, y, yaw):
     return x*1.5, y*1.5, yaw
 
-class Strategy(Robot):
-  def __init__(self):
+class Strategy(object):
+  def __init__(self, num, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
+
+    self.robot = Core(num, sim)
 
     dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
 
   def RunStatePoint(self, state):
-    if state == "Kick_Off" :
-      c = self.robot.toPoint(0, 0, 0)
+    if state == "Kick_Off" and self.side == "Yellow" :
+      c = self.robot.toPoint(-60, 0, 0)
+    elif state == "Kick_Off" and self.side == "Blue" :
+      c = self.robot.toPoint(60, 0, 180)
     elif state == "Free_Kick" :
       c = self.robot.toPoint(100, 100, 90)
     elif state == "Free_Ball" :
@@ -139,19 +143,7 @@ class Strategy(Robot):
     elif self.strategy_mode == "Attack":
       return self.robot.toChase(t, self.opp_side, "Straight")
 
-  
-
-  def main(self, argv):
-    TEST_MODE = True
-    if SysCheck(argv) == "Native Mode":
-      log("Start Native")
-      self.robot = Core(1)
-      
-    elif SysCheck(argv) == "Simulative Mode":
-      log("Start Sim")
-      self.robot = Core(1, True)
-    
-     
+  def main(self):
 
     while not rospy.is_shutdown():
 
@@ -183,7 +175,7 @@ class Strategy(Robot):
             self.Chase(targets)
 
         if self.robot.is_orbit:
-          if abs(targets[self.opp_side]['ang']) < 10:
+          if abs(targets[self.opp_side]['ang']) < self.orb_attack_ang :
             self.robot.toAttack(targets, self.opp_side)
           elif not self.robot.CheckBallHandle():
             self.Chase(targets)
@@ -193,7 +185,7 @@ class Strategy(Robot):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.Chase(targets)
-          elif abs(targets[self.opp_side]['ang']) < 5:
+          elif abs(targets[self.opp_side]['ang']) < self.atk_shoot_ang :
             self.robot.toShoot(3, 1)
           else:
             self.robot.toAttack(targets, self.opp_side)
@@ -221,10 +213,15 @@ class Strategy(Robot):
     self.run_y      = config['run_y']
     self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
+    self.orb_attack_ang  = config['orb_attack_ang']
+    self.atk_shoot_ang  = config['atk_shoot_ang']
+   #self.ROTATE_V_ang   = config['ROTATE_V_ang']
+    self.remaining_range_v   = config['remaining_range_v']
+    self.remaining_range_yaw = config['remaining_range_yaw']
 
-    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
-    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
-    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+    self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.robot.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
 
     self.run_point = config['run_point']
 
@@ -232,7 +229,13 @@ class Strategy(Robot):
 
 if __name__ == '__main__':
   try:
-    s = Strategy()
-    s.main(sys.argv[1:])
+    if SysCheck(sys.argv[1:]) == "Native Mode":
+      log("Start Native")
+      s = Strategy(1, False)
+    elif SysCheck(sys.argv[1:]) == "Simulative Mode":
+      log("Start Sim")
+      s = Strategy(1, True)
+    # s.main(sys.argv[1:])
+    s.main()
   except rospy.ROSInterruptException:
     pass

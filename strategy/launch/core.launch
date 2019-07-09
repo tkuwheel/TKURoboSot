@@ -1,12 +1,14 @@
 <launch>
 <arg name="sim" default="false" />
 <group if="$(arg sim)">
+  <!-- Rotate -90 degrees from tku robot to sim robot -->
   <node name="mapping" pkg="topic_tools" type="transform"
         args="/motion/cmd_vel /nubot1/nubotcontrol/velcmd nubot_common/VelCmd
               'nubot_common.msg.VelCmd(
-               Vx=m.linear.x,
-               Vy=m.linear.y,
+               Vx=m.linear.y,
+               Vy=m.linear.x * -1,
                 w=m.angular.z)' --import nubot_common" />
+  <node name="gazebo_relay" pkg="strategy" type="gazebo_relay.py" />
 </group>
 <!-- <rosparam command="load" file="$(find strategy)/cfg/game_state.yaml" ns="core" /> -->
 <node name="core" pkg="strategy" type="core.py" args="$(arg sim)" output="screen" />

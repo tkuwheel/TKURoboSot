@@ -4,7 +4,7 @@ import rospy
 import math
 import numpy as np
 
-SOCCER_BALL_RADIUS = 10
+SOCCER_BALL_RADIUS = 0
 
 class Chase(object):
   def ClassicRounding(self, goal_ang, ball_dis, ball_ang):
@@ -46,6 +46,7 @@ class Chase(object):
     w = (velocity / orbit_radius)
 
     v_x   = 0
-    v_y   = velocity * -0.5 # Kp
+    v_y   = velocity * -1 # Kp
     v_yaw = w * 3.5 # Kp
-    return v_x, v_y, v_yaw
+    o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
+    return v_x, v_y, o_yaw
