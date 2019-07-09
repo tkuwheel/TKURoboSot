@@ -128,7 +128,7 @@ class Core(Robot, StateMachine):
        
       elif t['ball']['dis'] >= self.goal_dis :
         a = self.Calculate(t['time'])  
-        if a > 1.5    
+        if a > 1.5:
           print('accelerating')
           self.ChangeVelocityRange(0,maximum_v)
       
@@ -288,7 +288,7 @@ if __name__ == '__main__':
       log("Start Native")
       s = Strategy(1, False)
     elif SysCheck(sys.argv[1:]) == "Simulative Mode":
-      log("Start Sim")
+      log("Start Sim")  
       s = Strategy(1, True)
     # s.main(sys.argv[1:])
     s.main()
