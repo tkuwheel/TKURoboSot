@@ -28,9 +28,6 @@ class Chase(object):
     v_x   = br_x * math.cos(math.radians(alpha)) - br_y * math.sin(math.radians(alpha))
     v_y   = br_x * math.sin(math.radians(alpha)) + br_y * math.cos(math.radians(alpha))
     v_yaw = goal_ang
-
-
-
     return v_x, v_y, v_yaw
 
   def StraightForward(self, ball_dis, ball_ang):
@@ -50,6 +47,3 @@ class Chase(object):
     v_yaw = w * 3.5 # Kp
     o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
     return v_x, v_y, o_yaw
-
-    
-    

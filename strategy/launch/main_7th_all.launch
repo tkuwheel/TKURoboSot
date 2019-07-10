@@ -5,8 +5,7 @@
  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
  <node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>
  <!-- <node name="web_video_server" pkg="web_video_server" type="web_video_server"/> -->
- <!--<node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="true" respawn_delay="5" output="screen"/>-->
  <include file="$(find pointgrey_camera_driver)/launch/camera.launch" />
- <!--<node name="Attack_motion" pkg="motion" type="Attack_motion_node" output="screen"/>-->
+ <node name="Attack_motion" pkg="motion" type="Attack_motion_node" output="screen"/>
  <include file="$(find vision)/launch/vision.launch" />
 </launch>

@@ -31,7 +31,7 @@ class Robot(object):
   __object_info = {'ball':{'dis' : 0, 'ang' : 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
-                   'time' : 0 }
+                   'time' : 0,
                    'velocity' : 0 }
   __ball_is_handled = False
   ## Configs

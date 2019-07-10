@@ -27,7 +27,6 @@ class Core(Robot, StateMachine):
     self.shoot = 0
     self.block = 0
 
-
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
   attack = State('Attack')
@@ -42,19 +41,13 @@ class Core(Robot, StateMachine):
   toOrbit  = chase.to(orbit) | orbit.to.itself()
   toPoint  = point.to.itself() | idle.to(point)
 
-  
-
-
   def on_toIdle(self):
-    
     self.goal_dis = 0
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
   def on_toChase(self, t, side, method = "Classic"):
-     
-    
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           t['ball']['dis'],\
@@ -62,14 +55,11 @@ class Core(Robot, StateMachine):
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
-    
-
     self.Accelerate(1,t,80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, t, side,  run, method = "Classic"):
     robot_info = self.GetRobotInfo()
-    
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
       self.MotionCtrl(x, y, yaw)
@@ -77,22 +67,7 @@ class Core(Robot, StateMachine):
         self.shoot = 1
     elif method == "Cross_Over":     
       x, y, yaw, self.shoot= self.AC.cross_over(t, side, run)
-    
-      '''if side == "Blue" :
-        if run['yaw'] < 0:
-          yaw = t['Yellow']['ang']
-        else :
-          yaw = -t['Yellow']['ang'] 
-      else :
-        if run['yaw'] < 0:
-          yaw = -t['Blue']['ang']
-        else :
-          yaw = t['Blue']['ang']  '''
-      
       self.MotionCtrl(x, y, yaw)
-
-      
-      
 
   def on_toShoot(self, power, pos):
     self.RobotShoot(power, pos)
@@ -113,10 +88,10 @@ class Core(Robot, StateMachine):
 
   def CheckBallHandle(self):
     return self.RobotBallHandle()
-  
+
   def Calculate(self,ntime):
     return ntime - self.tStart
-  
+
   def Accelerate(self, do, t, maximum_v = 100):
     if do :
       if self.goal_dis == 0:
@@ -133,11 +108,9 @@ class Core(Robot, StateMachine):
           self.ChangeVelocityRange(0,maximum_v)
       
       self.goal_dis = t['ball']['dis']
-        
     else :
       self.ChangeVelocityRange(0,maximum_v)
       print('back to normal')
-      
 
 class Strategy(object):
   def __init__(self, num, sim=False):
@@ -172,19 +145,16 @@ class Strategy(object):
     if c:
       self.robot.toIdle()
       self.dclient.update_configuration({"run_point": False})
+    else:
+      pass
 
   def Chase(self, t):
     if self.strategy_mode == "Defense":
       return self.robot.toChase(t, self.side['opponet'], "Classic")
     elif self.strategy_mode == "Attack":
       return self.robot.toChase(t, self.side['opponet'], "Straight")
-      #return self.robot.toChase(t, self.side['opponet'], "Teamwork")
     else: 
       return self.robot.toChase(t, self.side['opponet'], "Classic")
-
-
-
-      
 
   def Attack(self, t):
     if self.strategy_mode == "Attack":
@@ -193,8 +163,6 @@ class Strategy(object):
       self.robot.toOrbit(t, self.side['opponet'])
     elif self.strategy_mode == "cross_over":
       return self.robot.toAttack(t, self.side['opponet'],self.run, "Cross_Over")
-
-  
 
   def main(self):
     while not rospy.is_shutdown():
@@ -242,8 +210,6 @@ class Strategy(object):
           else:
             self.Attack(targets)
 
-            
-
         if self.robot.is_shoot:
           if self.strategy_mode == "Defense":
             #self.robot.toOrbit(targets, self.side['opponet'])
@@ -272,7 +238,6 @@ class Strategy(object):
     self.run['yaw']    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
     self.maximum_v = config['maximum_v']
-    
 
     self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -290,7 +255,6 @@ if __name__ == '__main__':
     elif SysCheck(sys.argv[1:]) == "Simulative Mode":
       log("Start Sim")  
       s = Strategy(1, True)
-    # s.main(sys.argv[1:])
     s.main()
   except rospy.ROSInterruptException:
     pass
