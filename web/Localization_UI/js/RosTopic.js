@@ -419,3 +419,19 @@ function PublishTopicCmdVel(vec3) {
       cmdVel1.publish(twist);
     }
 }
+function stop_robot(){
+    var twist = new ROSLIB.Message({
+        linear: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        angular: {
+            x: 0,
+            y: 0,
+            z: 0
+        }
+    });
+    console.log(stop);
+    cmdVel1.publish(twist);
+}

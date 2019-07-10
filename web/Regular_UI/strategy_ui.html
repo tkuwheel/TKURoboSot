@@ -174,21 +174,44 @@
                             <canvas id="attack_map" class="DrawRect" width="659" height="493" ></canvas>
                             <canvas id="robot_map" class="DrawRect" width="659" height="493" ></canvas>
                             <canvas id="reset_map" class="DrawRect" width="659" height="493" ></canvas>
-                            
                             <div id = "locTable"> 
-                                <table class = "locInformationTable" >    
-                                    <label id="coordinate_x1"></label>
-                                    <label id="coordinate_y1"></label>
-                                    <label id="coordinate_angle1"></label>
-                                    <label id="coordinate_sigma1"></label>
-                                    <label id="coordinate_x2"></label>
-                                    <label id="coordinate_y2"></label>
-                                    <label id="coordinate_angle2"></label>
-                                    <label id="coordinate_sigma2"></label>
-                                    <label id="coordinate_x3"></label>
-                                    <label id="coordinate_y3"></label>
-                                    <label id="coordinate_angle3"></label>
-                                    <label id="coordinate_sigma3"></label>     
+                                <table class = "locInformationTable" >
+                                    <tr>
+                                        <td>
+                                            <label class = "localization_info2">R1&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x1" >0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y1">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle1">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma1">NULL</label>
+                                        </td>
+                                    </tr>
+                                    <tr>   
+                                        <td>
+                                            <label class = "localization_info2">R3&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x2">0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y2">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle2">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma2">NULL</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class = "localization_info2">R3&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x3">0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y3">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle3">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma3">NULL</label>
+                                        </td>
+                                    </tr> 
                                 </table>
                             </div>
                         </div>

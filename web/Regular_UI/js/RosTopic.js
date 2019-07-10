@@ -20,29 +20,29 @@ var s3 = new ROSLIB.Topic({
 s1.subscribe(function (msg) {
     sigma1 = msg.data;
     //console.log(sigma);
-    //document.getElementById('coordinate_sigma1').innerText = Math.round(sigma1);
+    document.getElementById('coordinate_sigma1').innerText = Math.round(sigma1);
     if (sigma1 > 20) {
         document.getElementById('coordinate_sigma1').style.color = "#FF0000";
     } else {
-        document.getElementById('coordinate_sigma1').style.color = "#000000";
+        document.getElementById('coordinate_sigma1').style.color = "#fff";
     }
 });
 s2.subscribe(function (msg) {
     sigma2 = msg.data;
-    //document.getElementById('coordinate_sigma2').innerText = Math.round(sigma2);
+    document.getElementById('coordinate_sigma2').innerText = Math.round(sigma2);
     if (sigma2 > 20) {
         document.getElementById('coordinate_sigma2').style.color = "#FF0000";
     } else {
-        document.getElementById('coordinate_sigma2').style.color = "#000000";
+        document.getElementById('coordinate_sigma2').style.color = "#fff";
     }
 });
 s3.subscribe(function (msg) {
     sigma3 = msg.data;
-    //document.getElementById('coordinate_sigma3').innerText = Math.round(sigma3);
+    document.getElementById('coordinate_sigma3').innerText = Math.round(sigma3);
     if (sigma3 > 20) {
         document.getElementById('coordinate_sigma3').style.color = "#FF0000";
     } else {
-        document.getElementById('coordinate_sigma3').style.color = "#000000";
+        document.getElementById('coordinate_sigma3').style.color = "#fff";
     }
 });
 /*========================================================*/
@@ -116,9 +116,9 @@ V1.subscribe(function(msg) {
     x1_=Math.round(x1_);
     y1_=Math.round(y1_);
 
-    //document.getElementById('coordinate_x1').innerText = x1;
-    //document.getElementById('coordinate_y1').innerText = -y1;
-    //document.getElementById('coordinate_angle1').innerText = w1;
+    document.getElementById('coordinate_x1').innerText = x1;
+    document.getElementById('coordinate_y1').innerText = -y1;
+    document.getElementById('coordinate_angle1').innerText = w1;
  
     draw_robot_map();
 });
@@ -144,9 +144,9 @@ V2.subscribe(function(msg) {
     x2_=Math.round(x2_);
     y2_=Math.round(y2_);
 
-    //document.getElementById('coordinate_x2').innerText = x2;
-    //document.getElementById('coordinate_y2').innerText = -y2;
-    //document.getElementById('coordinate_angle2').innerText = w2;
+    document.getElementById('coordinate_x2').innerText = x2;
+    document.getElementById('coordinate_y2').innerText = -y2;
+    document.getElementById('coordinate_angle2').innerText = w2;
     
     draw_robot_map();
 });
@@ -172,9 +172,9 @@ V3.subscribe(function(msg) {
     x3_=Math.round(x3_);
     y3_=Math.round(y3_);
 
-    //document.getElementById('coordinate_x3').innerText = x3;
-    //document.getElementById('coordinate_y3').innerText = -y3;
-    //document.getElementById('coordinate_angle3').innerText = w3;
+    document.getElementById('coordinate_x3').innerText = x3;
+    document.getElementById('coordinate_y3').innerText = -y3;
+    document.getElementById('coordinate_angle3').innerText = w3;
 
     draw_robot_map();
 });
@@ -267,6 +267,9 @@ function draw_robot(num,sigma,x,y,x_,y_,catchball,imu){
 }
 function ball_condition(){
   if(catchball2==false&&catchball3==false){
+    if(ball_ang1!=999&&ball_ang2==999&&ball_ang3==999){
+        draw_ball(x1,y1,w1,ball_ang1,ball_dis1);
+    }
     if(ball_ang2==999){
       if(ball_ang3!=999){
         draw_ball(x3,y3,w3,ball_ang3,ball_dis3);
