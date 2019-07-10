@@ -1,4 +1,3 @@
 #!/bin/bash
 
-cp ../../../devel/lib/motion/*.txt ./
-python read_motor.py Triple_record.txt
+python read_motor.py ../../../devel/lib/motion/Triple.txt

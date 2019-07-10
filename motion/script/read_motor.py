@@ -37,12 +37,12 @@ def Plot_Trend(time,w1,w2,w3,tar1,tar2,tar3):
         x[i] = total_time
     
     fig, ax = plt.subplots()
-    ax.plot(x,w1,'r',label='w1',linestyle='-')
-    ax.plot(x,w2,'g',label='w2',linestyle='-')
-    ax.plot(x,w3,'b',label='w3',linestyle='-')
-    ax.plot(x,tar1,'r',label='target1',linestyle='--')
-    ax.plot(x,tar2,'g',label='target2',linestyle='--')
-    ax.plot(x,tar3,'b',label='target3',linestyle='--')
+    ax.plot(x,w1,'blue',label='w1',linestyle='-')
+    ax.plot(x,w2,'orange',label='w2',linestyle='-')
+    ax.plot(x,w3,'green',label='w3',linestyle='-')
+    ax.plot(x,tar1,'red',label='target1',linestyle='--')
+    ax.plot(x,tar2,'black',label='target2',linestyle='--')
+    ax.plot(x,tar3,'yellow',label='target3',linestyle='--')
 
     ax.legend(loc = 'upper right')
     plt.xlabel('time')

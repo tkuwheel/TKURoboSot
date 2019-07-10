@@ -16,40 +16,39 @@
   * Define 
   ******************************/
 //#define DEBUG
+double  PWM2RPM(const int16_t &);
+int16_t RPM2PWM(const double &);
 class MotorController{
 public:
 	MotorController();
 	~MotorController();
-
-private:
-//    int m_number;
-//    std::string m_name;
-    int16_t m_tar_pwm;
-    int16_t m_curr_pwm;
-    double m_tar_rpm;
-    double m_curr_rpm;
-    double m_sin_value; 
-    double m_max_rpm;
-
-private:
-    double  PWM2RPM(const int16_t &);
-    int16_t RPM2PWM(const double &);
-    void    SpeedControl(const double &, const double &);
 public:
-
-    void    SpeedControl();
-
+public:
+    double  MotorControl();
     void    SetSpeed(const double &, const double &);
-    void    SetTarRPM(const double &);
-    void    SetCurrRPM(const double &);
     void    SetMaxRPM(const double &);
-
+    void    SetPID(const double &, const double &, const double &);
     double  GetSinValue();
     double  GetTarRPM();
     double  GetCurrRPM();
     int16_t GetTarPWM();
     int16_t GetCurrPWM();
-//    int     GetNumber(){return m_number;}
-//    std::string GetName(){return m_name;}
+private:
+    void    mPIDControl(const double &, const double &);
+    void    mSpeedPlan(const double &, const double &);
+private:
+    int16_t m_tar_pwm;
+    int16_t m_curr_pwm;
+
+    double m_cmd_rpm;
+    double m_tar_rpm;
+    double m_curr_rpm;
+    double m_acc_error;
+    double m_pre_error;
+    double m_sin_value; 
+    double m_max_rpm;
+    double m_kp;
+    double m_ki;
+    double m_kd;
 };
 #endif //MotorControl_H

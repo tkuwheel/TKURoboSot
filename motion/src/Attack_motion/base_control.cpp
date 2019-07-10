@@ -15,9 +15,7 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     ms_serialData.rear = 0;
 
     if(mb_record){
-        record_name1 = record_name1.assign(argv[0])  + "_motor1.txt";
-        record_name2 = record_name2.assign(argv[0])  + "_motor2.txt";
-        record_name3 = record_name3.assign(argv[0])  + "_motor3.txt";
+        record_name = record_name.assign(argv[0])  + ".txt";
     }
 
 	serial = NULL;
@@ -36,6 +34,7 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     mb_clear_odo = false;
     mb_base = false;
     mb_enable = false;
+    mb_stop = false;
     mb_close = false;
     m_duration = 0;
     m_serialNow = {0};
@@ -80,7 +79,6 @@ BaseController::~BaseController()
 
 void* BaseController::mpThreadRun(void* p)
 {
-    printf("mpThreadRun\n");
     ((BaseController*)p)->mRun();
     pthread_exit(NULL);
 }
@@ -90,16 +88,21 @@ void BaseController::mRun()
 // TODO
     std::stringstream fss;
     std::stringstream fduration;
+    if(mb_record){
+        mOpenRecordFile();
+    }
     gettimeofday(&m_serialLast, 0);
-    double scale;
-    printf("mRun\n");
     while(true){
+        if(!mCheckSerial()){
+            printf("Cannot get feedback\n");
+            sleep(1);
+            continue;
+        }
         if(mb_enable){
-//            mb_enable = false;
-//            mBaseControl();
-//            mDriverSetting();
-//
-//            mCsslSend2FPGA();
+            mb_enable = false;
+            mBaseControl();
+            mDriverSetting();
+            mCsslSend2FPGA();
         }
         if(msb_serial){
             mb_base = true;
@@ -108,19 +111,23 @@ void BaseController::mRun()
                 m_duration += m_baseRX.duration;
 //                if(mb_clear_odo){
 //                    mb_clear_odo = false;
-            }else{
 
-#ifdef _RECORD  // record TODO
-//                if(mb_record && (m_baseRX.duration < 1000000)){
-//                    scale =  1/(0.000001 * m_baseRX.duration);
-//
-//                    fp1 << fss.str();
-//                    fp2 << fss.str();
-//                    fp3 << fss.str();
-//                    fss.str(std::string());
+#ifdef RECORD  // record TODO
+                if(mb_record){
+                    // motor1
+                    fss << m_baseRX.duration << " " 
+                        << m_motorCurrRPM.w1 << " "
+                        << m_motorCurrRPM.w2 << " "
+                        << m_motorCurrRPM.w3 << " "
+                        << m_motorTarRPM.w1 << " "
+                        << m_motorTarRPM.w2 << " "
+                        << m_motorTarRPM.w3 << " "
+                        << "\n";
+                    fp << fss.str();
+                    fss.str(std::string());
 #endif
 //
-//                }
+                }
 //
             }
         }
@@ -186,12 +193,12 @@ void BaseController::mCsslSend2FPGA()
     cssl_data[TX_PACKAGE_SIZE-1] = m_baseTX.crc_16_2;
 #ifdef CSSL
     cssl_putdata(serial, cssl_data, TX_PACKAGE_SIZE);
+#else
+    msb_serial = true;
+#endif //CSSL
 #ifdef DEBUG
     ShowCsslSend();
 #endif //DEBUG
-#else // no CSSL
-    ShowCsslSend();
-#endif //CSSL
 
 }
 
@@ -206,22 +213,38 @@ void BaseController::mCsslCallback(int id, uint8_t* buf, int len)
     }
 }
 
+bool BaseController::mCheckSerial()
+{
+#ifndef CSSL
+    return true;
+#endif
+    gettimeofday(&m_serialNow, 0);
+    long duration_s = m_serialNow.tv_sec - m_serialLast.tv_sec;
+    long duration_us = m_serialNow.tv_usec - m_serialLast.tv_usec;
+    double duration = duration_s * 1000 + duration_us / 1000;
+    if(duration > 1000.0){
+        m_serialLast = m_serialNow;
+        return false;
+    }else{
+        return true;
+    }
+}
+
 bool BaseController::mSerialDecoder()
 {
 #ifndef CSSL
-    for(int i=0; i<17; i++){
-        ms_serialData.rear++;
-        if(ms_serialData.rear >= BUFFER_SIZE)ms_serialData.rear = 0;
-        if(i==0)ms_serialData.data[ms_serialData.rear++] = 0xff;
-        else if(i==1)ms_serialData.data[ms_serialData.rear++] = 0xfa;
-        else if(i==14)ms_serialData.data[ms_serialData.rear++] = 0xe9;
-        else if(i==15)ms_serialData.data[ms_serialData.rear++] = 0xa4;
-        else ms_serialData.data[ms_serialData.rear++] = 0;
+    gettimeofday(&m_serialNow, 0);
+    long duration_s = m_serialNow.tv_sec - m_serialLast.tv_sec;
+    long duration_us = m_serialNow.tv_usec - m_serialLast.tv_usec;
+    m_serialLast = m_serialNow;
+    m_baseRX.duration = duration_s * 1000000 + duration_us;
 
-        if(ms_serialData.rear>=BUFFER_SIZE)ms_serialData.rear=0;
-    }
-#ifdef DEBUG_CSSLCALLBACK
-#endif //DEBUG_CSSLCALLBACK
+    m_baseRX.size = 0;
+    m_baseRX.w1 = 0;
+    m_baseRX.w2 = 0;
+    m_baseRX.w3 = 0; 
+    m_baseRX.error = "no error";
+    return true;
 #endif //CSSL
     msb_serial = false;
     int data_len = ms_serialData.rear - ms_serialData.head;
@@ -251,23 +274,15 @@ bool BaseController::mSerialDecoder()
                 m_baseRX.error = "no error";
                 mb_success = true;
                 ms_serialData.head = (ms_serialData.head + RX_PACKAGE_SIZE)%BUFFER_SIZE;
-//                printf("decoer correct\n");
                 break;
             }else{
-//                m_baseRX.w1 = 0;
-//                m_baseRX.w2 = 0;
-//                m_baseRX.w3 = 0;
                 m_baseRX.error = "error";
                 mb_success = false;
                 m_baseRX.error_times++;
-//                printf("decoer error\n");
             }
         }
         mb_success = false;
     }
-//    printf("speed%d speed%d, duration: %d\n", *pmotor_feedback, m_baseRX.w1, (int)m_baseRX.duration);
-#ifdef DEBUG_CSSLCALLBACK
-#endif //DEBUG_CSSLCALLBACK
     return mb_success;
 
 }
@@ -275,22 +290,11 @@ bool BaseController::mSerialDecoder()
 void BaseController::mOpenRecordFile()
 {
     if(mb_record){
-        fp1.open(record_name1, std::ios::out);
-        if(fp1.is_open())
+        fp.open(record_name, std::ios::out);
+        if(fp.is_open())
             printf("open record file1\n");
         else
             printf("file1 open failed\n");
-        fp2.open(record_name2, std::ios::out);
-        if(fp2.is_open())
-            printf("open record file2\n");
-        else
-            printf("file2 open failed\n");
-        fp3.open(record_name3, std::ios::out);
-        if(fp3.is_open())
-            printf("open record file3\n");
-        else
-            printf("file3 open failed\n");
-
     }else{
         printf("do not record file\n");
     }
@@ -299,12 +303,8 @@ void BaseController::mOpenRecordFile()
 
 void BaseController::mCloseRecordFile()
 {
-    if(fp1.is_open())
-        fp1.close();
-    if(fp2.is_open())
-        fp2.close();
-    if(fp3.is_open())
-        fp3.close();
+    if(fp.is_open())
+        fp.close();
 }
 
 void BaseController::mCommandRegularization()
@@ -330,6 +330,19 @@ void BaseController::mSpeedRegularization()
     m_motorCurrRPM.w1 = m_baseRX.w1 * scale / TICKS_PER_ROUND;
     m_motorCurrRPM.w2 = m_baseRX.w2 * scale / TICKS_PER_ROUND;
     m_motorCurrRPM.w3 = m_baseRX.w3 * scale / TICKS_PER_ROUND;
+}
+
+int16_t BaseController::mPWMRegularization(int16_t pwm)
+{
+    if(pwm > 0){
+        pwm = pwm * 0.8 + MIN_PWM;
+    }else if(pwm < 0){
+        pwm = pwm * 0.8 - MIN_PWM;
+
+    }else{
+        pwm = 0;
+    }
+    return pwm;
 }
 
 void BaseController::mShootRegularization()
@@ -359,36 +372,45 @@ void BaseController::mDriverSetting()
         m_motorCurrPWM.w2 = 0;
         m_motorCurrPWM.w3 = 0;
     }else{
-        m_en_stop += (m_motorCurrPWM.w1 >= MIN_PWM)?  0x80 : 0;
-        m_en_stop += (m_motorCurrPWM.w2 >= MIN_PWM)?  0x40 : 0;
-        m_en_stop += (m_motorCurrPWM.w3 >= MIN_PWM)?  0x20 : 0;
-        m_en_stop += (m_motorCurrPWM.w1 > MIN_PWM)?  0 : 0x10;
-        m_en_stop += (m_motorCurrPWM.w2 > MIN_PWM)?  0 : 0x08;
-        m_en_stop += (m_motorCurrPWM.w3 > MIN_PWM)?  0 : 0x04;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) >= MIN_PWM)?  0x80 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) >= MIN_PWM)?  0x40 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) >= MIN_PWM)?  0x20 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
+
     }
 }
 
 void BaseController::mBaseControl()
 {
 // TODO
-    m_Motor1.SetSpeed(m_motorCommand.w1, m_motorCurrRPM.w1);
-    m_Motor2.SetSpeed(m_motorCommand.w2, m_motorCurrRPM.w2);
-    m_Motor3.SetSpeed(m_motorCommand.w3, m_motorCurrRPM.w3);
+    m_Motor1.SetSpeed(m_motorCommandRPM.w1, m_motorCurrRPM.w1);
+    m_Motor2.SetSpeed(m_motorCommandRPM.w2, m_motorCurrRPM.w2);
+    m_Motor3.SetSpeed(m_motorCommandRPM.w3, m_motorCurrRPM.w3);
 
-    m_Motor1.SpeedControl();
-    m_Motor2.SpeedControl();
-    m_Motor3.SpeedControl();
+    m_motorTarRPM.w1 = m_Motor1.MotorControl();
+    m_motorTarRPM.w2 = m_Motor2.MotorControl();
+    m_motorTarRPM.w3 = m_Motor3.MotorControl();
 
-    m_motorCurrPWM.w1 = m_Motor1.GetCurrPWM();
-    m_motorCurrRPM.w2 = m_Motor2.GetCurrPWM();
-    m_motorCurrRPM.w3 = m_Motor3.GetCurrPWM();
+    m_motorCurrPWM.w1 = mPWMRegularization(m_Motor1.GetCurrPWM());
+    m_motorCurrPWM.w2 = mPWMRegularization(m_Motor2.GetCurrPWM());
+    m_motorCurrPWM.w3 = mPWMRegularization(m_Motor3.GetCurrPWM());
+
+//    m_motorTarPWM.w1 =  RPM2PWM(m_motorTarRPM.w1);
+//    m_motorTarPWM.w2 =  RPM2PWM(m_motorTarRPM.w2);
+//    m_motorTarPWM.w3 =  RPM2PWM(m_motorTarRPM.w3);
 }
 
 void BaseController::mInverseKinematics()
 {
-	m_motorCommand.w1 = m_baseCommand.x*(-1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
-	m_motorCommand.w2 = m_baseCommand.x*(1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
-	m_motorCommand.w3 = m_baseCommand.x*(0)+m_baseCommand.y*(1)+m_baseCommand.yaw*(-1);
+    double cmd1, cmd2, cmd3;
+	cmd1 = m_baseCommand.x*(-1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
+	cmd2 = m_baseCommand.x*(1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
+	cmd3 = m_baseCommand.x*(0)+m_baseCommand.y*(1)+m_baseCommand.yaw*(-1);
+    m_motorCommandRPM.w1 = cmd1 / 100 * MAX_MOTOR_RPM;
+    m_motorCommandRPM.w2 = cmd2 / 100 * MAX_MOTOR_RPM;
+    m_motorCommandRPM.w3 = cmd3 / 100 * MAX_MOTOR_RPM;
 #ifdef DEBUG
 #endif
 }
@@ -401,26 +423,6 @@ void BaseController::mForwardKinematics()
 	m_baseOdometry.x = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
 	m_baseOdometry.y = ( m_baseRX.w1 * (-0.3333) + m_baseRX.w2 * (-0.3333) + m_baseRX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
 	m_baseOdometry.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;
-}
-
-double BaseController::PWM2RPM(int16_t pwm)
-{
-    if(pwm > 0) 
-        return (pwm - MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
-    else if(pwm < 0)
-        return (pwm + MIN_PWM) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
-    else 
-        return 0;
-}
-
-int16_t BaseController::RPM2PWM(double rpm)
-{
-    if(rpm > 0) 
-        return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM + MIN_PWM;
-    else if(rpm < 0)
-        return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM - MIN_PWM;
-    else 
-        return 0;
 }
 
 void BaseController::mTrajectory()
@@ -481,34 +483,49 @@ void BaseController::Send(const RobotCommand &CMD)
     mInverseKinematics();
 }
 
-void BaseController::SetSingle(int number, int16_t pwm)
+void BaseController::SetSingle(int number, int16_t rpm)
 {
 // TODO
     switch(number){
         case 1:
-//            DriverSetting(pwm, 0, 0);
+            m_motorCommandRPM.w1 = rpm;
+            m_motorCommandRPM.w2 = 0;
+            m_motorCommandRPM.w3 = 0;
             break;
         case 2:
-//            DriverSetting(0, pwm, 0);
+            m_motorCommandRPM.w2 = rpm;
+            m_motorCommandRPM.w1 = 0;
+            m_motorCommandRPM.w3 = 0;
             break;
         case 3:
-//            DriverSetting(0, 0, pwm);
+            m_motorCommandRPM.w3 = rpm;
+            m_motorCommandRPM.w1 = 0;
+            m_motorCommandRPM.w2 = 0;
             break;
         default:
-//            DriverSetting(0, 0, 0);
+            m_motorCommandRPM.w1 = 0;
+            m_motorCommandRPM.w2 = 0;
+            m_motorCommandRPM.w3 = 0;
             break;
     }
 }
 
-void BaseController::SetTriple(int16_t pwm1, int16_t pwm2, int16_t pwm3)
+void BaseController::SetTriple(int16_t rpm1, int16_t rpm2, int16_t rpm3)
 {
 // TODO
-//    DriverSetting(pwm1, pwm2, pwm3);
+    m_motorCommandRPM.w1 = rpm1;
+    m_motorCommandRPM.w2 = rpm2;
+    m_motorCommandRPM.w3 = rpm3;
 }
 
 void BaseController::SetEnable()
 {
     mb_enable = true;
+}
+
+void BaseController::SetStop()
+{
+    mb_stop = true;
 }
 
 void BaseController::Close()
@@ -547,7 +564,7 @@ void BaseController::ShowCsslSend()
     printf("shoot: %x\n", (m_baseTX.shoot));
     printf("crc16-1: %x\n", (m_baseTX.crc_16_1));
     printf("crc16-2: %x\n", (m_baseTX.crc_16_2));
-    printf("crc16: %x\n", (crc_16));
+    printf("crc16: %x\n", (m_baseTX.crc_16_1 << 8) + (m_baseTX.crc_16_2));
     printf("w1: %x\n", ((m_baseTX.w1_h) << 8) + (m_baseTX.w1_l));
     printf("w2: %x\n", ((m_baseTX.w2_h) << 8) + (m_baseTX.w2_l));
     printf("w3: %x\n", ((m_baseTX.w3_h) << 8) + (m_baseTX.w3_l));

@@ -25,8 +25,8 @@
 /*******************************
   * Define 
   ******************************/
-#define DEBUG
-//#define _RECORD
+//#define DEBUG
+#define RECORD
 #define CSSL
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
@@ -89,6 +89,7 @@ public: //public function
     void    SetSingle(int, int16_t);
     void    SetTriple(int16_t, int16_t, int16_t);
     void    SetEnable();
+    void    SetStop();
     void    ClearOdo();
     void    Close();
 //    RobotCommand GetOdoRobot();
@@ -104,11 +105,13 @@ private: //private function
     void 	mCsslFinish();
 	void 	mCsslSend2FPGA();
 	static void	mCsslCallback(int, uint8_t*, int);
+    bool    mCheckSerial();
     bool    mSerialDecoder();
     void    mOpenRecordFile();
     void    mCloseRecordFile();
     void    mCommandRegularization();
     void    mSpeedRegularization();
+    int16_t    mPWMRegularization(int16_t);
 	void	mShootRegularization();
 	void	mDriverSetting();
     void    mBaseControl();
@@ -117,19 +120,14 @@ private: //private function
     void    mTrajectory();
 ////    void    Filter();
 ////    void    MotorSpeed();
-    double  PWM2RPM(int16_t);
-    int16_t RPM2PWM(double);
 private: //private variable
-    std::fstream fp1;
-    std::fstream fp2;
-    std::fstream fp3;
-    std::string record_name1;
-    std::string record_name2;
-    std::string record_name3;
+    std::fstream fp;
+    std::string record_name;
     pthread_t tid;
 	cssl_t *serial;
 
     MotorSpeed m_motorCommand;
+    MotorSpeed m_motorCommandRPM;
     MotorSpeed m_motorCurrPWM;
     MotorSpeed m_motorTarPWM;
     MotorSpeed m_motorCurrRPM;
@@ -146,8 +144,9 @@ private: //private variable
     bool mb_clear_odo;
     bool mb_base;
     bool mb_enable;
+    bool mb_stop;
     bool mb_close;
-    long m_duration;
+    double m_duration;
     struct timeval m_serialNow;
     struct timeval m_serialLast;
     struct timeval m_commandTime;

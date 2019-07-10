@@ -24,12 +24,12 @@ add_executable(Single_n
 )
 target_link_libraries(Single_n  ${catkin_LIBRARIES} crcLib csslLib)
 
-#add_executable(Triple
-#                test/three_motor.cpp
-#                ${BASE_CONTROL}
-#)
-#target_link_libraries(Triple  ${catkin_LIBRARIES} crcLib csslLib)
-#
+add_executable(Triple
+                test/three_motor.cpp
+                ${ROBOT_CONTROL}
+)
+target_link_libraries(Triple  ${catkin_LIBRARIES} crcLib csslLib)
+
 #add_executable(Step_n
 #                test/test_motor_step.cpp
 #                ${MOTOR_CONTROL}

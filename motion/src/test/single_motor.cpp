@@ -14,22 +14,17 @@ int main(int argc, char** argv)
     std::cout << "argc " << argc << std::endl;
 
     int number;
-    double p;
+    double rpm;
     if(argc == 3){
         number = strtol(argv[1], NULL, 10);
-        p = strtof(argv[2], NULL);
+        rpm = strtof(argv[2], NULL);
     }else{
         std::cout << "usage: [motor number] [motor pwm]\n";
         exit(EXIT_FAILURE);
     }
-//    int16_t pwm = p*(MAX_PWM-0.2*MAX_PWM)/100+MIN_PWM;
-//
-//    std::stringstream ss;
-//    ss << number;
-//    std::string name = "Motor" + ss.str();
     ros::init(argc, argv, "Single");
     ros::NodeHandle n;
-    BaseController Base(argc, argv, false);
+    BaseController Base(argc, argv, true);
     MotorSpeed currRPM;
     MotorSpeed tarRPM;
 //
@@ -38,46 +33,43 @@ int main(int argc, char** argv)
 //    std::cout << "\t speed " << p <<std::endl;
 //
     signal(SIGINT, inturrupt);
-    ros::Rate loop_rate(1);
+    ros::Rate loop_rate(100);
     double real_rpm;
     double target_rpm;
     long duration;
+    int count = 0;
     while(true){
         if(flag){
             Base.Close();
-            printf("CLSOE\n");
-            if(Base.GetBaseFlag()){
-                currRPM = Base.GetCurrRPM();
-                if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
-            }
+//            printf("CLSOE\n");
+            Base.ShowCsslCallback();
+            currRPM = Base.GetCurrRPM();
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
+            loop_rate.sleep();
             continue;
         }
-//        Motor.SetSpeed(p);
-//        Motor.SetEnable();
+        Base.SetSingle(number, rpm);
+        Base.SetEnable();
+        count++;
+        if(count>=200){
+            count = 0;
+//            Base.SetStop();
+        }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
-//#ifdef DEBUG
-//
-//
-//            targetRPM = Base.GetTarRPM();
+            tarRPM = Base.GetTarRPM();
+#ifdef DEBUG
             printf("\n*****motor command******\n");
 
 //            printf("motor number: %d\n", number);
-//            printf("target pwm: %d(dec) %x(hex) target rpm: %f\n", (int16_t)pwm, (int16_t)pwm, target_rpm);
+//            Base.ShowCsslSend();
             printf("\n*****get feedback******\n");
-            Base.ShowCsslCallback();
-//            printf("duration: %d\t\n", (int)duration);
-//            printf("motor current speed(rpm): %f\n", currRPM.w1);
-//            printf("motor current speed(rpm): %f\n", currRPM.w2);
-//            printf("motor current speed(rpm): %f\n", currRPM.w2);
-//            printf("error message: %s\n", RX.error);
-//#endif
+//            printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
+//            Base.ShowCsslCallback();
+#endif
         }
         loop_rate.sleep();
     }
-////    Motor.McsslFinish();
     std::cout << "Close Attack Motion\n";
-//
-//
-//    return 0;
+    return 0;
 }
