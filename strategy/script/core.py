@@ -10,6 +10,10 @@ from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
 from methods.behavior import Behavior
+from methods.block import Block
+from methods.wait import Wait
+from methods.right_limit import R_limit
+from methods.left_limit import L_limit
 from dynamic_reconfigure.server import Server
 from strategy.cfg import StrategyConfig
 import dynamic_reconfigure.client
@@ -21,6 +25,10 @@ class Core(Robot, StateMachine):
     self.CC  = Chase()
     self.AC  = Attack()
     self.BC  = Behavior()
+    self.BK  = Block()
+    self.WT  = Wait()
+    self.RL  = R_limit()
+    self.LL  = L_limit() 
     self.sim = sim
 
   idle   = State('Idle', initial = True)
@@ -29,44 +37,57 @@ class Core(Robot, StateMachine):
   shoot  = State('Shoot')
   orbit  = State('Orbit')
   point  = State('Point')
+  block  = State('Block')
+  wait   = State('Wait')
+  r_limit = State('R_limit')
+  l_limit = State('L_limit')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | orbit.to(idle) | point.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | orbit.to(chase) | point.to(chase)
-  toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | orbit.to(attack)
-  toShoot  = attack.to(shoot)
-  toOrbit  = chase.to(orbit) | orbit.to.itself()
+  toIdle   = idle.to.itself() | block.to(idle) | wait.to(idle) | r_limit.to(idle) | l_limit.to(idle)
   toPoint  = point.to.itself() | idle.to(point)
-
+  toBlock  = idle.to(block) | wait.to(block) | block.to.itself() | r_limit.to(block) | l_limit.to(block)
+  toWait   = idle.to(wait) | block.to(wait) | wait.to.itself()
+  toR_limit = idle.to(r_limit) | block.to(r_limit) | r_limit.to.itself()
+  toL_limit = idle.to(l_limit) | block.to(l_limit) | l_limit.to.itself()
   def on_toIdle(self):
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
-  def on_toChase(self, t, side, method = "Classic"):
-    if method == "Classic":
-      x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
-                                          t['ball']['dis'],\
-                                          t['ball']['ang'])
-      self.MotionCtrl(x, y, yaw)
-    elif method == "Straight":
-      x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
-      self.MotionCtrl(x, y, yaw)
-
-  def on_toAttack(self, t, side):
-    x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-    self.MotionCtrl(x, y, yaw)
-
-  def on_toShoot(self, power, pos):
-    self.RobotShoot(power, pos)
-
-  def on_toOrbit(self, t, side):
-    x, y, yaw = self.CC.Orbit(t[side]['ang'])
-    self.MotionCtrl(x, y, yaw, True)
-
   def on_toPoint(self, tx, ty, tyaw):
     x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
     self.MotionCtrl(x, y, yaw)
     return remaining
+  
+  def on_toBlock(self, t, side ,i):
+    x, y, yaw = self.BK.ClassicBlocking(t[side]['dis'],\
+                                        t[side]['ang'],\
+                                        t['ball']['dis'],\
+                                        t['ball']['ang'],\
+                                        t[side]['right'],\
+                                        t[side]['left'],\
+                                        i['imu']['ang'])
+    self.MotionCtrl(x, y, yaw)
+
+  def on_toWait(self, t, side):
+    x, y, yaw = self.WT.ClassicWaiting(t['ball']['dis'],\
+                                       t['ball']['ang'],\
+                                       t[side]['dis'],\
+                                       t[side]['ang'])
+    self.MotionCtrl(x, y, yaw)
+  
+  def on_toR_limit(self, t, side):
+    x, y, yaw = self.RL.ClassicRlimit(t['ball']['dis'],\
+                                       t['ball']['ang'],\
+                                       t[side]['dis'],\
+                                       t[side]['ang'])
+    self.MotionCtrl(x, y, yaw)
+  def on_toL_limit(self, t, side):
+    x, y, yaw = self.LL.ClassicLlimit(t['ball']['dis'],\
+                                       t['ball']['ang'],\
+                                       t[side]['dis'],\
+                                       t[side]['ang'])
+    self.MotionCtrl(x, y, yaw)
+
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
@@ -122,7 +143,8 @@ class Strategy(object):
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
-
+      twopoint = self.robot.GetTwopoint()
+      imu = self.robot.GetImu()
       if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
         print("Can not find ball")
         self.robot.toIdle()
@@ -132,47 +154,59 @@ class Strategy(object):
 
         if self.robot.is_idle:
           if self.game_start:
-            self.Chase(targets)
+            self.robot.toBlock(targets,self.side,imu)
           elif self.run_point:
             self.RunStatePoint(self.game_state)
-
-        if self.robot.is_chase:
-          if self.robot.CheckBallHandle():
-            if self.strategy_mode == "Attack":
-              self.robot.toOrbit(targets, self.opp_side)
-            elif self.strategy_mode == "Defense":
-              self.robot.toAttack(targets, self.opp_side)
-          else:
-            self.Chase(targets)
-
-        if self.robot.is_orbit:
-          if abs(targets[self.opp_side]['ang']) < self.orb_attack_ang :
-            self.robot.toAttack(targets, self.opp_side)
-          elif not self.robot.CheckBallHandle():
-            self.Chase(targets)
-          else:
-            self.robot.toOrbit(targets, self.opp_side)
-
-        if self.robot.is_attack:
-          if not self.robot.CheckBallHandle():
-            self.Chase(targets)
-          elif abs(targets[self.opp_side]['ang']) < self.atk_shoot_ang :
-            self.robot.toShoot(3, 1)
-          else:
-            self.robot.toAttack(targets, self.opp_side)
-
-        if self.robot.is_shoot:
-          self.robot.toAttack(targets, self.opp_side)
-
+        
+        if self.robot.is_block and targets['ball']['dis']>150:
+          #go wait
+          self.robot.toWait(targets,self.side)
+          print("waiting for incoming")
+        elif self.robot.is_wait and targets['ball']['dis']>150:
+          #keep waiting
+          self.robot.toWait(targets,self.side)
+          print("waiting for incoming")
+        elif self.robot.is_wait and targets['ball']['dis']<=150:
+          #go block
+          self.robot.toBlock(targets,self.side,imu)
+          print("blocking")
+        elif self.robot.is_block and twopoint[self.side]['right']<=40 and targets['ball']['ang']<=0:
+          #go r limit
+          self.robot.toR_limit(targets,self.side)
+          print("right side has reached limit")
+        elif self.robot.is_block and twopoint[self.side]['left']<=40 and targets['ball']['ang']>=0:
+          #go l limit
+          self.robot.toL_limit(targets,self.side)
+          print("left side has reached limit")
+        elif self.robot.is_block and targets['ball']['dis']<=150:
+          #keep blocking
+          self.robot.toBlock(targets,self.side,imu)
+          print("blocking")
+        elif self.robot.is_r_limit and targets['ball']['ang']<=0:
+          #keep r limit
+          self.robot.toR_limit(targets,self.side)
+          print("right side has reached limit")
+        elif self.robot.is_l_limit and targets['ball']['ang']>=0:
+          #keep l limit
+          self.robot.toL_limit(targets,self.side)
+          print("left side has reached limit")
+        elif self.robot.is_r_limit and targets['ball']['ang']>0:
+          #go block
+          self.robot.toBlock(targets,self.side,imu)
+          print("blocking")
+        elif self.robot.is_l_limit and targets['ball']['ang']<0:
+          #go block
+          self.robot.toBlock(targets,self.side,imu)           
+          print("blocking")
       ## Run point
-      if self.robot.is_point:
-        self.RunStatePoint(self.game_state)
+        if self.robot.is_point:
+          self.RunStatePoint(self.game_state)
 
-      if rospy.is_shutdown():
-        log('shutdown')
-        break
+        if rospy.is_shutdown():
+          log('shutdown')
+          break
 
-      self.rate.sleep()
+        self.rate.sleep()
 
   def Callback(self, config, level):
     self.game_start = config['game_start']

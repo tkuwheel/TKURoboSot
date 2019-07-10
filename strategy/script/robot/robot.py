@@ -10,9 +10,11 @@ from simple_pid import PID
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
+from vision.msg import Two_point
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
+from imu_3d.msg import inertia
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -28,17 +30,20 @@ VISION_TOPIC = "vision/object"
 CMDVEL_TOPIC = "motion/cmd_vel"
 SHOOT_TOPIC  = "motion/shoot"
 POSITION_TOPIC = "akf_pose"
-
+IMU            = "imu_3d"
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
 
   __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
-  __object_info = {'ball':{'dis' : 0, 'ang' : 0},
-                   'Blue':{'dis' : 0, 'ang' : 0},
-                   'Yellow':{'dis' : 0, 'ang' : 0},
+  __object_info = {'ball':{'dis' : 0, 'ang' : 0 ,'right' : 0 ,'left' : 0},
+                   'Blue':{'dis' : 0, 'ang' : 0,'right' : 0 ,'left' : 0},
+                   'Yellow':{'dis' : 0, 'ang' : 0,'right' : 0 ,'left' : 0},
                    'velocity' : 0 }
+  __twopoint_info = {'Blue':{'right' : 0,'left' : 0},
+                     'Yellow':{'right' : 0,'left' : 0}}
+  __imu_info = {'imu':{'ang' : 0}} 
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -92,6 +97,8 @@ class Robot(object):
     if not sim :
       rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
       rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
+      rospy.Subscriber('/interface/Two_point', Two_point, self._GetTwopoint)
+      rospy.Subscriber(IMU,inertia,self._GetImu)
       self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.RealBallHandle
       self.RobotShoot = self.RealShoot
@@ -119,26 +126,35 @@ class Robot(object):
     return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetSimVision(self, vision):
-    self.__object_info['ball']['dis'] = vision.ballinfo.real_pos.radius
-    self.__object_info['ball']['ang'] = math.degrees(vision.ballinfo.real_pos.angle)
+    self.__object_info['ball']['dis']    = vision.ballinfo.real_pos.radius
+    self.__object_info['ball']['ang']    = math.degrees(vision.ballinfo.real_pos.angle)
     self.__robot_info['location']['x']   = vision.robotinfo[self.robot_number - 1].pos.x
     self.__robot_info['location']['y']   = vision.robotinfo[self.robot_number - 1].pos.y
     self.__robot_info['location']['yaw'] = math.degrees(vision.robotinfo[self.robot_number - 1].heading.theta)
 
   def _GetSimGoalInfo(self, goal_info):
-    self.__object_info['Blue']['dis'] = goal_info.right_radius
-    self.__object_info['Blue']['ang'] = goal_info.right_angle
+    self.__object_info['Blue']['dis']    = goal_info.right_radius
+    self.__object_info['Blue']['ang']    = goal_info.right_angle
     self.__object_info['Yellow']['dis']  = goal_info.left_radius
     self.__object_info['Yellow']['ang']  = goal_info.left_angle
 
   def _GetVision(self, vision):
-    self.__object_info['ball']['dis']    = vision.ball_dis
-    self.__object_info['ball']['ang']    = vision.ball_ang
-    self.__object_info['Blue']['dis']    = vision.blue_fix_dis
-    self.__object_info['Blue']['ang']    = vision.blue_fix_ang
-    self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
-    self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
-  
+    self.__object_info['ball']['dis']     = vision.ball_dis
+    self.__object_info['ball']['ang']     = vision.ball_ang
+    self.__object_info['Blue']['dis']     = vision.blue_fix_dis
+    self.__object_info['Blue']['ang']     = vision.blue_fix_ang
+    self.__object_info['Yellow']['dis']   = vision.yellow_fix_dis
+    self.__object_info['Yellow']['ang']   = vision.yellow_fix_ang
+    
+  def _GetTwopoint(self,vision):
+    self.__twopoint_info['Blue']['right']   = vision.blue_right
+    self.__twopoint_info['Blue']['left']    = vision.blue_left
+    self.__twopoint_info['Yellow']['right'] = vision.yellow_right
+    self.__twopoint_info['Yellow']['left']  = vision.yellow_left   
+
+  def _GetImu(self,imu_3d):
+    self.__imu_info['imu']['ang']    = imu_3d.yaw
+
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
@@ -192,6 +208,12 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
+ 
+  def GetTwopoint(self):
+    return self.__twopoint_info
+
+  def GetImu(self):
+    return self.__imu_info
 
   def SimShoot(self, power, pos) :
     rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number), 1)

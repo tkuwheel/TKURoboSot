@@ -1,13 +1,13 @@
 Camera: {Focal: 13.971313932573906, High: 650.0}
-Center: {Camera_high: 620, Center_X: 318, Center_Y: 255, Front: 267, Inner: 37, Outer: 223,
-  X: 308, Y: 266}
+Center: {Camera_high: 620, Center_X: 318, Center_Y: 255, Front: 267, Horizon: 100,
+  Inner: 37, Outer: 230, X: 308, Y: 266}
 FPS: 17
 HSV:
   Ball: [0, 30, 30, 94, 30, 100]
   Blue: [203, 236, 82, 100, 0, 100]
   Green: [120, 209, 52, 86, 19, 63]
   White: [0, 359, 0, 22, 0, 23]
-  Yellow: [32, 80, 29, 100, 0, 100]
+  Yellow: [32, 80, 29, 100, 40, 100]
   black: {angle: 3, gray: 26}
   white: {angle: 3, gray: 161}
 Parameterbutton: 7
