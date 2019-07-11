@@ -22,12 +22,12 @@ vision_pub = rospy.Publisher('/vision/object', Object, queue_size=1)
 location_pub = rospy.Publisher('/akf_pose', PoseWithCovarianceStamped, queue_size=1) 
 
 def OmniVisionCallback(data):
-    rx = data.robotinfo[1 -1].pos.x * 0.01
-    ry = data.robotinfo[1 -1].pos.y * 0.01
+    rx = data.robotinfo[1 -1].pos.x
+    ry = data.robotinfo[1 -1].pos.y
     ra = data.robotinfo[1 -1].heading.theta
     q = PoseWithCovarianceStamped()
-    q.pose.pose.position.x = rx
-    q.pose.pose.position.y = ry
+    q.pose.pose.position.x = rx * 0.01
+    q.pose.pose.position.y = ry * 0.01
     qn = tf.transformations.quaternion_from_euler(0, 0, ra)
     q.pose.pose.orientation.x = qn[0]
     q.pose.pose.orientation.y = qn[1]
