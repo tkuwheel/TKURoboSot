@@ -66,7 +66,7 @@ def OmniVisionCallback(data):
     vision_pub.publish(m)
 
 def ShootCallback(data):
-    shoot_client(data.data)
+    shoot_client(data.data * 0.03) # Reduce Shoot power for nubot_gazebo
 
 def HandleCallback(data):
     r = handle_client()

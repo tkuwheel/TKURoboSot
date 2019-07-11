@@ -88,7 +88,7 @@ class Core(Robot, StateMachine):
     #   x, y, yaw, _ = self.AC.cross_over(t, side, run)
     #   self.MotionCtrl(x, y, yaw)
 
-  def on_toShoot(self, power, pos):
+  def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
 
   def on_toMovement(self, method):
@@ -229,7 +229,7 @@ class Strategy(object):
           if not self.robot.CheckBallHandle():
             self.ToChase()
           elif  abs(targets[self.robot.opp_side]['ang']) < 3:
-            self.robot.toShoot(3, 1)
+            self.robot.toShoot(100)
           else:
             self.ToAttack()
 

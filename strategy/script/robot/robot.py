@@ -168,7 +168,7 @@ class Robot(object):
 
   def RealShoot(self, power, pos) :
     msg = Int32()
-    msg.data = 100
+    msg.data = power
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
