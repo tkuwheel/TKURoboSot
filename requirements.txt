@@ -4,4 +4,3 @@ six==1.12.0
 catkin-tools==0.4.5
 rospkg==1.1.7
 simple-pid==0.2.1
-transformations==2019.4.22

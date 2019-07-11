@@ -50,3 +50,6 @@ class Chase(object):
     v_yaw = w * 3.5 # Kp
     o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
     return v_x, v_y, o_yaw
+
+    
+    
