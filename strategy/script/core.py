@@ -16,6 +16,9 @@ import dynamic_reconfigure.client
 
 class Core(Robot, StateMachine):
 
+  last_ball_dis = 0
+  last_time     = time.time()
+
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
   attack = State('Attack')
@@ -54,8 +57,6 @@ class Core(Robot, StateMachine):
     self.CC  = Chase()
     self.AC  = Attack()
     self.BC  = Behavior()
-    self.goal_dis = 0
-    self.tStart = time.time()
     self.block = 0
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
@@ -75,7 +76,7 @@ class Core(Robot, StateMachine):
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
-    # self.Accelerate(1, t, 80)
+    self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
@@ -125,27 +126,24 @@ class Core(Robot, StateMachine):
     self.RobotStatePub(self.current_state.identifier)
 
   def CheckBallHandle(self):
+    if self.RobotBallHandle():
+      ## Back to normal from Accelerator
+      self.ChangeVelocityRange(0, self.maximum_v)
+      Core.last_ball_dis = 0
+
     return self.RobotBallHandle()
 
-  def Calculate(self, ntime):
-    return ntime - self.tStart
-
-  def Accelerate(self, do, t, maximum_v = 100):
-    if do :
-      if self.goal_dis == 0:
-        print('goal into')
-        self.tStart = t['time']
-      elif t['ball']['dis'] < self.goal_dis:
-        self.tStart = t['time']
-      elif t['ball']['dis'] >= self.goal_dis :
-        a = self.Calculate(t['time'])  
-        if a >= 0.8:    
-          print('accelerating')
-          self.ChangeVelocityRange(0, maximum_v)
-      self.goal_dis = t['ball']['dis']
-    else :
-      self.ChangeVelocityRange(0, maximum_v)
-      print('back to normal')
+  def Accelerator(self, exceed = 100):
+    t = self.GetObjectInfo()
+    if Core.last_ball_dis == 0:
+      Core.last_time = time.time()
+      Core.last_ball_dis = t['ball']['dis']
+    elif t['ball']['dis'] >= Core.last_ball_dis:
+      if time.time() - Core.last_time >= 0.8:
+        self.ChangeVelocityRange(0, exceed)
+    else:
+      Core.last_time = time.time()
+      Core.last_ball_dis = t['ball']['dis']
 
 class Strategy(object):
 
@@ -211,8 +209,6 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            # self.robot.goal_dis = 0
-            # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToAttack()
           else:
             self.ToChase()
