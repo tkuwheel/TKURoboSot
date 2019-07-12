@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# encoding: utf-8
 from __future__ import print_function
 import rospy
 import math
@@ -40,16 +41,25 @@ class Chase(object):
     v_yaw = ball_ang
     return v_x, v_y, v_yaw
 
-  def Orbit(self, goal_ang):
-    orbit_radius = 33.5 # 22.5 + 11 cm
-    velocity = goal_ang
-    w = (velocity / orbit_radius)
+  def Run_point_relative(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    v_x   = 0
-    v_y   = velocity * -1 # Kp
-    v_yaw = w * 3.5 # Kp
-    o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
-    return v_x, v_y, o_yaw
+    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    print("ball_dis : " , math.ceil(ball_dis) , "\n")
+    print("ball_x : " , math.ceil(ball_x) , "ball_y : " , math.ceil(ball_y) , "\n")
+
+    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    door_y = goal_dis * math.sin(math.radians(goal_ang))
+    print("goal_dis : " , math.ceil(goal_dis) , "\n")
+    print("door_x : " , math.ceil(door_x) , "door_y : " , math.ceil(door_y) , "\n")
+    print("----------------------------------------------------")
+
+    defence_x   = ( ball_x + door_x ) / 2					#防守位置
+    defence_y   = ( ball_y + door_y ) / 2
+    defence_yaw = 0
+
+    return defence_x , defence_y , defence_yaw
+
 
     
     

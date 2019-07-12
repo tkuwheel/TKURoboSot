@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 from __future__ import print_function
 import rospy
 import math
@@ -34,3 +35,5 @@ class Behavior(Robot):
       arrived = False
 
     return o_x, o_y, o_yaw, arrived
+
+  
