@@ -70,7 +70,7 @@ class Core(Robot, StateMachine):
     
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-      if abs(t[side]['ang']) < 5 :
+      if abs(t[side]['ang']) < 5 and t[side]['dis'] <= 250 :
         self.shoot = 1
 
     elif method == "Cross_Over":     
@@ -144,7 +144,7 @@ class Strategy(object):
     elif state == "Penalty_Kick" :
       c = self.robot.toPoint(-100, 100, 135)
     elif state == "Run_Specific_Point" :
-      c = self.robot.toPoint(self.run_x, self.run_y, self.run_yaw)
+      c = self.robot.toPoint(self.run['x'], self.run['y'], self.run['yaw'])
     else:
       print("ummmm")
 
@@ -156,7 +156,7 @@ class Strategy(object):
     if self.chase_straight :
       return self.robot.toChase(t, self.side['opponent'], "Straight")
     elif self.strategy_mode == "Defense_ball":
-      return self.robot.toChase(t, self.side['opponent'], "Relative")
+      return self.robot.toChase(t, self.side['teamate'], "Relative")
     else: 
       return self.robot.toChase(t, self.side['opponent'], "Classic")
     
@@ -164,10 +164,10 @@ class Strategy(object):
   def Attack(self, t):
     if self.strategy_mode == "Attack":
       return self.robot.toAttack(t, self.side['opponent'], self.run)
-    elif self.strategy_mode == "Defense":
-      self.robot.toOrbit(t, self.side['opponent'])
     elif self.strategy_mode == "cross_over":
       return self.robot.toAttack(t, self.side['opponent'], self.run, "Cross_Over")
+    else:
+      return self.robot.toAttack(t, self.side['opponent'], self.run)
 
 
   
@@ -206,7 +206,7 @@ class Strategy(object):
           if not self.robot.CheckBallHandle():
             self.Chase(targets)
           elif  self.robot.shoot:
-              self.robot.RobotShoot(power, pos)
+              self.robot.RobotShoot(3, 1)
               self.robot.shoot = 0
           else:
             self.Attack(targets)

@@ -45,17 +45,12 @@ class Chase(object):
 
     ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
     ball_y = ball_dis * math.sin(math.radians(ball_ang))
-    print("ball_dis : " , math.ceil(ball_dis) , "\n")
-    print("ball_x : " , math.ceil(ball_x) , "ball_y : " , math.ceil(ball_y) , "\n")
 
     door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
     door_y = goal_dis * math.sin(math.radians(goal_ang))
-    print("goal_dis : " , math.ceil(goal_dis) , "\n")
-    print("door_x : " , math.ceil(door_x) , "door_y : " , math.ceil(door_y) , "\n")
-    print("----------------------------------------------------")
 
-    defence_x   = ( ball_x + door_x ) / 2					#防守位置
-    defence_y   = ( ball_y + door_y ) / 2
+    defence_x   = (5* ball_x + door_x ) / 6					#防守位置
+    defence_y   = (5* ball_y + door_y ) / 6
     defence_yaw = 0
 
     return defence_x , defence_y , defence_yaw

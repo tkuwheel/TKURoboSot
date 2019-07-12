@@ -33,23 +33,13 @@ class Attack(Robot):
     v_x   = go_x  * math.cos(math.radians(run['yaw'])) - go_y  * math.sin(math.radians(run['yaw']))
     v_y   = go_x  * math.sin(math.radians(run['yaw'])) + go_y  * math.cos(math.radians(run['yaw'])) 
 
- 
-    if t[side]['dis'] > 250:
+
        
-       v_yaw = t[side]['ang']
+    v_yaw = t[side]['ang']
     
-    else:
-      if t[side]['ang'] > 0 :
-        v_yaw = -80
-      else :
-        v_yaw = t[side]['ang']
    
-    
 
-
-
-
-    if t[side]['dis'] <= 200 and t[side]['ang']<=10:
+    if t[side]['dis'] <= 240 :
       shoot = 1
             
     return v_x, v_y, v_yaw, shoot
