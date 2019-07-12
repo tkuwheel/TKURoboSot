@@ -33,7 +33,7 @@ void MotorController::mPIDControl(const double &tar_rpm, const double &curr_rpm)
 {
     double error = (tar_rpm - curr_rpm)/60.0/FB_FREQUENCY;
 
-    double delta_pwm = m_kp*error + m_ki*m_acc_error + kd*m_delta_error;
+    double delta_pwm = m_kp*error + m_ki*m_acc_error + m_kd*m_delta_error;
     m_curr_pwm += delta_pwm;
     if(m_curr_pwm >= MAX_PWM)
         m_curr_pwm = MAX_PWM;
@@ -49,6 +49,7 @@ void MotorController::mSpeedPlan(const double &cmd_rpm, const double &curr_rpm)
     if(m_sin_value >= 1)m_sin_value = 1;
     m_tar_rpm = m_sin_value*m_max_rpm;
     m_curr_pwm = m_tar_rpm/MAX_MOTOR_RPM * MAX_PWM;
+//    m_curr_pwm = cmd_rpm/MAX_MOTOR_RPM * MAX_PWM;
 }
 
 int16_t MotorController::MotorControl()
@@ -65,7 +66,7 @@ void MotorController::SetSpeed(const double &cmd_rpm, const double &curr_rpm)
 {
     double error = (m_tar_rpm - curr_rpm)/60.0/FB_FREQUENCY;
     m_acc_error += error;
-    m_delta_error += (error - m_pre_error)
+    m_delta_error += (error - m_pre_error);
     m_pre_error = error;
     m_max_rpm = cmd_rpm;
     m_cmd_rpm = cmd_rpm;
