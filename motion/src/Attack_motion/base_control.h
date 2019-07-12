@@ -111,7 +111,8 @@ private: //private function
     void    mCloseRecordFile();
     void    mCommandRegularization();
     void    mSpeedRegularization();
-    int16_t    mPWMRegularization(int16_t);
+    void    mSpeedRegularization(double &, const int &);
+    int16_t mPWMRegularization(int16_t );
 	void	mShootRegularization();
 	void	mDriverSetting();
     void    mBaseControl();

@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 //    std::cout << "\t speed " << p <<std::endl;
 //
     signal(SIGINT, inturrupt);
-    ros::Rate loop_rate(100);
+    ros::Rate loop_rate(CMD_FREQUENCY);
     double real_rpm;
     double target_rpm;
     long duration;
@@ -41,20 +41,18 @@ int main(int argc, char** argv)
     while(true){
         if(flag){
             Base.Close();
-//            printf("CLSOE\n");
+            printf("CLSOE\n");
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
             if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
             loop_rate.sleep();
             continue;
         }
-        Base.SetSingle(number, rpm);
-        Base.SetEnable();
         count++;
-        if(count>=200){
-            count = 0;
-//            Base.SetStop();
-        }
+//        if(count>=CMD_FREQUENCY/2){
+            Base.SetSingle(number, rpm);
+            Base.SetEnable();
+//        }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             tarRPM = Base.GetTarRPM();
@@ -64,7 +62,7 @@ int main(int argc, char** argv)
 //            printf("motor number: %d\n", number);
 //            Base.ShowCsslSend();
             printf("\n*****get feedback******\n");
-//            printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
+            printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 //            Base.ShowCsslCallback();
 #endif
         }

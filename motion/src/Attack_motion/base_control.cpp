@@ -65,12 +65,12 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
 
 BaseController::~BaseController()
 {
+    mCloseRecordFile();
+    pthread_cancel(tid);
     if(serial){
 	    mCsslFinish();
         serial = NULL;
     }
-    mCloseRecordFile();
-    pthread_cancel(tid);
     printf("close base thread\n");
 #ifdef DEBUG
 	std::cout << "\n~BaseController(DEBUG)\n";
@@ -92,6 +92,7 @@ void BaseController::mRun()
         mOpenRecordFile();
     }
     gettimeofday(&m_serialLast, 0);
+    int counter = 0;
     while(true){
         if(!mCheckSerial()){
             printf("Cannot get feedback\n");
@@ -99,6 +100,7 @@ void BaseController::mRun()
             continue;
         }
         if(mb_enable){
+            counter++;
             mb_enable = false;
             mBaseControl();
             mDriverSetting();
@@ -107,7 +109,10 @@ void BaseController::mRun()
         if(msb_serial){
             mb_base = true;
             if(mSerialDecoder()){
-                mSpeedRegularization();
+
+                m_Motor1.SetSpeed(m_motorCommandRPM.w1, m_motorCurrRPM.w1);
+                m_Motor2.SetSpeed(m_motorCommandRPM.w2, m_motorCurrRPM.w2);
+                m_Motor3.SetSpeed(m_motorCommandRPM.w3, m_motorCurrRPM.w3);
                 m_duration += m_baseRX.duration;
 //                if(mb_clear_odo){
 //                    mb_clear_odo = false;
@@ -116,22 +121,21 @@ void BaseController::mRun()
                 if(mb_record){
                     // motor1
                     fss << m_baseRX.duration << " " 
-                        << m_motorCurrRPM.w1 << " "
-                        << m_motorCurrRPM.w2 << " "
-                        << m_motorCurrRPM.w3 << " "
                         << m_motorTarRPM.w1 << " "
+                        << m_motorCurrRPM.w1 << " "
                         << m_motorTarRPM.w2 << " "
+                        << m_motorCurrRPM.w2 << " "
                         << m_motorTarRPM.w3 << " "
+                        << m_motorCurrRPM.w3 << " "
                         << "\n";
                     fp << fss.str();
                     fss.str(std::string());
-#endif
-//
                 }
-//
+#endif
             }
         }
     }
+    printf("exit base thread\n");
 }
 
 int BaseController::mCsslInit()
@@ -283,6 +287,9 @@ bool BaseController::mSerialDecoder()
         }
         mb_success = false;
     }
+    mSpeedRegularization(m_motorCurrRPM.w1, m_baseRX.w1);
+    mSpeedRegularization(m_motorCurrRPM.w2, m_baseRX.w2);
+    mSpeedRegularization(m_motorCurrRPM.w3, m_baseRX.w3);
     return mb_success;
 
 }
@@ -326,14 +333,29 @@ void BaseController::mCommandRegularization()
 
 void BaseController::mSpeedRegularization()
 {
+    /**********************************
+        transform feedback speed to rpm
+    ***********************************/
     double scale = FB_FREQUENCY * 60;
     m_motorCurrRPM.w1 = m_baseRX.w1 * scale / TICKS_PER_ROUND;
     m_motorCurrRPM.w2 = m_baseRX.w2 * scale / TICKS_PER_ROUND;
     m_motorCurrRPM.w3 = m_baseRX.w3 * scale / TICKS_PER_ROUND;
 }
 
+void BaseController::mSpeedRegularization(double &rpm, const int &feedback_speed)
+{
+    /**********************************
+        transform feedback speed to rpm
+    ***********************************/
+    double scale = FB_FREQUENCY * 60;
+    rpm = feedback_speed * scale / TICKS_PER_ROUND;
+}
+
 int16_t BaseController::mPWMRegularization(int16_t pwm)
 {
+    /**********************************
+        transform target pwm into driver pwm
+    ***********************************/
     if(pwm > 0){
         pwm = pwm * 0.8 + MIN_PWM;
     }else if(pwm < 0){
@@ -375,9 +397,9 @@ void BaseController::mDriverSetting()
         m_en_stop += (fabs(m_motorCurrPWM.w1) >= MIN_PWM)?  0x80 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w2) >= MIN_PWM)?  0x40 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w3) >= MIN_PWM)?  0x20 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
+//        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
+//        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
+//        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
 
     }
 }
@@ -385,17 +407,14 @@ void BaseController::mDriverSetting()
 void BaseController::mBaseControl()
 {
 // TODO
-    m_Motor1.SetSpeed(m_motorCommandRPM.w1, m_motorCurrRPM.w1);
-    m_Motor2.SetSpeed(m_motorCommandRPM.w2, m_motorCurrRPM.w2);
-    m_Motor3.SetSpeed(m_motorCommandRPM.w3, m_motorCurrRPM.w3);
 
-    m_motorTarRPM.w1 = m_Motor1.MotorControl();
-    m_motorTarRPM.w2 = m_Motor2.MotorControl();
-    m_motorTarRPM.w3 = m_Motor3.MotorControl();
 
-    m_motorCurrPWM.w1 = mPWMRegularization(m_Motor1.GetCurrPWM());
-    m_motorCurrPWM.w2 = mPWMRegularization(m_Motor2.GetCurrPWM());
-    m_motorCurrPWM.w3 = mPWMRegularization(m_Motor3.GetCurrPWM());
+    m_motorCurrPWM.w1 = mPWMRegularization(m_Motor1.MotorControl());
+    m_motorCurrPWM.w2 = mPWMRegularization(m_Motor2.MotorControl());
+    m_motorCurrPWM.w3 = mPWMRegularization(m_Motor3.MotorControl());
+    m_motorTarRPM.w1 = m_Motor1.GetTarRPM();
+    m_motorTarRPM.w2 = m_Motor2.GetTarRPM();
+    m_motorTarRPM.w3 = m_Motor3.GetTarRPM();
 
 //    m_motorTarPWM.w1 =  RPM2PWM(m_motorTarRPM.w1);
 //    m_motorTarPWM.w2 =  RPM2PWM(m_motorTarRPM.w2);
@@ -531,6 +550,7 @@ void BaseController::SetStop()
 void BaseController::Close()
 {
     mb_close = true;
+    printf("OAO\n");
     mDriverSetting();
     mCsslSend2FPGA();
 }
@@ -565,9 +585,9 @@ void BaseController::ShowCsslSend()
     printf("crc16-1: %x\n", (m_baseTX.crc_16_1));
     printf("crc16-2: %x\n", (m_baseTX.crc_16_2));
     printf("crc16: %x\n", (m_baseTX.crc_16_1 << 8) + (m_baseTX.crc_16_2));
-    printf("w1: %x\n", ((m_baseTX.w1_h) << 8) + (m_baseTX.w1_l));
-    printf("w2: %x\n", ((m_baseTX.w2_h) << 8) + (m_baseTX.w2_l));
-    printf("w3: %x\n", ((m_baseTX.w3_h) << 8) + (m_baseTX.w3_l));
+    printf("w1: %d\n", ((m_baseTX.w1_h) << 8) + (m_baseTX.w1_l));
+    printf("w2: %d\n", ((m_baseTX.w2_h) << 8) + (m_baseTX.w2_l));
+    printf("w3: %d\n", ((m_baseTX.w3_h) << 8) + (m_baseTX.w3_l));
 }
 
 void BaseController::ShowCsslCallback()

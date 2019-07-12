@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 //    std::cout << "\t speed " << p <<std::endl;
 //
     signal(SIGINT, inturrupt);
-    ros::Rate loop_rate(100);
+    ros::Rate loop_rate(CMD_FREQUENCY);
     double real_rpm;
     double target_rpm;
     long duration;
@@ -45,6 +45,7 @@ int main(int argc, char** argv)
             Base.Close();
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
+            printf("close\n");
             if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
             loop_rate.sleep();
             continue;
@@ -62,15 +63,14 @@ int main(int argc, char** argv)
 #ifdef DEBUG
             printf("\n*****motor command******\n");
 
-//            printf("motor number: %d\n", number);
-            Base.ShowCsslSend();
+//            Base.ShowCsslSend();
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
-            Base.ShowCsslCallback();
+//            Base.ShowCsslCallback();
 #endif
         }
         loop_rate.sleep();
     }
     std::cout << "Close Attack Motion\n";
-    return 0;
+//    return 0;
 }

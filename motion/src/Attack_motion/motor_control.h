@@ -24,7 +24,7 @@ public:
 	~MotorController();
 public:
 public:
-    double  MotorControl();
+    int16_t MotorControl();
     void    SetSpeed(const double &, const double &);
     void    SetMaxRPM(const double &);
     void    SetPID(const double &, const double &, const double &);
@@ -37,6 +37,7 @@ private:
     void    mPIDControl(const double &, const double &);
     void    mSpeedPlan(const double &, const double &);
 private:
+    int     m_counter; 
     int16_t m_tar_pwm;
     int16_t m_curr_pwm;
 
@@ -44,6 +45,7 @@ private:
     double m_tar_rpm;
     double m_curr_rpm;
     double m_acc_error;
+    double m_delta_error;
     double m_pre_error;
     double m_sin_value; 
     double m_max_rpm;

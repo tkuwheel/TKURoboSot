@@ -1,6 +1,4 @@
 #!/bin/bash
 
-cp ../../../devel/lib/motion/*.txt ./
-# rm ../../../devel/lib/motion/*.txt 
 
-python read_motor.py Single_n.txt
+python read_single.py ../../../devel/lib/motion/Single_n.txt

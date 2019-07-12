@@ -19,12 +19,12 @@ def Read_File(filename):
             line = line.strip("\n,' '")
             line_list = line.split(' ')
             time.append(int(line_list[0]))
-            w1.append(float(line_list[1]))
-            w2.append(float(line_list[2]))
-            w3.append(float(line_list[3]))
-            tar1.append(float(line_list[4]))
-            tar2.append(float(line_list[5]))
-            tar3.append(float(line_list[6]))
+            tar1.append(float(line_list[1]))
+            w1.append(float(line_list[2]))
+            tar2.append(float(line_list[3]))
+            w2.append(float(line_list[4]))
+            tar3.append(float(line_list[5]))
+            w3.append(float(line_list[6]))
                 
         return time,w1,w2,w3,tar1,tar2,tar3
 
