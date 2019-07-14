@@ -10,44 +10,68 @@ from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
 from methods.behavior import Behavior
-from dynamic_reconfigure.server import Server
-from strategy.cfg import StrategyConfig
+from dynamic_reconfigure.server import Server as DynamicReconfigureServer
+from strategy.cfg import RobotConfig
 import dynamic_reconfigure.client
 
 class Core(Robot, StateMachine):
+
+  idle   = State('Idle', initial = True)
+  chase  = State('Chase')
+  attack = State('Attack')
+  shoot  = State('Shoot')
+  point  = State('Point')
+  movement = State('Movement')
+
+  toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | idle.to.itself()
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
+  toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
+  toShoot  = attack.to(shoot)
+  toMovement = chase.to(movement) | movement.to.itself()
+  toPoint  = point.to.itself() | idle.to(point)
+
+  def Callback(self, config, level):
+    self.game_start = config['game_start']
+    self.game_state = config['game_state']
+    self.chase_straight = config['chase_straight']
+    self.run_point  = config['run_point']
+    self.our_side   = config['our_side']
+    self.opp_side   = 'Blue' if self.our_side == 'Yellow' else 'Yellow'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    self.run_yaw    = config['run_yaw']
+    self.strategy_mode = config['strategy_mode']
+    self.attack_mode = config['attack_mode']
+    self.maximum_v = config['maximum_v']
+    self.orb_attack_ang = config['orb_attack_ang']
+    self.atk_shoot_ang = config['atk_shoot_ang']
+
+    self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+
+    return config
+
   def __init__(self, robot_num, sim = False):
     super(Core, self).__init__(robot_num, sim)
     StateMachine.__init__(self)
     self.CC  = Chase()
     self.AC  = Attack()
     self.BC  = Behavior()
-    self.sim = sim
     self.goal_dis = 0
     self.tStart = time.time()
-    self.shoot = 0
     self.block = 0
+    dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
-
-  idle   = State('Idle', initial = True)
-  chase  = State('Chase')
-  attack = State('Attack')
-  point  = State('Point')
-
-  toIdle   = chase.to(idle) | attack.to(idle)  |  point.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself()  | point.to(chase)
-  toAttack = chase.to(attack) | attack.to.itself() 
-  toPoint  = point.to.itself() | idle.to(point)
-
-  
   def on_toIdle(self):
-    
     self.goal_dis = 0
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
-  def on_toChase(self, t, side, method = "Classic"):
-
+  def on_toChase(self, method = "Classic"):
+    t = self.GetObjectInfo()
+    side = self.opp_side
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           t['ball']['dis'],\
@@ -57,118 +81,146 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
       self.Accelerate(1,t,80)
 
+    elif method == "Defense":
+      x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
+
+    
+
+    self.MotionCtrl(x, y, yaw)
+
+  def on_toAttack(self, method = "Classic"):
+    t = self.GetObjectInfo()
+    side = self.opp_side
+    if method == "Classic":
+      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
+
+    elif method == "Cut":
+      x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'])
+
+    
+      
+    self.MotionCtrl(x, y, yaw)
+
+  def on_toShoot(self, power, pos = 1):
+    self.RobotShoot(power, pos)
+
+  def on_toMovement(self, method):
+    t = self.GetObjectInfo()
+    side = self.opp_side
+    if method == "Orbit":
+      x, y, yaw = self.BC.Orbit(t[side]['ang'])
+
+    elif method == "Post_up":
+      x, y, yaw, _ = self.BC.Post_up(t, side, self.run_yaw)
+
     elif method == "Relative":
-      x, y, yaw = self.CC.Run_point_relative(t[side]['dis'],\
+      x, y, yaw = self.BC.Run_point_relative(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
+
+    self.MotionCtrl(x, y, yaw, True)
+
+  def on_toPoint(self):
+    if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
+      x, y, yaw, arrived = self.BC.Go2Point(-60, 0, 0)
+    elif self.game_state == "Kick_Off" and self.our_side == "Blue" :
+      x, y, yaw, arrived = self.BC.Go2Point(60, 0, 180)
+    elif self.game_state == "Free_Kick" :
+      x, y, yaw, arrived = self.BC.Go2Point(100, 100, 90)
+    elif self.game_state == "Free_Ball" :
+      x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 180)
+    elif self.game_state == "Throw_In" :
+      x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 270)
+    elif self.game_state == "Coner_Kick":
+      x, y, yaw, arrived = self.BC.Go2Point(300, 200, 45)
+    elif self.game_state == "Penalty_Kick" :
+      x, y, yaw, arrived = self.BC.Go2Point(-100, 100, 135)
+    elif self.game_state == "Run_Specific_Point" :
+      x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, self.run_yaw)
+    else:
+      log("Unknown Game State")
+
     self.MotionCtrl(x, y, yaw)
-
-  def on_toAttack(self, t, side,  run, method = "Classic"):
-
-    robot_info = self.GetRobotInfo()
-    
-    if method == "Classic":
-      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-      if abs(t[side]['ang']) < 5 and t[side]['dis'] <= 250 :
-        self.shoot = 1
-
-    elif method == "Cross_Over":     
-      x, y, yaw, self.shoot = self.AC.cross_over(t, side, run)
-
-   
-    self.MotionCtrl(x, y, yaw)
-
-
-
-  def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw, remaining = self.BC.Go2Point(tx, ty, tyaw)
-    print("got it: ", remaining)
-    self.MotionCtrl(x, y, yaw)
-    return remaining
+    return arrived
 
   def PubCurrentState(self):
     self.RobotStatePub(self.current_state.identifier)
 
   def CheckBallHandle(self):
     return self.RobotBallHandle()
-  
-  def Calculate(self,ntime):
+
+  def Calculate(self, ntime):
     return ntime - self.tStart
-  
+
   def Accelerate(self, do, t, maximum_v = 100):
     if do :
       if self.goal_dis == 0:
         print('goal into')
         self.tStart = t['time']
-        
       elif t['ball']['dis'] < self.goal_dis:
         self.tStart = t['time']
-       
       elif t['ball']['dis'] >= self.goal_dis :
         a = self.Calculate(t['time'])  
         if a >= 0.8:    
           print('accelerating')
-          self.ChangeVelocityRange(0,maximum_v)
-      
+          self.ChangeVelocityRange(0, maximum_v)
       self.goal_dis = t['ball']['dis']
-        
     else :
-      self.ChangeVelocityRange(0,maximum_v)
+      self.ChangeVelocityRange(0, maximum_v)
       print('back to normal')
-      
 
 class Strategy(object):
+
   def __init__(self, num, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
-    self.run = {'x' : 0, 'y' : 0, 'yaw' : 0}
-    self.side = {'opponent' : '0', 'teamate' : '0', 'pos' : '0'}
     self.robot = Core(num, sim)
-    dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
+    self.main()
 
-  def RunStatePoint(self, state):
-    if state == "Kick_Off" and self.side['teamate'] == "Yellow" :
-      c = self.robot.toPoint(-60, 0, 0)
-    elif state == "Kick_Off" and self.side['teamate'] == "Blue" :
-      c = self.robot.toPoint(60, 0, 180)
-    elif state == "Free_Kick" :
-      c = self.robot.toPoint(100, 100, 90)
-    elif state == "Free_Ball" :
-      c = self.robot.toPoint(100, -100, 180)
-    elif state == "Throw_In" :
-      c = self.robot.toPoint(-100, -100, 270)
-    elif state == "Coner_Kick":
-      c = self.robot.toPoint(300, 200, 45)
-    elif state == "Penalty_Kick" :
-      c = self.robot.toPoint(-100, 100, 135)
-    elif state == "Run_Specific_Point" :
-      c = self.robot.toPoint(self.run['x'], self.run['y'], self.run['yaw'])
-    else:
-      print("ummmm")
-
-    if c:
-      self.robot.toIdle()
+  def RunStatePoint(self):
+    if self.robot.toPoint():
       self.dclient.update_configuration({"run_point": False})
+      self.robot.toIdle()
 
-  def Chase(self, t):
-    if self.chase_straight :
-      return self.robot.toChase(t, self.side['opponent'], "Straight")
-    elif self.strategy_mode == "Defense_ball":
-      return self.robot.toChase(t, self.side['teamate'], "Relative")
-    else: 
-      return self.robot.toChase(t, self.side['opponent'], "Classic")
+  def ToChase(self):
+    mode = self.robot.attack_mode
+    if mode == "Defense":
+      self.ToMovement()
+    
+    else:
+      if self.robot.chase_straight :
+        self.robot.toChase("Classic")
+
+      else:
+        self.robot.toChase("Straight")
+    
+   
+  def ToAttack(self):
+    mode = self.robot.attack_mode
+    if mode == "Attack" :
+      self.robot.toAttack("Classic")
+
+    elif mode == "Cut":
+      self.robot.toAttack("Cut")
+
     
 
-  def Attack(self, t):
-    if self.strategy_mode == "Attack":
-      return self.robot.toAttack(t, self.side['opponent'], self.run)
-    elif self.strategy_mode == "cross_over":
-      return self.robot.toAttack(t, self.side['opponent'], self.run, "Cross_Over")
-    else:
-      return self.robot.toAttack(t, self.side['opponent'], self.run)
 
+  def ToMovement(self):
+    mode = self.robot.strategy_mode
+    if mode == "At_Orbit":
+      self.robot.toMovement("Orbit")
+    elif mode == "At_post_up":
+      self.robot.toMovement("post_up")
+    elif mode == "Defense_ball"
+      self.robot.toMovement("Relative_ball")
+    elif mode == "Defense_goal"
+      self.robot.toMovement("Relative_goal")
+    else :
+      self.ToAttack()
+    
 
   
   def main(self):
@@ -178,74 +230,71 @@ class Strategy(object):
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
+      mode = self.robot.strategy_mode
 
-      if targets is None or targets['ball']['ang'] == 999 and self.game_start: # Can not find ball when starting
+      # Can not find ball when starting
+      if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
         print("Can not find ball")
         self.robot.toIdle()
       else:
-        
-        if not self.robot.is_idle and not self.run_point and not self.game_start:
+        if not self.robot.is_idle and not self.robot.run_point and not self.robot.game_start:
           self.robot.toIdle()
+
         if self.robot.is_idle:
-          
-          if self.game_start:
-            self.Chase(targets)
-          elif self.run_point:
-            self.RunStatePoint(self.game_state)
+          if self.robot.game_start:
+            self.ToChase()
+          elif self.robot.run_point:
+            self.RunStatePoint()
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            self.robot.goal_dis = 0
-            self.robot.Accelerate(0,targets,self.maximum_v) 
-            self.Attack(targets)
+            # self.robot.goal_dis = 0
+            # self.robot.Accelerate(0,targets,self.maximum_v) 
+            self.ToMovement()
+
           else:
-            self.Chase(targets)
+            self.ToChase()
 
 
+        if self.robot.is_movement:
+          if mode == 'At_Orbit':
+            if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
+              self.ToAttack():
+            elif not self.robot.CheckBallHandle():
+              self.ToChase()
+            else:
+              self.ToMovement()
+
+          elif mode == 'At_post_up':
+          elif mode == "Defense_ball" or "Defense_goal":  
+            if self.robot.CheckBallHandle():
+              self.robot.strategy_mode = "Fast_break"
+              self.ToAttack()
+            else : 
+              self.ToMovement()
+          
+            
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
-            self.Chase(targets)
-          elif  self.robot.shoot:
-              self.robot.RobotShoot(3, 1)
-              self.robot.shoot = 0
+            self.ToChase()
+          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
+            self.robot.toShoot(100)
           else:
-            self.Attack(targets)
+            self.robot.toAttack("Classic")
 
-            
-          
+        if self.robot.is_shoot:
+          self.ToAttack()
+
+
       ## Run point
       if self.robot.is_point:
-        self.RunStatePoint(self.game_state)
+        self.RunStatePoint()
 
       if rospy.is_shutdown():
         log('shutdown')
         break
 
       self.rate.sleep()
-
-  def Callback(self, config, level):
-    self.game_start = config['game_start']
-    self.chase_straight = config['chase_straight']
-    self.game_state = config['game_state']
-    self.run_point  = config['run_point']
-    self.run['x']      = config['run_x']
-    self.run['y']      = config['run_y']
-    self.run['yaw']    = config['run_yaw']
-    self.side['pos']            = 'attack' 
-    self.side['teamate']        = config['our_goal']
-    self.side['opponent']        = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
-    self.strategy_mode = config['strategy_mode']
-    self.maximum_v = config['maximum_v']
-
-    
-
-    self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
-    self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
-    self.robot.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
-
-    self.run_point = config['run_point']
-
-    return config
 
 if __name__ == '__main__':
   try:
@@ -255,6 +304,5 @@ if __name__ == '__main__':
     elif SysCheck(sys.argv[1:]) == "Simulative Mode":
       log("Start Sim")  
       s = Strategy(1, True)
-    s.main()
   except rospy.ROSInterruptException:
     pass

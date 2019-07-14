@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.3)
 project(strategy)
 
 find_package(catkin REQUIRED COMPONENTS
-#  dynamic_tutorials
   roscpp
   rospy
   std_msgs
@@ -18,11 +17,10 @@ find_package(catkin REQUIRED COMPONENTS
 #    FILES
 #  )
 
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  GameState.srv
+)
 
 # add_action_files(
 #   FILES
@@ -36,7 +34,8 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 generate_dynamic_reconfigure_options(
-  cfg/Strategy.cfg
+  cfg/GameState.cfg
+  cfg/Robot.cfg
 )
 
 catkin_package(
