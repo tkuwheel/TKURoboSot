@@ -17,10 +17,10 @@ find_package(catkin REQUIRED COMPONENTS
 #    FILES
 #  )
 
-add_service_files(
-  FILES
-  GameState.srv
-)
+#add_service_files(
+ # FILES
+ #GameState.srv
+#)
 
 # add_action_files(
 #   FILES
