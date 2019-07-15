@@ -28,7 +28,7 @@ class Core(Robot, StateMachine):
   toIdle   = chase.to(idle) |  movement.to(idle) | point.to(idle) | idle.to.itself() | shoot.to(idle)
   toChase  = idle.to(chase) |  chase.to.itself() | movement.to(chase) | point.to(chase)
   toShoot  = movement.to(shoot) | point.to(shoot)
-  toMovement = chase.to(movement) | movement.to.itself()
+  toMovement = chase.to(movement) | movement.to.itself() | point.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | chase.to(point) | movement.to(point) | shoot.to(point)
 
   def Callback(self, config, level):
@@ -74,7 +74,6 @@ class Core(Robot, StateMachine):
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
-    self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toShoot(self, power, pos = 1):
@@ -116,17 +115,19 @@ class Core(Robot, StateMachine):
 
 class Strategy(object):
 
+  can_shoot = False
   current_index = 0
   current_point = [0, 0, 0]
-  padding = 50
-  ball1 = (-115 + padding, 120)
-  ball2 = (-115 + padding, 40)
-  ball3 = (-115 + padding, -40)
-  ball4 = (-115 + padding, -120)
-  target1 = (115 - padding, 120)
-  target2 = (115 - padding, 40)
-  target3 = (115 - padding, -40)
-  target4 = (115 - padding, -120)
+  padding_ball  = 35
+  padding_target= 65
+  ball1 = (-115 + padding_ball, 120)
+  ball2 = (-115 + padding_ball, 40)
+  ball3 = (-115 + padding_ball, -40)
+  ball4 = (-115 + padding_ball, -120)
+  target1 = (115 - padding_target, 120)
+  target2 = (115 - padding_target, 40)
+  target3 = (115 - padding_target, -40)
+  target4 = (115 - padding_target, -120)
   level1 = {'balls_point': [ball1], 'targets_point': [target1]}
   level2 = {'balls_point': [ball1, ball4], 'targets_point': [target4, target1]}
   level3 = {'balls_point': [ball1, ball2, ball4], 'targets_point': [target4, target2, target1]}
@@ -166,63 +167,62 @@ class Strategy(object):
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
 
-      # Can not find ball when starting
-      if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
-        print("Can not find ball")
+      if self.robot.game_level == "Level1":
+        level = self.level1
+      elif self.robot.game_level == "Level2":
+        level = self.level2
+      elif self.robot.game_level == "Level3":
+        level = self.level3
+      elif self.robot.game_level == "Level4":
+        level = self.level4
+
+      if not self.robot.is_idle and not self.robot.game_start:
         self.robot.toIdle()
-      else:
-        if self.robot.game_level == "Level1":
-          level = self.level1
-        elif self.robot.game_level == "Level2":
-          level = self.level2
-        elif self.robot.game_level == "Level3":
-          level = self.level3
-        elif self.robot.game_level == "Level4":
-          level = self.level4
 
-        if not self.robot.is_idle and not self.robot.game_start:
-          self.robot.toIdle()
+      if self.robot.is_idle:
+        if self.robot.game_start:
+          Strategy.current_index = 0
+          self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
+          self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
-        if self.robot.is_idle:
-          if self.robot.game_start:
-            Strategy.current_index = 0
-            self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
-            self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
-
-        if self.robot.is_point:
-          if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
-            if self.robot.CheckBallHandle():
-              self.robot.toShoot(100)
-            else:
-              self.robot.toChase("Straight")
-          else:
-            self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
-
-        if self.robot.is_chase:
+      if self.robot.is_point:
+        if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
-            self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
-            # self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
-            self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+            if Strategy.can_shoot:
+              self.robot.toShoot(80)
+            else:
+              self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
+              self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
           else:
             self.robot.toChase("Straight")
+        else:
+          self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
-        if self.robot.is_movement:
-          if not self.robot.CheckBallHandle():
-            self.robot.toChase("Straight")
-          elif self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw']):
-            self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
-          else:
-            self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+      if self.robot.is_chase:
+        if self.robot.CheckBallHandle():
+          self.UpdateCurrentPoint(0, 0, 180)
+          self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+          # self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+        else:
+          self.robot.toChase("Straight")
 
-        if self.robot.is_shoot:
-          if Strategy.current_index + 1 >= len(level['balls_point']):
-            print("Endgame")
-            self.dclient.update_configuration({"game_start": False})
-            self.robot.toIdle()
-          else:
-            Strategy.current_index += 1
-            self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
-            self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+      if self.robot.is_movement:
+        if not self.robot.CheckBallHandle():
+          self.robot.toChase("Straight")
+        elif self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw']):
+          self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+        else:
+          self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+
+      if self.robot.is_shoot:
+        if Strategy.current_index + 1 >= len(level['balls_point']):
+          print("Endgame")
+          self.dclient.update_configuration({"game_start": False})
+          self.robot.toIdle()
+        else:
+          Strategy.current_index += 1
+          self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
+          self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
       if rospy.is_shutdown():
         log('shutdown')

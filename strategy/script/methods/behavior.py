@@ -15,6 +15,7 @@ class Behavior(Robot):
   def Orbit(self, goal_ang):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang
+    velocity = velocity if abs(velocity) < 45 else 45 * np.sign(velocity) # maximum speed
     w = (velocity / orbit_radius)
 
     v_x   = 0
