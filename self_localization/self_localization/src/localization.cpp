@@ -98,10 +98,29 @@ void Localization::get_parameter()
 void Localization::sensorCallback(const std_msgs::Int32MultiArray msg)
 {
     point.clear();
+    good_point.clear();
+    bad_point.clear();
     point = msg.data;
     std::vector<MCL::SensorData> mcl_sensor_data;
-    for(int i = 0; i<point.size()/2;i+=2){
-        mcl_sensor_data.push_back(MCL::SensorData(point[i],point[i+1]));
+    int boundary_error = 0;
+
+    for(int i = 0; i<point.size();i+=2){
+        int xl=point[i];
+        int yl=point[i+1];
+        int x2;
+        int y2;
+        double angle = atan2(yl, xl);
+        double distance = sqrt(xl*xl+yl*yl);
+        x2=robot_x+distance*cos(-angle+(robot_w * TO_RAD));
+        y2=robot_y-distance*sin(-angle+(robot_w * TO_RAD));
+        if(abs(x2)>300+boundary_error||abs(y2)>200+boundary_error){
+            bad_point.push_back(point[i]);
+            bad_point.push_back(point[i+1]);
+        }else{
+            good_point.push_back(point[i]);
+            good_point.push_back(point[i+1]);
+            mcl_sensor_data.push_back(MCL::SensorData(point[i],point[i+1]));
+        }
     }
     if(mcl_sensor_data.size()>0){
         mcl.updateSensor(mcl_sensor_data);
@@ -134,6 +153,11 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
     static long double x=0;
     static long double y=0;
     static long double w=0;
+    double x_=msg.linear.x;
+    double y_=msg.linear.y;
+    double w_=msg.angular.z;
+    if(w_<0)w_=w_+360;
+    if(w_>360)w_=w_-360;
 
     double ALPHA = 0.5;
     double dt;
@@ -141,6 +165,7 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
     static double frame_rate = 0.0;
     static double StartTime = ros::Time::now().toNSec();
     double EndTime;
+
     bool filter = false;
     frame_counter++;
     if (frame_counter == 2)
@@ -153,9 +178,11 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
         {
             static long double vx=0,vy=0,vw=0;
             double vx_,vy_,vw_;
-            vx_ = 3*(msg.linear.x-x)/dt;
-            vy_ = 3*(msg.linear.y-y)/dt;
-            vw_ = 3*(msg.angular.z*TO_RAD-w)/dt;
+            vx_ = 3*(x_-x)/dt;
+            vy_ = 3*(y_-y)/dt;
+            vw_ = 3*(w_-w)*TO_RAD/dt;
+            if(w<30&&w_>330)vw_ = 3*((w_-360)+(0-w))*TO_RAD/dt;
+            if(w>330&&w_<30)vw_ = 3*((360-w)+(w_-0))*TO_RAD/dt;
             //vw = 2*(imu_angle*TO_RAD-w)/dt;
             //cout<<"================="<<endl;
             //cout<<vx_<<endl;
@@ -178,7 +205,7 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
                 //cout<<"fucck3"<<endl;
  
             }
-             //vx=0,vy=0,vw=0;
+            //vx=0,vy=0,vw=0;
             
             if(!filter){
                 vx=vx_;
@@ -199,18 +226,20 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
                 vw=0;
                 cout<<"speed filter on\n";
             }
-            // cout<<"================="<<endl;
+            //cout<<"================="<<endl;
             //cout<<vx<<endl;
             //cout<<vy<<endl;
             //cout<<vw<<endl;
             //if(vx!=0&&vy!=0&&vw!=0){
-                //cout<<"vx,vy,vw = "<<vx<<" "<<vy<<" "<<vw<<endl;
+            //    cout<<"vx,vy,vw = "<<vx<<" "<<vy<<" "<<vw<<endl;
             //}
             mcl.updateMotion(vy,vx,vw);
-            //mcl.updateMotion(0,0,0);
-            x=msg.linear.x;
-            y=msg.linear.y;
-            w=msg.angular.z*TO_RAD;
+            x=x_;
+            y=y_;
+            w=w_;
+            //if(w<0)w=w+360;
+            //if(w>360)w=w-360;
+            //cout<<w<<endl;
             //w=imu_angle*TO_RAD;
             //frame_rate = (1000000000.0 / dt) * ALPHA + frame_rate * (1.0 - ALPHA);
             //cout << "FPS: " << frame_rate << endl;
@@ -278,6 +307,7 @@ void Localization::draw_field()
 }
 void Localization::draw_particles()
 {
+    //畫粒子
     particles_map=field_map.clone();
     auto particles = mcl.getParticles();
     for(auto p : particles)
@@ -316,6 +346,9 @@ void Localization::draw_particles()
     x=std::get<0>(estimation);
     y=std::get<1>(estimation);
     w=std::get<2>(estimation);
+    robot_x=x;
+    robot_y=y;
+    robot_w=w;
     //cout<<mcl.get_sd();
     sd_publisher(mcl.get_sd());
     //==========
@@ -344,9 +377,10 @@ void Localization::draw_particles()
     line(particles_map, Point(x, y), Point(x_, y_), Scalar(0, 0, 255), 2);
 //=================================================================
 
-    for(int i = 0; i<point.size();i+=2){
-        int xl=point[i];
-        int yl=point[i+1];
+    //畫白線點
+    for(int i = 0; i<good_point.size();i+=2){
+        int xl=good_point[i];
+        int yl=good_point[i+1];
         int x2;
         int y2;
         double angle = atan2(yl, xl);
@@ -355,7 +389,17 @@ void Localization::draw_particles()
         y2=y-distance*sin(-angle+(w * TO_RAD));
         circle(particles_map, Point(x2, y2), 3, Scalar(255, 0, 0), -1);
     }
-
+    for(int i = 0; i<bad_point.size();i+=2){
+        int xl=bad_point[i];
+        int yl=bad_point[i+1];
+        int x2;
+        int y2;
+        double angle = atan2(yl, xl);
+        double distance = sqrt(xl*xl+yl*yl);
+        x2=x+distance*cos(-angle+(w * TO_RAD));
+        y2=y-distance*sin(-angle+(w * TO_RAD));
+        circle(particles_map, Point(x2, y2), 3, Scalar(0, 0, 255), -1);
+    }
     image_publisher(particles_map);
     //imshow("particles_map",particles_map);
     //waitKey(10);
