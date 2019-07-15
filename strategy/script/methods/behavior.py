@@ -21,7 +21,13 @@ class Behavior(Robot):
     v_y   = velocity * -1 # Kp
     v_yaw = w * 3.5 # Kp
     o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
-    return v_x, v_y, o_yaw
+
+    remaining_yaw = o_yaw
+    if abs(remaining_yaw) < REMAINING_RANGE_YAW:
+      arrived = True
+    else:
+      arrived = False
+    return v_x, v_y, o_yaw, arrived
 
   def Go2Point(self, tx, ty, tyaw):
     robot_info = self.GetRobotInfo()

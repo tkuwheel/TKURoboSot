@@ -36,6 +36,7 @@ find_package(catkin REQUIRED COMPONENTS
 generate_dynamic_reconfigure_options(
 #  cfg/GameState.cfg
   cfg/Robot.cfg
+  cfg/Passing.cfg
 )
 
 catkin_package(

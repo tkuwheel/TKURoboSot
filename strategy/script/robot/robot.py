@@ -121,7 +121,7 @@ class Robot(object):
       self.__object_info['ball']['speed_pwm_y']  = spwmy
       self.__object_info['ball']['global_x'] = gbx
       self.__object_info['ball']['global_y'] = gby
-      print(spwmx, spwmy)
+      # print(spwmx, spwmy)
       Robot.last_time = time.time()
 
     self.__object_info['ball']['dis']    = vision.ball_dis
