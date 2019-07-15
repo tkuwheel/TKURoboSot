@@ -17,10 +17,10 @@ find_package(catkin REQUIRED COMPONENTS
 #    FILES
 #  )
 
-add_service_files(
-  FILES
-  GameState.srv
-)
+#add_service_files(
+#  FILES
+#  GameState.srv
+#)
 
 # add_action_files(
 #   FILES
@@ -34,7 +34,7 @@ add_service_files(
 # )
 
 generate_dynamic_reconfigure_options(
-  cfg/GameState.cfg
+#  cfg/GameState.cfg
   cfg/Robot.cfg
 )
 
