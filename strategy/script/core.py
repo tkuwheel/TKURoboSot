@@ -27,7 +27,7 @@ class Core(Robot, StateMachine):
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
   toShoot  = attack.to(shoot)
-  toMovement = chase.to(movement) | movement.to.itself()
+  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
   toPoint  = point.to.itself() | idle.to(point)
 
   def Callback(self, config, level):
@@ -95,7 +95,7 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
 
     elif method == "Cut":
-      x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'])
+      x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'],self.run_yaw)
 
     
       
@@ -109,17 +109,29 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Orbit":
       x, y, yaw = self.BC.Orbit(t[side]['ang'])
+      self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Post_up":
       x, y, yaw, _ = self.BC.Post_up(t, side, self.run_yaw)
+      self.MotionCtrl(x, y, yaw, True)
 
-    elif method == "Relative":
-      x, y, yaw = self.BC.Run_point_relative(t[side]['dis'],\
+    elif method == "Relative_ball":
+      x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw, True)
 
-    self.MotionCtrl(x, y, yaw, True)
+    elif method == "Relative_goal":
+      x, y, yaw = self.BC.relative_goal(t[side]['dis'],\
+                                             t[side]['ang'],\
+                                             t['ball']['dis'],\
+                                             t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw, True)
+      
+   
+
+    
 
   def on_toPoint(self):
     if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
@@ -214,9 +226,9 @@ class Strategy(object):
       self.robot.toMovement("Orbit")
     elif mode == "At_post_up":
       self.robot.toMovement("post_up")
-    elif mode == "Defense_ball"
+    elif mode == "Defense_ball":
       self.robot.toMovement("Relative_ball")
-    elif mode == "Defense_goal"
+    elif mode == "Defense_goal":
       self.robot.toMovement("Relative_goal")
     else :
       self.ToAttack()
@@ -259,13 +271,13 @@ class Strategy(object):
         if self.robot.is_movement:
           if mode == 'At_Orbit':
             if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
-              self.ToAttack():
+              self.ToAttack()
             elif not self.robot.CheckBallHandle():
               self.ToChase()
             else:
               self.ToMovement()
 
-          elif mode == 'At_post_up':
+          #elif mode == 'At_post_up':
           elif mode == "Defense_ball" or "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.robot.strategy_mode = "Fast_break"
@@ -278,7 +290,7 @@ class Strategy(object):
           if not self.robot.CheckBallHandle():
             self.ToChase()
           elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
-            self.robot.toShoot(100)
+            self.robot.toShoot(0)
           else:
             self.robot.toAttack("Classic")
 

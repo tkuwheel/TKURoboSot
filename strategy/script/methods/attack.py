@@ -16,12 +16,12 @@ class Attack(Robot):
 
     return v_x, v_y, v_yaw
 
-  def Cut(self, t, side, yaw):
-    go_x = t[side]['dis'] * math.cos(math.radians(t[side]['ang']))
-    go_y = t[side]['dis'] * math.sin(math.radians(t[side]['ang']))
+  def Cut(self, goal_dis, goal_ang, yaw):
+    go_x = goal_dis * math.cos(math.radians(goal_ang))
+    go_y = goal_dis * math.sin(math.radians(goal_ang))
     v_x   = go_x  * math.cos(math.radians(yaw)) - go_y  * math.sin(math.radians(yaw))
     v_y   = go_x  * math.sin(math.radians(yaw)) + go_y  * math.cos(math.radians(yaw))        
-    v_yaw = t[side]['ang']
+    v_yaw = goal_ang
     
     return v_x, v_y, v_yaw
 
