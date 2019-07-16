@@ -3,13 +3,13 @@ cmake_minimum_required(VERSION 2.8.3)
 set(BASE_CONTROL Attack_motion/base_control.cpp)
 set(MOTOR_CONTROL Attack_motion/motor_control.cpp)
 set(ROBOT_CONTROL ${BASE_CONTROL} ${MOTOR_CONTROL})
-#add_executable(Attack_motion_node 
-#				Attack_motion/motion.cpp 
-#                Attack_motion/motion_nodeHandle.cpp
-#                Attack_motion/base_control.cpp 
-#                ${ROBOT_CONTROL}
-#)
-#target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib crcLib)
+
+add_executable(Attack_motion_node 
+				Attack_motion/motion.cpp 
+                Attack_motion/motion_nodeHandle.cpp
+                Attack_motion/base_control.cpp 
+)
+target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib crcLib)
 
 add_executable(Crc
                 get_crc.cpp

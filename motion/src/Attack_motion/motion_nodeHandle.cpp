@@ -2,7 +2,6 @@
 Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
 {
     this->robotCMD = {0, 0, 0, 0, 0};
-    this->RX = {0, 0, 0, 0, 0, 0};
     this->motion_flag = false;
     this->remote = false;
     this->holdBall = false;
@@ -119,15 +118,13 @@ void* Motion_nodeHandle::pThreadRun(void* p)
     return NULL;
 }
 
-robot_command Motion_nodeHandle::getMotion()
+RobotCommand Motion_nodeHandle::getMotion()
 {
     this->motion_flag = false;
-//    robot_command CMD = this->robotCMD;
-//    this->robotCMD = {0, 0, 0, 0, 0, 0};
     return robotCMD;
 }
 
-void Motion_nodeHandle::pub_robotFB(robot_command &robotFB)
+void Motion_nodeHandle::pub_robotFB(RobotCommand &robotFB)
 {
     geometry_msgs::Twist FB;
 
@@ -150,4 +147,12 @@ void Motion_nodeHandle::clear()
 bool Motion_nodeHandle::getMotionFlag()
 {
     return this->motion_flag;
+}
+
+void Motion_nodeHandle::ShowCommand()
+{
+    printf("x speed %f\n", robotCMD.x);
+    printf("y speed %f\n", robotCMD.y);
+    printf("yaw speed %f\n", robotCMD.yaw);
+    printf("shoot power %d\n", robotCMD.shoot_power);
 }

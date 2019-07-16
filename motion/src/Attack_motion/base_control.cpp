@@ -474,7 +474,7 @@ void BaseController::mSetSlope(
         }else{
             slope[i] = err[i]/interval;
         }
-        printf("%f\n", slope[i]);
+//        printf("%f\n", slope[i]);
     }
     
 }
@@ -482,13 +482,15 @@ void BaseController::mSetSlope(
 void BaseController::mInverseKinematics()
 {
     double cmd1, cmd2, cmd3;
-	cmd1 = m_baseCommand.x*(-1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
-	cmd2 = m_baseCommand.x*(1)+m_baseCommand.y*(-0.5)+m_baseCommand.yaw*(-1);
-	cmd3 = m_baseCommand.x*(0)+m_baseCommand.y*(1)+m_baseCommand.yaw*(-1);
+	cmd1 = m_baseCommand.x*(0.5)+m_baseCommand.y*(-1)+m_baseCommand.yaw*(-1);
+	cmd2 = m_baseCommand.x*(0.5)+m_baseCommand.y*(1)+m_baseCommand.yaw*(-1);
+	cmd3 = m_baseCommand.x*(-1)+m_baseCommand.y*(0)+m_baseCommand.yaw*(-1);
     m_motorCommandRPM.w1 = cmd1 / 100 * MAX_MOTOR_RPM;
     m_motorCommandRPM.w2 = cmd2 / 100 * MAX_MOTOR_RPM;
     m_motorCommandRPM.w3 = cmd3 / 100 * MAX_MOTOR_RPM;
 #ifdef DEBUG
+        printf("cmd %f %f %f\n", cmd1, cmd2, cmd3);
+        printf("cmd rpm %f %f %f\n", m_motorCommandRPM.w1, m_motorCommandRPM.w2, m_motorCommandRPM.w3);
 #endif
 }
 
@@ -558,6 +560,11 @@ void BaseController::Send(const RobotCommand &CMD)
     m_baseCommand = CMD;
     mCommandRegularization();
     mInverseKinematics();
+    for(int i = 0; i<3;i++){
+        *((double*)(&m_motorPreCmdCurrRPM )+i) = (*((double*)(&m_motorCurrRPM )+i)+*((double*)(&m_motorTarRPM )+i))/2;
+    }
+    m_interval = 0;
+    mSetSlope(m_motorCommandRPM, m_motorCurrRPM, m_final_interval, m_slope);
 }
 
 void BaseController::SetSingle(int number, int16_t rpm)

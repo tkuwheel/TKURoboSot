@@ -27,7 +27,7 @@
   ******************************/
 //#define DEBUG
 #define RECORD
-#define CSSL
+//#define CSSL
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
 
@@ -73,9 +73,9 @@ public: //constructor & destructor
     BaseController(int, char **, bool);
 	~BaseController();
 private: //const
-	const double m1_Angle = -5*M_PI/6;
-	const double m2_Angle = -M_PI/6;
-	const double m3_Angle = M_PI;
+	const double m1_Angle = -M_PI/6;
+	const double m2_Angle = M_PI/6;
+	const double m3_Angle = -M_PI;
 //	const double robot_radius = 1;
 	const double robot_radius = 0.15;
 	const double wheel_radius = 0.0508;

@@ -44,8 +44,7 @@ private:
 	ros::Subscriber shoot_sub;
 	ros::Subscriber remote_sub;
     ros::Subscriber holdBall_sub;
-	robot_command robotCMD;
-	serial_rx RX;
+	RobotCommand robotCMD;
     pthread_t tid;
 	bool remote;
     bool holdBall;
@@ -61,9 +60,10 @@ private:
     void run();
 public:
 //    void *run();
-	robot_command getMotion();
-	void pub_robotFB(robot_command &);
+	RobotCommand getMotion();
+	void pub_robotFB(RobotCommand &);
 	void clear();
 	bool getMotionFlag();
+    void ShowCommand();
 };
 #endif
