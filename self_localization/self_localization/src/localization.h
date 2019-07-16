@@ -32,6 +32,11 @@ private:
     Mat field_map;
     Mat particles_map;
     vector<int> point;
+    vector<int> good_point;
+    vector<int> bad_point;
+    double robot_x;
+    double robot_y;
+    double robot_w;
     ros::NodeHandle nh;
     ros::Subscriber sensor_sub;
     ros::Subscriber vel_sub;

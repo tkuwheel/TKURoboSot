@@ -27,11 +27,13 @@ STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
 
 class Robot(object):
 
+  last_time = 0
+
   __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
-  __object_info = {'ball':{'dis' : 0, 'ang' : 0},
+  __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
+                           'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
-                   'time' : 0,
                    'velocity' : 0 }
   __ball_is_handled = False
   ## Configs
@@ -104,14 +106,32 @@ class Robot(object):
     return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetVision(self, vision):
+    rbx = vision.ball_dis * math.cos(math.radians(vision.ball_ang))
+    rby = vision.ball_dis * math.sin(math.radians(vision.ball_ang))
+    rrbx, rrby = self.Rotate(rbx, rby, self.__robot_info['location']['yaw'])
+    gbx = rrbx + self.__robot_info['location']['x']
+    gby = rrby + self.__robot_info['location']['y']
+    if time.time() - Robot.last_time >= 0.5:
+      spx = (gbx - self.__object_info['ball']['global_x']) * 0.02 # m / 0.5s
+      spy = (gby - self.__object_info['ball']['global_y']) * 0.02
+      spwmx, spwmy = self.ConvertSpeedToPWM(spx, spy)
+      self.__object_info['ball']['speed_x']  = spx
+      self.__object_info['ball']['speed_y']  = spy
+      self.__object_info['ball']['speed_pwm_x']  = spwmx
+      self.__object_info['ball']['speed_pwm_y']  = spwmy
+      self.__object_info['ball']['global_x'] = gbx
+      self.__object_info['ball']['global_y'] = gby
+      # print(spwmx, spwmy)
+      Robot.last_time = time.time()
+
     self.__object_info['ball']['dis']    = vision.ball_dis
     self.__object_info['ball']['ang']    = vision.ball_ang
     self.__object_info['Blue']['dis']    = vision.blue_fix_dis
     self.__object_info['Blue']['ang']    = vision.blue_fix_ang
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
-  
-  def _GetPosition(self,loc):
+
+  def _GetPosition(self, loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
     qx = loc.pose.pose.orientation.x
@@ -124,6 +144,15 @@ class Robot(object):
     s = String()
     s.data = state
     self.state_pub.publish(s)
+
+  def ConvertSpeedToPWM(self, x, y):
+    reducer = 24
+    max_rpm = 7580
+    wheel_radius  = 0.11
+    circumference = 2 * math.pi * wheel_radius
+    _x = (x / circumference * reducer * 60)/max_rpm * 100
+    _y = (y / circumference * reducer * 60)/max_rpm * 100
+    return _x, _y
 
   def Rotate(self, x, y, theta):
     _x = x*math.cos(math.radians(theta)) - y*math.sin(math.radians(theta))
@@ -160,7 +189,6 @@ class Robot(object):
       self.cmdvel_pub.publish(msg)
 
   def GetObjectInfo(self):
-    self.__object_info['time'] = time.time()
     return self.__object_info
 
   def GetRobotInfo(self):
