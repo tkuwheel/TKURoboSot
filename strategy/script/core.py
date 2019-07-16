@@ -106,18 +106,18 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo()
     side = self.opp_side
     if method == "Orbit":
-      x, y, yaw = self.BC.Orbit(t[side]['ang'])
+      x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Post_up":
-      x, y, yaw, _ = self.BC.Post_up(t, side, self.run_yaw)
+      x, y, yaw = self.BC.Post_up(t, side, self.run_yaw)
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
       x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
-                                             t[side]['ang'],\
-                                             t['ball']['dis'],\
-                                             t['ball']['ang'])
+                                        t[side]['ang'],\
+                                        t['ball']['dis'],\
+                                        t['ball']['ang'])
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_goal":
