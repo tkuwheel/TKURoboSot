@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# encoding: utf-8
 from __future__ import print_function
 import rospy
 import math
@@ -46,3 +47,43 @@ class Behavior(Robot):
       arrived = False
 
     return o_x, o_y, o_yaw, arrived
+
+  def Post_up(self, t, side, yaw):
+    go_x = t[side]['dis'] * math.cos(math.radians(t[side]['ang']))
+    go_y = t[side]['dis'] * math.sin(math.radians(t[side]['ang']))
+    v_x   = go_x  * math.cos(math.radians(yaw)) - go_y  * math.sin(math.radians(yaw))
+    v_y   = go_x  * math.sin(math.radians(yaw)) + go_y  * math.cos(math.radians(yaw))        
+    v_yaw = t[side]['ang']
+    
+    return v_x, v_y, v_yaw
+
+  def relative_goal(self, goal_dis, goal_ang, ball_dis, ball_ang):
+
+    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+    defence_x   = ( ball_x + door_x ) / 2				#防守位置
+    defence_y   = ( ball_y + door_y ) / 2
+    defence_yaw = 0
+
+    return defence_x , defence_y , defence_yaw
+
+  def relative_ball(self, goal_dis, goal_ang, ball_dis, ball_ang):
+
+    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+    defence_x   = (5* ball_x + door_x ) / 6					#防守位置
+    defence_y   = (5* ball_y + door_y ) / 6
+    defence_yaw = 0
+
+    return defence_x , defence_y , defence_yaw
+
+
+  

@@ -30,12 +30,13 @@ class Core(Robot, StateMachine):
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
   toShoot  = attack.to(shoot)
-  toMovement = chase.to(movement) | movement.to.itself()
+  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
   toPoint  = point.to.itself() | idle.to(point)
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
+    self.chase_straight = config['chase_straight']
     self.run_point  = config['run_point']
     self.our_side   = config['our_side']
     self.opp_side   = 'Blue' if self.our_side == 'Yellow' else 'Yellow'
@@ -43,7 +44,10 @@ class Core(Robot, StateMachine):
     self.run_y      = config['run_y']
     self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
+    self.attack_mode = config['attack_mode']
     self.maximum_v = config['maximum_v']
+    self.orb_attack_ang = config['orb_attack_ang']
+    self.atk_shoot_ang = config['atk_shoot_ang']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -76,6 +80,9 @@ class Core(Robot, StateMachine):
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
+    elif method == "Defense":
+      x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
+
     self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
@@ -84,10 +91,13 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-      self.MotionCtrl(x, y, yaw)
-    # elif method == "Cross_Over":
-    #   x, y, yaw, _ = self.AC.cross_over(t, side, run)
-    #   self.MotionCtrl(x, y, yaw)
+
+    elif method == "Cut":
+      x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'],self.run_yaw)
+
+    
+      
+    self.MotionCtrl(x, y, yaw)
 
   def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
@@ -97,7 +107,25 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Orbit":
       x, y, yaw = self.BC.Orbit(t[side]['ang'])
-    self.MotionCtrl(x, y, yaw, True)
+      self.MotionCtrl(x, y, yaw, True)
+
+    elif method == "Post_up":
+      x, y, yaw, _ = self.BC.Post_up(t, side, self.run_yaw)
+      self.MotionCtrl(x, y, yaw, True)
+
+    elif method == "Relative_ball":
+      x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
+                                             t[side]['ang'],\
+                                             t['ball']['dis'],\
+                                             t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw, True)
+
+    elif method == "Relative_goal":
+      x, y, yaw = self.BC.relative_goal(t[side]['dis'],\
+                                             t[side]['ang'],\
+                                             t['ball']['dis'],\
+                                             t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw, True)
 
   def on_toPoint(self):
     if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
@@ -160,31 +188,39 @@ class Strategy(object):
       self.robot.toIdle()
 
   def ToChase(self):
-    mode = self.robot.strategy_mode
+    mode = self.robot.attack_mode
     if mode == "Defense":
-      self.robot.toChase("Classic")
-    elif mode == "Attack":
-      if self.robot.CheckBallHandle():
-        self.ToMovement()
+      self.ToMovement()
+    
+    else:
+      if self.robot.chase_straight :
+        self.robot.toChase("Classic")
+
       else:
         self.robot.toChase("Straight")
-    else: 
-      log("Unknown Chase Mode")
-
+    
+   
   def ToAttack(self):
-    mode = self.robot.strategy_mode
-    if mode == "Attack":
+    mode = self.robot.attack_mode
+    if mode == "Attack" :
       self.robot.toAttack("Classic")
-    if mode == "Defense":
-      self.robot.toAttack("Classic")
-    elif mode == "cross_over":
-      self.robot.toAttack("Cross_Over")
+
+    elif mode == "Cut":
+      self.robot.toAttack("Cut")
 
   def ToMovement(self):
     mode = self.robot.strategy_mode
-    if mode == "Attack":
-      self.robot.toMovement('Orbit')
-
+    if mode == "At_Orbit":
+      self.robot.toMovement("Orbit")
+    elif mode == "At_post_up":
+      self.robot.toMovement("post_up")
+    elif mode == "Defense_ball":
+      self.robot.toMovement("Relative_ball")
+    elif mode == "Defense_goal":
+      self.robot.toMovement("Relative_goal")
+    else :
+      self.ToAttack()
+  
   def main(self):
     while not rospy.is_shutdown():
 
@@ -192,6 +228,7 @@ class Strategy(object):
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
+      mode = self.robot.strategy_mode
 
       # Can not find ball when starting
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
@@ -209,28 +246,42 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            self.ToAttack()
+            # self.robot.goal_dis = 0
+            # self.robot.Accelerate(0,targets,self.maximum_v) 
+            self.ToMovement()
           else:
             self.ToChase()
+
 
         if self.robot.is_movement:
-          if abs(targets[self.robot.opp_side]['ang']) < 10:
-            self.ToAttack()
-          elif not self.robot.CheckBallHandle():
-            self.ToChase()
-          else:
-            self.ToMovement()
+          if mode == 'At_Orbit':
+            if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
+              self.ToAttack()
+            elif not self.robot.CheckBallHandle():
+              self.ToChase()
+            else:
+              self.ToMovement()
 
+          #elif mode == 'At_post_up':
+          elif mode == "Defense_ball" or "Defense_goal":  
+            if self.robot.CheckBallHandle():
+              self.robot.strategy_mode = "Fast_break"
+              self.ToAttack()
+            else : 
+              self.ToMovement()
+          
+            
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.ToChase()
-          elif  abs(targets[self.robot.opp_side]['ang']) < 3:
-            self.robot.toShoot(100)
+          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
+            self.robot.toShoot(0)
           else:
-            self.ToAttack()
+            self.robot.toAttack("Classic")
 
         if self.robot.is_shoot:
           self.ToAttack()
+
 
       ## Run point
       if self.robot.is_point:
