@@ -6,6 +6,9 @@ import math
 import numpy as np
 from robot.robot import Robot
 
+ORBIT_KP_V = -0.5
+ORBIT_KP_W = 4.2
+
 REMAINING_RANGE_V = 5
 REMAINING_RANGE_YAW = 2
 
@@ -16,13 +19,20 @@ class Behavior(Robot):
   def Orbit(self, goal_ang):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang
+    # velocity = velocity if abs(velocity) < 45 else 45 # maximum speed
     w = (velocity / orbit_radius)
 
     v_x   = 0
-    v_y   = velocity * -1 # Kp
-    v_yaw = w * 3.5 # Kp
+    v_y   = velocity * ORBIT_KP_V
+    v_yaw = w * ORBIT_KP_W
     o_yaw = v_yaw if abs(v_yaw) > 0.2 else 0.2 * np.sign(v_yaw) # 0.2 is minimum speed
-    return v_x, v_y, o_yaw
+
+    remaining_yaw = o_yaw
+    if abs(remaining_yaw) < REMAINING_RANGE_YAW:
+      arrived = True
+    else:
+      arrived = False
+    return v_x, v_y, o_yaw, arrived
 
   def Go2Point(self, tx, ty, tyaw):
     robot_info = self.GetRobotInfo()
