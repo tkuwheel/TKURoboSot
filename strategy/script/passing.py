@@ -119,7 +119,7 @@ class Strategy(object):
   current_index = 0
   current_point = [0, 0, 0]
   padding_ball  = 35
-  padding_target= 65
+  padding_target= 80
   ball1 = (-115 + padding_ball, 120)
   ball2 = (-115 + padding_ball, 40)
   ball3 = (-115 + padding_ball, -40)
@@ -182,6 +182,7 @@ class Strategy(object):
       if self.robot.is_idle:
         if self.robot.game_start:
           Strategy.current_index = 0
+          Strategy.can_shoot = False
           self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
@@ -192,7 +193,7 @@ class Strategy(object):
               self.robot.toShoot(80)
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
-              self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+              self.robot.toMovement(0 - position['location']['yaw'])
           else:
             self.robot.toChase("Straight")
         else:
@@ -200,7 +201,7 @@ class Strategy(object):
 
       if self.robot.is_chase:
         if self.robot.CheckBallHandle():
-          self.UpdateCurrentPoint(0, 0, 180)
+          self.UpdateCurrentPoint(0, 0, 90)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
           # self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
         else:
@@ -209,10 +210,11 @@ class Strategy(object):
       if self.robot.is_movement:
         if not self.robot.CheckBallHandle():
           self.robot.toChase("Straight")
-        elif self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw']):
+        elif self.robot.toMovement(0 - position['location']['yaw']):
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+          Strategy.can_shoot = True
         else:
-          self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
+          self.robot.toMovement(0 - position['location']['yaw'])
 
       if self.robot.is_shoot:
         if Strategy.current_index + 1 >= len(level['balls_point']):
@@ -221,6 +223,7 @@ class Strategy(object):
           self.robot.toIdle()
         else:
           Strategy.current_index += 1
+          Strategy.can_shoot = False
           self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
