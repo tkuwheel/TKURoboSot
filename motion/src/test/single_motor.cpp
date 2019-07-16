@@ -34,30 +34,29 @@ int main(int argc, char** argv)
 //
     signal(SIGINT, inturrupt);
     ros::Rate loop_rate(CMD_FREQUENCY);
+//    ros::Rate loop_rate(1);
     double real_rpm;
     double target_rpm;
     long duration;
     int count = 0;
+    Base.SetSingle(number, rpm);
     while(true){
         if(flag){
             Base.Close();
             printf("CLSOE\n");
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)
+                break;
             loop_rate.sleep();
             continue;
         }
-        count++;
-//        if(count>=CMD_FREQUENCY/2){
-            Base.SetSingle(number, rpm);
-            Base.SetEnable();
-//        }
+        Base.SetEnable();
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             tarRPM = Base.GetTarRPM();
 #ifdef DEBUG
-            printf("\n*****motor command******\n");
+//            printf("\n*****motor command******\n");
 
 //            printf("motor number: %d\n", number);
 //            Base.ShowCsslSend();

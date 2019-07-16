@@ -17,7 +17,7 @@
 /*******************************
   * Include header
   ******************************/
-#include "motor_control.h"
+//#include "motor_control.h"
 #include "parameter.h"
 #include "motor_data.h"
 #include "cssl.h"
@@ -63,6 +63,10 @@ typedef struct{
 	int w2;
     int w3;
 }SerialRX;
+
+double PWM2RPM(const int16_t &);
+int16_t RPM2PWM(const double &);
+
 class BaseController{
 public: //constructor & destructor
 //    BaseControl();
@@ -116,6 +120,8 @@ private: //private function
 	void	mShootRegularization();
 	void	mDriverSetting();
     void    mBaseControl();
+    MotorSpeed  mTrapeziumSpeedPlan(const MotorSpeed &, const MotorSpeed &, MotorSpeed &);
+    void    mSetSlope(const MotorSpeed &, const MotorSpeed &, int &, double []);
 	void	mInverseKinematics();
 	void	mForwardKinematics();	
     void    mTrajectory();
@@ -129,6 +135,7 @@ private: //private variable
 
     MotorSpeed m_motorCommand;
     MotorSpeed m_motorCommandRPM;
+    MotorSpeed m_motorPreCmdCurrRPM;
     MotorSpeed m_motorCurrPWM;
     MotorSpeed m_motorTarPWM;
     MotorSpeed m_motorCurrRPM;
@@ -137,9 +144,6 @@ private: //private variable
 	RobotCommand m_baseOdometry;
 	SerialTX m_baseTX;
 	SerialRX m_baseRX;
-    MotorController m_Motor1;
-    MotorController m_Motor2;
-    MotorController m_Motor3;
     bool mb_success;
     bool mb_record;
     bool mb_clear_odo;
@@ -157,6 +161,10 @@ private: //private variable
     static bool msb_serial;
     static int  ms_length;
 
+//    double  m_slope;
+    int     m_interval;
+    int     m_final_interval;
+    double  m_slope[3];
     double  m_max_speed;
     uint8_t m_en_stop;
     uint8_t m_shoot_power;

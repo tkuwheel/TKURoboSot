@@ -39,9 +39,9 @@ def Plot_Trend(time,tar1,w1,tar2,w2,tar3,w3):
     fig, ax = plt.subplots()
     ax.plot(x,tar1,'r',label='target rpm',linestyle='-', marker='.')
     ax.plot(x,w1,'b',label='real rpm',linestyle='-')
-    ax.plot(x,tar2,'r',label='target rpm',linestyle='-')
+    ax.plot(x,tar2,'r',label='target rpm',linestyle='-',marker='.')
     ax.plot(x,w2,'b',label='real rpm',linestyle='-')
-    ax.plot(x,tar3,'r',label='target rpm',linestyle='-')
+    ax.plot(x,tar3,'r',label='target rpm',linestyle='-',marker='.')
     ax.plot(x,w3,'b',label='real rpm',linestyle='-')
 
     ax.legend(loc = 'upper right')

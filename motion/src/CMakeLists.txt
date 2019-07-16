@@ -19,14 +19,12 @@ target_link_libraries(Crc  crcLib)
 add_executable(Single_n
                 test/single_motor.cpp
                 ${BASE_CONTROL}
-                ${MOTOR_CONTROL}
-#${ROBOT_CONTROL}
 )
 target_link_libraries(Single_n  ${catkin_LIBRARIES} crcLib csslLib)
 
 add_executable(Triple
                 test/three_motor.cpp
-                ${ROBOT_CONTROL}
+                ${BASE_CONTROL}
 )
 target_link_libraries(Triple  ${catkin_LIBRARIES} crcLib csslLib)
 

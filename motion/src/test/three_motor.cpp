@@ -2,7 +2,7 @@
 #include <iostream>
 #include "base_control.h"
 #include "ros/ros.h"
-#define DEBUG
+//#define DEBUG
 bool flag = false;
 void inturrupt(int signal)
 {
@@ -36,10 +36,12 @@ int main(int argc, char** argv)
 //
     signal(SIGINT, inturrupt);
     ros::Rate loop_rate(CMD_FREQUENCY);
+//    ros::Rate loop_rate(1);
     double real_rpm;
     double target_rpm;
     long duration;
     int count = 0;
+    Base.SetTriple(rpm1, rpm2, rpm3);
     while(true){
         if(flag){
             Base.Close();
@@ -50,12 +52,11 @@ int main(int argc, char** argv)
             loop_rate.sleep();
             continue;
         }
-        Base.SetTriple(rpm1, rpm2, rpm3);
         Base.SetEnable();
         count++;
-        if(count>=200){
+        if(count>=8){
             count = 0;
-//            Base.SetStop();
+            Base.SetTriple(rpm1, rpm2, rpm3);
         }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();

@@ -19,13 +19,14 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     }
 
 	serial = NULL;
-    m_motorCommand = {0};
-    m_motorCurrPWM = {0};
-    m_motorTarPWM = {0};
-    m_motorCurrRPM = {0};
-    m_motorTarRPM = {0};
-	m_baseCommand = {0};
-	m_baseOdometry = {0};
+    m_motorCommand = {0.0};
+    m_motorPreCmdCurrRPM = {0.0};
+    m_motorCurrPWM = {0.0};
+    m_motorTarPWM = {0.0};
+    m_motorCurrRPM = {0.0};
+    m_motorTarRPM = {0.0};
+	m_baseCommand = {0.0};
+	m_baseOdometry = {0.0};
 	m_baseTX = {0};
     m_baseTX.head1 = 0xff;
     m_baseTX.head2 = 0xfa;
@@ -42,6 +43,9 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     m_commandTime = {0};
 
     m_max_speed = 0;
+    m_interval = 0;
+    m_final_interval = 0;
+    m_slope[3] = {0};
     m_en_stop = 0;
     m_shoot_power = 0;
     mb_hold_ball = false;
@@ -100,7 +104,6 @@ void BaseController::mRun()
             continue;
         }
         if(mb_enable){
-            counter++;
             mb_enable = false;
             mBaseControl();
             mDriverSetting();
@@ -110,9 +113,6 @@ void BaseController::mRun()
             mb_base = true;
             if(mSerialDecoder()){
 
-                m_Motor1.SetSpeed(m_motorCommandRPM.w1, m_motorCurrRPM.w1);
-                m_Motor2.SetSpeed(m_motorCommandRPM.w2, m_motorCurrRPM.w2);
-                m_Motor3.SetSpeed(m_motorCommandRPM.w3, m_motorCurrRPM.w3);
                 m_duration += m_baseRX.duration;
 //                if(mb_clear_odo){
 //                    mb_clear_odo = false;
@@ -237,16 +237,26 @@ bool BaseController::mCheckSerial()
 bool BaseController::mSerialDecoder()
 {
 #ifndef CSSL
+    msb_serial = false;
     gettimeofday(&m_serialNow, 0);
     long duration_s = m_serialNow.tv_sec - m_serialLast.tv_sec;
     long duration_us = m_serialNow.tv_usec - m_serialLast.tv_usec;
     m_serialLast = m_serialNow;
     m_baseRX.duration = duration_s * 1000000 + duration_us;
 
-    m_baseRX.size = 0;
-    m_baseRX.w1 = 0;
-    m_baseRX.w2 = 0;
-    m_baseRX.w3 = 0; 
+//    m_baseRX.size = 0;
+//    m_baseRX.w1 = m_motorTarRPM.w1;
+//    m_baseRX.w2 = m_motorTarRPM.w2;
+//    m_baseRX.w3 = m_motorTarRPM.w3; 
+    if(mb_close){
+        m_motorCurrRPM.w1 = 0;
+        m_motorCurrRPM.w2 = 0;
+        m_motorCurrRPM.w3 = 0;
+    }else{
+        m_motorCurrRPM.w1 = m_motorTarRPM.w1;
+        m_motorCurrRPM.w2 = m_motorTarRPM.w2;
+        m_motorCurrRPM.w3 = m_motorTarRPM.w3; 
+    }
     m_baseRX.error = "no error";
     return true;
 #endif //CSSL
@@ -326,9 +336,6 @@ void BaseController::mCommandRegularization()
     }else{
         m_max_speed = speed;
     }
-    m_Motor1.SetMaxRPM(m_max_speed);
-    m_Motor2.SetMaxRPM(m_max_speed);
-    m_Motor3.SetMaxRPM(m_max_speed);
 }
 
 void BaseController::mSpeedRegularization()
@@ -397,9 +404,9 @@ void BaseController::mDriverSetting()
         m_en_stop += (fabs(m_motorCurrPWM.w1) >= MIN_PWM)?  0x80 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w2) >= MIN_PWM)?  0x40 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w3) >= MIN_PWM)?  0x20 : 0;
-//        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
-//        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
-//        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
 
     }
 }
@@ -407,18 +414,69 @@ void BaseController::mDriverSetting()
 void BaseController::mBaseControl()
 {
 // TODO
+    m_motorTarRPM = mTrapeziumSpeedPlan(m_motorCommandRPM, m_motorCurrRPM, m_motorTarRPM);
 
+    m_motorCurrPWM.w1 = RPM2PWM(m_motorTarRPM.w1);
+    m_motorCurrPWM.w2 = RPM2PWM(m_motorTarRPM.w2);
+    m_motorCurrPWM.w3 = RPM2PWM(m_motorTarRPM.w3);
+}
 
-    m_motorCurrPWM.w1 = mPWMRegularization(m_Motor1.MotorControl());
-    m_motorCurrPWM.w2 = mPWMRegularization(m_Motor2.MotorControl());
-    m_motorCurrPWM.w3 = mPWMRegularization(m_Motor3.MotorControl());
-    m_motorTarRPM.w1 = m_Motor1.GetTarRPM();
-    m_motorTarRPM.w2 = m_Motor2.GetTarRPM();
-    m_motorTarRPM.w3 = m_Motor3.GetTarRPM();
+MotorSpeed  BaseController::mTrapeziumSpeedPlan(
+        const MotorSpeed &cmdRPM,
+        const MotorSpeed &currRPM,
+        MotorSpeed &tarRPM)
+{
+//        printf("cmd %f, curr %f, error %f\n", *((double*)(&cmdRPM)+i), *((double*)(&currRPM)+i), err[i]);
+    if(m_interval<m_final_interval){
+        m_interval++;
+    }
+    for(int i = 0; i < 3; i++){
+        *((double*)(&tarRPM) + i) = m_slope[i] * m_interval + *((double*)(&m_motorPreCmdCurrRPM)+i);
+    }
+//    printf("now %d final %d\n",m_interval, m_final_interval);
+    return tarRPM;
 
-//    m_motorTarPWM.w1 =  RPM2PWM(m_motorTarRPM.w1);
-//    m_motorTarPWM.w2 =  RPM2PWM(m_motorTarRPM.w2);
-//    m_motorTarPWM.w3 =  RPM2PWM(m_motorTarRPM.w3);
+}
+void BaseController::mSetSlope(
+        const MotorSpeed &cmdRPM,
+        const MotorSpeed &currRPM,
+        int &interval, double slope[])
+{
+    double err[3];
+    for(int i = 0; i < 3; i++){
+        err[i] = *((double*)(&cmdRPM) + i)-*((double*)(&currRPM) + i);
+        if(fabs(err[i])<50){
+            err[i] = 0.0;
+        }
+    }
+    int maxAt = 0;
+    double max_slope = 0;
+    for(int i = 0; i < 3; i++){
+        maxAt = (fabs(err[i])>fabs(err[maxAt]))? i : maxAt;
+    }
+    if(err[maxAt] == 0){
+        interval = 0;
+    }else{
+        if(err[maxAt]>=0){
+            max_slope = 50.0;
+        }else{
+            max_slope = -50.0;
+        }
+        interval = err[maxAt]/max_slope;
+    }
+    for(int i = 0; i < 3; i++){
+        if(interval==0){
+            slope[i] = 0.0;
+            continue;
+        }
+        if(i == maxAt){
+            slope[i] = max_slope;
+        }else{
+            slope[i] = err[i]/interval;
+        }
+        printf("%f\n", slope[i]);
+    }
+    
 }
 
 void BaseController::mInverseKinematics()
@@ -505,26 +563,19 @@ void BaseController::Send(const RobotCommand &CMD)
 void BaseController::SetSingle(int number, int16_t rpm)
 {
 // TODO
+
     switch(number){
         case 1:
-            m_motorCommandRPM.w1 = rpm;
-            m_motorCommandRPM.w2 = 0;
-            m_motorCommandRPM.w3 = 0;
+            SetTriple(rpm, 0, 0);
             break;
         case 2:
-            m_motorCommandRPM.w2 = rpm;
-            m_motorCommandRPM.w1 = 0;
-            m_motorCommandRPM.w3 = 0;
+            SetTriple(0, rpm, 0);
             break;
         case 3:
-            m_motorCommandRPM.w3 = rpm;
-            m_motorCommandRPM.w1 = 0;
-            m_motorCommandRPM.w2 = 0;
+            SetTriple(0, 0, rpm);
             break;
         default:
-            m_motorCommandRPM.w1 = 0;
-            m_motorCommandRPM.w2 = 0;
-            m_motorCommandRPM.w3 = 0;
+            SetTriple(rpm, 0, 0);
             break;
     }
 }
@@ -535,6 +586,13 @@ void BaseController::SetTriple(int16_t rpm1, int16_t rpm2, int16_t rpm3)
     m_motorCommandRPM.w1 = rpm1;
     m_motorCommandRPM.w2 = rpm2;
     m_motorCommandRPM.w3 = rpm3;
+//    m_motorPreCmdCurrRPM = m_motorCurrRPM;
+//    m_motorPreCmdCurrRPM = m_motorTarRPM;
+    for(int i = 0; i<3;i++){
+        *((double*)(&m_motorPreCmdCurrRPM )+i) = (*((double*)(&m_motorCurrRPM )+i)+*((double*)(&m_motorTarRPM )+i))/2;
+    }
+    m_interval = 0;
+    mSetSlope(m_motorCommandRPM, m_motorCurrRPM, m_final_interval, m_slope);
 }
 
 void BaseController::SetEnable()
@@ -553,6 +611,7 @@ void BaseController::Close()
     printf("OAO\n");
     mDriverSetting();
     mCsslSend2FPGA();
+
 }
 
 //RobotCommand BaseController::GetOdoRobot()
@@ -630,4 +689,24 @@ void BaseController::ShowSerialPacket()
     printf("\n\n");
 
 
+}
+
+double PWM2RPM(const int16_t &pwm)
+{
+    if(pwm > 0) 
+        return (pwm - MAX_PWM*0.1) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+    else if(pwm < 0)
+        return (pwm + MAX_PWM*0.1) * MAX_MOTOR_RPM / (MAX_PWM - MAX_PWM * 0.2);
+    else 
+        return 0;
+}
+
+int16_t RPM2PWM(const double &rpm)
+{
+    if(rpm > 0) 
+        return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM + MAX_PWM*0.1;
+    else if(rpm < 0)
+        return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM - MAX_PWM*0.1;
+    else 
+        return 0;
 }
