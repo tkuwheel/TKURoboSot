@@ -33,27 +33,32 @@ var connect_request = new ROSLIB.ServiceRequest({
 let connected = false;
 
 function service_connect(){
+  
   setTimeout(service_connect, 3000);
-  connectClient.callService(connect_request,
-    function(connect_request) {
-      if(connected == false){
-        console.log('Monitor連接成功');
-        SendMsgs('Monitor連接成功',"blue");
-        connected = true;
+  let monitor_checked = document.getElementById("MonitorButton").checked;
+  if(monitor_checked){
+    connectClient.callService(connect_request,
+      function(connect_request) {
+        if(connected == false){
+          console.log('Monitor連接成功');
+          SendMsgs('Monitor連接成功',"blue");
+          connected = true;
+        }
+        //callback(result.action_servers);
+      },
+      function(message){
+        if(connected == true){
+          console.log('Monitor連接中斷');
+          SendMsgs('Monitor連接中斷',"red");
+          //console.log(message);
+          connected = false;
+        }
+        else{
+          console.log('無法連接Monitor');
+          SendMsgs('無法連接Monitor',"red");
+        }
       }
-      //callback(result.action_servers);
-    },
-    function(message){
-      if(connected == true){
-        console.log('Monitor連接中斷');
-        SendMsgs('Monitor連接中斷',"red");
-        //console.log(message);
-        connected = false;
-      }
-      else{
-        console.log('無法連接Monitor');
-        SendMsgs('無法連接Monitor',"red");
-      }
-    }
-  )
+    )
+  }
 }
+
