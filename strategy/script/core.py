@@ -93,12 +93,17 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
-
     elif method == "Cut":
       x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'],self.run_yaw)
+    elif method == "Post_up":
+      if t[side]['dis'] < 50 :
+        t[side]['dis'] = 50
 
-    
-      
+      x, y, yaw = self.AC.Post_up(t[side]['dis'],\
+                                       t[side]['ang'],\
+                                       l['ranges'],\
+                                       l['angle']['increment'])
+       
     self.MotionCtrl(x, y, yaw)
 
   def on_toShoot(self, power, pos = 1):
@@ -109,30 +114,21 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Orbit":
       x, y, yaw = self.BC.Orbit(t[side]['ang'])
-      self.MotionCtrl(x, y, yaw, True)
-
-    elif method == "Post_up":
-      x, y, yaw, _ = self.BC.Post_up(t, side, self.run_yaw)
-      self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
       x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
-      self.MotionCtrl(x, y, yaw, True)
-
+   
     elif method == "Relative_goal":
       x, y, yaw = self.BC.relative_goal(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
-      self.MotionCtrl(x, y, yaw, True)
-      
-   
-
     
-
+    self.MotionCtrl(x, y, yaw, True)
+      
   def on_toPoint(self):
     if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
       x, y, yaw, arrived = self.BC.Go2Point(-60, 0, 0)
@@ -214,6 +210,9 @@ class Strategy(object):
     if mode == "Attack" :
       self.robot.toAttack("Classic")
 
+    elif mode == "At_post_up":
+      self.robot.toAttack("Post_up")
+
     elif mode == "Cut":
       self.robot.toAttack("Cut")
 
@@ -224,8 +223,6 @@ class Strategy(object):
     mode = self.robot.strategy_mode
     if mode == "At_Orbit":
       self.robot.toMovement("Orbit")
-    elif mode == "At_post_up":
-      self.robot.toMovement("post_up")
     elif mode == "Defense_ball":
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":
@@ -243,6 +240,7 @@ class Strategy(object):
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
       mode = self.robot.strategy_mode
+      laser = self.robot.GetObstacleInfo()
 
       # Can not find ball when starting
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
@@ -284,6 +282,10 @@ class Strategy(object):
               self.ToAttack()
             else : 
               self.ToMovement()
+
+          elif mode == "Fast_break":
+            self.ToAttack()
+            
           
             
         if self.robot.is_attack:

@@ -11,6 +11,9 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
 from std_msgs.msg import Bool 
+from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Int32MultiArray
+from sensor_msgs.msg import JointState
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -33,6 +36,12 @@ class Robot(object):
                    'Yellow':{'dis' : 0, 'ang' : 0},
                    'time' : 0,
                    'velocity' : 0 }
+  __obstacle_info = {'angle' : {'min' : 0, 'max' : 0, 'increment' : math.pi / 180 * 3},
+		                 'scan' : 0,
+		                 'range' : {'min' : 0, 'max' : 0},
+                     'ranges' : [0],
+		                 'intensities' : [0]}
+
   __ball_is_handled = False
   ## Configs
   __minimum_w = 0
@@ -80,12 +89,14 @@ class Robot(object):
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
     print("Objects informations: {}".format(self.__object_info))
+    print("Obstacles informations: {}".format(self.__obstacle_info))
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
 
     rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
+    rospy.Subscriber('BlackRealDis',Int32MultiArray,self._GetBlackItemInfo)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
@@ -110,7 +121,10 @@ class Robot(object):
     self.__object_info['Blue']['ang']    = vision.blue_fix_ang
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
-  
+
+  def _GetBlackItemInfo(self, vision):
+    self.__obstacle_info['ranges'] =vision.data
+
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
@@ -165,6 +179,9 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
+  
+  def GetObstacleInfo(self):
+    return self.__obstacle_info
 
   def RealShoot(self, power, pos) :
     msg = Int32()

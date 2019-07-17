@@ -5,11 +5,12 @@ import rospy
 import math
 import numpy as np
 from robot.robot import Robot
+from robot.obstacle import Obstacle
 
 REMAINING_RANGE_V = 5
 REMAINING_RANGE_YAW = 2
 
-class Behavior(Robot):
+class Behavior(Robot,Obstacle):
   def __init__(self):
     pass
 
@@ -48,14 +49,7 @@ class Behavior(Robot):
 
     return o_x, o_y, o_yaw, arrived
 
-  def Post_up(self, t, side, yaw):
-    go_x = t[side]['dis'] * math.cos(math.radians(t[side]['ang']))
-    go_y = t[side]['dis'] * math.sin(math.radians(t[side]['ang']))
-    v_x   = go_x  * math.cos(math.radians(yaw)) - go_y  * math.sin(math.radians(yaw))
-    v_y   = go_x  * math.sin(math.radians(yaw)) + go_y  * math.cos(math.radians(yaw))        
-    v_yaw = t[side]['ang']
-    
-    return v_x, v_y, v_yaw
+  
 
   def relative_goal(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
