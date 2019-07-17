@@ -26,10 +26,10 @@ class Core(Robot, StateMachine):
   point  = State('Point')
   movement = State('Movement')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | idle.to.itself()
+  toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself()
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
-  toShoot  = attack.to(shoot)
+  toShoot  = attack.to(shoot)| idle.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
   toPoint  = point.to.itself() | idle.to(point)
 
@@ -112,20 +112,28 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     if method == "Orbit":
       x, y, yaw = self.BC.Orbit(t[side]['ang'])
+      self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
       x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw)
    
     elif method == "Relative_goal":
       x, y, yaw = self.BC.relative_goal(t[side]['dis'],\
                                              t[side]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw)
     
-    self.MotionCtrl(x, y, yaw, True)
+    elif method == "Penalty_kick":
+      x, y, yaw = self.BC.PenaltyTurning(t[side]['dis'], t[side]['ang'], position['imu_3d']['ang'], dest_ang)
+      self.MotionCtrl(x, y, yaw, True)
+    
+    
+    
       
   def on_toPoint(self):
     if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
@@ -213,12 +221,16 @@ class Strategy(object):
 
   def ToMovement(self):
     mode = self.robot.strategy_mode
-    if mode == "At_Orbit":
+    state = self.robot.game_state
+    if state == "Penalty_Kick":
+      self.robot.toMovement("Penalty_Kick")
+    elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
     elif mode == "Defense_ball":
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":
       self.robot.toMovement("Relative_goal")
+
     else :
       self.ToAttack()
   
@@ -230,6 +242,7 @@ class Strategy(object):
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
       mode = self.robot.strategy_mode
+      state = self.robot.game_state
       laser = self.robot.GetObstacleInfo()
 
       # Can not find ball when starting
@@ -240,9 +253,15 @@ class Strategy(object):
         if not self.robot.is_idle and not self.robot.run_point and not self.robot.game_start:
           self.robot.toIdle()
 
-        if self.robot.is_idle:
+        if self.robot.is_idle:          
           if self.robot.game_start:
-            self.ToChase()
+            if self.robot.game_state == "Coner_Kick" or "Throw_In" or "Free_Kick":
+              self.robot.toShoot(80)
+            elif self.game_state == "Penalty_Kick":
+              self.ToMovement()
+            else :
+              self.ToChase()
+
           elif self.robot.run_point:
             self.RunStatePoint()
 
@@ -256,7 +275,22 @@ class Strategy(object):
 
 
         if self.robot.is_movement:
-          if mode == 'At_Orbit':
+          
+          if state == "Penalty_Kick":
+            imu_ang = math.degrees(position['imu_3d']['ang'])
+            if imu_ang >180:
+              imu_ang = imu_ang - 360
+            if abs(dest_ang + imu_ang) > 2:
+              self.ToMovement()
+            elif abs(dest_ang + imu_ang) <= 2:
+              start = time.time()
+              print("stop") 
+              for i in range(0, 15):
+                self.robot.MotionCtrl(0,0,0)
+              self.robot.game_state = "Kick_Off"
+              self.robot.toShoot(100)
+                    
+          elif mode == 'At_Orbit':
             if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
               self.ToAttack()
             elif not self.robot.CheckBallHandle():
@@ -264,7 +298,7 @@ class Strategy(object):
             else:
               self.ToMovement()
 
-          #elif mode == 'At_post_up':
+
           elif mode == "Defense_ball" or "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.robot.strategy_mode = "Fast_break"
@@ -274,16 +308,14 @@ class Strategy(object):
 
           elif mode == "Fast_break":
             self.ToAttack()
-            
-          
-            
+                      
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.ToChase()
           elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
-            self.robot.toShoot(0)
+            self.robot.toShoot(100)
           else:
-            self.robot.toAttack("Classic")
+            self.robot.ToAttack()
 
         if self.robot.is_shoot:
           self.ToAttack()

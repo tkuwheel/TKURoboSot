@@ -4,6 +4,7 @@ import math
 import numpy as np
 import time
 from simple_pid import PID
+from imu_3d.msg import inertia
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
@@ -24,6 +25,7 @@ VISION_TOPIC = "vision/object"
 CMDVEL_TOPIC = "motion/cmd_vel"
 SHOOT_TOPIC  = "motion/shoot"
 POSITION_TOPIC = "akf_pose"
+IMU            = "imu_3d"
 
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
@@ -32,7 +34,8 @@ class Robot(object):
 
   last_time = 0
 
-  __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
+  __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
+                   'imu_3d' : {'yaw' : 0}}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
                            'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
@@ -106,6 +109,7 @@ class Robot(object):
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
     if not sim :
+      rospy.Subscriber(IMU,inertia,self._GetImu)
       self.RobotBallHandle = self.RealBallHandle
     else:
       self.RobotBallHandle = self.SimBallHandle
@@ -144,6 +148,9 @@ class Robot(object):
 
   def _GetBlackItemInfo(self, vision):
     self.__obstacle_info['ranges'] =vision.data
+
+  def _GetImu(self, imu_3d):
+    self.self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
