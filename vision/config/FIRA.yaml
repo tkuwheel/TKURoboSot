@@ -11,8 +11,8 @@ HSV:
   black: {angle: 3, gray: 26}
   white: {angle: 3, gray: 203}
 Parameterbutton: 7
-SCAN: {Angle_Near_Gap: 4, Angle_range_1: 2, Angle_range_2_3: 2, Dont_Search_Angle_1: 330,
-  Dont_Search_Angle_2: 88, Dont_Search_Angle_3: 209, Magn_Far_End: 187, Magn_Far_Start: 141,
-  Magn_Middle_Start: 90, Magn_Near_Gap: 2, Magn_Near_Start: 33}
+SCAN: {Angle_Near_Gap: 4, Angle_range_1: 148, Angle_range_2_3: 2, Dont_Search_Angle_1: 92,
+  Dont_Search_Angle_2: 332, Dont_Search_Angle_3: 206, Magn_Far_End: 187, Magn_Far_Start: 141,
+  Magn_Middle_Start: 90, Magn_Near_Gap: 2, Magn_Near_Start: 36}
 blackItem: {angle: 3, gray: 40}
 whiteline: {angle: 4, gray: 100}
