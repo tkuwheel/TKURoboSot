@@ -4,16 +4,17 @@ The purpose of this project is implementing, researching, developing the Soccer 
 
 # Requirement & Installation
 ### System:
-ROS Kinetic w/ Ubuntu 16.04 [Install](http://wiki.ros.org/kinetic/Installation/Ubuntu)
+~ROS Kinetic w/ Ubuntu 16.04 [Install](http://wiki.ros.org/kinetic/Installation/Ubuntu)~
+~ROS Melodic w/ Ubuntu 18.04 [Install](http://wiki.ros.org/melodic/Installation/Ubuntu)~
 
 ## Setup:
 ```bash
-$ mkdir robosot_ws/src && cd robosot_ws
+$ mkdir -p robosot_ws/src && cd robosot_ws
 $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ```
 ### ROS Packages:
 ```bash
-$ sudo apt-get install ros-kinetic-rosbridge-server ros-kinetic-web-video-server
+$ sudo apt-get install ros-kinetic-rosbridge-server
 ```
 ### Python packages:
 ```bash

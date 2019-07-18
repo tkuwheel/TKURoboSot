@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 # FlyCapture SDK安裝:
 ## 先安裝必要套件
 ```bash
-Ubuntu 16.04
+Ubuntu 16.04, 18.04
 user$: sudo apt-get install libraw1394-11 libgtkmm-2.4-1v5 libglademm-2.4-1v5 libgtkglextmm-x11-1.2-dev libgtkglextmm-x11-1.2 libusb-1.0-0
 Ubuntu 14.04
 user$: sudo apt-get install libraw1394-11 libgtkmm-2.4-1c2a libglademm-2.4-1c2a libgtkglextmm-x11-1.2-dev libgtkglextmm-x11-1.2 libusb-1.0-0
@@ -83,7 +83,15 @@ dpkg: dependency problems prevent configuration of flycap:
 
 dpkg: error processing package flycap (--install):
 ```
-## 下載套件
+**解除安裝**
+```bash
+$ sudo ./remove_flycapture.sh
+```
+**下載套件**
 ```bash
 sudo apt-get install libglademm-2.4-dev
+```
+**重新安裝**
+```bash
+$ sudo ./install_flycapture.sh
 ```

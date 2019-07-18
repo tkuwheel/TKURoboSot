@@ -16,8 +16,8 @@ magenta_y=(0 0 1 -1 2 -2 )     # the first one is not useful now-keeper
 ### spawn the football
 rosrun gazebo_ros spawn_model -file $(rospack find nubot_description)/models/football/model.sdf -sdf \
                               -model ${football_name} \
-                              -x 0.0 -y 0.0 -z 0.0 \
-                               /
+                              -x 0.0 -y 0.0 -z 0.0 & #\
+                              # /
 sleep 1
 
 ### spawn cyan robots
