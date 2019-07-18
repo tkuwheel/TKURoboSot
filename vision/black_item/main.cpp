@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "balck_item");
     ros::NodeHandle h_node;
     signal(SIGINT, SigintHandler);
-    Vision cam("/camera/image_raw");
+    Vision cam("camera/image_raw");
     ros::spin();
     ROS_INFO("Node exit");
     printf("Process exit\n");

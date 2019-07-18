@@ -58,13 +58,13 @@ NodeHandle::NodeHandle()
     Readyaml();
     AngleLUT();
     SizeFilter = 10;
-    connect_srv = nh.advertiseService("/monitor/connect", &NodeHandle::connectcall, this);
+    connect_srv = nh.advertiseService("monitor/connect", &NodeHandle::connectcall, this);
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
-    monitor_pub = nh.advertise<sensor_msgs::Image>("/camera/image_monitor", 1);
-    object_pub = nh.advertise<vision::Object>("/vision/object", 1);
-    Two_point_pub = nh.advertise<vision::Two_point>("/interface/Two_point", 1);
+    monitor_pub = nh.advertise<sensor_msgs::Image>("camera/image_monitor", 1);
+    object_pub = nh.advertise<vision::Object>("vision/object", 1);
+    Two_point_pub = nh.advertise<vision::Two_point>("interface/Two_point", 1);
 }
 void NodeHandle::AngleLUT()
 {
@@ -82,7 +82,7 @@ void NodeHandle::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " /FIRA/vision";
+        std::string temp = "rosparam load " + param + " FIRA/vision";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
@@ -112,7 +112,7 @@ void NodeHandle::SaveButton_setting(const vision::bin msg)
 void NodeHandle::Parameter_getting()
 {
 
-    if (nh.getParam("/FIRA/vision/HSV/Ball", HSV_red))
+    if (nh.getParam("FIRA/vision/HSV/Ball", HSV_red))
     {
         cout << "get_parameter" << endl;
     }
@@ -121,31 +121,31 @@ void NodeHandle::Parameter_getting()
         cout << "Unable to read parameters" << endl;
     }
     //===================中心參數=========================
-    nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
-    nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
-    nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
-    nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
-    nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
-    nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Center_X", CenterXMsg);
+    nh.getParam("FIRA/vision/Center/Center_Y", CenterYMsg);
+    nh.getParam("FIRA/vision/Center/Inner", InnerMsg);
+    nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
+    nh.getParam("FIRA/vision/Center/Front", FrontMsg);
+    nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
     //==================掃瞄點參數=========================
-    nh.getParam("/FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
     Set_Unscaned_Angle();
     //===================色模參數=========================
-    nh.getParam("/FIRA/vision/HSV/Ball", HSV_red);
-    nh.getParam("/FIRA/vision/HSV/Blue", HSV_blue);
-    nh.getParam("/FIRA/vision/HSV/Yellow", HSV_yellow);
-    nh.getParam("/FIRA/vision/HSV/Green", HSV_green);
-    nh.getParam("/FIRA/vision/HSV/White", HSV_white);
+    nh.getParam("FIRA/vision/HSV/Ball", HSV_red);
+    nh.getParam("FIRA/vision/HSV/Blue", HSV_blue);
+    nh.getParam("FIRA/vision/HSV/Yellow", HSV_yellow);
+    nh.getParam("FIRA/vision/HSV/Green", HSV_green);
+    nh.getParam("FIRA/vision/HSV/White", HSV_white);
     //HSVmap();
     color_map = ColorFile();
 }

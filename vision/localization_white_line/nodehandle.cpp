@@ -7,9 +7,9 @@ NodeHandle::NodeHandle()
 
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     color_sub = nh.subscribe("interface/color", 1, &NodeHandle::colorcall, this);
-    //whiteframe_pub = nh.advertise<sensor_msgs::Image>("/camera/white", 1);
-    //whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("/vision/WhiteRealDis", 1);
-    whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("/vision/mcl/WhiteRealDis", 1);
+    //whiteframe_pub = nh.advertise<sensor_msgs::Image>("camera/white", 1);
+    //whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("vision/WhiteRealDis", 1);
+    whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("vision/mcl/WhiteRealDis", 1);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
 }
 void NodeHandle::AngleLUT()
@@ -28,7 +28,7 @@ void NodeHandle::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " /FIRA/vision";
+        std::string temp = "rosparam load " + param + " FIRA/vision";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
@@ -43,17 +43,17 @@ void NodeHandle::Parameter_getting()
 {
     cout << "get parameter" << endl;
     //===================中心參數=========================
-    nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
-    nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
-    nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
-    nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
-    nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
-    nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Center_X", CenterXMsg);
+    nh.getParam("FIRA/vision/Center/Center_Y", CenterYMsg);
+    nh.getParam("FIRA/vision/Center/Inner", InnerMsg);
+    nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
+    nh.getParam("FIRA/vision/Center/Front", FrontMsg);
+    nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
     //==================黑白掃描參數=======================
-    nh.getParam("/FIRA/vision/HSV/white/gray", WhiteGrayMsg);
-    nh.getParam("/FIRA/vision/HSV/white/angle", WhiteAngleMsg);
+    nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
+    nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
     //====================================================
-    nh.getParam("/FIRA/vision/HSV/Green", HSV_green);
+    nh.getParam("FIRA/vision/HSV/Green", HSV_green);
 }
 //======================前置處理結束=========================
 int NodeHandle::Frame_Area(int coordinate, int range)

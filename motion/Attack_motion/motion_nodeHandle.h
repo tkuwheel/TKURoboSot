@@ -21,12 +21,12 @@
 /*********************
  ** Define 
  *********************/
-#define odometry_topic_name "/motion/odom"
-#define motion_feedback_topic_name "/motion/motionFB"
-#define motion_topic_name "/motion/cmd_vel"
-#define shoot_topic_name "/motion/shoot"
-#define remote_topic_name "/motion/remote"
-#define holdBall_topic_name "/motion/hold_ball"
+#define odometry_topic_name "motion/odom"
+#define motion_feedback_topic_name "motion/motionFB"
+#define motion_topic_name "motion/cmd_vel"
+#define shoot_topic_name "motion/shoot"
+#define remote_topic_name "motion/remote"
+#define holdBall_topic_name "motion/hold_ball"
 
 //#define DEBUG 
 class Motion_nodeHandle{
