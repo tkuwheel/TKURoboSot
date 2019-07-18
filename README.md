@@ -5,7 +5,8 @@ The purpose of this project is implementing, researching, developing the Soccer 
 # Requirement & Installation
 ### System:
 ~ROS Kinetic w/ Ubuntu 16.04 [Install](http://wiki.ros.org/kinetic/Installation/Ubuntu)~
-~ROS Melodic w/ Ubuntu 18.04 [Install](http://wiki.ros.org/melodic/Installation/Ubuntu)~
+ROS Melodic w/ Ubuntu 18.04 [Install](http://wiki.ros.org/melodic/Installation/Ubuntu)
+ROS2 Dashing w/ Ubuntu 18.04 [Install](https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/)
 
 ## Setup:
 ```bash
