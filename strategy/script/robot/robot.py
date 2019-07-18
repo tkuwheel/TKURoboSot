@@ -16,14 +16,14 @@ from std_msgs.msg import Bool
 ## DO NOT CHANGE THIS VALUE
 ROTATE_V_ANG = 90
 
-## Real Robot
+## Strategy Inputs
 VISION_TOPIC = "vision/object"
-CMDVEL_TOPIC = "motion/cmd_vel"
-SHOOT_TOPIC  = "motion/shoot"
 POSITION_TOPIC = "akf_pose"
 
 ## Strategy Outputs
-STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
+STRATEGY_STATE_TOPIC = "strategy/state"
+CMDVEL_TOPIC = "motion/cmd_vel"
+SHOOT_TOPIC  = "motion/shoot"
 
 class Robot(object):
 
@@ -97,8 +97,9 @@ class Robot(object):
     if not sim :
       self.RobotBallHandle = self.RealBallHandle
     else:
+      self.sim_hold_pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
       self.RobotBallHandle = self.SimBallHandle
-      rospy.Subscriber("/robot1/BallIsHandle", Bool, self._CheckBallHandle)
+      rospy.Subscriber("BallIsHandle", Bool, self._CheckBallHandle)
       self.TuningVelocityContorller(1, 0, 0)
       self.TuningAngularVelocityContorller(0.1, 0, 0)
 
@@ -200,8 +201,7 @@ class Robot(object):
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
-    pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
-    pub.publish(True)
+    self.sim_hold_pub.publish(True)
     return self.__ball_is_handled
 
   def _CheckBallHandle(self, data):

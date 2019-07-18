@@ -13,13 +13,18 @@ from std_msgs.msg import Int32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
+## Simulator Topics or Services
+NUBOT_OMNI_VISION = "/nubot1/omnivision/OmniVisionInfo"
+NUBOT_SHOOT_SRV   = "/nubot1/Shoot"
+NUBOT_HANDLE_SRV  = "/nubot1/BallHandle"
+
 ROBOT_NUM = 1
 BLUE_GOAL = {'x': 300, 'y': 0}
 YELLOW_GOAL = {'x': -300, 'y': 0}
 
-handle_pub = rospy.Publisher('/robot1/BallIsHandle', Bool, queue_size=1)
-vision_pub = rospy.Publisher('/vision/object', Object, queue_size=1)
-location_pub = rospy.Publisher('/akf_pose', PoseWithCovarianceStamped, queue_size=1) 
+handle_pub = rospy.Publisher('BallIsHandle', Bool, queue_size=1)
+vision_pub = rospy.Publisher('vision/object', Object, queue_size=1)
+location_pub = rospy.Publisher('akf_pose', PoseWithCovarianceStamped, queue_size=1) 
 
 def OmniVisionCallback(data):
     rx = data.robotinfo[1 -1].pos.x
@@ -73,18 +78,18 @@ def HandleCallback(data):
     handle_pub.publish(r)
 
 def shoot_client(power, pos = 1):
-    rospy.wait_for_service('nubot1/Shoot', 1)
+    rospy.wait_for_service(NUBOT_SHOOT_SRV, 1)
     try:
-        server = rospy.ServiceProxy('nubot1/Shoot', Shoot)
+        server = rospy.ServiceProxy(NUBOT_SHOOT_SRV, Shoot)
         resp1 = server(power, pos)
         return resp1
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
 def handle_client():
-    rospy.wait_for_service("/nubot1/BallHandle", 1)
+    rospy.wait_for_service(NUBOT_HANDLE_SRV, 1)
     try:
-        client = rospy.ServiceProxy("/nubot1/BallHandle", BallHandle)
+        client = rospy.ServiceProxy(NUBOT_HANDLE_SRV, BallHandle)
         resp1 = client(1)
         return resp1.BallIsHolding
     except rospy.ServiceException :
@@ -93,9 +98,9 @@ def handle_client():
 def listener():
     rospy.init_node('gazebo_relay', anonymous=True)
 
-    rospy.Subscriber("/motion/shoot", Int32, ShootCallback)
-    rospy.Subscriber("/motion/hold", Bool, HandleCallback)
-    rospy.Subscriber("/nubot1/omnivision/OmniVisionInfo", OminiVisionInfo, OmniVisionCallback)
+    rospy.Subscriber("motion/shoot", Int32, ShootCallback)
+    rospy.Subscriber("motion/hold", Bool, HandleCallback)
+    rospy.Subscriber(NUBOT_OMNI_VISION, OminiVisionInfo, OmniVisionCallback)
 
     rospy.spin()
 
