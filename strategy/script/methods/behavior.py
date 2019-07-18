@@ -89,10 +89,10 @@ class Behavior(Robot,Obstacle):
 
     return defence_x , defence_y , defence_yaw
 
-  def PenaltyTurning(self, x, y, imu_ang, dest_ang):
+  def PenaltyTurning(self, imu_ang, dest_ang):
     v_x   = 0
     v_y   = 0
-    print('turn dest_ang=',dest_ang)
+    print('turn dest_ang=', dest_ang)
     imu_ang_deg = math.degrees(imu_ang)
     imu_ang_deg = (imu_ang_deg + 360)%360
     if imu_ang_deg >180:

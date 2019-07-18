@@ -83,7 +83,7 @@ class Core(Robot, StateMachine):
     elif method == "Defense":
       x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
 
-    # self.Accelerator(80)
+    self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
@@ -129,7 +129,7 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw)
     
     elif method == "Penalty_kick":
-      x, y, yaw = self.BC.PenaltyTurning(t[side]['dis'], t[side]['ang'], position['imu_3d']['ang'], dest_ang)
+      x, y, yaw = self.BC.PenaltyTurning(position['imu_3d']['yaw'], self.run_yaw)
       self.MotionCtrl(x, y, yaw, True)
     
     
@@ -175,7 +175,7 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_ball_dis = t['ball']['dis']
     elif t['ball']['dis'] >= Core.last_ball_dis:
-      if time.time() - Core.last_time >= 0.8:
+      if time.time() - Core.last_time >= 1:
         self.ChangeVelocityRange(0, exceed)
     else:
       Core.last_time = time.time()
@@ -255,10 +255,9 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            if state == "Corner_Kick":
+            if state == "Corner_Kick" or state == "Free_Kick" or state == "Throw_In":
               self.robot.toShoot(80)
-            elif state == "Free_Kick":
-              self.robot.toShoot(80)
+
             elif state == "Penalty_Kick":
               self.ToMovement()
             else :
@@ -303,7 +302,7 @@ class Strategy(object):
               self.ToMovement()
 
 
-          elif mode == "Defense_ball" or "Defense_goal":  
+          elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.robot.strategy_mode = "Fast_break"
               self.ToAttack()
