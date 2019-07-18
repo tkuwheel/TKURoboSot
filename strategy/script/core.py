@@ -131,7 +131,7 @@ class Core(Robot, StateMachine):
     
     elif method == "Penalty_Kick":
       front_ang = math.degrees(position['imu_3d']['yaw'])-90
-      x, y, yaw = self.BC.PenaltyTurning(side, front_ang, self.run_yaw)
+      x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw)
       self.MotionCtrl(x, y, yaw, True)
     
     
@@ -279,17 +279,8 @@ class Strategy(object):
 
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
-            dest_ang = self.robot.run_yaw
-            front_ang = math.degrees(position['imu_3d']['yaw']) - 90
-            if front_ang >180:
-              front_ang = front_ang - 360
-            print(front_ang)
-            if abs(dest_ang + front_ang) <= 2:
+            if targets[self.robot.opp_side]['ang'] <= self.robot.atk_shoot_ang:
               print("stop") 
-              if dest_ang < 0:
-                self.robot.MotionCtrl(0,0,30,True)
-              else :
-                self.robot.MotionCtrl(0,0,-30,True)
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
             else:
