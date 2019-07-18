@@ -150,7 +150,7 @@ class Robot(object):
     self.__obstacle_info['ranges'] =vision.data
 
   def _GetImu(self, imu_3d):
-    self.self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
+    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
@@ -232,7 +232,8 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] < self.__handle_dis and self.__object_info['ball']['ang'] < self.__handle_ang:
+    if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
+     
       return True
     else:
       return False

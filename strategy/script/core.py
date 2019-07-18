@@ -83,7 +83,7 @@ class Core(Robot, StateMachine):
     elif method == "Defense":
       x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
 
-    self.Accelerator(80)
+    # self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
@@ -111,7 +111,7 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo()
     side = self.opp_side
     if method == "Orbit":
-      x, y, yaw = self.BC.Orbit(t[side]['ang'])
+      x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
@@ -201,7 +201,7 @@ class Strategy(object):
       self.ToMovement()
     
     else:
-      if self.robot.chase_straight :
+      if not self.robot.chase_straight :
         self.robot.toChase("Classic")
 
       else:
@@ -255,9 +255,11 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            if self.robot.game_state == "Coner_Kick" or "Throw_In" or "Free_Kick":
+            if state == "Corner_Kick":
               self.robot.toShoot(80)
-            elif self.game_state == "Penalty_Kick":
+            elif state == "Free_Kick":
+              self.robot.toShoot(80)
+            elif state == "Penalty_Kick":
               self.ToMovement()
             else :
               self.ToChase()
@@ -267,17 +269,19 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
+            print(self.robot.CheckBallHandle())
             # self.robot.goal_dis = 0
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
           else:
+            print(self.robot.CheckBallHandle(),"123")
             self.ToChase()
 
 
         if self.robot.is_movement:
           
           if state == "Penalty_Kick":
-            imu_ang = math.degrees(position['imu_3d']['ang'])
+            imu_ang = math.degrees(position['imu_3d']['yaw'])
             if imu_ang >180:
               imu_ang = imu_ang - 360
             if abs(dest_ang + imu_ang) > 2:
@@ -315,7 +319,7 @@ class Strategy(object):
           elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
             self.robot.toShoot(100)
           else:
-            self.robot.ToAttack()
+            self.ToAttack()
 
         if self.robot.is_shoot:
           self.ToAttack()
