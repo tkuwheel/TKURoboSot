@@ -30,9 +30,10 @@ int main(int argc, char **argv)
 	Motion_nodeHandle Node(argc, argv);
 //    ros::init(argc, argv, "Test");
 //    ros::NodeHandle n;
-	BaseController Base(argc, argv, true);
+	BaseController Base(argc, argv, false);
 
 	RobotCommand robotCMD;
+    RobotCommand robotOdo;
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
 	std::cout << "ATTACK MOTION IS RUNNING!\n";
@@ -42,12 +43,13 @@ int main(int argc, char **argv)
             Base.Close();
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
-            printf("close\n");
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
+//            printf("close\n");
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)
+                break;
             loop_rate.sleep();
             continue;
         }
-        Base.SetEnable();
+//        Base.SetEnable();
         if(Node.getMotionFlag()){
             robotCMD = Node.getMotion();
 #ifdef DEBUG
@@ -58,7 +60,8 @@ int main(int argc, char **argv)
         }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
-#ifdef DEBUG
+            Node.pub_robotFB(Base.GetOdometry());
+#ifdef DEBUG_
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif

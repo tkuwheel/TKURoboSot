@@ -2,7 +2,7 @@
 #include <iostream>
 #include "base_control.h"
 #include "ros/ros.h"
-//#define DEBUG
+#define DEBUG
 bool flag = false;
 void inturrupt(int signal)
 {
@@ -48,9 +48,10 @@ int main(int argc, char** argv)
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
             printf("close\n");
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
-            loop_rate.sleep();
-            continue;
+//            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)break;
+//            loop_rate.sleep();
+//            continue;
+            break;
         }
         Base.SetEnable();
         count++;

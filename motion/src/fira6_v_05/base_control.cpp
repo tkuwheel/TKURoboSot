@@ -26,10 +26,11 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     m_motorCurrRPM = {0.0};
     m_motorTarRPM = {0.0};
 	m_baseCommand = {0.0};
+	m_baseSpeed = {0.0};
 	m_baseOdometry = {0.0};
 	m_baseTX = {0};
-    m_baseTX.head1 = 0xff;
-    m_baseTX.head2 = 0xfa;
+    m_baseTX.head1 = HEAD_1;
+    m_baseTX.head2 = HEAD_2;
 	m_baseRX = {0};
     mb_success = false;
     mb_clear_odo = false;
@@ -100,7 +101,7 @@ void BaseController::mRun()
     while(true){
         if(!mCheckSerial()){
             printf("Cannot get feedback\n");
-            sleep(1);
+//            sleep(1);
             continue;
         }
         if(mb_enable){
@@ -112,11 +113,17 @@ void BaseController::mRun()
         if(msb_serial){
             mb_base = true;
             if(mSerialDecoder()){
+                mForwardKinematics();
+                mOdometry();
 
                 m_duration += m_baseRX.duration;
-//                if(mb_clear_odo){
-//                    mb_clear_odo = false;
+                if(mb_clear_odo){
+                    mb_clear_odo = false;
+                    m_baseOdometry.x = 0;
+                    m_baseOdometry.y = 0;
+                    m_baseOdometry.yaw = 0;
 
+                }
 #ifdef RECORD  // record TODO
                 if(mb_record){
                     // motor1
@@ -269,7 +276,7 @@ bool BaseController::mSerialDecoder()
     for(int i = 0; i <= (data_len-RX_PACKAGE_SIZE); i++){
         ms_serialData.head = (ms_serialData.head + 1) % BUFFER_SIZE;
 
-        if((ms_serialData.data[ms_serialData.head]==0xff)&&(ms_serialData.data[(ms_serialData.head+1)%BUFFER_SIZE]==0xfa)){
+        if((ms_serialData.data[ms_serialData.head]==(HEAD_1))&&(ms_serialData.data[(ms_serialData.head+1)%BUFFER_SIZE]==(HEAD_2))){
             for(int j = 0; j < RX_PACKAGE_SIZE; j++){
                 serial_data[j] = ms_serialData.data[(ms_serialData.head+j)%BUFFER_SIZE];
             }
@@ -411,14 +418,23 @@ void BaseController::mDriverSetting()
     }
 }
 
-void BaseController::mBaseControl()
+int BaseController::mBaseControl()
 {
 // TODO
+#ifdef FIRA_6_OLD
+    m_motorCurrPWM.w1 = RPM2PWM(m_motorCommandRPM.w1);
+    m_motorCurrPWM.w2 = RPM2PWM(m_motorCommandRPM.w2);
+    m_motorCurrPWM.w3 = RPM2PWM(m_motorCommandRPM.w3);
+    return 1;
+#endif
     m_motorTarRPM = mTrapeziumSpeedPlan(m_motorCommandRPM, m_motorCurrRPM, m_motorTarRPM);
 
-    m_motorCurrPWM.w1 = RPM2PWM(m_motorTarRPM.w1);
-    m_motorCurrPWM.w2 = RPM2PWM(m_motorTarRPM.w2);
-    m_motorCurrPWM.w3 = RPM2PWM(m_motorTarRPM.w3);
+//    m_motorCurrPWM.w1 = RPM2PWM(m_motorTarRPM.w1);
+//    m_motorCurrPWM.w2 = RPM2PWM(m_motorTarRPM.w2);
+//    m_motorCurrPWM.w3 = RPM2PWM(m_motorTarRPM.w3);
+//    m_motorCurrPWM.w1 = MIN_PWM;
+//    m_motorCurrPWM.w2 = MIN_PWM;
+//    m_motorCurrPWM.w3 = MIN_PWM;
 }
 
 MotorSpeed  BaseController::mTrapeziumSpeedPlan(
@@ -492,16 +508,19 @@ void BaseController::mInverseKinematics()
         printf("cmd %f %f %f\n", cmd1, cmd2, cmd3);
         printf("cmd rpm %f %f %f\n", m_motorCommandRPM.w1, m_motorCommandRPM.w2, m_motorCommandRPM.w3);
 #endif
+#ifdef FIRA_6_OLD
+        mb_enable = true;
+#endif
 }
 
 void BaseController::mForwardKinematics()
 {
-	double x,y;
-	double yaw=0;
-	int round=0;
-	m_baseOdometry.x = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseOdometry.y = ( m_baseRX.w1 * (-0.3333) + m_baseRX.w2 * (-0.3333) + m_baseRX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseOdometry.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;
+	m_baseSpeed.x = ( m_baseRX.w1 * (0.3333) + m_baseRX.w2 * (0.3333) + m_baseRX.w3 * (-0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	m_baseSpeed.y = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
+	m_baseSpeed.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))*wheel_radius/robot_radius / 2000 / 26;
+//	m_base.x = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
+//	m_base.y = ( m_baseRX.w1 * (-0.3333) + m_baseRX.w2 * (-0.3333) + m_baseRX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
+//	m_base.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;
 }
 
 void BaseController::mTrajectory()
@@ -510,6 +529,13 @@ void BaseController::mTrajectory()
 //    odo.traj.x += odo.vel.x*cos(odo.vel.yaw)-odo.vel.y*sin(odo.vel.yaw);
 //    odo.traj.y += odo.vel.x*sin(odo.vel.yaw)+odo.vel.y*cos(odo.vel.yaw);
 //    odo.traj.yaw += odo.vel.yaw;
+}
+
+void BaseController::mOdometry()
+{
+	m_baseOdometry.x += m_baseSpeed.x;
+	m_baseOdometry.y += m_baseSpeed.y;
+	m_baseOdometry.yaw += m_baseSpeed.yaw;
 }
 
 bool BaseController::GetBaseFlag()
@@ -621,12 +647,12 @@ void BaseController::Close()
 
 }
 
-//RobotCommand BaseController::GetOdoRobot()
-//{
-//// TODO
-//	return RobotCommand();
-//}
-//
+RobotCommand BaseController::GetOdometry()
+{
+    mb_clear_odo = true;
+	return m_baseOdometry;
+}
+
 //RobotCommand BaseController::GetTraj()
 //{
 //// TODO

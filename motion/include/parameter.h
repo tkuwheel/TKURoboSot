@@ -1,8 +1,11 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
+#define VERSION FIRA_6_01
+#define HEAD_1 0xf6
+#define HEAD_2 0x01
 #define FB_FREQUENCY 500     //Hz
-#define CMD_FREQUENCY 240   //Hz
+#define CMD_FREQUENCY 30   //Hz
 #define TX_PACKAGE_SIZE 12  //bytes
 #define RX_PACKAGE_SIZE 16  //bytes
 #define MAX_MOTOR_RPM 7000  //rpm

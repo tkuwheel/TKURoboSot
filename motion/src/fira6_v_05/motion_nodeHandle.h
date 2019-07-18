@@ -61,7 +61,7 @@ private:
 public:
 //    void *run();
 	RobotCommand getMotion();
-	void pub_robotFB(RobotCommand &);
+	void pub_robotFB(RobotCommand);
 	void clear();
 	bool getMotionFlag();
     void ShowCommand();

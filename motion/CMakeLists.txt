@@ -15,12 +15,10 @@ set(INCLUDE_DIR
 # common/
 # common/cssl
 )
-set(BASE_CONTROL_DIR
-    ${PROJECT_SOURCE_DIR}/src/Attack_motion)
 # message(FIND PATH ${PROJECT_SOURCE_DIR})
 # message(FIND INCLUDE ${INCLUDE_DIR})
 
-include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR} ${BASE_CONTROL_DIR})
+include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 catkin_package(CATKIN_DEPENDS
  message_runtime

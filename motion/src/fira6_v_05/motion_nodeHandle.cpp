@@ -124,7 +124,7 @@ RobotCommand Motion_nodeHandle::getMotion()
     return robotCMD;
 }
 
-void Motion_nodeHandle::pub_robotFB(RobotCommand &robotFB)
+void Motion_nodeHandle::pub_robotFB(RobotCommand robotFB)
 {
     geometry_msgs::Twist FB;
 

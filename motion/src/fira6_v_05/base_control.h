@@ -26,8 +26,9 @@
   * Define 
   ******************************/
 //#define DEBUG
-#define RECORD
-//#define CSSL
+//#define RECORD
+#define CSSL
+#define FIRA_6_OLD
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
 
@@ -96,7 +97,7 @@ public: //public function
     void    SetStop();
     void    ClearOdo();
     void    Close();
-//    RobotCommand GetOdoRobot();
+    RobotCommand GetOdometry();
 //    RobotCommand GetTraj();
     void    ShowCsslSend();
     void    ShowCsslCallback();
@@ -119,12 +120,13 @@ private: //private function
     int16_t mPWMRegularization(int16_t );
 	void	mShootRegularization();
 	void	mDriverSetting();
-    void    mBaseControl();
+    int     mBaseControl();
     MotorSpeed  mTrapeziumSpeedPlan(const MotorSpeed &, const MotorSpeed &, MotorSpeed &);
     void    mSetSlope(const MotorSpeed &, const MotorSpeed &, int &, double []);
 	void	mInverseKinematics();
 	void	mForwardKinematics();	
     void    mTrajectory();
+    void    mOdometry();
 ////    void    Filter();
 ////    void    MotorSpeed();
 private: //private variable
@@ -142,6 +144,7 @@ private: //private variable
     MotorSpeed m_motorTarRPM;
 	RobotCommand m_baseCommand;
 	RobotCommand m_baseOdometry;
+	RobotCommand m_baseSpeed;
 	SerialTX m_baseTX;
 	SerialRX m_baseRX;
     bool mb_success;

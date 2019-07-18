@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-set(BASE_CONTROL Attack_motion/base_control.cpp)
-set(MOTOR_CONTROL Attack_motion/motor_control.cpp)
-set(ROBOT_CONTROL ${BASE_CONTROL} ${MOTOR_CONTROL})
+set(BASE_CONTROL_DIR fira6_v_05)
+include_directories(${BASE_CONTROL_DIR})
+set(BASE_CONTROL fira6_v_05/base_control.cpp)
 
-add_executable(Attack_motion_node 
-				Attack_motion/motion.cpp 
-                Attack_motion/motion_nodeHandle.cpp
-                Attack_motion/base_control.cpp 
+add_executable(fira6
+				fira6_v_05/motion.cpp 
+                fira6_v_05/motion_nodeHandle.cpp
+                fira6_v_05/base_control.cpp 
 )
-target_link_libraries(Attack_motion_node ${catkin_LIBRARIES} csslLib crcLib)
+target_link_libraries(fira6 ${catkin_LIBRARIES} csslLib crcLib)
 
 add_executable(Crc
                 get_crc.cpp
