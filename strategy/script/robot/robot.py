@@ -59,7 +59,7 @@ class Robot(object):
   Ki_v = 0.0
   Kd_v = 0.1
   Cp_v = 0
-  Kp_w = 0.25
+  Kp_w = 0.5
   Ki_w = 0.0
   Kd_w = 0.1
   Cp_w = 0
