@@ -108,7 +108,8 @@ class Core(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toMovement(self, method):
-    t = self.GetObjectInfo()
+    t = self.GetObjectInfo() 
+    position = self.GetRobotInfo()
     side = self.opp_side
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
@@ -129,7 +130,8 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw)
     
     elif method == "Penalty_kick":
-      x, y, yaw = self.BC.PenaltyTurning(position['imu_3d']['yaw'], self.run_yaw)
+      front_ang = math.degrees(position['imu_3d']['yaw'])-90
+      x, y, yaw = self.BC.PenaltyTurning(side, front_ang, self.run_yaw)
       self.MotionCtrl(x, y, yaw, True)
     
     
@@ -277,21 +279,22 @@ class Strategy(object):
             self.ToChase()
 
 
-        if self.robot.is_movement:
-          
+        if self.robot.is_movement:          
           if state == "Penalty_Kick":
-            imu_ang = math.degrees(position['imu_3d']['yaw'])
-            if imu_ang >180:
-              imu_ang = imu_ang - 360
-            if abs(dest_ang + imu_ang) > 2:
-              self.ToMovement()
-            elif abs(dest_ang + imu_ang) <= 2:
+            front_ang = math.degrees(position['imu_3d']['yaw']) - 90
+            if front_ang >180:
+              front_ang = front_ang - 360
+            if abs(dest_ang + front_ang) <= 2:
               start = time.time()
               print("stop") 
-              for i in range(0, 15):
-                self.robot.MotionCtrl(0,0,0)
+              if dest_ang < 0:
+                self.robot.MotionCtrl(0,0,40.True)
+              else :
+                self.robot.MotionCtrl(0,0,-40,True)
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
+            else:
+              self.ToMovement()
                     
           elif mode == 'At_Orbit':
             if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
