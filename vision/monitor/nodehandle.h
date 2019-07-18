@@ -26,7 +26,7 @@
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
 #define WHITEITEM 0x10 //WHITEITEM=robot
-#define VISION_TOPIC "/camera/image_raw"
+#define VISION_TOPIC "camera/image_raw"
 #define YAML_PATH ros::package::getPath("vision") + "/config/FIRA.yaml"
 #define BIN_PATH ros::package::getPath("vision") + "/config/HSVcolormap.bin"
 #define IMAGE "/src/vision/1.bmp"
