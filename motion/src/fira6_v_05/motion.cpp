@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
 	std::cout << "ATTACK MOTION IS RUNNING!\n";
-	ros::Rate loop_rate(CMD_FREQUENCY);
+	ros::Rate loop_rate(60);
 	while(true){
         if(flag){
             Base.Close();
@@ -51,12 +51,15 @@ int main(int argc, char **argv)
         }
 //        Base.SetEnable();
         if(Node.getMotionFlag()){
-            robotCMD = Node.getMotion();
 #ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
 #endif
-            Base.Send(robotCMD);
+        }
+        robotCMD = Node.getMotion();
+        Base.Send(robotCMD);
+        if(robotCMD.shoot_power>0){
+            Node.clear();
         }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();

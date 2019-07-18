@@ -43,7 +43,6 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     m_serialLast = {0};
     m_commandTime = {0};
 
-    m_max_speed = 0;
     m_interval = 0;
     m_final_interval = 0;
     m_slope[3] = {0};
@@ -100,6 +99,11 @@ void BaseController::mRun()
     int counter = 0;
     while(true){
         if(!mCheckSerial()){
+            if(mb_close){
+                m_motorCurrRPM.w1 = 0;
+                m_motorCurrRPM.w2 = 0;
+                m_motorCurrRPM.w3 = 0;
+            }
             printf("Cannot get feedback\n");
 //            sleep(1);
             continue;
@@ -191,6 +195,7 @@ void BaseController::mCsslSend2FPGA()
     m_baseTX.w3_h = (int16_t)m_motorCurrPWM.w3 >> 8;
 // TODO
     m_baseTX.enable_stop = m_en_stop;
+    m_baseTX.shoot = m_shoot_power;
     for(int i = 0; i < TX_PACKAGE_SIZE-2; i++){
         cssl_data[i] = *((uint8_t*)(&m_baseTX)+i);
     }
@@ -331,17 +336,15 @@ void BaseController::mCloseRecordFile()
         fp.close();
 }
 
-void BaseController::mCommandRegularization()
+void BaseController::mCommandRegularization(RobotCommand &CMD)
 {
-    double speed = sqrt(pow(m_baseCommand.x, 2) + pow(m_baseCommand.y, 2)) + fabs(m_baseCommand.yaw);
+    double speed = sqrt(pow(CMD.x, 2) + pow(CMD.y, 2)) + fabs(CMD.yaw);
     if(speed > 100){
 
-        m_baseCommand.x = m_baseCommand.x * 100 / speed;
-        m_baseCommand.y = m_baseCommand.y * 100 / speed;
-        m_baseCommand.yaw = m_baseCommand.yaw * 100 / speed;
-        m_max_speed = 100;
+        CMD.x = CMD.x * 100 / speed;
+        CMD.y = CMD.y * 100 / speed;
+        CMD.yaw = CMD.yaw * 100 / speed;
     }else{
-        m_max_speed = speed;
     }
 }
 
@@ -381,15 +384,15 @@ int16_t BaseController::mPWMRegularization(int16_t pwm)
     return pwm;
 }
 
-void BaseController::mShootRegularization()
+void BaseController::mShootRegularization(const RobotCommand &CMD)
 {
-	if(m_shoot_power == 0){
+	if(CMD.shoot_power == 0){
 		m_shoot_power = 0;
-	}else if(m_shoot_power >= 100){
+	}else if(CMD.shoot_power >= 100){
 		m_shoot_power = 255;
 	}
 	else{
-		m_shoot_power = (255 * m_shoot_power / 100);
+		m_shoot_power = (255 * CMD.shoot_power / 100);
 	}
 #ifdef DEBUG
 	std::cout << "shoot_regularization(DEBUG)\n";
@@ -399,21 +402,34 @@ void BaseController::mShootRegularization()
 #endif
 }
 
-void BaseController::mDriverSetting()
+int BaseController::mDriverSetting()
 {
 // TODO
-    m_en_stop = 0;
     if(mb_close){
+        m_en_stop = 0;
         m_motorCurrPWM.w1 = 0;
         m_motorCurrPWM.w2 = 0;
         m_motorCurrPWM.w3 = 0;
+        return 1;
     }else{
-        m_en_stop += (fabs(m_motorCurrPWM.w1) >= MIN_PWM)?  0x80 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w2) >= MIN_PWM)?  0x40 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w3) >= MIN_PWM)?  0x20 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w1) == MIN_PWM)?  0x10 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w2) == MIN_PWM)?  0x08 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w3) == MIN_PWM)?  0x04 : 0;
+//        if((m_en_stop&0x1c) == 0x1c){
+//            m_en_stop = 0;
+//            return -1;
+//        }
+
+        m_en_stop = 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) >= 0)?  0x80 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
+        if((m_en_stop&0x1c)!=0){
+            if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
+            if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
+            if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
+        }
+        return -1;
 
     }
 }
@@ -509,7 +525,7 @@ void BaseController::mInverseKinematics()
         printf("cmd rpm %f %f %f\n", m_motorCommandRPM.w1, m_motorCommandRPM.w2, m_motorCommandRPM.w3);
 #endif
 #ifdef FIRA_6_OLD
-        mb_enable = true;
+       mb_enable = true; 
 #endif
 }
 
@@ -584,7 +600,8 @@ void BaseController::Send(const RobotCommand &CMD)
 #ifdef DEBUG
 #endif
     m_baseCommand = CMD;
-    mCommandRegularization();
+    mShootRegularization(m_baseCommand);
+    mCommandRegularization(m_baseCommand);
     mInverseKinematics();
     for(int i = 0; i<3;i++){
         *((double*)(&m_motorPreCmdCurrRPM )+i) = (*((double*)(&m_motorCurrRPM )+i)+*((double*)(&m_motorTarRPM )+i))/2;

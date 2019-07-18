@@ -136,12 +136,8 @@ void Motion_nodeHandle::pub_robotFB(RobotCommand robotFB)
 
 void Motion_nodeHandle::clear()
 {
-    if(this->remote == false){
-        this->robotCMD.x = 0;
-        this->robotCMD.y = 0;
-        this->robotCMD.yaw = 0;
-    }
-    this->robotCMD.shoot_power = 0;
+    this->motion_flag = false;
+    robotCMD.shoot_power = 0;
 }
 
 bool Motion_nodeHandle::getMotionFlag()
