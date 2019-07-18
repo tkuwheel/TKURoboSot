@@ -44,8 +44,10 @@ int main(int argc, char **argv)
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
 //            printf("close\n");
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0){
+                loop_rate.sleep();
                 break;
+            }
             loop_rate.sleep();
             continue;
         }
