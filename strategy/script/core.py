@@ -29,7 +29,7 @@ class Core(Robot, StateMachine):
   toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself()
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
   toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
-  toShoot  = attack.to(shoot)| idle.to(shoot)
+  toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
   toPoint  = point.to.itself() | idle.to(point)
 
@@ -83,7 +83,7 @@ class Core(Robot, StateMachine):
     elif method == "Defense":
       x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
 
-    self.Accelerator(80)
+    #self.Accelerator(80)
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
@@ -129,7 +129,7 @@ class Core(Robot, StateMachine):
                                              t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
     
-    elif method == "Penalty_kick":
+    elif method == "Penalty_Kick":
       front_ang = math.degrees(position['imu_3d']['yaw'])-90
       x, y, yaw = self.BC.PenaltyTurning(side, front_ang, self.run_yaw)
       self.MotionCtrl(x, y, yaw, True)
@@ -270,27 +270,26 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            print(self.robot.CheckBallHandle())
             # self.robot.goal_dis = 0
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
           else:
-            print(self.robot.CheckBallHandle(),"123")
             self.ToChase()
 
 
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
+            dest_ang = self.robot.run_yaw
             front_ang = math.degrees(position['imu_3d']['yaw']) - 90
             if front_ang >180:
               front_ang = front_ang - 360
+            print(front_ang)
             if abs(dest_ang + front_ang) <= 2:
-              start = time.time()
               print("stop") 
               if dest_ang < 0:
-                self.robot.MotionCtrl(0,0,40.True)
+                self.robot.MotionCtrl(0,0,30,True)
               else :
-                self.robot.MotionCtrl(0,0,-40,True)
+                self.robot.MotionCtrl(0,0,-30,True)
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
             else:
