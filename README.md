@@ -15,7 +15,7 @@ $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ```
 ### ROS Packages:
 ```bash
-$ sudo apt-get install ros-melodic-rosbridge-server
+$ sudo apt-get install ros-melodic-rosbridge-server ros-melodic-prosilica-camera
 ```
 ### Python packages:
 ```bash
