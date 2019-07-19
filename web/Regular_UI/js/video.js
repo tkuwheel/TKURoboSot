@@ -22,18 +22,18 @@ function MonitorSwitch(checked) {
         ViewButton(64);
         video.src = "img/black.png";
         if (ChooseRobot == 1) {
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP').value + ':8080/stream?topic=/camera/image_monitor'},100);
-            //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/image_monitor";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP').value + ':8080/stream?topic=camera/image_monitor'},100);
+            //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/image_monitor";
             //console.log(11);
         }
         else if (ChooseRobot == 2) {
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP2').value + ':8080/stream?topic=/camera/image_monitor'},100);
-            //video.src = "http://" + document.getElementById("RobotIP2").value + ":8080/stream?topic=/camera/image_monitor";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP2').value + ':8080/stream?topic=camera/image_monitor'},100);
+            //video.src = "http://" + document.getElementById("RobotIP2").value + ":8080/stream?topic=camera/image_monitor";
             //console.log(22);
         }
         else if (ChooseRobot == 3) {
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP3').value + ':8080/stream?topic=/camera/image_monitor'},100);
-            //video.src = "http://" + document.getElementById("RobotIP3").value + ":8080/stream?topic=/camera/image_monitor";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP3').value + ':8080/stream?topic=camera/image_monitor'},100);
+            //video.src = "http://" + document.getElementById("RobotIP3").value + ":8080/stream?topic=camera/image_monitor";
             //console.log(33);
         }
         else{
@@ -115,21 +115,21 @@ function Mclmap(checked) {
     if (checked == true) {
         video.src = "img/black.png";
         if (ChooseRobot == 1) {
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP').value + ':8080/stream?topic=/mcl/image'},100);
-            //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/mcl/image";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP').value + ':8080/stream?topic=mcl/image'},100);
+            //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";
             //console.log(11);
         }
         else if (ChooseRobot == 2) {
             //console.log("white")
             
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP2').value + ':8080/stream?topic=/mcl/image'},100);
-           // video.src = "http://" + document.getElementById("RobotIP2").value + ":8080/stream?topic=/mcl/image";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP2').value + ':8080/stream?topic=mcl/image'},100);
+           // video.src = "http://" + document.getElementById("RobotIP2").value + ":8080/stream?topic=mcl/image";
             
             //console.log(22);
         }
         else if (ChooseRobot == 3) {
-            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP3').value + ':8080/stream?topic=/mcl/image'},100);
-            //video.src = "http://" + document.getElementById("RobotIP3").value + ":8080/stream?topic=/mcl/image";
+            setTimeout(function(){video.src = 'http://' + document.getElementById('RobotIP3').value + ':8080/stream?topic=mcl/image'},100);
+            //video.src = "http://" + document.getElementById("RobotIP3").value + ":8080/stream?topic=mcl/image";
             //console.log(33);
         }
         else{
