@@ -4,6 +4,7 @@ import math
 import numpy as np
 import time
 from simple_pid import PID
+from imu_3d.msg import inertia
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
@@ -11,6 +12,9 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
 from std_msgs.msg import Bool 
+from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Int32MultiArray
+from sensor_msgs.msg import JointState
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -19,6 +23,7 @@ ROTATE_V_ANG = 90
 ## Strategy Inputs
 VISION_TOPIC = "vision/object"
 POSITION_TOPIC = "akf_pose"
+IMU            = "imu_3d"
 
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "strategy/state"
@@ -29,12 +34,19 @@ class Robot(object):
 
   last_time = 0
 
-  __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
+  __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
+                   'imu_3d' : {'yaw' : 0}}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
                            'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
                    'velocity' : 0 }
+  __obstacle_info = {'angle' : {'min' : 0, 'max' : 0, 'increment' : math.pi / 180 * 3},
+		                 'scan' : 0,
+		                 'range' : {'min' : 0, 'max' : 0},
+                     'ranges' : [0],
+		                 'intensities' : [0]}
+
   __ball_is_handled = False
   ## Configs
   __minimum_w = 0
@@ -47,7 +59,7 @@ class Robot(object):
   Ki_v = 0.0
   Kd_v = 0.1
   Cp_v = 0
-  Kp_w = 0.25
+  Kp_w = 0.5
   Ki_w = 0.0
   Kd_w = 0.1
   Cp_w = 0
@@ -82,12 +94,14 @@ class Robot(object):
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
     print("Objects informations: {}".format(self.__object_info))
+    print("Obstacles informations: {}".format(self.__obstacle_info))
 
   def __init__(self, robot_num, sim = False):
     self.robot_number = robot_num
 
     rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
+    rospy.Subscriber('BlackRealDis',Int32MultiArray,self._GetBlackItemInfo)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
@@ -95,6 +109,7 @@ class Robot(object):
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
     if not sim :
+      rospy.Subscriber(IMU,inertia,self._GetImu)
       self.RobotBallHandle = self.RealBallHandle
     else:
       self.sim_hold_pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
@@ -132,7 +147,13 @@ class Robot(object):
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
 
-  def _GetPosition(self, loc):
+  def _GetBlackItemInfo(self, vision):
+    self.__obstacle_info['ranges'] =vision.data
+
+  def _GetImu(self, imu_3d):
+    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
+
+  def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
     self.__robot_info['location']['y'] = loc.pose.pose.position.y*100
     qx = loc.pose.pose.orientation.x
@@ -194,6 +215,9 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
+  
+  def GetObstacleInfo(self):
+    return self.__obstacle_info
 
   def RealShoot(self, power, pos) :
     msg = Int32()
@@ -208,7 +232,8 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] < self.__handle_dis and self.__object_info['ball']['ang'] < self.__handle_ang:
+    if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
+     
       return True
     else:
       return False
