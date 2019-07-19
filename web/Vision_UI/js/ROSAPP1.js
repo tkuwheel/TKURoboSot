@@ -3,7 +3,7 @@
 
 var updateClient = new ROSLIB.Service({
     ros: ros,
-    name: '/StrategyParam',
+    name: 'StrategyParam',
     serviceType: 'vision/checkpoint'
 });
 /*var updateClient2 = new ROSLIB.Service({

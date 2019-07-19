@@ -4,3 +4,4 @@ int64 Inner
 int64 Outer
 int64 Front
 int64 Camera_High
+int64 Horizon
