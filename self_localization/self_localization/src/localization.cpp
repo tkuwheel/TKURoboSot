@@ -38,17 +38,17 @@
 Localization::Localization()
 {
     //Readyaml();
-    sensor_sub = nh.subscribe("/vision/mcl/WhiteRealDis", 1000, &Localization::sensorCallback, this);
-    reset_sub = nh.subscribe("/mcl/resetParticles", 1000, &Localization::resetCallback, this);
-    aug_sub = nh.subscribe("/mcl/setAugmentParam", 1000, &Localization::augCallback, this);
-    weight_sub = nh.subscribe("/mcl/setCmpsWeight", 1000, &Localization::weightCallback, this);
-    save_sub = nh.subscribe("/mcl/save", 1000, &Localization::saveCallback, this);
-    vel_sub = nh.subscribe("/motion/motionFB", 1000, &Localization::velCallback, this);
-    imu_sub = nh.subscribe("/imu_3d", 1000, &Localization::imuCallback, this);
-    imu_reset_sub = nh.subscribe("/mcl/imu_reset", 1000, &Localization::imuresetCallback, this);
-    pos_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("/akf_pose", 1);
-    sd_pub = nh.advertise<std_msgs::Float32>("/mcl/std", 1);
-    image_pub = nh.advertise<sensor_msgs::Image>("/mcl/image", 1);
+    sensor_sub = nh.subscribe("vision/mcl/WhiteRealDis", 1000, &Localization::sensorCallback, this);
+    reset_sub = nh.subscribe("mcl/resetParticles", 1000, &Localization::resetCallback, this);
+    aug_sub = nh.subscribe("mcl/setAugmentParam", 1000, &Localization::augCallback, this);
+    weight_sub = nh.subscribe("mcl/setCmpsWeight", 1000, &Localization::weightCallback, this);
+    save_sub = nh.subscribe("mcl/save", 1000, &Localization::saveCallback, this);
+    vel_sub = nh.subscribe("motion/motionFB", 1000, &Localization::velCallback, this);
+    imu_sub = nh.subscribe("imu_3d", 1000, &Localization::imuCallback, this);
+    imu_reset_sub = nh.subscribe("mcl/imu_reset", 1000, &Localization::imuresetCallback, this);
+    pos_pub = nh.advertise<geometry_msgs::PoseWithCovarianceStamped>("akf_pose", 1);
+    sd_pub = nh.advertise<std_msgs::Float32>("mcl/std", 1);
+    image_pub = nh.advertise<sensor_msgs::Image>("mcl/image", 1);
     draw_field();
     imu_angle_offset = 0;
     imu_angle = 0;
@@ -63,7 +63,7 @@ void Localization::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " /mcl";
+        std::string temp = "rosparam load " + param + " mcl";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
@@ -77,7 +77,7 @@ void Localization::Readyaml()
 void Localization::Saveyaml()
 {
     std::string param = YAML_PATH;
-    std::string temp = "rosparam dump " + param + " /FIRA";
+    std::string temp = "rosparam dump " + param + " FIRA";
     const char *save = temp.c_str();
     system(save);
 
@@ -89,9 +89,9 @@ void Localization::get_parameter()
     cout << "get parameter" << endl;
     double a_fast,a_slow,wcmps;
     //===================FPS參數==========================
-    nh.getParam("/FIRA/mcl/a_fast", a_fast);
-    nh.getParam("/FIRA/mcl/a_slow", a_slow);
-    nh.getParam("/FIRA/mcl/wcmps", wcmps);
+    nh.getParam("FIRA/mcl/a_fast", a_fast);
+    nh.getParam("FIRA/mcl/a_slow", a_slow);
+    nh.getParam("FIRA/mcl/wcmps", wcmps);
     mcl.setAugmentParam(a_fast, a_slow);
     mcl.setCmpsWeight(wcmps);
 }
