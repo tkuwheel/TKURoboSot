@@ -379,8 +379,8 @@ int main(int argc,char **argv)
     ros::init(argc, argv, "imu_3d");
     ros::NodeHandle n;
     ros::Publisher imu_pub = n.advertise<imu_3d::inertia>("imu_3d",1000);
-    ros::Subscriber speed_sub = n.subscribe("/FIRA/R1/Strategy/PathPlan/RobotSpeed",100,speed_stationary);
-    ros::Subscriber angle_sub = n.subscribe("/imu_3d/angle_correction",100,angle_callback);
+    ros::Subscriber speed_sub = n.subscribe("FIRA/R1/Strategy/PathPlan/RobotSpeed",100,speed_stationary);
+    ros::Subscriber angle_sub = n.subscribe("imu_3d/angle_correction",100,angle_callback);
 
     ros::Rate loop_rate(100);
 
