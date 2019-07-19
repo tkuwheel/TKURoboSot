@@ -8,8 +8,8 @@ function MonitorSwitch(checked) {
         if(ground_reverse==true){
             document.getElementById('canvasMap').style.webkitTransform = "rotate(180deg)";
         }
-        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/mcl/image";},100);
-        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/mcl/image";
+        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";},100);
+        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";
         console.log("localization map");
     } else {
         document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";
@@ -30,8 +30,8 @@ function WhielineSwitch(checked) {
         video.src = "img/black.png";
         document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";
         document.getElementById('canvasMap').style.zIndex = "999";
-        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/white";},100);
-        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/mcl/image";
+        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/white";},100);
+        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";
         console.log("whieline map");
     } else {
         document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";

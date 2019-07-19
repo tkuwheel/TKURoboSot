@@ -3,17 +3,17 @@
 //sigma
 var s1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/mcl/std',
+    name: 'mcl/std',
     messageType: 'std_msgs/Float32'
 });
 var s2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/mcl/std',
+    name: 'mcl/std',
     messageType: 'std_msgs/Float32'
 });
 var s3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/mcl/std',
+    name: 'mcl/std',
     messageType: 'std_msgs/Float32'
 });
 //sigma
@@ -49,17 +49,17 @@ s3.subscribe(function (msg) {
 //imu
 var s1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/imu_3d',
+    name: 'imu_3d',
     messageType: 'imu_3d/inertia'
 });
 var s2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/imu_3d',
+    name: 'imu_3d',
     messageType: 'imu_3d/inertia'
 });
 var s3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/imu_3d',
+    name: 'imu_3d',
     messageType: 'imu_3d/inertia'
 });
 //sigma
@@ -77,19 +77,19 @@ s3.subscribe(function (msg) {
 //Map
 var V1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/akf_pose',
+    name: 'akf_pose',
     messageType: '/geometry_msgs/PoseWithCovarianceStamped'
     
 });
 var V2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/akf_pose',
+    name: 'akf_pose',
     messageType: '/geometry_msgs/PoseWithCovarianceStamped'
     
 });
 var V3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/akf_pose',
+    name: 'akf_pose',
     messageType: '/geometry_msgs/PoseWithCovarianceStamped'
     
 });
@@ -334,17 +334,17 @@ function draw_ball(x,y,w,ball_ang,ball_dis)
 }
 var imu_pub1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/imu_3d/angle_correction',
+    name: 'imu_3d/angle_correction',
     messageType: 'std_msgs/Float32'
 });
 var imu_pub2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/imu_3d/angle_correction',
+    name: 'imu_3d/angle_correction',
     messageType: 'std_msgs/Float32'
 });
 var imu_pub3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/imu_3d/angle_correction',
+    name: 'imu_3d/angle_correction',
     messageType: 'std_msgs/Float32'
 });
 function ImuReset() {
@@ -376,17 +376,17 @@ function ImuReset() {
 //reset
 var resetParticles1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/mcl/resetParticles',
+    name: 'mcl/resetParticles',
     messageType: 'self_localization/resetParticles'
 });
 var resetParticles2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/mcl/resetParticles',
+    name: 'mcl/resetParticles',
     messageType: 'self_localization/resetParticles'
 });
 var resetParticles3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/mcl/resetParticles',
+    name: 'mcl/resetParticles',
     messageType: 'self_localization/resetParticles'
 });
 
@@ -460,17 +460,17 @@ function CoordReverse() {
 //GameState
 var GameState1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 var GameState2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 var GameState3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 
@@ -490,17 +490,17 @@ function PublishTopicGameState(state) {
 //MotionRemote
 var Remote1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/remote',
+    name: 'motion/remote',
     messageType: 'std_msgs/Bool'
 });
 var Remote2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/motion/remote',
+    name: 'motion/remote',
     messageType: 'std_msgs/Bool'
 });
 var Remote3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/motion/remote',
+    name: 'motion/remote',
     messageType: 'std_msgs/Bool'
 });
 
@@ -529,17 +529,17 @@ function RemoteSwitch(state) {
 //GameState
 var GameState1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 var GameState2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 var GameState3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 
@@ -559,17 +559,17 @@ function PublishTopicGameState(state) {
 //TeamColor
 var TeamColor1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/TeamColor',
+    name: 'FIRA/TeamColor',
     messageType: '/std_msgs/String'
 });
 var TeamColor2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/FIRA/TeamColor',
+    name: 'FIRA/TeamColor',
     messageType: '/std_msgs/String'
 });
 var TeamColor3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/FIRA/TeamColor',
+    name: 'FIRA/TeamColor',
     messageType: '/std_msgs/String'
 });
 
@@ -590,18 +590,18 @@ function PublishTopicTeamColor(color) {
 //vector
 var cmdVel1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/cmd_vel',
+    name: 'motion/cmd_vel',
     messageType: '/geometry_msgs/Twist'
 });
 
 var cmdVel2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/motion/cmd_vel',
+    name: 'motion/cmd_vel',
     messageType: '/geometry_msgs/Twist'
 });
 var cmdVel3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/motion/cmd_vel',
+    name: 'motion/cmd_vel',
     messageType: '/geometry_msgs/Twist'
 });
 
@@ -661,17 +661,17 @@ function PublishTopicCmdVel(vec3) {
 //shoot
 var TopicShoot1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/shoot',
+    name: 'motion/shoot',
     messageType: 'std_msgs/Int32'
 });
 var TopicShoot2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/motion/shoot',
+    name: 'motion/shoot',
     messageType: 'std_msgs/Int32'
 });
 var TopicShoot3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/motion/shoot',
+    name: 'motion/shoot',
     messageType: 'std_msgs/Int32'
 });
 
@@ -695,17 +695,17 @@ function PublishTopicShoot(size) {
 //Vision
 var Vision1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/vision/object',
+    name: 'vision/object',
     messageType: '/vision/Object'
 });
 var Vision2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/vision/object',
+    name: 'vision/object',
     messageType: '/vision/Object'
 });
 var Vision3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/vision/object',
+    name: 'vision/object',
     messageType: '/vision/Object'
 });
 
@@ -776,50 +776,50 @@ function SaveVision(i, VBox) {
 //ros1
 var TSInfoPub12 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/r1_info',
+    name: 'r1_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 var TSInfoPub13 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/r1_info',
+    name: 'r1_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 //ros2
 var TSInfoPub21 = new ROSLIB.Topic({
     ros: ros,
-    name: '/r2_info',
+    name: 'r2_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 var TSInfoPub23 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/r2_info',
+    name: 'r2_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 //ros3
 var TSInfoPub31 = new ROSLIB.Topic({
     ros: ros,
-    name: '/r3_info',
+    name: 'r3_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 var TSInfoPub32 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/r3_info',
+    name: 'r3_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 //subscribe
 var TSInfoListen1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/r1_info',
+    name: 'r1_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 var TSInfoListen2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/r2_info',
+    name: 'r2_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 var TSInfoListen3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/r3_info',
+    name: 'r3_info',
     messageType: '/std_msgs/Float32MultiArray'
 });
 
@@ -881,17 +881,17 @@ TSInfoListen3.subscribe(function(msg) {
 //SaveParam 
 var SaveParam1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/SaveParam',
+    name: 'FIRA/SaveParam',
     messageType: 'std_msgs/Int32'
 });
 var SaveParam2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/FIRA/SaveParam',
+    name: 'FIRA/SaveParam',
     messageType: 'std_msgs/Int32'
 });
 var SaveParam3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/FIRA/SaveParam',
+    name: 'FIRA/SaveParam',
     messageType: 'std_msgs/Int32'
 });
 
@@ -911,17 +911,17 @@ function PublishTopicSaveParam() {
 // IsTeamStrategy
 var TeamStrategy1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/IsTeamStrategy',
+    name: 'FIRA/IsTeamStrategy',
     messageType: 'std_msgs/Int32'
 });
 var TeamStrategy2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/FIRA/IsTeamStrategy',
+    name: 'FIRA/IsTeamStrategy',
     messageType: 'std_msgs/Int32'
 });
 var TeamStrategy3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/FIRA/IsTeamStrategy',
+    name: 'FIRA/IsTeamStrategy',
     messageType: 'std_msgs/Int32'
 });
 
@@ -941,17 +941,17 @@ function IsTeamStrategy(check) {
 //////////////////////////video/////////////
 var View1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/vision/view',
+    name: 'vision/view',
     messageType: '/vision/view'
 });
 var View2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/vision/view',
+    name: 'vision/view',
     messageType: '/vision/view'
 });
 var View3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/vision/view',
+    name: 'vision/view',
     messageType: '/vision/view'
 });
 
@@ -973,17 +973,17 @@ function ViewButton(value) {
 // hold ball
 var HoldBall1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/hold_ball',
+    name: 'motion/hold_ball',
     messageType: 'std_msgs/Bool'
 });
 var HoldBall2 = new ROSLIB.Topic({
     ros: ros2,
-    name: '/motion/hold_ball',
+    name: 'motion/hold_ball',
     messageType: 'std_msgs/Bool'
 });
 var HoldBall3 = new ROSLIB.Topic({
     ros: ros3,
-    name: '/motion/hold_ball',
+    name: 'motion/hold_ball',
     messageType: 'std_msgs/Bool'
 });
 

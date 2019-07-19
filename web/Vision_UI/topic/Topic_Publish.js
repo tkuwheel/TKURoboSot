@@ -11,7 +11,7 @@ function topic_creater(topic_name , type){
 function topic_cmdVel_pub(_x,_y,_z){
 	var cmdVel = new ROSLIB.Topic({
 		ros : ros,
-		name : '/cmd_vel',
+		name : 'cmd_vel',
 		messageType : 'geometry_msgs/Twist'
 	});
 	console.log('/cmd_vel creat');
@@ -33,7 +33,7 @@ function topic_cmdVel_pub(_x,_y,_z){
 function topic_cmdVel_pub_1(){
 	var cmdVel = new ROSLIB.Topic({
 		ros : ros,
-		name : '/test',
+		name : 'test',
 		messageType : 'std_msgs/Char'
 	});
 	console.log('/test creat');

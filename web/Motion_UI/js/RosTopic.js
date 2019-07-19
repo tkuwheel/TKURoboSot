@@ -1,7 +1,7 @@
 //shoot
 var TopicShoot1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/shoot',
+    name: 'motion/shoot',
     messageType: 'std_msgs/Int32'
 });
 //shoot
@@ -18,7 +18,7 @@ function PublishTopicShoot(size) {
 // hold ball
 var HoldBall1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/hold_ball',
+    name: 'motion/hold_ball',
     messageType: 'std_msgs/Bool'
 });
 
@@ -42,7 +42,7 @@ function HoldBallSwitch(state,robot) {
 //MotionRemote
 var Remote = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/remote',
+    name: 'motion/remote',
     messageType: 'std_msgs/Bool'
 });
 //Remote_state
@@ -70,7 +70,7 @@ function RemoteSwitch(state) {
 //cmd_vel
 var cmdVel1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/cmd_vel',
+    name: 'motion/cmd_vel',
     messageType: '/geometry_msgs/Twist'
 });
 function topicSaveParam(value){

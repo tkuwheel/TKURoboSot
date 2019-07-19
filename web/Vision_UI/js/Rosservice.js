@@ -23,7 +23,7 @@ function savecall(){
 //================================
 var connectClient = new ROSLIB.Service({
   ros : ros,
-  name : '/monitor/connect',
+  name : 'monitor/connect',
   serviceType : 'std_srvs/Empty'
 });
 
