@@ -291,7 +291,7 @@ class Strategy(object):
 
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
-            if targets[self.robot.opp_side]['ang'] <= self.robot.atk_shoot_ang:
+            if abs(targets[self.robot.opp_side]['ang']) <= self.robot.atk_shoot_ang:
               print("stop") 
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
