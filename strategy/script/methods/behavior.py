@@ -90,7 +90,7 @@ class Behavior(Robot,Obstacle):
     return defence_x , defence_y , defence_yaw
 
   def PenaltyTurning(self, side, dest_ang):
-    robot_info = self.GetObjectInfo()
+    robot_info = self.GetRobotInfo()
     if dest_ang == 0:
       v_yaw = robot_info[side]['ang']      
     v_x = 0

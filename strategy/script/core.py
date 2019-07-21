@@ -48,6 +48,7 @@ class Core(Robot, StateMachine):
     self.maximum_v = config['maximum_v']
     self.orb_attack_ang = config['orb_attack_ang']
     self.atk_shoot_ang = config['atk_shoot_ang']
+    self.atk_shoot_dis = config['atk_shoot_dis']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -89,6 +90,7 @@ class Core(Robot, StateMachine):
   def on_toAttack(self, method = "Classic"):
     t = self.GetObjectInfo()
     side = self.opp_side
+    l = self.robot.GetObstacleInfo()
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     elif method == "Cut":
@@ -96,7 +98,6 @@ class Core(Robot, StateMachine):
     elif method == "Post_up":
       if t[side]['dis'] < 50 :
         t[side]['dis'] = 50
-
       x, y, yaw = self.AC.Post_up(t[side]['dis'],\
                                        t[side]['ang'],\
                                        l['ranges'],\
@@ -111,6 +112,8 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo() 
     position = self.GetRobotInfo()
     side = self.opp_side
+    l = self.robot.GetObstacleInfo()
+
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
@@ -132,7 +135,14 @@ class Core(Robot, StateMachine):
     elif method == "Penalty_Kick":
       front_ang = math.degrees(position['imu_3d']['yaw'])-90
       x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw)
-      self.MotionCtrl(x, y, yaw)
+      self.MotionCtrl(x, y, yaw, )
+      
+    elif method == "At_post_up":
+      x, y, yaw = self.AC.Post_up(t[side]['dis'],\
+                                       t[side]['ang'],\
+                                       l['ranges'],\
+                                       l['angle']['increment'])
+      self.MotionCtrl(x, y, yaw, )
     
     
     
@@ -226,6 +236,8 @@ class Strategy(object):
     state = self.robot.game_state
     if state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
+    if mode == "At_post_up":
+      self.robot.toMovement("At_post_up")
     elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
     elif mode == "Defense_ball":
@@ -308,7 +320,8 @@ class Strategy(object):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.ToChase()
-          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang:
+          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and \
+                abs(targets[self.robot.opp_side]['dis']) <= self.robot.atk_shoot_dis:
             self.robot.toShoot(100)
           else:
             self.ToAttack()
