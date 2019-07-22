@@ -6,25 +6,19 @@ __pycache__
 .vscode
 CATKIN_IGNORE
 *.swp
-<<<<<<< HEAD
+# *.txt
 *.swo
 *~
-=======
-*.txt
->>>>>>> 0dee97afd87a12690cb6d4e5c1ea6b9201fbcde0
 
 # fpga
 db
 export_db
 incremental_db
 output_files
-work]
+work
 signaltap
 
 *.stp
 *.qdf
 *.bak
-<<<<<<< HEAD
 .DS_Store
-=======
->>>>>>> 0dee97afd87a12690cb6d4e5c1ea6b9201fbcde0
