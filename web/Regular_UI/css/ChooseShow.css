@@ -1,0 +1,67 @@
+/*form*/
+
+.ChooseShowDialog {
+    width: 500px;
+}
+
+.ChooseShowContent {
+    position: relative;
+    background-color: #FFF;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+
+/*=====================================================*/
+
+
+/*Module*/
+
+#STypeModule {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#STypeModule td {
+    width: 50%;
+}
+
+
+/*====================================================*/
+
+
+/*button*/
+
+#NotShow {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#NotShow.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#SType {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#SType.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}

@@ -1,0 +1,929 @@
+/*====================================================*/
+
+
+/*form*/
+
+.PathplanDialog {
+    width: 500px;
+}
+
+.PathplanContent {
+    position: relative;
+    background-color: #FFF;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+
+/*====================================================*/
+
+
+/*====================================================*/
+
+
+/*RobotState*/
+
+#PathplanSettingRobotDiv {
+    position: absolute;
+    top: 2%;
+    left: 27%;
+    width: 250px;
+    height: 60px;
+}
+
+#PathplanSettingRobotDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+#PathplanRobot1Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PathplanRobot1Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PathplanRobot2Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PathplanRobot2Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PathplanRobot3Button {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PathplanRobot3Button.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PathplanButton1 table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#PathplanButton2 table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#PathplanButton3 table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+
+/*====================================================*/
+
+
+/*PathplanStrategyButton*/
+
+
+/*Robot1*/
+
+#AttackStrategy1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#AttackStrategy1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ChaseStrategy1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ChaseStrategy1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ZoneAttack1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ZoneAttack1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TypeSAttack1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TypeSAttack1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PGoalkeeper1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PGoalkeeper1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#SideSpeedUp1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#SideSpeedUp1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#DorsadAttack1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#DorsadAttack1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#CornerKick1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#CornerKick1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PenaltyKick1 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PenaltyKick1.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+
+/*Robot2*/
+
+#AttackStrategy2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#AttackStrategy2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ChaseStrategy2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ChaseStrategy2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ZoneAttack2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ZoneAttack2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TypeSAttack2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TypeSAttack2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TypeUAttack2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TypeUAttack2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#SideSpeedUp2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#SideSpeedUp2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#DorsadAttack2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#DorsadAttack2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#CornerKick2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#CornerKick2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PenaltyKick2 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PenaltyKick2.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+
+/*Robot3*/
+
+#AttackStrategy3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#AttackStrategy3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ChaseStrategy3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ChaseStrategy3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#ZoneAttack3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#ZoneAttack3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TypeSAttack3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TypeSAttack3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#TypeUAttack3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#TypeUAttack3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#SideSpeedUp3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#SideSpeedUp3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#DorsadAttack3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#DorsadAttack3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#CornerKick3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#CornerKick3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#PenaltyKick3 {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#PenaltyKick3.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+
+/*====================================================*/
+
+
+/*table*/
+
+
+/*Robot1*/
+
+#AttackStrategyModule1 td {
+    width: 50%;
+}
+
+#ChaseStrategyModule1 td {
+    width: 50%;
+}
+
+#ZoneAttackModule1 td {
+    width: 50%;
+}
+
+#TypeSAttackModule1 td {
+    width: 50%;
+}
+
+#PGoalkeeperModule1 td {
+    width: 50%;
+}
+
+#SideSpeedUpModule1 td {
+    width: 50%;
+}
+
+#DorsadAttackModule1 td {
+    width: 50%;
+}
+
+#CornerKickModule1 td {
+    width: 50%;
+}
+
+#PenaltyKickModule1 td {
+    width: 50%;
+}
+
+
+/*Robot2*/
+
+#AttackStrategyModule2 td {
+    width: 50%;
+}
+
+#ChaseStrategyModule2 td {
+    width: 50%;
+}
+
+#ZoneAttackModule2 td {
+    width: 50%;
+}
+
+#TypeSAttackModule2 td {
+    width: 50%;
+}
+
+#TypeUAttackModule2 td {
+    width: 50%;
+}
+
+#SideSpeedUpModule2 td {
+    width: 50%;
+}
+
+#DorsadAttackModule2 td {
+    width: 50%;
+}
+
+#CornerKickModule2 td {
+    width: 50%;
+}
+
+#PenaltyKickModule2 td {
+    width: 50%;
+}
+
+
+/*Robot3*/
+
+#AttackStrategyModule3 td {
+    width: 50%;
+}
+
+#ChaseStrategyModule3 td {
+    width: 50%;
+}
+
+#ZoneAttackModule3 td {
+    width: 50%;
+}
+
+#TypeSAttackModule3 td {
+    width: 50%;
+}
+
+#TypeUAttackModule3 td {
+    width: 50%;
+}
+
+#SideSpeedUpModule3 td {
+    width: 50%;
+}
+
+#DorsadAttackModule3 td {
+    width: 50%;
+}
+
+#CornerKickModule3 td {
+    width: 50%;
+}
+
+#PenaltyKickModule3 td {
+    width: 50%;
+}
+
+
+/*=====================================================*/
+
+
+/*Module*/
+
+
+/*Robot1*/
+
+#AttackStrategyModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ChaseStrategyModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ZoneAttackModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#TypeSAttackModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#PGoalkeeperModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#SideSpeedUpModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#DorsadAttackModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#CornerKickModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#PenaltyKickModule1 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+
+/*Robot2*/
+
+#AttackStrategyModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ChaseStrategyModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ZoneAttackModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#TypeSAttackModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#TypeUAttackModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#SideSpeedUpModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#DorsadAttackModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#CornerKickModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#PenaltyKickModule2 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+
+/*Robot3*/
+
+#AttackStrategyModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ChaseStrategyModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#ZoneAttackModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#TypeSAttackModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#TypeUAttackModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#SideSpeedUpModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#DorsadAttackModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#CornerKickModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+#PenaltyKickModule3 {
+    height: 200px;
+    text-align: left;
+    border-style: solid;
+    overflow: scroll;
+}
+
+
+/*=====================================================*/
+
+
+/*form-group*/
+
+#AttackStrategyModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#AttackStrategyModule2.form-group {
+    background-color: #90ee90;
+}
+
+#AttackStrategyModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#ChaseStrategyModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#ChaseStrategyModule2.form-group {
+    background-color: #90ee90;
+}
+
+#ChaseStrategyModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#ZoneAttackModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#ZoneAttackModule2.form-group {
+    background-color: #90ee90;
+}
+
+#ZoneAttackModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#TypeSAttackModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#TypeSAttackModule2.form-group {
+    background-color: #90ee90;
+}
+
+#TypeSAttackModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#PGoalkeeperkModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#TypeUAttackModule2.form-group {
+    background-color: #90ee90;
+}
+
+#TypeUAttackModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#PGoalkeeperModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#TypeUAttackModule2.form-group {
+    background-color: #90ee90;
+}
+
+#TypeUAttackModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#SideSpeedUpModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#SideSpeedUpModule2.form-group {
+    background-color: #90ee90;
+}
+
+#SideSpeedUpModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#DorsadAttackModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#DorsadAttackModule2.form-group {
+    background-color: #90ee90;
+}
+
+#DorsadAttackModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#CornerKickModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#CornerKickModule2.form-group {
+    background-color: #90ee90;
+}
+
+#CornerKickModule3.form-group {
+    background-color: #b0c4de;
+}
+
+#PenaltyKickModule1.form-group {
+    background-color: #ffb6c1;
+}
+
+#PenaltyKickModule2.form-group {
+    background-color: #90ee90;
+}
+
+#PenaltyKickModule3.form-group {
+    background-color: #b0c4de;
+}
+
+
+/*=====================================================*/
+
+
+/*Save*/
+
+#PathplanExecute {
+    text-align: center;
+}

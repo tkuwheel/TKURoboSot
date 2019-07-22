@@ -1,6 +1,6 @@
 # Uses ISO units. For example, use 'm' for length.
 general:
-  dribble_distance_thres: 0.50           # theshold distance between nubot and football below which dribble ball
+  dribble_distance_thres: 0.7           # theshold distance between nubot and football below which dribble ball
   dribble_angle_thres: 30.0              # kicking mechanism aligning with football; allowed maximum angle error in degrees
   noise_scale: 0.10                     # the scale of gaussian noise (m)
   noise_rate: 0.01                       # how frequent the noise generates

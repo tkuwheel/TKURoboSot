@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://blog.themearmada.com/demos/off-canvas-menu/ -->
+<html>
+<head>
+    <title>Localization UI</title>
+    <meta charset="UTF-8">
+    <!--Font-->
+    <link rel="shortcut icon" href="img/icon.png" />
+    <link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
+    <link rel="stylesheet" href="css/Lcworldmap.css">
+    <link rel="stylesheet" href="css/font-pacifico.css">
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--script src="js/main.js"></script-->
+    <script src="jquery-ui-1.11.4/jquery-ui.js"></script>
+    <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="js/eventemitter2.min.js"></script>
+    <script src="js/close_right_button.js"></script>
+    <script src="js/CloseReverseOut.js"></script>
+    <script src="js/roslib.js"></script>
+    <script src="js/Lcworldmap.js"></script>
+    <!--<script src="js/RobotConnect.js"></script>-->
+
+
+</head>
+
+<body onload="joystick_main();MonitorSwitch(false)">
+    <div class="modal-dialog" id="background" style="width:1500px">
+        <div class="modal-content motherground">
+            <div class="modal-header title">
+                <h4 class="modal-title" id="titleModalLabel">Localization Challenge</h4>
+                
+                <table id="InterfaceSetting">
+                    <tr>
+                        <td>
+                            <div>
+                                <img id="Setting_Wifi" src="img/wifi.png" data-toggle="modal" data-target="#connect_Robot"></img>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="wifilight">
+                                <canvas id="Light" width="50" height="50" z-index:="5"></canvas>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="setting">
+                                <img id="setting_button" src="img/setting.png" data-toggle="modal" data-target="#setting_Robot">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="SpeedDiv">
+                <table>
+                    <tr>
+                        <td colspan="2">
+                            <label id="SpeedLabel">Speed&nbsp;<i class="fa fa-bolt "></i></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="SpeedSlider" name="SpeedElement" type="range" min="0" max="100" value="0" oninput="ToInputValue(this.value,this.name,1);">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="SpeedInput" name="SpeedElement" placeholder="Speed" value="0" type="number" min="0" max="100" oninput="ToSliderValue(this.value,this.name,0);" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="Joystick">
+                <canvas id="Joystick_Canvas">
+                    Your browser does not support the HTML5 canvas tag.
+                </canvas>
+            </div>
+            <div id="LocalizationDiv" >
+                <table >
+                    <tr >
+                        <div style="width:180px;">
+                                <input id="imuButton" type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;陀螺儀校正&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" onclick="ImuReset()">
+                        </div>
+                    </tr>
+                    <tr >
+                        <div style="width:180px;">
+                                <input id="ResetButton" type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定位重置&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" onclick="CoordReset()">
+                        </div>
+                    </tr>
+                    <tr >
+                        <div style="width:180px;">
+                                <input id="ReverseButton" type="button" value="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定位反轉&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" onclick="CoordReverse()">
+                        </div>
+                    </tr>
+                </table>
+
+            </div>
+            <div id="FunctionButttonDiv">
+                <table>
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="off" id="GroundButton" type="checkbox" onclick="GroundSwitch(this.checked);">
+                            <label id="GroundLable" for="GroundButton">Field Rotate</label>
+                        </div>
+                    </tr>
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="off" id="WhitelineButton" type="checkbox" name="Whiteline" onclick="WhielineSwitch(this.checked);" />
+                            <label id="WhitelineLable" for="WhitelineButton">&nbsp;&nbsp;WhiteLine&nbsp;&nbsp;</label>
+                        </div>
+                    </tr>
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="off" id="LocalizationButton" type="checkbox" onclick="MonitorSwitch(this.checked);">
+                            <label id="LocalizationLable" for="LocalizationButton">Localization Map</label>
+                        </div>
+                    </tr>
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="off" id="KeyboardControlButton" type="checkbox" name="KeyboardControl" onclick="KeyboardState(this.checked)" />
+                            <label id="KeyboardControlLable" for="KeyboardControlButton">Keyboard Control</label>
+                        </div>
+                    </tr>
+
+                    <tr>
+                        <div style="width:140px;">
+                            <input id="StandbyButton" type="checkbox" name="RobotRemoteButton" onclick="RemoteSwitch(this.checked);" />
+                            <label id="StandbyLable" for="StandbyButton">&nbsp;&nbsp;&nbsp;Stand by&nbsp;&nbsp;&nbsp;</label>
+                        </div>
+                    </tr>
+                </table>
+            </div>
+<!--        
+            <div class="modal-body">
+                <div class="form-group" id="OptimizationModule">
+                    <table id="OptimizationTable" >
+                        <tr>
+                            <th id="OptimizationTitle">
+                                <label for="Optimization">Optimization</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td id="OptimizationLabel">
+                                <div>
+                                    <label id="OptimizationCheck">
+                                        <input type="checkbox" name="OptimizationElement"> 1 </label>
+                                </div>
+                            </td>
+                            <td id="OptimizationLabel">
+                                <div>
+                                    <label id="OptimizationCheck">
+                                        <input type="checkbox" name="OptimizationElement"> 2 </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="OptimizationLabel">
+                                <div>
+                                    <label id="OptimizationCheck">
+                                        <input type="checkbox" name="OptimizationElement"> 3 </label>
+                                </div>
+                            </td>
+                            <td id="OptimizationLabel">
+                                <div>
+                                    <label id="OptimizationCheck">
+                                        <input type="checkbox" name="OptimizationElement"> 4 </label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="send" onclick="Optimization()" class="button" id="send">
+                            </td>
+                        </tr>
+                    </table>
+                </div> 
+-->
+                <!--<img src="img/LcGround.png" id="court">-->
+                <div id="MCLInformation">
+                    <label>coordinate:&nbsp;( </label>
+                    <label id="coordinate_x">0</label>
+                    <label>,&nbsp; </label>
+                    <label id="coordinate_y">0</label>
+                    <label>)&nbsp;&nbsp;Angle:&nbsp;</label>
+                    <label id="coordinate_angle"></label>
+                    <label>Sigma:&nbsp; </label>
+                    <label id="coordinate_sigma"></label>
+                    <label>&nbsp;&nbsp;&nbsp;ball:&nbsp;</label>
+                    <label id="ball_ang">999&nbsp;°</label>
+                    <label>&nbsp;&nbsp;</label>
+                    <label id="ball_dis">999&nbsp;cm</label>
+                </div>
+                <div id="MapArea">
+                    <img id="canvasMap" ></img>
+                </div>
+                
+                <div id="canvasMap">
+                    <canvas id="path_map" class="DrawRect" width="1000" height="723" ></canvas>
+                    
+                    <!-- 1 -->
+                    <canvas id="Rect1" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 2 -->
+                    <canvas id="Rect2" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 3 -->
+                    <canvas id="Rect3" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 4 -->
+                    <canvas id="Rect4" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 5 -->
+                    <canvas id="Rect5" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 7 -->
+                    <canvas id="Rect7" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 9 -->
+                    <canvas id="Rect9" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 6 -->
+                    <canvas id="Rect6" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 8 -->
+                    <canvas id="Rect8" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 10 -->
+                    <canvas id="Rect10" class="DrawRect" height="60" width="60"></canvas>
+                    <!-- 11 -->
+                    <canvas id="Rect11" class="DrawRect" height="60" width="60"></canvas>
+                    <!-- 12 -->
+                    <canvas id="Rect12" class="DrawRect" height="60" width="60"></canvas>
+                    <!-- 13 -->
+                    <canvas id="Rect13" class="DrawRect" height="60" width="60"></canvas>
+                    <!-- 15 -->
+                    <canvas id="Rect15" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 17 -->
+                    <canvas id="Rect17" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 14 -->
+                    <canvas id="Rect14" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 16 -->
+                    <canvas id="Rect16" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 18 -->
+                    <canvas id="Rect18" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 19 -->
+                    <canvas id="Rect19" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 20 -->
+                    <canvas id="Rect20" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 21 -->
+                    <canvas id="Rect21" class="DrawRect" width="60" height="60"></canvas>
+                    <!-- 22 -->
+                    <canvas id="Rect22" class="DrawRect" width="60" height="60"></canvas>
+                    <canvas id="robot_map" class="DrawRect" width="1000" height="723"></canvas>
+                    
+                    <canvas id="reset_map" class="DrawRect" width="1000" height="723"></canvas>
+                </div>
+                <div class="form-group" id="RobotModule">
+                    <table>
+                        <tr>
+                            <th>
+                                <label for="Region_1" class="region">Region 1</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement1" value="1" onclick="DrawRectangle(1);RegionOrder(1,1)">1</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement1" value="2" onclick="DrawRectangle(2);RegionOrder(2,1)">2</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement1" value="5" onclick="DrawRectangle(5);RegionOrder(5,1)">5</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement1" value="6" onclick="DrawRectangle(6);RegionOrder(6,1)">6</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="width:175px;">
+                                <label for="Region_2" class="region">Region 2</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement2" value="3" onclick="DrawRectangle(3);RegionOrder(3,2)">3</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement2" value="4" onclick="DrawRectangle(4);RegionOrder(4,2)">4</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement2" value="8" onclick="DrawRectangle(8);RegionOrder(8,2)">8</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement2" value="9" onclick="DrawRectangle(9);RegionOrder(9,2)">9</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="width:175px;">
+                                <label for="Region_3" class="region">Region 3</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement3" value="14" onclick="DrawRectangle(14);RegionOrder(14,3)">14</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement3" value="15" onclick="DrawRectangle(15);RegionOrder(15,3)">15</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement3" value="19" onclick="DrawRectangle(19);RegionOrder(19,3)">19</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement3" value="20" onclick="DrawRectangle(20);RegionOrder(20,3)">20</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="width:175px;">
+                                <label for="Region_4" class="region">Region 4</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement4" value="17" onclick="DrawRectangle(17);RegionOrder(17,4)">17</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement4" value="18" onclick="DrawRectangle(18);RegionOrder(18,4)">18</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement4" value="21" onclick="DrawRectangle(21);RegionOrder(21,4)">21</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement4" value="22" onclick="DrawRectangle(22);RegionOrder(22,4)">22</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th style="width:175px;">
+                                <label for="Region_5" class="region">Region 5</label>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="7" onclick="DrawRectangle(7);RegionOrder(7,5)">7</label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="10" onclick="DrawRectangle(10);RegionOrder(10,5)">10</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="11" onclick="DrawRectangle(11);RegionOrder(11,5)">11</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="12" onclick="DrawRectangle(12);RegionOrder(12,5)">12</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="13" onclick="DrawRectangle(13);RegionOrder(13,5)">13</label>
+                                </div>
+                            </td>
+                            <td style="width:175px;">
+                                <div class="radio">
+                                    <label style="width:80px;">
+                                        <input type="radio" name="LocalElement5" value="16" onclick="DrawRectangle(16);RegionOrder(16,5)">16</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="position:relative;left:30px">
+                                <input class="button" type="button" value="send" id="send_button" onclick="RegionLocation()" />
+                            </td>
+                            <td style="position:relative;left:30px">
+                                <input class="button" type="button" value="reset" id="reset_button" onclick="RegionReset()">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="position:relative;left:30px">
+                                <input class="button" type="button" value="start" id="start_button" onclick="topicROSGameState(9)">
+                            </td>
+                            <td style="position:relative;left:30px">
+                                <input class="button" type="button" value="stop" id="stop_button" onclick="topicROSGameState(0);stop_robot()">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="HoldBallDiv1" vlaue="0">
+                    <i id="HoldBallButton1" class="fa fa-futbol-o fa-2x" aria-hidden="true"></i>
+                </div>
+                <div class="modal fade" id="connect_Robot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="Wifimodal_content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="innerModalLabel">Connect To Robot</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="RobotIPDATA" class="control-label">Robot_IP:</label>
+                                        <input name="RobotIPDATA" type="text" class="form-control" id="RobotIP" value=IP.textContent>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="RobotHostDATA" class="control-label">Robot_Host:</label>
+                                        <input name="RobotHostDATA" type="text" class="form-control" id="RobotHost" value=Host.textContent>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ros.close();">Close</button>
+                                <button type="button" class="btn btn-primary" id="send-message" onclick="RobotConnect();history.go(0);">Connect</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="setting_Robot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="settingmodal_content" id="setting_block">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="settingLabel">Robot Setting</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="modal-body" id="GeneralDisplay">
+                                    <div id="RobotStateDiv">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <!-- General_Button -->
+                                                     <div style="width:130px;">
+                                                        <input id="SPlanningVelocityLabel" type="radio" name="SwitchButton" checked="checked" />
+                                                        <label id="SPlanningVelocityLabel" for="SPlanningVelocityLabel">S-Planning Velocity</label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style="width:130px;">
+                                                        <input id="BallElementLabel" type="radio" name="SwitchButton"/>
+                                                        <label id="BallElementLabel" for="BallElementLabel">Hold Condition</label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div style="width:130px;">
+                                                        <input id="MCLElementLabel" type="radio" name="SwitchButton"/>
+                                                        <label id="MCLElementLabel" for="MCLElementLabel">MCL Parameter</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="form-group" id="SPlanningVelocityModule">
+                                        <table  style="width:100%;">
+                                            <tr>
+                                                <th style="font-weight:bold;" >ConfigName</th>
+                                                <th  style="font-weight:bold;">Value</th>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Vdis_max</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="2.2" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Vdis_min</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="0.3" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)VTdis_max</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="80.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)VTdis_min</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="50.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Tangle_max</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="20.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Tangle_min</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="3.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Angle_max</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="144.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td >(double)Angle_min</td>
+                                                <td>
+                                                    <input type="text" name="SPlanningVelocityElement" value="5.0" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="form-group" id="BallElementModule">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <th >ConfigName</th>
+                                                <th >Value</th>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)HoldBall_angle</td>
+                                                <td>
+                                                    <input type="text" name="BallElement" value="3.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)HoldBall_distance</td>
+                                                <td>
+                                                    <input type="text" name="BallElement" value="0.33" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)LostBall_angle</td>
+                                                <td>
+                                                    <input type="text" name="BallElement" value="9.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)LostBall_distance</td>
+                                                <td>
+                                                    <input type="text" name="BallElement" value="0.4" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(bool)Chase_Enable</td>
+                                                <td>
+                                                    <input type="text" name="BallElement" value="1" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="MCLElementModule">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <th >ConfigName</th>
+                                                <th >Value</th>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)a_fast</td>
+                                                <td>
+                                                    <input type="text" name="MCLElement" value="1.0" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)a_slow</td>
+                                                <td>
+                                                    <input type="text" name="MCLElement" value="0.0005" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>(double)wcmps</td>
+                                                <td>
+                                                    <input type="text" name="MCLElement" value="0.1" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="modal-footer" id="SetGeneralExecute">
+                                    <!-- <input id="next" type="button" value="NEXT"/> -->
+                                    <!-- &emsp;&emsp;&emsp;&emsp;&emsp; -->
+                                    <input class="button" id="GeneralSave" type="button" value="SAVE" onclick="setTimeout(GeneralTransfer(),1000);setTimeout(topicSaveParam(1),1000);setTimeout(saveyamel(),1000)" />
+                                    <input class="button" id="GeneralReset" type="button" value="RESET" onclick="GeneralReset();setTimeout(GeneralTransfer(),1000);setTimeout(topicSaveParam(1),1000);"/>
+                                    <!-- <input id="close" type="button" value="CLOSE"/> -->
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>  
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function () {//单选  
+        // $("input[name='visionelement']:checkbox").click(function(){  
+        //     if($(this).is(':checked')){  
+        //         console.log($(this).attr('id'))  
+        //         $("#MCLmap").toggleClass("ui-state-active");
+        //     } 
+        // });  
+        $('#LocalizationButton,#WhitelineButton').change(function(){
+            //console.log($(this).prop('checked'))
+            if(!$(this).prop('checked'))
+            {
+                return false;
+            }
+            switch($(this).attr('id'))
+            {
+                case "LocalizationButton":
+                $('#WhitelineButton').prop('checked',false);
+                $('#WhitelineButton').change();
+                break;
+                case "WhitelineButton":
+                $('#LocalizationButton').prop('checked',false);
+                $('#LocalizationButton').change();
+                break;
+            }
+        });
+    });
+</script>
+<script src="js/RobotConnect.js"></script>
+<script src="js/variable.js"></script>
+<script src="js/LcROS.js"></script>
+<script src="js/Joystick.js"></script>
+<script src="js/RosTopic.js"></script>
+<script src="js/RosParam.js"></script>
+<script src="js/KeyboardControl.js"></script>
+<script src="js/video.js"></script>
+<script src="js/HoldBall.js"></script>
+<script src="js/SliderControl.js"></script>
+<script type="text/javascript">
+
+
+    //    $(document).ready(function() {
+    //     $("#GeneralSave").click(function() {
+    //         //up();
+    //         var SPlanningVelocityBox = [];
+    //         //var DistanceSettingsBox = [];
+
+    //         $("[name=SPlanningVelocityElement]").each(function() {
+    //             SPlanningVelocityBox.push(parseFloat($(this).val()));
+    //         });
+    //         // $("[name=DistanceSettingsElement]").each(function() {
+    //         //     DistanceSettingsBox.push(parseFloat($(this).val()));
+    //         // });
+    //         localStorage.setItem("GeneralSPlanStr", JSON.stringify(SPlanningVelocityBox));
+    //         //localStorage.setItem("GeneralDistanceSetStr", JSON.stringify(DistanceSettingsBox));
+    //         GeneralTransfer(SPlanningVelocityBox);
+    //     });
+    // });
+    $("#LocalizationDiv").buttonset();
+    $("#FunctionButttonDiv").buttonset();
+    $("#RobotStateDiv").buttonset();
+
+    $("#SPlanningVelocityModule").show();
+    $("#BallElementModule").hide();
+    $("#MCLElementModule").hide();
+
+    $("#SPlanningVelocityLabel").click(function() {
+        $("#SPlanningVelocityModule").show();
+        $("#BallElementModule").hide();
+        $("#MCLElementModule").hide();
+    });
+    $("#BallElementLabel").click(function() {
+        $("#SPlanningVelocityModule").hide();
+        $("#BallElementModule").show();
+        $("#MCLElementModule").hide();
+    });
+    $("#MCLElementLabel").click(function() {
+        $("#BallElementModule").hide();
+        $("#SPlanningVelocityModule").hide();
+        $("#MCLElementModule").show();
+    });
+</script>
+</body>
+</html>

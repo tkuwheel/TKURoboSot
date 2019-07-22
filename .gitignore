@@ -1,20 +1,24 @@
 .catkin_workspace
-.robot_ns
+.robot_setting
 *.0
 __pycache__
 *.pyc
 .vscode
+CATKIN_IGNORE
 *.swp
 # *.txt
+*.swo
+*~
 
 # fpga
 db
 export_db
 incremental_db
 output_files
-work]
+work
 signaltap
 
 *.stp
 *.qdf
 *.bak
+.DS_Store

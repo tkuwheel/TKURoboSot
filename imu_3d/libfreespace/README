@@ -1,0 +1,278 @@
+libfreespace Build info
+Updated 8/2/2013
+
+General Information
+===================
+
+This document describes the build process for libfreespace.
+
+
+Required Tools
+===================
+
+The tools required to fully build libfreespace are:
+
+1)  bazaar - Use a stable release.
+	Windows:	http://wiki.bazaar.canonical.com/WindowsDownloads
+	Ubuntu:		sudo apt-get install bzr
+
+2)  Python v2.7
+	Windows:	http://www.python.org/download/releases/2.7.5/
+    			Update the environment variable PATH to include the folder that contain python.exe.
+    Ubuntu:		sudo apt-get install python
+
+3)  Doxygen v1.8.0 (older versions will have formatting problems)
+    Windows:	http://www.stack.nl/~dimitri/doxygen/download.html
+    Ubuntu:		You cannot use apt-get for doxygen because the version is too old.
+    			Instead, get it from the Doxygen download page.
+
+
+4)  Graphviz v2.30.1  
+    Windows:	http://www.graphviz.org/Download_windows.php
+    Ubuntu:		sudo apt-get install graphviz
+
+5)  CMake v2.8      http://www.cmake.org/
+	Windows:	http://www.cmake.org/cmake/resources/software.html
+	Ubuntu:		sudo apt-get install cmake
+				sudo apt-get install cmake-gui
+
+If using Microsoft Windows:
+
+6)  One of MS Visual Studio 8.0 (2005), 9.0 (2008), 10 (2010), 11 (2012)
+	The "Express" versions work just fine, although they lack 64-bit compilers.
+    Only the Visual C/C++ parts are necessary.
+
+7)  Windows Driver Development Kit (WinDDK) 7.1.0
+    The WDK can be obtained from Microsoft by following the instructions at:
+    http://msdn.microsoft.com/en-us/library/windows/hardware/gg487428.aspx
+
+    CMake will automatically look for the DDK at C:\WinDDK\7600.16385.1.
+    If you install the DDK elsewhere, you can either point to it during the
+    configuration process, or you can point the environment variable
+    "WINDDK_DIR" to it and CMake will find it.
+
+    At the moment, the newest WDK 8.0 is not supported.
+
+If using Linux:
+
+6)  GNU Make and GNU G++
+    The best way to get these is to get the build-essential package.
+    This should be available for most Linux distros.
+    Ubuntu:		sudo apt-get install build-essential
+
+7)  libusb    	http://www.libusb.org/
+    Ubuntu:		sudo apt-get install libusb-1.0-0-dev
+
+
+Getting the files
+===================
+
+To correctly check out all of the repositories, navigate to the <base>
+directory and use the following command:
+    bzr branch lp:libfreespace libfreespace
+
+If you find this doesn't work, try:
+    bzr branch lp:~libfreespace-devteam/libfreespace/cmake libfreespace
+
+If still it does not seem to work, try the standalone flag:
+	bzr branch --standalone lp:~libfreespace-devteam/libfreespace/cmake libfreespace
+
+Building
+===================
+
+Launch cmake-gui.
+
+Fill in the "Where is the source code:" entry. This will be the location of the
+libfreespace directory. (e.g. c:\Hillcrest\libfreespace or ~\Hillcrest\libfreespace)
+
+Fill in the "Where to build the binaries" entry. This can be anywhere but a
+reasonable location is c:\Hillcrest\build\libfreespace or ~\Hillcrest\build\libfreespace
+
+If some configuration data opens up when you enter the build directory, it means
+that the directory already had a build in it. You can reset the build directory
+by selecting File > Delete Cache.
+
+Click "Configure". You will be prompted to select a generator for this project.
+Choose any of the supported generators:
+
+Windows:
+    Visual Studio 8 2005
+    Visual Studio 9 2008
+    Visual Studio 10
+    Visual Studio 11
+
+Linux:
+	Unix Makefiles
+
+At this point, all the configuration settings will be red. This is the time to 
+make any changes to the settings that are displayed. Not all settings are
+required, however some important ones are:
+
+Windows:
+
+The WINDDK_DIR variable. If your WinDDK is installed in a typical location then
+cmake should be able to detect it for you. A typical setting is:
+    C:\WinDDK\7600.16385.1
+
+If using Visual Studio 8 or 9, the VC8_INCLUDE or VC9_INCLUDE variable. If your
+Visual Studio installation is in a typical location cmake should be able to 
+detect it for you. A typical setting is:
+    C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\include
+
+Linux:
+	
+The LIBUSB_1_INCLUDE_DIR and LIBUSB_1_LIBRARY variables. These should be
+automatically detected by cmake but if they are not you may need to point
+them at your libusb installation.
+
+There are other configuration settings available:
+
+CMAKE_INSTALL_PREFIX :
+	The installation directory where the CMake install project will install to.
+	This is initiated by building the "INSTALL" project in the VS solution.
+	Default is typically "C:\Program Files (x86)\libfreespace"
+LIBFREESPACE_BACKEND :
+    Specify an alternate backend on some paltforms. On Linux, valid values are
+    'hidraw' and 'libusb'
+LIBFREESPACE_CODECS_ONLY : (ON/OFF)
+    Build only the libfreespace codecs
+LIBFREESPACE_CUSTOM_INSTALL_RULES :
+    CMake file to customize install rules when libfreespace is built as part of
+    a larger project
+LIBFREESPACE_DOCS_ENABLED : (ON/OFF)
+    Enabled doxygen docs as build target
+LIBFREESPACE_DOCS_INTERNAL : (ON/OFF)
+    Generate doxygen for src files (in addition to API)
+LIBFREESPACE_HIDRAW_THREADED_WRITES : (ON/OFF)
+    Enable writes in a backend thread when using hidraw
+LIBFREESPACE_LIB_TYPE : (SHARED/STATIC)
+    The type of library to create
+LIBFREESPACE_ADDITIONAL_MESSAGE_FILE :
+    Reserved for Hillcrest use. An additional HID message definition file.
+
+Set whatever configuration settings you wish, then click "Configure" until all
+red bars are gone. If a red bar persists, it means that setting will need to
+be set manually.
+
+Once the red bars are gone click "Generate".
+
+In order to compile the project:
+
+Windows:
+
+There should be a Visual Studio project under the "Where to build the
+binaries" location. The project will be called libfreespace.sln .
+
+Open this project. Press F7 to build all. There should now be a
+libfreespace.lib file in the Debug directory of the build directory.
+
+Linux:
+
+There should be a Makefile in the build directory.
+In order to build the library simply open a terminal window, cd to the build
+directory and use the make command.
+
+Example:
+    cd ~/Hillcrest/build/libfreespace
+    make
+
+If you wish to use the "INSTALL" feature of cmake:
+
+Windows:
+
+You will probably have to start Visual Studio using administrator privileges. 
+Then right click the "INSTALL" project and click "Build". There will now be a 
+libfreespace build in the install directory pointed to by CMAKE_INSTALL_PREFIX.
+
+Linux:
+
+You can use the install target of the Makefile. You may need administrator 
+priveleges in order to do so. This will install libfreespace in the directory 
+pointed to by CMAKE_INSTALL_PREFIX.
+
+Example:
+    cd ~/Hillcrest/build/libfreespace
+    sudo make install
+
+Documentation
+=============
+
+To make the doxygen documentation: 
+
+Windows:
+You can build the libfreespace-docs project in the libfreespace solution.
+    1) Open an explorer window to your build directory
+    2) Open libfreespace.sln
+    3) Right click on the libfreespace-docs project and click "Build"
+    4) You can open the documentation by returning to the explorer window, and
+    opening docs > html > index.html
+
+You can also build the documentation from the command line by opening a command
+window in your build directory:
+    1) Open an explorer window to your build directory
+    2) Shift-(Right Click) on the window and select "Open command window here"
+    3) In the command window, enter:
+    cd doc
+    doxygen Doxyfile
+    4) From here you can open it using
+    ./html/index.html
+
+Linux:
+You can make the libfreespace-docs target of the libfreespace Makefile.
+    1) Open a terminal window and navigate to the build directory.
+    2) Enter  "make libfreespace-docs"
+    4) From here you can open it using Firefox (or any other browser):
+        firefox ./doc/html/index.html
+
+You can also build the documentation using doxygen directly:
+    1) Open a terminal window and navigate to the build directory.
+    2) Navigate to the "doc" directory by using:
+        cd doc
+    3) Build the Doxygen documentation by using:
+        doxygen Doxyfile
+    4) From here you can open it using Firefox (or any other browser):
+        firefox ./html/index.html
+
+Troubleshooting
+===============
+
+Linux:
+
+USB CONFIGURATION:
+
+libusb requires the Kernel to have USB support enabled.  Specifically:
+
+Support for Host side USB must be enabled in the kernel.
+Support for USB device filesystem
+
+At least one USB Host Controller Driver must be enabled.
+
+These options can be found under Device Drivers, USB Support using
+make menuconfig.
+
+Depending on how your system is configured, you may need to tweak
+some settings to enable access to the USB port.  The following are
+options to try:
+
+1.  If using an old version of Linux, USBFS may need to be mounted
+
+    You can check if USBFS is mounted by issuing:
+
+    cat /proc/bus/usb/devices
+
+    with at least one USB device attached.
+    If the file does not exist, issue the following command:
+
+    mount -t usbfs /dev/bus/usb /proc/bus/usb
+
+2.  The permissions on the /dev/bus/usb/[bus]/[device] file may be too
+    restrictive.  Try running as root to see if this fixes the problem.
+    If it does and you don't want to run as root, update the udev configuration.
+    For example, edit or add /etc/udev/rules.d/99-local.rules and add the line:
+
+    SUBSYSTEM=="usb", ATTR{idVendor}=="1d5a", MODE="0666"
+
+3.  If you're running on a system that uses HAL to auto-load drivers, 
+    you may want to keep it from loading the HID drivers while debugging
+    to avoid mouse movement.  To do this, create a file in /etc/hal/fdi/preprobe
+    with the contents:

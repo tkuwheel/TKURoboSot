@@ -1,21 +1,54 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+from __future__ import print_function
 import rospy
 import math
+import numpy as np
+from robot.robot import Robot
+from robot.obstacle import Obstacle
 
-class Attack(object):
-  __pub_info = {'v_x':None,'v_y':None,'v_yaw':None} 
+class Attack(Robot,Obstacle):
+  def __init__(self):
+    pass
 
   def ClassicAttacking(self, goal_dis, goal_ang):
-    self.__pub_info['v_x']   = goal_dis * math.cos(math.radians(goal_ang))
-    self.__pub_info['v_y']   = goal_dis * math.sin(math.radians(goal_ang))
-    self.__pub_info['v_yaw'] = goal_ang
+    v_x   = goal_dis * math.cos(math.radians(goal_ang))
+    v_y   = goal_dis * math.sin(math.radians(goal_ang))
+    v_yaw = goal_ang
 
-    return self.__pub_info
+    return v_x, v_y, v_yaw
 
-#  def ClassicAttacking(self,obj):
-#    __pub_info['v_x'] = obj['magenta_goal']['dis'] * math.cos(math.radians(obj['magenta_goal']['ang']))
-#    __pub_info['v_y'] = obj['magenta_goal']['dis'] * math.sin(math.radians(obj['magenta_goal']['ang']))
-#    __pub_info['v_yaw'] = obj['magenta_goal']['ang']
-#    strategy_type = 'attack'
-#
-#    return __pub_info
+  def Cut(self, goal_dis, goal_ang, yaw):
+    go_x = goal_dis * math.cos(math.radians(goal_ang))
+    go_y = goal_dis * math.sin(math.radians(goal_ang))
+    v_x   = go_x  * math.cos(math.radians(yaw)) - go_y  * math.sin(math.radians(yaw))
+    v_y   = go_x  * math.sin(math.radians(yaw)) + go_y  * math.cos(math.radians(yaw))        
+    v_yaw = goal_ang
+    
+    return v_x, v_y, v_yaw
+
+  def Post_up(self, goal_dis, goal_ang,ranges, angle_increment):
+    self.raw = []
+    self.edit = []
+    self.__goal_dis = goal_dis
+    self.__goal_ang = goal_ang
+    self.__ranges = ranges
+    self.__angle_increment = angle_increment
+
+
+    self.raw , object_dis= self.state(a , ranges) 
+    self.edit = self.filter(self.raw)        
+    obstacle_force_x , obstacle_force_y = self.Obstacle_segmentation(self.edit ,angle_increment , object_dis)
+    
+    if obstacle_force_x == 0 and obstacle_force_y == 0 :
+        v_x   = goal_dis * math.cos(math.radians(goal_ang))
+        v_y   = goal_dis * math.sin(math.radians(goal_ang))
+        v_yaw = goal_ang
+
+        return v_x , v_y , v_yaw
+
+    else :
+        v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis)
+
+    
+    return v_x, v_y, v_yaw
+  

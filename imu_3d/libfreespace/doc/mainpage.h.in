@@ -1,0 +1,46 @@
+/**
+ * @mainpage @PROJECT_NAME@ @PROJECT_VERSION_STRING@ Documentation
+ *
+ * See @PROJECT_NAME@ website for more information and FAQ
+ *
+ * \version 0.7 - Uses CMake as the build management system. Added utility functions to help extract data from
+ *                the MEOut Format n messages.
+ * \version 0.6 - New messages, DataModeControlV2 and ReorientationRequest, Scoop and FSM-USB_2 support
+ * \version 0.5 - API refactor to send messages, FSP2xx support
+ * \version 0.4 - Windows robustness updates, minor API cleanup
+ * \version 0.3 - Windows support, device discovery, and bug fixes
+ * \version 0.2 - libusb 1.0
+ * \version 0.1 - Initial Linux/libusb 0.9 release
+ *
+ */
+
+/*!
+	\ingroup messages
+	\anchor meoutformatinfo
+	\page meoutformat MotionEngine Output Format
+
+	When the user requests motion from a Freespace device using a 
+	Data Mode Control V2 Request, the user must provide a Format by setting the
+	formatSelect field and then request data fields by setting the appropriate Format
+	Flags. The Format determines the different data fields that can be
+	transmitted, and the Format Flags determine which fields are actually
+	transmitted in the MotionEngine Output Packet. The MotionEngine Output Packets
+	that are transmitted in response to a Data Mode Control V2 Request will have
+	the same formatSelect and Format Flag values as the Request, plus the appropriate
+	real-time data. Below is a table which outlines the available data fields by 
+	Format and Format Flag:
+
+	Format Flag 	|	formatSelect = 0	|	formatSelect = 1	|	formatSelect = 2	|	formatSelect = 3
+	----------------|-----------------------|-----------------------|-----------------------|-------------------
+	FF0		|	Pointer					|	Acceleration					|	Reserved			|	Pointer
+	FF1		|	Linear Acceleration		|	Linear Acceleration, No Gravity	|	Reserved			|	Linear Acceleration	
+	FF2		|	Linear Acceleration, No Gravity	|	Angular Velocity		|	Reserved			|	Linear Acceleration, No Gravity
+	FF3		|	Angular Velocity		|	Magnetometer					|	Reserved			|	Angular Velocity
+	FF4		|	Magnetometer			|	Inclination						|	Reserved			|	Magnetometer
+	FF5		|	Temperature				|	Compass Heading					|	Reserved			|	Temperature	
+	FF6		|	Angular Position (WXYZ)	|	Angular Position (XYZW)			|	Reserved			|	Angular Position (WXYZ)	
+	FF7		|	Reserved	|	Activity Classification/Power Management Flags	|	Reserved		|	Reserved
+
+	For more information about using the Data Mode Control V2 Request and MotionEngine Output Packet, or for detailed
+	information about the meaning, units, and orientation of these data fields, please refer to the 1000-2984 HCOMM Reference Manual.
+*/

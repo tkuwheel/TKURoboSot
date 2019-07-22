@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<launch> 
+  <!-- <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml" ns="prosilica_driver"/> -->
+  <rosparam command="load" file="$(find vision)/config/FIRA.yaml" ns="FIRA"/>
+  <node name="interface" pkg="vision" type="interface" respawn="true" respawn_delay="5"/>
+  <!-- <node name="white_line" pkg="vision" type="white_line" respawn="true" respawn_delay="5"/> -->
+  <node name="localization_white_line" pkg="vision" type="localization_white_line" respawn="true" respawn_delay="5"/>
+  <node name="black_item" pkg="vision" type="black_item" respawn="true" respawn_delay="5"/>
+  <node name="monitor" pkg="vision" type="monitor" respawn="true" respawn_delay="5" />
+</launch>

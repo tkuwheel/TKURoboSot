@@ -1,45 +1,45 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
+from __future__ import print_function
 import rospy
 import math
+import numpy as np
+
+SOCCER_BALL_RADIUS = 0
 
 class Chase(object):
-  __pub_info = {'v_x':None,'v_y':None,'v_yaw':None}
-  __goal = None
-
   def ClassicRounding(self, goal_ang, ball_dis, ball_ang):
-    alpha = math.radians(ball_ang - goal_ang)
-    beta = 0.7
+    ball_dis = ball_dis - SOCCER_BALL_RADIUS
+    alpha = ball_ang - goal_ang
+    if ball_dis > 100:
+      beta = 15
+    elif ball_dis > 50:
+      beta = 45
+    else:
+      beta = 70
+
     if abs(alpha) > beta:
-      if alpha > 0 :
-        alpha = beta
-      else:
-        alpha = -beta
+      alpha = beta * np.sign(alpha)
     else:
       pass
 
     br_x = ball_dis * math.cos(math.radians(ball_ang))
     br_y = ball_dis * math.sin(math.radians(ball_ang))
-    self.__pub_info['v_x']   = br_x * math.cos(alpha) - br_y * math.sin(alpha)
-    self.__pub_info['v_y']   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
-    self.__pub_info['v_yaw'] = goal_ang
-    
-    return self.__pub_info
 
-#  def ClassicRounding(self, goal_ang=None, ball_dis=None, ball_ang=None, obj):
-#    alpha = math.radians(obj['ball']['ang'] - obj['magenta_goal']['ang'])
-#    beta = 0.7
-#    if abs(alpha) > beta:
-#      if alpha > 0 :
-#        alpha = beta
-#      else:
-#        alpha = -beta
-#    else:
-#      pass
-#
-#    br_x = obj['ball']['dis'] * math.cos(math.radians(obj['ball']['ang']))
-#    br_y = obj['ball']['dis'] * math.sin(math.radians(obj['ball']['ang']))
-#    self.__pub_info['v_x']   = br_x * math.cos(alpha) - br_y * math.sin(alpha)
-#    self.__pub_info['v_y']   = br_x * math.sin(alpha) + br_y * math.cos(alpha)
-#    self.__pub_info['v_yaw'] = obj['magenta_goal']['ang']
-#    
-#    return self.__pub_info
+    v_x   = br_x * math.cos(math.radians(alpha)) - br_y * math.sin(math.radians(alpha))
+    v_y   = br_x * math.sin(math.radians(alpha)) + br_y * math.cos(math.radians(alpha))
+    v_yaw = goal_ang
+    return v_x, v_y, v_yaw
+
+  def StraightForward(self, ball_dis, ball_ang):
+    ball_dis = ball_dis - SOCCER_BALL_RADIUS
+    v_x   = ball_dis * math.cos(math.radians(ball_ang))
+    v_y   = ball_dis * math.sin(math.radians(ball_ang))
+    v_yaw = ball_ang
+    return v_x, v_y, v_yaw
+
+  
+
+
+    
+    
