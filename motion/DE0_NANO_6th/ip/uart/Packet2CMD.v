@@ -12,12 +12,17 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   1.0  :| Chun-Jui Huang    :| 2019/05/8 :|  Initial version
 // --------------------------------------------------------------------
-//`default_nettype  none
-module Packet2CMD(
+`default_nettype  none
+module Packet2CMD #(
+	parameter STREAM_SIZE	=	8
+)(
+//===========================================================================
+// PORT declarations
+//===========================================================================
 input 					iClk,
 input 					iRst_n,
 input 					iDataValid,
-input 		[71:0]	iPacket,
+input 		[STREAM_SIZE-1:0]	iPacket,
 output reg 	[7:0]		oMotor1,
 output reg 	[7:0]		oMotor2,
 output reg 	[7:0]		oMotor3,
@@ -35,11 +40,11 @@ always@(posedge iClk)begin
 	end
 	else begin
 		if(iDataValid)begin
-			oMotor1 <= iPacket[55:48];
-			oMotor2 <= iPacket[47:40];
-			oMotor3 <= iPacket[39:32];
-			oEN <= iPacket[31:24];
-			oShoot <= iPacket[23:16];
+			oMotor1 <= iPacket[63:48];
+			oMotor2 <= iPacket[47:32];
+			oMotor3 <= iPacket[31:16];
+			oEN <= iPacket[15:8];
+			oShoot <= iPacket[7:0];
 		end
 		else begin
 			oMotor1 <= oMotor1;

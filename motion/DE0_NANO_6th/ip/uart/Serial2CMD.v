@@ -20,7 +20,7 @@
 //   Ver  :| Author            :| Mod. Date  :|  Changes Made:
 //   2.0  :| Chun-Jui Huang    :| 2017/07/07 :|  use Crc16
 // --------------------------------------------------------------------
-//`default_nettype  none
+`default_nettype  none
 module Serial2CMD (
 //===========================================================================
 // PORT declarations
@@ -40,11 +40,12 @@ output	reg			oCrcSuccess,
 output 	reg	[7:0]	debug			//  debug
 
 );
-
+`include "param.h"
 //===========================================================================
 // PARAMETER declarations
 //===========================================================================
-//parameter SIZE	=	8;
+parameter PACKAGE_SIZE	=	RX_PACKAGE_SIZE;
+parameter STREAM_SIZE	=	PACKAGE_SIZE * 8;
 // differentiate state in order to change state
 parameter DATA0	=	0;
 parameter DATA1	=	1;
@@ -55,18 +56,22 @@ parameter DATA5	=	5;
 parameter DATA6	=	6;
 parameter DATA7	=	7;
 parameter DATA8	=	8;
+parameter DATA9	=	9;
+parameter DATA10	=	10;
+parameter DATA11	=	11;
 parameter END	=	8'hFF;
 
 //=============================================================================
 // REG/WIRE declarations
 //=============================================================================
 reg		[71:0] 	rPacket;
-reg		[7:0]	rData_0, rData_1, rData_2, rData_3, rData_4, rData_5,rData_6, rData_7, rData_8;	//	divide information to 6 part and 8 bits per part
+reg		[7:0]	rData_0, rData_1, rData_2, rData_3, rData_4, rData_5; 	//
+reg		[7:0] rData_6, rData_7, rData_8, rData_9, rData_10, rData_11;	//	divide information to 11 part and 8 bits per part
 reg		[7:0]	state;
 reg				rRx_ready;
 reg				rCheck;
 reg		[7:0]	rChecksum;
-reg		[7:0]	null = 8'h0;
+// reg		[7:0]	null = 8'h0;
 
 wire				wCrcFinish;
 wire				wCrcSuccess;
@@ -139,37 +144,55 @@ always @(posedge iCLK) begin
 					end
 				DATA3:				
 					begin
-						rData_3	<=	iData;		//motor2
+						rData_3	<=	iData;		
 						rCheck <= 0;
 						state	<=	DATA4;
 					end
 				DATA4:
 					begin
-						rData_4	<=	iData;		//motor3
+						rData_4	<=	iData;		//motor2
 						rCheck <= 0;
 						state	<=	DATA5;
 					end
 				DATA5:
 					begin
-						rData_5	<=	iData;		//enable+stop
+						rData_5	<=	iData;		
 						rCheck <= 0;
 						state	<=	DATA6;
 					end
 				DATA6:
 					begin
-						rData_6	<=	iData;		//shoot
+						rData_6	<=	iData;		//motor3
 						rCheck <= 0;
 						state	<=	DATA7;
 					end
 				DATA7:
 					begin
-						rData_7	<=	iData;		//crc_1
+						rData_7	<=	iData;		
 						rCheck <= 0;
 						state	<=	DATA8;
 					end
 				DATA8:
 					begin
-						rData_8	<=	iData;		//crc_2
+						rData_8	<=	iData;		//enable+stop//crc_2
+						rCheck <= 0;
+						state	<=	DATA9;
+					end
+				DATA9:
+					begin
+						rData_9	<=	iData;		//shoot
+						rCheck <= 0;
+						state	<=	DATA10;
+					end
+				DATA10:
+					begin
+						rData_10	<=	iData;		//crc_1
+						rCheck <= 0;
+						state	<=	DATA11;
+					end
+				DATA11:
+					begin
+						rData_11	<=	iData;		//crc_2
 						rCheck <= 1;
 						state	<=	END;
 					end
@@ -204,23 +227,24 @@ always @(posedge iCLK) begin
 	end
 end
 Crc16 #(
-	.PACKAGE_SIZE(9),
-	.STREAM_SIZE(72)
+	.STREAM_SIZE(STREAM_SIZE)
 	) Crc_RX (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
 	.iDataValid(rCheck),
-	.iData({rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8}),
+	.iData({rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8,rData_9,rData_10,rData_11}),
 	.oCrc(wCrc),
 	.oSuccess(wCrcSuccess),
 	.oFinish(wCrcFinish)
 );
 
-Packet2CMD packet(
+Packet2CMD #(
+	.STREAM_SIZE(STREAM_SIZE - 32) // remove ff fa crc_1 crc_2
+	) Packet (
 	.iClk(iCLK),
 	.iRst_n(iRst_n),
 	.iDataValid(wCrcSuccess),
-	.iPacket({rData_0,rData_1,rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8}),
+	.iPacket({rData_2,rData_3,rData_4,rData_5,rData_6,rData_7,rData_8,rData_9}),
 	.oMotor1(wCMD_Motor1),
 	.oMotor2(wCMD_Motor2),
 	.oMotor3(wCMD_Motor3),

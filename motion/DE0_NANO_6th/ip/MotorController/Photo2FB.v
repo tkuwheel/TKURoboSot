@@ -13,7 +13,8 @@
 //   0.1  :| Chih-En Wu        :| 2012/08/04 :|  Convert from VHDL version
 // --------------------------------------------------------------------
 
-//`default_nettype  none
+`default_nettype  none
+
 module Photo2FB (
 input				iCLK,			// System Clock
 input				iPA,			// Motor Channel A
@@ -51,8 +52,9 @@ reg				rDLA, rDLB;
 //=======================================================
 
 //Clock Divisor
+`include "param.h"
 Clkdiv #(
-	.EXCEPTCLK	(10)
+	.EXCEPTCLK	(FEEDBACK_FREQUENCY)
 ) Clk1K (
 	.iClk		(iCLK),	// 50Mhz clock 
 	.iRst_n	(iRst_n),// Reset
