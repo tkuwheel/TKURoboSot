@@ -140,7 +140,7 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw, )
       
     elif method == "At_post_up":
-      x, y, yaw = self.AC.Post_up(t[side]['dis'],\
+      x, y, yaw = self.BC.Post_up(t[side]['dis'],\
                                        t[side]['ang'],\
                                        l['ranges'],\
                                        l['angle']['increment'])
@@ -284,7 +284,7 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            print("12")
+            
             # self.robot.goal_dis = 0
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
@@ -310,7 +310,7 @@ class Strategy(object):
               self.ToMovement()
 
           elif mode == 'At_post_up':
-            if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
+            if targets[self.robot.opp_side]['dis'] < self.robot.atk_shoot_dis:
               self.ToAttack()
             elif not self.robot.CheckBallHandle():
               self.ToChase()
