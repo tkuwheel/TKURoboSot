@@ -605,7 +605,6 @@ void BaseController::Send(const RobotCommand &CMD)
 {
 #ifdef DEBUG
 #endif
-    mb_close = false;
     m_baseCommand = CMD;
     mShootRegularization(m_baseCommand);
     mCommandRegularization(m_baseCommand);

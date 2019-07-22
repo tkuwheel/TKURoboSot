@@ -56,9 +56,6 @@ int main(int argc, char **argv)
         if(Node.getMotionFlag()){
 
             counter = 0;
-            robotCMD = Node.getMotion();
-
-            Base.Send(robotCMD);
 #ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
@@ -67,11 +64,12 @@ int main(int argc, char **argv)
             counter++;
             if(counter >= (CMD_FREQUENCY/2)){
                 Node.clearAll();
-                Base.Close();
                 printf("\nCANNOT GET COMMAND\n");
             }
 
         }
+        robotCMD = Node.getMotion();
+        Base.Send(robotCMD);
         if(robotCMD.shoot_power>0){
             Node.clearShoot();
         }
