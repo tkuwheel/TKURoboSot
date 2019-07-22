@@ -208,8 +208,7 @@ class Strategy(object):
 
       else:
         self.robot.toChase("Straight")
-    
-   
+
   def ToAttack(self):
     mode = self.robot.attack_mode
     if mode == "Attack" :

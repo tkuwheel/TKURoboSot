@@ -15,6 +15,7 @@ from std_msgs.msg import Bool
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Int32MultiArray
 from sensor_msgs.msg import JointState
+from strategy.msg import RobotState
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -105,7 +106,7 @@ class Robot(object):
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
-    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
+    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), RobotState)
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
     if not sim :
@@ -163,9 +164,11 @@ class Robot(object):
     self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180
 
   def RobotStatePub(self, state):
-    s = String()
-    s.data = state
-    self.state_pub.publish(s)
+    m = RobotState()
+    m.state = state
+    m.ball_is_handled = self.__ball_is_handled
+    m.ball_dis = self.__object_info['ball']['dis']
+    self.state_pub.publish(m)
 
   def ConvertSpeedToPWM(self, x, y):
     reducer = 24
@@ -233,7 +236,8 @@ class Robot(object):
 
   def RealBallHandle(self):
     if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
-     
+      self.__ball_is_handled = True
       return True
     else:
+      self.__ball_is_handled = False
       return False
