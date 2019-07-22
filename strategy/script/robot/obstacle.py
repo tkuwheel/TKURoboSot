@@ -7,10 +7,10 @@ import numpy as np
 
 class Obstacle(object): 
   def state(self, ranges):
-    
+    self.raw = []
     object_dis=float(500)
     for i in range (len(ranges)):
-       if ranges[i]>65: 
+       if ranges[i]>130: 
          self.raw.append(0)
        else :
          self.raw.append(ranges[i])
@@ -23,7 +23,7 @@ class Obstacle(object):
        
     mask=[1,0,1]
 
-    
+    self.edit = []
     if raw[len(raw)-1]==0 and raw[0]!=0 and raw[1]==0 :
         self.edit.append(0)
     else :
@@ -121,7 +121,7 @@ class Obstacle(object):
 
         
 
-  def Force_Calculation (self , obstacle_force_x ,obstacle_force_y , goal_ang ,goal_dis) :
+  def Force_Calculation (self , obstacle_force_x ,obstacle_force_y , goal_ang ,goal_dis ,mode) :
     
     x=np.array([1,0])
     y=np.array([-1*obstacle_force_x , -1*obstacle_force_y])
@@ -132,11 +132,11 @@ class Obstacle(object):
     else :
         k = 1
 
-    if goal_dis > 300:
+    if mode== 0 :
         v_x = goal_dis * math.cos(math.radians(goal_ang)) - 40 * obstacle_force_x
         v_y = goal_dis * math.sin(math.radians(goal_ang)) - 40 * obstacle_force_y
 
-    else :
+    elif mode==1 :
         v_x = goal_dis * math.cos(math.radians(goal_ang))
         v_y = goal_dis * math.sin(math.radians(goal_ang)) 
 

@@ -27,8 +27,8 @@ class Attack(Robot,Obstacle):
     return v_x, v_y, v_yaw
 
   def Post_up(self, goal_dis, goal_ang,ranges, angle_increment):
-    self.raw = []
-    self.edit = []
+    
+    
     self.__goal_dis = goal_dis
     self.__goal_ang = goal_ang
     self.__ranges = ranges
@@ -47,7 +47,7 @@ class Attack(Robot,Obstacle):
         return v_x , v_y , v_yaw
 
     else :
-        v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis)
+        v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis,1)
 
     
     return v_x, v_y, v_yaw

@@ -309,6 +309,14 @@ class Strategy(object):
             else:
               self.ToMovement()
 
+          elif mode == 'At_post_up':
+            if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
+              self.ToAttack()
+            elif not self.robot.CheckBallHandle():
+              self.ToChase()
+            else:
+              self.ToMovement()              
+
 
           elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
