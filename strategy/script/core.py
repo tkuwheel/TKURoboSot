@@ -63,6 +63,8 @@ class Core(Robot, StateMachine):
     self.AC  = Attack()
     self.BC  = Behavior()
     self.block = 0
+    self.left_ang = 0
+
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
   def on_toIdle(self):
@@ -133,8 +135,8 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw)
     
     elif method == "Penalty_Kick":
-      front_ang = math.degrees(position['imu_3d']['yaw'])-90
       x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw)
+      self.left_ang = abs(yaw)
       self.MotionCtrl(x, y, yaw, )
       
     elif method == "At_post_up":
@@ -142,6 +144,7 @@ class Core(Robot, StateMachine):
                                        t[side]['ang'],\
                                        l['ranges'],\
                                        l['angle']['increment'])
+      
       self.MotionCtrl(x, y, yaw, )
     
     
@@ -225,9 +228,9 @@ class Strategy(object):
     if mode == "Attack" :
       self.robot.toAttack("Classic")
 
-    elif mode == "At_post_up":
-      self.robot.toAttack("Post_up")
-
+, left_ang
+, left_ang
+, left_ang
     elif mode == "Cut":
       self.robot.toAttack("Cut")
 
@@ -291,7 +294,7 @@ class Strategy(object):
 
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
-            if abs(targets[self.robot.opp_side]['ang']) <= self.robot.atk_shoot_ang:
+            if self.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
