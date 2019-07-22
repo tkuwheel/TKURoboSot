@@ -6,23 +6,14 @@ import numpy as np
 
 
 class Obstacle(object): 
-  def state(self,a, ranges):
-    object_dis = 0
-    if a == 0 :
-      object_dis=999
-      for i in range (len(ranges)):
-          if ranges[i]>65 :
-              self.raw.append(0)
-          else :
-              self.raw.append(ranges[i])
-
-    elif a ==1 :
-        object_dis=2.5
-        for i in range (len(ranges)):
-            if ranges[i] > 2.5 :
-                self.raw.append(0)
-            else :
-                self.raw.append(ranges[i])
+  def state(self, ranges):
+    
+    object_dis=float(500)
+    for i in range (len(ranges)):
+       if ranges[i]>65: 
+         self.raw.append(0)
+       else :
+         self.raw.append(ranges[i])
     
     return self.raw , object_dis
 

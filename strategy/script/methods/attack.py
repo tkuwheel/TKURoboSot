@@ -35,7 +35,7 @@ class Attack(Robot,Obstacle):
     self.__angle_increment = angle_increment
 
 
-    self.raw , object_dis= self.state(a , ranges) 
+    self.raw , object_dis= self.state(ranges) 
     self.edit = self.filter(self.raw)        
     obstacle_force_x , obstacle_force_y = self.Obstacle_segmentation(self.edit ,angle_increment , object_dis)
     

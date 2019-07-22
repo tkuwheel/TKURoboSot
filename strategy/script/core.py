@@ -92,7 +92,7 @@ class Core(Robot, StateMachine):
   def on_toAttack(self, method = "Classic"):
     t = self.GetObjectInfo()
     side = self.opp_side
-    l = self.robot.GetObstacleInfo()
+    l = self.GetObstacleInfo()
     if method == "Classic":
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     elif method == "Cut":
@@ -114,7 +114,7 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo() 
     position = self.GetRobotInfo()
     side = self.opp_side
-    l = self.robot.GetObstacleInfo()
+    l = self.GetObstacleInfo()
 
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
@@ -228,11 +228,10 @@ class Strategy(object):
     if mode == "Attack" :
       self.robot.toAttack("Classic")
 
-, left_ang
-, left_ang
-, left_ang
     elif mode == "Cut":
       self.robot.toAttack("Cut")
+    elif mode == "Post_up":
+      self.robot.toAttack("Post_up")
 
   def ToMovement(self):
     mode = self.robot.strategy_mode
@@ -285,6 +284,7 @@ class Strategy(object):
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
+            print("12")
             # self.robot.goal_dis = 0
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
