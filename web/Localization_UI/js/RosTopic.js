@@ -2,7 +2,7 @@
 // hold ball
 var HoldBall1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/hold_ball',
+    name: 'motion/hold_ball',
     messageType: 'std_msgs/Bool'
 });
 
@@ -25,7 +25,7 @@ function HoldBallSwitch(state,robot) {
 //ball
 var ball = new ROSLIB.Topic({
     ros: ros,
-    name: '/vision/object',
+    name: 'vision/object',
     messageType: '/vision/Object'
 });
 ball.subscribe(function(msg) {
@@ -40,7 +40,7 @@ ball.subscribe(function(msg) {
 //=======================================================
 var imu_3d = new ROSLIB.Topic({
     ros: ros,
-    name: '/imu_3d',
+    name: 'imu_3d',
     messageType: 'imu_3d/inertia'
 });
 imu_3d.subscribe(function(msg) {
@@ -50,7 +50,7 @@ imu_3d.subscribe(function(msg) {
 //=======================================================
 var path = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/PathOrder',
+    name: 'FIRA/PathOrder',
     messageType: 'std_msgs/Float32MultiArray'
 });
 path.subscribe(function(msg) {
@@ -94,7 +94,7 @@ path.subscribe(function(msg) {
 
 var coord = new ROSLIB.Topic({
     ros: ros,
-    name: '/akf_pose',
+    name: 'akf_pose',
     messageType: 'geometry_msgs/PoseWithCovarianceStamped'
 });
 coord.subscribe(function(msg) {
@@ -228,7 +228,7 @@ coord.subscribe(function(msg) {
 });
 var std = new ROSLIB.Topic({
     ros: ros,
-    name: '/mcl/std',
+    name: 'mcl/std',
     messageType: 'std_msgs/Float32'
 });
 std.subscribe(function(msg) {
@@ -242,7 +242,7 @@ std.subscribe(function(msg) {
 });
 var save_parameter = new ROSLIB.Topic({
     ros: ros,
-    name: '/mcl/save',
+    name: 'mcl/save',
     messageType: 'std_msgs/Empty'
 });
 function saveyamel(){
@@ -255,7 +255,7 @@ function saveyamel(){
 //MotionRemote
 var Remote = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/remote',
+    name: 'motion/remote',
     messageType: 'std_msgs/Bool'
 });
 //Remote_state
@@ -280,7 +280,7 @@ function RemoteSwitch(state) {
 /*========================================================*/
 var imu_pub = new ROSLIB.Topic({
     ros: ros,
-    name: '/imu_3d/angle_correction',
+    name: 'imu_3d/angle_correction',
     messageType: 'std_msgs/Float32'
 });
 function ImuReset() {
@@ -293,7 +293,7 @@ function ImuReset() {
 /*========================================================*/
 var resetParticles = new ROSLIB.Topic({
     ros: ros,
-    name: '/mcl/resetParticles',
+    name: 'mcl/resetParticles',
     messageType: 'self_localization/resetParticles'
 });
 function CoordReset() {
@@ -325,30 +325,30 @@ function CoordReverse() {
 //Region
 var RegionBox = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/Location',
+    name: 'FIRA/Location',
     messageType: 'std_msgs/Float32MultiArray'
 });
 //Optimization
 var OptimizationBox = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/Optimization',
+    name: 'FIRA/Optimization',
     messageType: 'std_msgs/Int32MultiArray'
 });
 //GameState
 var GameState = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/GameState',
+    name: 'FIRA/GameState',
     messageType: 'std_msgs/Int32'
 });
 var SaveParam = new ROSLIB.Topic({
     ros: ros,
-    name: '/FIRA/SaveParam',
+    name: 'FIRA/SaveParam',
     messageType: 'std_msgs/Int32'
 });
 //cmd_vel
 var cmdVel1 = new ROSLIB.Topic({
     ros: ros,
-    name: '/motion/cmd_vel',
+    name: 'motion/cmd_vel',
     messageType: '/geometry_msgs/Twist'
 });
 //TopicFunction

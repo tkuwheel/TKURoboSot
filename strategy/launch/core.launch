@@ -10,6 +10,8 @@
                 w=m.angular.z)' --import nubot_common" />
   <node ns="$(env ROBOT_NS)" name="gazebo_relay" pkg="strategy" type="gazebo_relay.py" output="screen" />
 </group>
-<node ns="$(env ROBOT_NS)" name="core" pkg="strategy" type="core.py" args="$(arg sim)" output="screen" />
+<group ns="$(env ROBOT_NS)">
+  <node name="core" pkg="strategy" type="core.py" args="$(arg sim)" output="screen" />
+</group>
 <!-- <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam" args="load /core $(find strategy)/cfg/game_state.yaml" /> -->
 </launch>

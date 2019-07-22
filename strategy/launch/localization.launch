@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch> 
+ <group ns="$(env ROBOT_NS)">
+  <node name="imu_3d" pkg="imu_3d" type="imu_3d" output="screen" />
+  <node name="self_localization" pkg="self_localization" type="self_localization" output="screen" />
+ </group>
+</launch>

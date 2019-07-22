@@ -15,7 +15,7 @@ REMAINING_RANGE_YAW = 2
 
 class Behavior(Robot,Obstacle):
   def __init__(self):
-    pass
+    self.penalty_angle = []
 
   def Orbit(self, goal_ang):
     orbit_radius = 33.5 # 22.5 + 11 cm
@@ -89,13 +89,20 @@ class Behavior(Robot,Obstacle):
 
     return defence_x , defence_y , defence_yaw
 
-  def PenaltyTurning(self, side, dest_ang):
-    robot_info = self.GetObjectInfo()
-    if dest_ang == 0:
-      v_yaw = robot_info[side]['ang']      
+  def PenaltyTurning(self, side, run_yaw):
+    robot_info = self.GetRobotInfo()
+    if run_yaw == 0:
+      v_yaw = robot_info[side]['ang']
+    
+    else:
+      front_ang = math.degrees(position['imu_3d']['yaw'])-90
+      dest_ang  = front_ang - run_yaw
+      self.penalty_angle.append(dest_ang)
+      dest_ang = self.penalty_angle[0] 
+      v_yaw = front_ang - dest_ang
+
     v_x = 0
     v_y = 0
-   
     return v_x, v_y, v_yaw
 
     

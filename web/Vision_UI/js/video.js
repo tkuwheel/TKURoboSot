@@ -178,8 +178,8 @@
 
     })(MJPEG || {});
 
-    //var player = new MJPEG.Player("player", "http://localhost:8080/stream?topic=/usb_cam/image_raw");
-    var player = new MJPEG.Player("player", "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/image");
+    //var player = new MJPEG.Player("player", "http://localhost:8080/stream?topic=usb_cam/image_raw");
+    var player = new MJPEG.Player("player", "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/image");
     player.start();*/
 
 
@@ -260,7 +260,7 @@ video_canvas.addEventListener("mousedown", function(e) {
 function CheckCamera(check) {
     var video = document.getElementById("player");
     if (check)
-        video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/image";
+        video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/image";
     else
         video.src = "img/offline.png";
 
@@ -286,14 +286,14 @@ function MonitorSwitch(value) {
     if(value==2){monitor=2;}
     if (value == 7){	
         if (check)
-            video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/image_monitor";
+            video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/image_monitor";
         else
             video.src = "img/offline.png";
     }
     else if(monitor!=8) {
 	//console.log(monitor);
         if (check)
-            video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/camera/image";
+            video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/image";
         else
             video.src = "img/offline.png";
     }
