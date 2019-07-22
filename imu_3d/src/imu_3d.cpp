@@ -480,7 +480,7 @@ int main(int argc,char **argv)
             double last_time;
             double delta_t = 0;
             degree = 360+sensor.x-direct_tmp-angle_correction;
-            printf("%f\n",direct_tmp);
+            //printf("%f\n",direct_tmp);
             if(degree>=360)
                 degree = degree - 360;
             printf("Angle: %f\n",degree);
