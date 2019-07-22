@@ -5,7 +5,7 @@ __pycache__
 *.pyc
 .vscode
 *.swp
-*.txt
+# *.txt
 
 # fpga
 db
