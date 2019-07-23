@@ -25,7 +25,7 @@
 /*******************************
   * Define 
   ******************************/
-//#define DEBUG
+#define DEBUG
 //#define RECORD
 #define CSSL
 #define FIRA_6_OLD
