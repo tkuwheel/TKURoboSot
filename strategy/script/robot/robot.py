@@ -232,7 +232,7 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
+    if self.__object_info['ball']['dis'] <= self.__handle_dis and  self.__object_info['ball']['ang'] <= self.__handle_ang:
      
       return True
     else:
