@@ -28,7 +28,7 @@ class Core(Robot, StateMachine):
 
   toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself()
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
-  toAttack = chase.to(attack) | attack.to.itself() | shoot.to(attack) | movement.to(attack)
+  toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)
   toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
   toPoint  = point.to.itself() | idle.to(point)
@@ -236,9 +236,10 @@ class Strategy(object):
   def ToMovement(self):
     mode = self.robot.strategy_mode
     state = self.robot.game_state
+    log('movement')
     if state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
-    if mode == "At_post_up":
+    elif mode == "At_post_up":
       self.robot.toMovement("At_post_up")
     elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
@@ -247,7 +248,7 @@ class Strategy(object):
     elif mode == "Defense_goal":
       self.robot.toMovement("Relative_goal")
 
-    else :
+    elif mode == "Fast_break":
       self.ToAttack()
   
   def main(self):
@@ -310,11 +311,12 @@ class Strategy(object):
               self.ToMovement()
 
           elif mode == 'At_post_up':
-            if targets[self.robot.opp_side]['dis'] < self.robot.atk_shoot_dis:
+            if targets[self.robot.opp_side]['dis'] <= self.robot.atk_shoot_dis:
               self.ToAttack()
             elif not self.robot.CheckBallHandle():
               self.ToChase()
             else:
+              print("post_up")
               self.ToMovement()              
 
 
@@ -332,7 +334,7 @@ class Strategy(object):
           if not self.robot.CheckBallHandle():
             self.ToChase()
           elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and \
-                abs(targets[self.robot.opp_side]['dis']) <= self.robot.atk_shoot_dis:
+                abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
             self.robot.toShoot(100)
           else:
             self.ToAttack()
