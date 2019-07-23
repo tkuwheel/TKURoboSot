@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <launch> 
  <!--<param name="FIRA/RobotNumber" value="1"/>-->
- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
- <node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>
+ 
  <group ns="$(env ROBOT_NS)">
+   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+   <node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>
    <rosparam command="load" file="$(find strategy)/cfg/vision_better.yaml"/>
    <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="true" respawn_delay="5" output="screen"/> 
    <include file="$(find vision)/launch/vision.launch" />
    <node name="Attack_motion" pkg="motion" type="Attack_motion_node"/>
-   <include file="$(find strategy)/launch/localization.launch" />
  </group>
 </launch>
