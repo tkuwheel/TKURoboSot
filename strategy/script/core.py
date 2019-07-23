@@ -137,15 +137,15 @@ class Core(Robot, StateMachine):
     elif method == "Penalty_Kick":
       x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw)
       self.left_ang = abs(yaw)
-      self.MotionCtrl(x, y, yaw, )
+      self.MotionCtrl(x, y, yaw )
       
-    elif method == "At_post_up":
+    elif method == "At_Post_up":
       x, y, yaw = self.BC.Post_up(t[side]['dis'],\
                                        t[side]['ang'],\
                                        l['ranges'],\
                                        l['angle']['increment'])
       
-      self.MotionCtrl(x, y, yaw, )
+      self.MotionCtrl(x, y, yaw)
     
     
     
@@ -239,8 +239,8 @@ class Strategy(object):
     log('movement')
     if state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
-    elif mode == "At_post_up":
-      self.robot.toMovement("At_post_up")
+    elif mode == "At_Post_up":
+      self.robot.toMovement("At_Post_up")
     elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
     elif mode == "Defense_ball":
@@ -278,14 +278,16 @@ class Strategy(object):
             elif state == "Penalty_Kick":
               self.ToMovement()
             else :
+              print('idle to chase')
               self.ToChase()
+              
 
           elif self.robot.run_point:
             self.RunStatePoint()
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
-            
+            print('chase to move')
             # self.robot.goal_dis = 0
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
@@ -295,7 +297,7 @@ class Strategy(object):
 
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
-            if self.left_ang <= self.robot.atk_shoot_ang:
+            if self.robot.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
@@ -310,7 +312,7 @@ class Strategy(object):
             else:
               self.ToMovement()
 
-          elif mode == 'At_post_up':
+          elif mode == 'At_Post_up':
             if targets[self.robot.opp_side]['dis'] <= self.robot.atk_shoot_dis:
               self.ToAttack()
             elif not self.robot.CheckBallHandle():
