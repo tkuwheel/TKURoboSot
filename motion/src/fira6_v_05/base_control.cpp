@@ -666,7 +666,8 @@ void BaseController::SetStop()
 void BaseController::Close()
 {
     mb_close = true;
-    printf("OAO\n");
+    m_shoot_power = 0;
+//    printf("OAO\n");
     mDriverSetting();
     mCsslSend2FPGA();
 
