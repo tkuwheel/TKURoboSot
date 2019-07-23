@@ -9,6 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
 #  image_transport
   message_filters
   message_generation
+  genmsg
+  actionlib_msgs
+  actionlib
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -24,14 +27,14 @@ add_message_files(
 #  GameState.srv
 #)
 
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  Passing.action
+)
 
 generate_messages(
   DEPENDENCIES
+  actionlib_msgs
 )
 
 generate_dynamic_reconfigure_options(

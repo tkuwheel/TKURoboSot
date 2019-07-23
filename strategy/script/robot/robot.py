@@ -97,8 +97,7 @@ class Robot(object):
     print("Objects informations: {}".format(self.__object_info))
     print("Obstacles informations: {}".format(self.__obstacle_info))
 
-  def __init__(self, robot_num, sim = False):
-    self.robot_number = robot_num
+  def __init__(self, sim = False):
 
     rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
@@ -106,7 +105,7 @@ class Robot(object):
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
-    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), RobotState)
+    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC, RobotState)
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
     if not sim :
