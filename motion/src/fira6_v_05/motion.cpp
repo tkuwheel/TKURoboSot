@@ -32,13 +32,14 @@ int main(int argc, char **argv)
 //    ros::NodeHandle n;
 	BaseController Base(argc, argv, false);
 
-	RobotCommand robotCMD;
-    RobotCommand robotOdo;
+	RobotCommand robotCMD = {0};
+    RobotCommand robotOdo = {0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
 	std::cout << "ATTACK MOTION IS RUNNING!\n";
 	ros::Rate loop_rate(CMD_FREQUENCY);
     int counter = 0;
+    int counter_shoot = 0;
 	while(true){
         if(flag){
             Base.Close();
@@ -53,6 +54,14 @@ int main(int argc, char **argv)
             continue;
         }
 //        Base.SetEnable();
+        if(robotCMD.shoot_power>0){
+	    if(counter_shoot>=CMD_FREQUENCY/2){
+		Node.clearShoot();
+		counter_shoot = 0;
+	    }else{
+		counter_shoot++;
+	    }
+        }
         if(Node.getMotionFlag()){
 
             counter = 0;
@@ -71,9 +80,6 @@ int main(int argc, char **argv)
                 printf("\nCANNOT GET COMMAND\n");
             }
 
-        }
-        if(robotCMD.shoot_power>0){
-            Node.clearShoot();
         }
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
