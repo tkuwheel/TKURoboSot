@@ -55,6 +55,10 @@ class RoleSelector(object):
       self._result.catcher_res = True
       self._as.set_succeeded(self._result)
 
+  @classmethod
+  def PassingTo(self, catcher_ns):
+    self._ac = actionlib.SimpleActionClient(catcher_ns + '/robot1/passing_action', strategy.msg.PassingAction)
+
   def MyState(self):
     if "robot1" in rospy.get_namespace():
       return self.robot1
