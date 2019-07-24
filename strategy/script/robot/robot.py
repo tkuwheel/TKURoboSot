@@ -167,9 +167,9 @@ class Robot(object):
     m.state = state
     m.ball_is_handled = self.__ball_is_handled
     m.ball_dis = self.__object_info['ball']['dis']
-    m.position.linear.x   = self.__robot_info['location']['x']
-    m.position.linear.y   = self.__robot_info['location']['y']
-    m.position.linear.yaw = self.__robot_info['location']['yaw']
+    m.position.linear.x  = self.__robot_info['location']['x']
+    m.position.linear.y  = self.__robot_info['location']['y']
+    m.position.angular.z = self.__robot_info['location']['yaw']
     self.state_pub.publish(m)
 
   def ConvertSpeedToPWM(self, x, y):
