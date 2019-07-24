@@ -115,6 +115,7 @@ void BaseController::mRun()
     }
     gettimeofday(&m_serialLast, 0);
     int counter = 0;
+    int count = 0;
     while(true){
         if(!mCheckSerial()){
             if(mb_close){
@@ -122,7 +123,8 @@ void BaseController::mRun()
                 m_motorCurrRPM.w2 = 0;
                 m_motorCurrRPM.w3 = 0;
             }
-            printf("Cannot get feedback\n");
+            count++;
+            printf("Cannot get feedback %d\n",count);
 //            sleep(1);
             continue;
         }
@@ -544,7 +546,7 @@ void BaseController::mInverseKinematics()
     m_motorCommandRPM.w1 = cmd1 / 100 * max_motor_rpm;
     m_motorCommandRPM.w2 = cmd2 / 100 * max_motor_rpm;
     m_motorCommandRPM.w3 = cmd3 / 100 * max_motor_rpm;
-#ifdef DEBUG
+#ifdef DEBUG_
         printf("cmd %f %f %f\n", cmd1, cmd2, cmd3);
         printf("cmd rpm %f %f %f\n", m_motorCommandRPM.w1, m_motorCommandRPM.w2, m_motorCommandRPM.w3);
 #endif

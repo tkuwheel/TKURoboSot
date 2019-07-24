@@ -113,8 +113,7 @@ void Motion_nodeHandle::run()
             if(counter>=frequency){
                 count++;
                 counter = 0;
-                printf("CANNOT GET COMMAND %d\r", count);
-                fflush(stdout);
+                printf("CANNOT GET COMMAND %d\n", count);
             }else{
                 counter++;
             }
