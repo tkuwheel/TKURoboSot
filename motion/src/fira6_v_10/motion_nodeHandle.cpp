@@ -134,19 +134,14 @@ void Motion_nodeHandle::pub_robotFB(RobotCommand robotFB)
     pub(FB);
 }
 
-void Motion_nodeHandle::clearShoot()
+void Motion_nodeHandle::clear()
 {
-//    this->motion_flag = false;
-    robotCMD.shoot_power = 0;
-}
-
-int Motion_nodeHandle::clearAll()
-{
-    robotCMD.x = 0;
-    robotCMD.y = 0;
-    robotCMD.yaw = 0;
-    robotCMD.shoot_power = 0;
-    robotCMD.hold_ball = false;
+    if(this->remote == false){
+        this->robotCMD.x = 0;
+        this->robotCMD.y = 0;
+        this->robotCMD.yaw = 0;
+    }
+    this->robotCMD.shoot_power = 0;
 }
 
 bool Motion_nodeHandle::getMotionFlag()

@@ -114,12 +114,12 @@ private: //private function
     bool    mSerialDecoder();
     void    mOpenRecordFile();
     void    mCloseRecordFile();
-    void    mCommandRegularization(RobotCommand &);
+    void    mCommandRegularization();
     void    mSpeedRegularization();
     void    mSpeedRegularization(double &, const int &);
     int16_t mPWMRegularization(int16_t );
-	void	mShootRegularization(const RobotCommand &);
-	int     mDriverSetting();
+	void	mShootRegularization();
+	void	mDriverSetting();
     int     mBaseControl();
     MotorSpeed  mTrapeziumSpeedPlan(const MotorSpeed &, const MotorSpeed &, MotorSpeed &);
     void    mSetSlope(const MotorSpeed &, const MotorSpeed &, int &, double []);

@@ -11,9 +11,8 @@
 /********************************
  *	Include header files
  ********************************/
-#include "parameter.h"
 #include "motor_data.h"
-#include "node_handle.h"
+#include "motion_nodeHandle.h"
 #include "base_control.h"
 /********************************
  *	Define	
@@ -28,63 +27,49 @@ void inturrupt(int signal)
 }
 int main(int argc, char **argv)
 {
-    Motion_nodeHandle Node(argc, argv);
-    //    ros::init(argc, argv, "Test");
-    //    ros::NodeHandle n;
-    BaseController Base(
-            argc, 
-            argv, 
-            HEAD_1,
-            HEAD_2,
-            MAX_MOTOR_RPM,
-            MIN_MOTOR_RPM,
-            MAX_PWM,
-            MIN_PWM,
-            TICKS_PER_ROUND,
-            false
-            );
-    RobotCommand robotCMD = {0};
-    RobotCommand robotOdo = {0};
+	Motion_nodeHandle Node(argc, argv);
+//    ros::init(argc, argv, "Test");
+//    ros::NodeHandle n;
+	BaseController Base(argc, argv, false);
+
+	RobotCommand robotCMD;
+    RobotCommand robotOdo;
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-    std::cout << "FIRA7th MOTION IS RUNNING!\n";
-    bool is_activated = false;
-    while(true){
+	std::cout << "ATTACK MOTION IS RUNNING!\n";
+	ros::Rate loop_rate(CMD_FREQUENCY);
+	while(true){
         if(flag){
             Base.Close();
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
-            //            printf("close\n");
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0){
-                sleep(1);
+//            printf("close\n");
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)
                 break;
-            }
-            sleep(1);
+            loop_rate.sleep();
             continue;
         }
-        // Get Command
-        if(Node.getNodeFlag(is_activated)){
-
+//        Base.SetEnable();
+        if(Node.getMotionFlag()){
             robotCMD = Node.getMotion();
-
-            Base.Send(robotCMD);
-#ifdef DEBUG_
+#ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
 #endif
+            Base.Send(robotCMD);
         }
-        // Send Command
-        if(Base.GetBaseFlag(is_activated)){
+        if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
-#ifdef DEBUG_
+#ifdef DEBUG
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
         }
-    }
-    std::cout << "Close Attack Motion\n";
-    return 0;
+		loop_rate.sleep();
+	}
+	std::cout << "Close Attack Motion\n";
+	return 0;
 }
 
 
