@@ -6,6 +6,7 @@ __pycache__
 .vscode
 CATKIN_IGNORE
 *.swp
+# *.txt
 *.swo
 *~
 
@@ -14,6 +15,8 @@ db
 export_db
 incremental_db
 output_files
+work
+signaltap
 
 *.stp
 *.qdf
