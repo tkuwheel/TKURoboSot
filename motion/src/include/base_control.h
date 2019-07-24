@@ -18,7 +18,7 @@
   * Include header
   ******************************/
 //#include "motor_control.h"
-#include "parameter.h"
+#include "serial_parameter.h"
 #include "motor_data.h"
 #include "cssl.h"
 #include "crc_16.h"
@@ -65,13 +65,21 @@ typedef struct{
     int w3;
 }SerialRX;
 
-double PWM2RPM(const int16_t &);
-int16_t RPM2PWM(const double &);
 
 class BaseController{
 public: //constructor & destructor
 //    BaseControl();
-    BaseController(int, char **, bool);
+    BaseController(
+            int, 
+            char **, 
+            uint8_t,
+            uint8_t,
+            int,
+            int,
+            int,
+            int,
+            int,
+            bool);
 	~BaseController();
 private: //const
 	const double m1_Angle = -M_PI/6;
@@ -83,7 +91,7 @@ private: //const
     std::string port = "/dev/communication/motion";
 
 public: //public function
-    bool    GetBaseFlag();
+    bool    GetBaseFlag(bool &);
     bool    GetErrFlag();
     uint8_t* GetPacket();
     MotorSpeed GetCurrRPM();
@@ -103,6 +111,8 @@ public: //public function
     void    ShowCsslCallback();
     void    ShowCommand();
     void    ShowSerialPacket();
+    double PWM2RPM(const int16_t &);
+    int16_t RPM2PWM(const double &);
 private: //private function
     static void *mpThreadRun(void *p);
     void    mRun();
@@ -130,6 +140,13 @@ private: //private function
 ////    void    Filter();
 ////    void    MotorSpeed();
 private: //private variable
+    uint8_t head_1; 
+    uint8_t head_2;
+    int max_motor_rpm; 
+    int min_motor_rpm; 
+    int max_pwm; 
+    int min_pwm;
+    int ticks_per_round;
     std::fstream fp;
     std::string record_name;
     pthread_t tid;

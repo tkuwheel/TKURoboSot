@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.8.3)
 
 add_executable(fira7
 				motion.cpp 
-                motion_nodeHandle.cpp
-                base_control.cpp 
 )
-target_link_libraries(fira7 ${catkin_LIBRARIES} csslLib crcLib)
+target_link_libraries(fira7 ${catkin_LIBRARIES} csslLib crcLib nodeLib baseLib)
 
