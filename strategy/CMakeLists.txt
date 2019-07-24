@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   actionlib_msgs
   actionlib
+  geometry_msgs
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -34,6 +35,7 @@ add_action_files(
 
 generate_messages(
   DEPENDENCIES
+  geometry_msgs
   actionlib_msgs
 )
 

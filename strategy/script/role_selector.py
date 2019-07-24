@@ -40,25 +40,7 @@ class RoleSelector(object):
     ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
     ts.registerCallback(self.MulticastReceiver)
 
-    # while not rospy.is_shutdown():
-    #   if time.time() - RoleSelector.last_time > 5:
-    #     print("Lossing Connection with teammates......")
-    #     time.sleep(1)
-    #   else:
-    #     if self.robot2['ball_is_handled']:
-    #       self.r2_role = "Attacker"
-    #       self.r3_role = "Supporter"
-    #     elif self.robot3['ball_is_handled']:
-    #       self.r2_role = "Supporter"
-    #       self.r3_role = "Attacker"
-    #     else:
-    #       self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
-    #       self.r3_role = "Supporter" if self.robot2 is "Attacker" else "Attacker"
-  
-    #   self.rate.sleep()
-
   def execute_cb(self, goal):
-    r = rospy.Rate(1)
     success = True
     while not self.MyState()['ball_is_handled']:
       if self._as.is_preempt_requested():
@@ -68,11 +50,14 @@ class RoleSelector(object):
         break
       self._feedback.catcher_ball_dis = self.MyState()['ball_dis']
       self._as.publish_feedback(self._feedback)
-      r.sleep()
 
     if success:
       self._result.catcher_res = True
       self._as.set_succeeded(self._result)
+
+  @classmethod
+  def PassingTo(self, catcher_ns):
+    self._ac = actionlib.SimpleActionClient(catcher_ns + '/robot1/passing_action', strategy.msg.PassingAction)
 
   def MyState(self):
     if "robot1" in rospy.get_namespace():
@@ -97,10 +82,8 @@ class RoleSelector(object):
   def MulticastReceiver(self, r2_data, r3_data):
     RoleSelector.last_time = time.time()
     RoleSelector.revival = True
-    self.robot2['state']           = r2_data.state
     self.robot2['ball_is_handled'] = r2_data.ball_is_handled
     self.robot2['ball_dis']        = r2_data.ball_dis
-    self.robot3['state']           = r3_data.state
     self.robot3['ball_is_handled'] = r3_data.ball_is_handled
     self.robot3['ball_dis']        = r3_data.ball_dis
 
@@ -109,8 +92,29 @@ class RoleSelector(object):
     self.prority = config["prority"]
     return config
 
+  def Supervisor(self):
+    r = rospy.Rate(30)
+    while not rospy.is_shutdown():
+      if time.time() - RoleSelector.last_time > 5:
+        print("Lossing Connection with teammates......")
+        time.sleep(1)
+      else:
+        if self.robot2['ball_is_handled']:
+          self.r2_role = "Attacker"
+          self.r3_role = "Supporter"
+        elif self.robot3['ball_is_handled']:
+          self.r2_role = "Supporter"
+          self.r3_role = "Attacker"
+        else:
+          self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
+          self.r3_role = "Supporter" if self.robot2 is "Attacker" else "Attacker"
+
+      r.sleep()
+    print("Good-bye")
+
 if __name__ == '__main__':
   rospy.init_node('role_selector')
   try:
     ne = RoleSelector()
+    ne.Supervisor()
   except rospy.ROSInterruptException: pass

@@ -1,11 +1,14 @@
 #include <ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
+#include <strategy/RobotState.h>
 
-ros :: NodeHandle nh;
+ros::NodeHandle nh;
 
-float x,y,yaw;
+float x, y, yaw;
 float T;
+bool ballhandle;
 
 const int DIR_R_UP = 8;
 const int DIR_R_DOWN = 9;
@@ -15,20 +18,25 @@ const int PWM_R = 10;
 const int PWM_L = 7;
 
 void messageCb( const geometry_msgs::Twist& msg){
-  x=msg.linear.x;
-  y=msg.linear.y;
-  yaw=msg.angular.z;
+  x   =msg.linear.x;
+  y   =msg.linear.y;
+  yaw =msg.angular.z;
+}
+
+void ball_handled(const strategy::RobotState& m){
+  ballhandle = m.ball_is_handled;
 }
 
 std_msgs::String str_msg;
 ros::Publisher chatter("chatter", &str_msg);
-ros::Subscriber<geometry_msgs::Twist> sub("motion/cmd_vel", &messageCb );
-//ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", &messageCb );
+ros::Subscriber<geometry_msgs::Twist> motion_sub("motion/cmd_vel", &messageCb );
+ros::Subscriber<strategy::RobotState> handle_sub("strategy/state", &ball_handled );
 
 void setup() {
   // put your setup code here, to run once:
   nh.initNode();
-  nh.subscribe(sub);
+  nh.subscribe(motion_sub);
+  nh.subscribe(handle_sub);
   nh.advertise(chatter);
   T=millis();
   pinMode(DIR_R_UP,OUTPUT);
@@ -39,7 +47,22 @@ void setup() {
   pinMode(PWM_L,OUTPUT);
 };
 
-void loop() {
+void loop(){
+  if(ballhandle==true){
+    ballmotionPWM();
+  }else{
+    digitalWrite(DIR_R_UP,LOW);
+    digitalWrite(DIR_L_UP,LOW);
+    digitalWrite(DIR_R_DOWN,HIGH);
+    digitalWrite(DIR_L_DOWN,HIGH);
+    analogWrite(PWM_R,255*25/100);
+    analogWrite(PWM_L,255*25/100);
+    str_msg.data ="NO_BallHandle";
+    chatter.publish( &str_msg );
+  }
+}
+
+void ballmotionPWM() {
   // put your main code here, to run repeatedly:
   // PWM 0~255
   if(yaw==0 & x==0 & y==0){             //停止
