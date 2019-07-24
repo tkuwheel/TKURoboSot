@@ -16,6 +16,7 @@ $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ### ROS Packages:
 ```bash
 $ sudo apt-get install ros-melodic-rosbridge-server ros-melodic-prosilica-camera
+$ sudo apt-get install ros-melodic-rosserial ros-melodic-rosserial-arduino
 ```
 ### Python packages:
 ```bash
@@ -28,6 +29,11 @@ $ pip install -r requirements.txt
 ## Compiling
 ```bash
 $ catkin_make
+```
+
+## Setup udev rules:
+```bash
+$ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
 ```
 
 <hr>
@@ -46,6 +52,9 @@ $ roslaunch nubot_gazebo game_ready.launch
 
 # Strategy w/ simulation mode
 $ roslaunch strategy core.launch sim:=true
+
+# Launch robot devices
+$ roslaunch strategy main_7th_all.launch
 
 # GUI
 # using plugin of dynamic_reconfigure
