@@ -10,12 +10,12 @@ float x, y, yaw;
 float T;
 bool ballhandle;
 
-const int DIR_R_UP = 8;
-const int DIR_R_DOWN = 9;
-const int DIR_L_UP = 5;
-const int DIR_L_DOWN = 6;
-const int PWM_R = 10;
-const int PWM_L = 7;
+const int PWM_R      = 6;
+const int DIR_R_UP   = 7;
+const int DIR_R_DOWN = 8;
+const int PWM_L      = 9;
+const int DIR_L_UP   = 10;
+const int DIR_L_DOWN = 11;
 
 void messageCb( const geometry_msgs::Twist& msg){
   x   = msg.linear.x;
