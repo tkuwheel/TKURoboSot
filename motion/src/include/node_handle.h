@@ -23,12 +23,12 @@
 /*********************
  ** Define 
  *********************/
-#define odometry_topic_name "/motion/odom"
-#define motion_feedback_topic_name "/motion/motionFB"
-#define motion_topic_name "/motion/cmd_vel"
-#define shoot_topic_name "/motion/shoot"
-#define remote_topic_name "/motion/remote"
-#define holdBall_topic_name "/motion/hold_ball"
+#define odometry_topic_name "motion/odom"
+#define motion_feedback_topic_name "motion/motionFB"
+#define motion_topic_name "motion/cmd_vel"
+#define shoot_topic_name "motion/shoot"
+#define remote_topic_name "motion/remote"
+#define holdBall_topic_name "motion/hold_ball"
 
 typedef void * (*THREADFUNCPTR)(void *);
 //#define DEBUG 
@@ -37,18 +37,6 @@ public:
 	Motion_nodeHandle(int, char **);
 	virtual ~Motion_nodeHandle();
 	
-private:
-	ros::NodeHandle *n;
-	ros::Publisher motionFB_pub;
-	ros::Subscriber motion_sub;
-	ros::Subscriber shoot_sub;
-	ros::Subscriber remote_sub;
-    ros::Subscriber holdBall_sub;
-	RobotCommand robotCMD;
-    pthread_t tid;
-	bool remote;
-    bool holdBall;
-    bool motion_flag;
 private:
     static void* pThreadRun(void* p);
 	void init(int argc, char **argv);
@@ -64,7 +52,21 @@ public:
 	void    pub_robotFB(RobotCommand);
 	void    clearShoot();
 	int     clearAll();
-	bool    getMotionFlag();
+	bool    getNodeFlag(bool &);
     void    ShowCommand();
+private:
+	ros::NodeHandle *n;
+	ros::Publisher motionFB_pub;
+	ros::Subscriber motion_sub;
+	ros::Subscriber shoot_sub;
+	ros::Subscriber remote_sub;
+    ros::Subscriber holdBall_sub;
+	RobotCommand robotCMD;
+    pthread_t tid;
+	bool remote;
+    bool holdBall;
+    bool motion_flag;
+    bool m_clear_flag;
+    bool m_is_activated;
 };
 #endif
