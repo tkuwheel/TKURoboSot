@@ -28,10 +28,10 @@ class Core(Robot, StateMachine):
 
   toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself()
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
-  toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)| chase.to(attack)
+  toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)| chase.to(attack)| point.to(attack)
   toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot)
-  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement)
-  toPoint  = point.to.itself() | idle.to(point) | movement.to(point)
+  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement) | point.to(movement) 
+  toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) 
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
@@ -99,6 +99,7 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
+    
     t = self.GetObjectInfo()
     side = self.opp_side
     l = self.GetObstacleInfo()
@@ -233,7 +234,7 @@ class Strategy(object):
     if self.robot.toPoint():
       if self.robot.run_point == "ball_hand":
         self.dclient.update_configuration({"run_point": "none"})
-        self.robot.toMovement()
+        self.ToMovement()
       elif self.robot.run_point == "empty_hand":
         self.dclient.update_configuration({"run_point": "none"})
         self.ToChase()
@@ -243,6 +244,7 @@ class Strategy(object):
 
   def ToChase(self):
     mode = self.robot.attack_mode
+    
     if mode == "Defense":
       self.ToMovement()
     
@@ -269,8 +271,11 @@ class Strategy(object):
   def ToMovement(self):
     mode = self.robot.strategy_mode
     state = self.robot.game_state
-    
-    if state == "Penalty_Kick":
+    point = self.robot.run_point
+    if point == "ball_hand":
+      print("ppppppppppp")
+      self.RunStatePoint()
+    elif state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
     elif mode == "At_Post_up":
       log("movement")
@@ -327,14 +332,10 @@ class Strategy(object):
             # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
           else:
-            print('fuck')
             self.ToChase()
 
 
         if self.robot.is_movement:
-          if point == "ball_hand":
-            self.RunStatePoint()
-          print("go movement")
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
@@ -357,18 +358,19 @@ class Strategy(object):
             elif not self.robot.CheckBallHandle():
                 self.ToChase()
             else:
-              print("post_up")
               self.ToMovement()              
 
 
           elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.dclient.update_configuration({"strategy_mode": "Fast_break"})
+
               self.ToAttack()
             else : 
               self.ToMovement()
 
           elif mode == "Fast_break":
+            
             self.ToAttack()
                       
         if self.robot.is_attack:
