@@ -28,24 +28,15 @@ NodeHandle::NodeHandle():
 	OuterMsg(235),
 	FrontMsg(267),
     FieldMsg(OuterMsg-100),
-	Camera_HighMsg(650),
-    pose_x(0.0),
-    pose_y(0.0),
-    pose_w(0.0)
+	Camera_HighMsg(650)
 {
 	Readyaml();
 	AngleLUT();
     color_map = ColorFile();
 	save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
-    pos_sub = nh.subscribe("/akf_pose", 1000, &NodeHandle::posCallback, this);
     for(int i=0; i<( sizeof(Unscaned_Angle)/sizeof(Unscaned_Angle[0]) ); i++){
         Unscaned_Angle[i]=999;
     }
-    shot_pose[0]=Point(160, -120);
-    shot_pose[1]=Point(160, -40);
-    shot_pose[2]=Point(160,  40);
-    shot_pose[3]=Point(160,  120);
-    
 }
 void NodeHandle::AngleLUT()
 {
@@ -74,27 +65,27 @@ void NodeHandle::get_param()
 {
 	cout<<"get parameter"<<endl;
     //====================中心參數============================
-	nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
-	nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
-	nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
-	nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
-	nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
-	nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
+	nh.getParam("FIRA/vision/Center/Center_X", CenterXMsg);
+	nh.getParam("FIRA/vision/Center/Center_Y", CenterYMsg);
+	nh.getParam("FIRA/vision/Center/Inner", InnerMsg);
+	nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
+	nh.getParam("FIRA/vision/Center/Front", FrontMsg);
+	nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
     //====================色彩參數============================
-    nh.getParam("/FIRA/vision/HSV/Ball", HSV_red);
-    nh.getParam("/FIRA/vision/HSV/Green", HSV_green);
+    nh.getParam("FIRA/vision/HSV/Ball", HSV_red);
+    nh.getParam("FIRA/vision/HSV/Green", HSV_green);
     //==================掃瞄點參數=========================
-    nh.getParam("/FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
     Set_Unscaned_Angle();
 }
 //===================前置處理結束=========================
@@ -182,18 +173,6 @@ void NodeHandle::SaveButton_setting(const vision::bin msg)
 	//cout<<"Save\n";
 	SaveButton = msg.bin;
 	get_param();
-}
-void NodeHandle::posCallback(const geometry_msgs::PoseWithCovarianceStamped msg){
-    pose_x = msg.pose.pose.position.x*100;
-    pose_y = msg.pose.pose.position.y*100;
-
-    double qx=msg.pose.pose.orientation.x;
-    double qy=msg.pose.pose.orientation.y;
-    double qz=msg.pose.pose.orientation.z;
-    double qw=msg.pose.pose.orientation.w;
-
-    pose_w=atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)/M_PI*180;
-    //cout<<pose_w<<endl;
 }
 //========================distance========================
 double NodeHandle::camera_f(double Omni_pixel)

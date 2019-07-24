@@ -4,7 +4,7 @@
 #include <ros/package.h>
 #include <signal.h>
 
-#define TEST ros::package::getPath("vision")+"/image_publisher/image.png"
+#define TEST ros::package::getPath("vision")+"/image_publisher/1.jpg"
 
 using namespace cv;
 using namespace std;

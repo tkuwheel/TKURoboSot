@@ -58,8 +58,8 @@ class Core(Robot, StateMachine):
 
     return config
 
-  def __init__(self, robot_num, sim = False):
-    super(Core, self).__init__(robot_num, sim)
+  def __init__(self, sim = False):
+    super(Core, self).__init__(sim)
     StateMachine.__init__(self)
     self.CC  = Chase()
     self.AC  = Attack()
@@ -221,10 +221,10 @@ class Core(Robot, StateMachine):
 
 class Strategy(object):
 
-  def __init__(self, num, sim=False):
+  def __init__(self, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
-    self.robot = Core(num, sim)
+    self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
     self.main()
 
@@ -252,8 +252,7 @@ class Strategy(object):
 
       else:
         self.robot.toChase("Straight")
-    
-   
+
   def ToAttack(self):
     mode = self.robot.attack_mode
     if mode == "Attack" :
@@ -398,9 +397,9 @@ if __name__ == '__main__':
   try:
     if SysCheck(sys.argv[1:]) == "Native Mode":
       log("Start Native")
-      s = Strategy(1, False)
+      s = Strategy(False)
     elif SysCheck(sys.argv[1:]) == "Simulative Mode":
       log("Start Sim")  
-      s = Strategy(1, True)
+      s = Strategy(True)
   except rospy.ROSInterruptException:
     pass
