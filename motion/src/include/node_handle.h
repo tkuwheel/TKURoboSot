@@ -38,18 +38,6 @@ public:
 	virtual ~Motion_nodeHandle();
 	
 private:
-	ros::NodeHandle *n;
-	ros::Publisher motionFB_pub;
-	ros::Subscriber motion_sub;
-	ros::Subscriber shoot_sub;
-	ros::Subscriber remote_sub;
-    ros::Subscriber holdBall_sub;
-	RobotCommand robotCMD;
-    pthread_t tid;
-	bool remote;
-    bool holdBall;
-    bool motion_flag;
-private:
     static void* pThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
@@ -64,7 +52,21 @@ public:
 	void    pub_robotFB(RobotCommand);
 	void    clearShoot();
 	int     clearAll();
-	bool    getMotionFlag();
+	bool    getNodeFlag(bool &);
     void    ShowCommand();
+private:
+	ros::NodeHandle *n;
+	ros::Publisher motionFB_pub;
+	ros::Subscriber motion_sub;
+	ros::Subscriber shoot_sub;
+	ros::Subscriber remote_sub;
+    ros::Subscriber holdBall_sub;
+	RobotCommand robotCMD;
+    pthread_t tid;
+	bool remote;
+    bool holdBall;
+    bool motion_flag;
+    bool m_clear_flag;
+    bool m_is_activated;
 };
 #endif
