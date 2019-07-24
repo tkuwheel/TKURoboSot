@@ -10,17 +10,17 @@ float x, y, yaw;
 float T;
 bool ballhandle;
 
-const int DIR_R_UP = 8;
-const int DIR_R_DOWN = 9;
-const int DIR_L_UP = 5;
-const int DIR_L_DOWN = 6;
-const int PWM_R = 10;
-const int PWM_L = 7;
+const int PWM_R      = 6;
+const int DIR_R_UP   = 7;
+const int DIR_R_DOWN = 8;
+const int PWM_L      = 9;
+const int DIR_L_UP   = 10;
+const int DIR_L_DOWN = 11;
 
 void messageCb( const geometry_msgs::Twist& msg){
-  x   =msg.linear.x;
-  y   =msg.linear.y;
-  yaw =msg.angular.z;
+  x   = msg.linear.x;
+  y   = msg.linear.y;
+  yaw = msg.angular.z;
 }
 
 void ball_handled(const strategy::RobotState& m){
@@ -48,7 +48,9 @@ void setup() {
 };
 
 void loop(){
-  if(ballhandle==true){
+  if(ballhandle){
+    str_msg.data ="Ball is handled";
+    chatter.publish( &str_msg );
     ballmotionPWM();
   }else{
     digitalWrite(DIR_R_UP,LOW);
@@ -60,6 +62,8 @@ void loop(){
     str_msg.data ="NO_BallHandle";
     chatter.publish( &str_msg );
   }
+  nh.spinOnce();
+  delay(10);
 }
 
 void ballmotionPWM() {
@@ -205,6 +209,4 @@ void ballmotionPWM() {
     chatter.publish( &str_msg );
     T=millis();
   }
-  nh.spinOnce();
-  delay(10);
 }
