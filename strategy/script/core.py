@@ -128,15 +128,12 @@ class Core(Robot, StateMachine):
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
-    
+
     elif method == "Penalty_Kick":
       front_ang = math.degrees(position['imu_3d']['yaw'])-90
       x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw)
       self.MotionCtrl(x, y, yaw)
-    
-    
-    
-      
+
   def on_toPoint(self):
     if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
       x, y, yaw, arrived = self.BC.Go2Point(-60, 0, 0)
@@ -201,11 +198,10 @@ class Strategy(object):
     mode = self.robot.attack_mode
     if mode == "Defense":
       self.ToMovement()
-    
+
     else:
       if not self.robot.chase_straight :
         self.robot.toChase("Classic")
-
       else:
         self.robot.toChase("Straight")
 
@@ -213,10 +209,8 @@ class Strategy(object):
     mode = self.robot.attack_mode
     if mode == "Attack" :
       self.robot.toAttack("Classic")
-
     elif mode == "At_post_up":
       self.robot.toAttack("Post_up")
-
     elif mode == "Cut":
       self.robot.toAttack("Cut")
 
@@ -231,7 +225,6 @@ class Strategy(object):
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":
       self.robot.toMovement("Relative_goal")
-
     else :
       self.ToAttack()
   

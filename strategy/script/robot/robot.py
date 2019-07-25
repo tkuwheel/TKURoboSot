@@ -147,6 +147,11 @@ class Robot(object):
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
 
+    if self.__object_info['ball']['dis'] < self.__handle_dis and abs(self.__object_info['ball']['ang']) < self.__handle_ang:
+      self.__ball_is_handled = True
+    else:
+      self.__ball_is_handled = False
+
   def _GetBlackItemInfo(self, vision):
     self.__obstacle_info['ranges'] =vision.data
 
@@ -220,7 +225,7 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
-  
+
   def GetObstacleInfo(self):
     return self.__obstacle_info
 
@@ -237,9 +242,4 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
-      self.__ball_is_handled = True
-      return True
-    else:
-      self.__ball_is_handled = False
-      return False
+    return self.__ball_is_handled
