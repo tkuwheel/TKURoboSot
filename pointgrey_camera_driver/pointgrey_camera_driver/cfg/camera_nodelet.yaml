@@ -11,9 +11,9 @@ dictitems:
   enable_strobe2: false
   enable_trigger: false
   enable_trigger_delay: false
-  exposure: 1.35
+  exposure: 1.3487548828125
   format7_color_coding: raw8
-  format7_roi_height: 1200
+  format7_roi_height: 0
   format7_roi_width: 1600
   format7_x_offset: 160
   format7_y_offset: 0
@@ -33,9 +33,9 @@ dictitems:
       enable_strobe2: false
       enable_trigger: false
       enable_trigger_delay: false
-      exposure: 1.35
+      exposure: 1.3487548828125
       format7_color_coding: raw8
-      format7_roi_height: 1200
+      format7_roi_height: 0
       format7_roi_width: 1600
       format7_x_offset: 160
       format7_y_offset: 0

@@ -33,7 +33,7 @@ user$: sudo apt-get install libraw1394-11 libgtkmm-2.4-1c2a libglademm-2.4-1c2a 
 ## 確認Linux核心版本 > 3.5.0，並開啟USB3.1
 ```bash
 $ uname -r      # checking linux version is newer than 3.5.0, if not, upgrade your kernel
-$ sudo modprobe usbcore usbfs_memory_mb=1000
+$ sudo modprobe usbcore usbfs_memory_mb=1024
 $ sudo vim /etc/default/grub
 # 把GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"這行修改成
 # GRUB_CMDLINE_LINUX_DEFAULT="quiet splash usbcore.usbfs_memory_mb=1000"
