@@ -164,7 +164,9 @@ class Robot(object):
     self.__obstacle_info['ranges'] =vision.data
 
   def _GetImu(self, imu_3d):
-    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
+    
+    front_ang = math.degrees(imu_3d.yaw) + 90 
+    self.__robot_info['imu']['front_ang'] = imu_3d.yaw  #caculate front angle by imu
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
@@ -173,8 +175,9 @@ class Robot(object):
     qy = loc.pose.pose.orientation.y
     qz = loc.pose.pose.orientation.z
     qw = loc.pose.pose.orientation.w
-    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180
-
+    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)\
+                                           / math.pi * 180  #caculate front angle by self_localization
+                                                                                                                                         
   def RobotStatePub(self, state):
     m = RobotState()
     m.state = state
