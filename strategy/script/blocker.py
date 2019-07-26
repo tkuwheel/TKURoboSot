@@ -7,33 +7,16 @@ from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
 from my_sys import log, SysCheck, logInOne
+from methods.chase import Chase
+from methods.attack import Attack
+from methods.behavior import Behavior
 from methods.block import Block
-from methods.wait import Wait
-from methods.right_limit import R_limit
-from methods.left_limit import L_limit
-from methods.push import Push
-from methods.ret import Ret
-from methods.guard_penalty import Guard_Penalty
-from methods.noballret import NoBallRet
-from methods.noballwait import NoBallWait
-from dynamic_reconfigure.server import Server
-from strategy.cfg import StrategyConfig
+from dynamic_reconfigure.server import Server as DynamicReconfigureServer
+from strategy.cfg import RobotConfig
 import dynamic_reconfigure.client
 
 class Core(Robot, StateMachine):
-  def __init__(self, robot_num, sim = False):
-    super(Core, self).__init__(robot_num, sim)
-    StateMachine.__init__(self)
-    self.BK  = Block()
-    self.WT  = Wait()
-    self.RL  = R_limit()
-    self.LL  = L_limit()
-    self.PH  = Push()
-    self.RT  = Ret()
-    self.NR  = NoBallRet()
-    self.NW  = NoBallWait()
-    self.GP  = Guard_Penalty() 
-    self.sim = sim
+
   last_ball_dis = 0
   last_time     = time.time()
   idle    = State('Idle', initial = True)
@@ -58,6 +41,41 @@ class Core(Robot, StateMachine):
   toNoBallRet = idle.to(noballret) | block.to(noballret) | r_limit.to(noballret) | l_limit.to(noballret) | noballret.to.itself()
   toNoBallWait = idle.to(noballwait) | noballret.to(noballwait) | push.to(noballwait) | noballwait.to.itself() | guard_penalty.to(noballwait)
   toGuard_Penalty = idle.to(guard_penalty) | guard_penalty.to.itself()
+
+  def Callback(self, config, level):
+    self.game_start = config['game_start']
+    self.game_state = config['game_state']
+    self.run_point  = config['run_point']
+    self.side       = config['our_goal']
+    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
+    self.run_x      = config['run_x']
+    self.run_y      = config['run_y']
+    self.run_yaw    = config['run_yaw']
+    self.strategy_mode = config['strategy_mode']
+    self.orb_attack_ang  = config['orb_attack_ang']
+    self.atk_shoot_ang  = config['atk_shoot_ang']
+   #self.ROTATE_V_ang   = config['ROTATE_V_ang']
+    self.remaining_range_v   = config['remaining_range_v']
+    self.remaining_range_yaw = config['remaining_range_yaw']
+    self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
+    self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
+    self.robot.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+    
+    self.run_point = config['run_point']
+
+    return config
+
+  def __init__(self, robot_num, sim = False):
+    super(Core, self).__init__(sim)
+    StateMachine.__init__(self)
+    self.CC  = Chase()
+    self.AC  = Attack()
+    self.BC  = Behavior()
+    self.BK  = Block()
+    self.left_ang = 0
+    dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
+
+  
   def on_toIdle(self):
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
@@ -141,248 +159,162 @@ class Core(Robot, StateMachine):
     self.RobotStatePub(self.current_state.identifier)
 
   def CheckBallHandle(self):
+    if self.RobotBallHandle():
+      ## Back to normal from Accelerator
+      self.ChangeVelocityRange(0, self.maximum_v)
+      Core.last_ball_dis = 0
+
     return self.RobotBallHandle()
+
+  def Accelerator(self, exceed = 100):
+    t = self.GetObjectInfo()
+    if Core.last_ball_dis == 0:
+      Core.last_time = time.time()
+      Core.last_ball_dis = t['ball']['dis']
+    elif t['ball']['dis'] >= Core.last_ball_dis:
+      if time.time() - Core.last_time >= 0.8:
+        self.ChangeVelocityRange(0, exceed)
+    else:
+      Core.last_time = time.time()
+      Core.last_ball_dis = t['ball']['dis']
 
 class Strategy(object):
   def __init__(self, num, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(1000)
-
-    self.robot = Core(num, sim)
-
+    self.robot = Core(sim)
     dsrv = Server(StrategyConfig, self.Callback)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
+    self.main()
 
   def main(self):
-
-    while not rospy.is_shutdown():
-      
+    while not rospy.is_shutdown():      
       self.robot.PubCurrentState()
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
       twopoint = self.robot.GetTwopoint()
-      imu = self.robot.GetImu()
-      if not self.robot.is_idle and not self.game_start:
-          self.robot.toIdle()
 
-    ##idle
-      if self.robot.is_idle:
-        if self.game_start:
-          if self.game_state=="Penalty_Kick":
-            self.robot.toGuard_Penalty(targets)
-          else:
+
+      if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
+        print("Can not find ball")
+        self.robot.toIdle()
+
+      else:
+        if not self.robot.is_idle and not self.game_start:
+            self.robot.toIdle()
+
+        if self.robot.is_idle:
+          if self.game_start:
+            if self.game_state=="Penalty_Kick":
+              self.robot.toGuard_Penalty(targets)
+            else:
+              self.robot.toBlock(targets,self.side,imu)
+          
+        if self.robot.is_block:
+          if targets['ball']['dis'] > 300 and not targets['ball']['dis'] == 999:
+            self.robot.toWait(targets,self.side)
+          elif twopoint[self.side]['left'] > 115 and twopoint[self.side]['left'] > twopoint[self.side]['right'] and targets['ball']['ang'] <= 0:
+            self.robot.toR_limit(targets,self.side,imu)
+          elif twopoint[self.side]['right'] > 115 and twopoint[self.side]['left'] < twopoint[self.side]['right'] and targets['ball']['ang'] >= 0:
+            self.robot.toL_limit(targets,self.side,imu)
+          elif targets['ball']['dis'] <= 300:
+            if targets['ball']['dis'] <= 80 and abs(targets['ball']['ang']) < 10:
+              self.robot.toPush(targets)      
+            else:
+              self.robot.toBlock(targets,self.side,imu)
+          elif twopoint[self.side]['right'] == 999 or twopoint[self.side]['left'] == 999:
             self.robot.toBlock(targets,self.side,imu)
-        
-    ##block
-      if self.robot.is_block:
-        if targets['ball']['dis']>300 and not targets['ball']['dis']==999:
-          #go wait
-          self.robot.toWait(targets,self.side)
-          
-        elif twopoint[self.side]['left']>115 and twopoint[self.side]['left']>twopoint[self.side]['right'] and targets['ball']['ang']<=0:
-          #go r limit
-          self.robot.toR_limit(targets,self.side,imu)
-          
-        elif twopoint[self.side]['right']>115 and twopoint[self.side]['left']<twopoint[self.side]['right'] and targets['ball']['ang']>=0:
-          #go l limit
-          self.robot.toL_limit(targets,self.side,imu)
-          
-        elif targets['ball']['dis']<=300:
-          if targets['ball']['dis']<=80 and abs(targets['ball']['ang'])<10:
-            #go push
-            self.robot.toPush(targets)
-            
-          else:
-            #keep blocking
-            self.robot.toBlock(targets,self.side,imu)
-
-        elif twopoint[self.side]['right']==999 or twopoint[self.side]['left']==999:
-          #keep blocking
-          self.robot.toBlock(targets,self.side,imu)
-          
-        if targets['ball']['ang']==999:
-          #go noballret
-          self.robot.toNoBallRet(targets,self.side)
-          
-     
-    ##wait
-      if self.robot.is_wait:
-        if targets['ball']['dis']>300:
-          #keep waiting
-          self.robot.toWait(targets,self.side)
-          
-        elif targets['ball']['dis']<=300:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)
-          
-        
-        
-      
-    ##r_limit
-      if self.robot.is_r_limit:
-        if targets['ball']['ang']<=0:
-          #keep r limit
-          self.robot.toR_limit(targets,self.side,imu)
-          
-        elif targets['ball']['ang']>0:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)
-          
-        if twopoint[self.side]['right']>110:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)
-          
-        if targets['ball']['dis']<=80:
-          #go push
-          self.robot.toPush(targets)
-          
-        if targets['ball']['ang']==999:
-          #go noballret
-          self.robot.toNoBallRet(targets,self.side)
-          
-     
-    ##l_limit
-      if self.robot.is_l_limit:
-        if targets['ball']['ang']>=0:
-          #keep l limit
-          self.robot.toL_limit(targets,self.side,imu)
-          
-        elif targets['ball']['ang']<0:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)           
-          
-        if twopoint[self.side]['left']>110:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)
-          
-        if targets['ball']['dis']<=80:
-          #go push
-          self.robot.toPush(targets)
-          
-        if targets['ball']['ang']==999:
-          #go noballret
-          self.robot.toNoBallRet(targets,self.side)
-          
-    ##push
-      if self.robot.is_push:
-        if targets['ball']['dis']<=80:
-          if targets[self.side]['dis']<120:
-            #keep push
-            self.robot.toPush(targets)
-            
-          else:
-            #go ret
-            self.robot.toRet(targets,self.side)
-            
-        elif targets['ball']['dis']>80 and not targets['ball']['dis']==999:
-          #go ret
-          self.robot.toRet(targets,self.side)
-          
-        if targets['ball']['ang']==999:
-          #go noballwait
-          self.robot.toNoBallWait(targets,self.side)
-            
-        elif targets['ball']['dis']>130 and not targets['ball']['dis']==999:
-          #go ret
-          self.robot.toRet(targets,self.side)
-          
-        if targets['ball']['ang']==999:
-          #go noballwait
-          self.robot.toNoBallWait(targets,self.side)
-          
-      
-    ##ret
-      if self.robot.is_ret:
-        if targets[self.side]['dis']<70:
-          #go block
-          self.robot.toBlock(targets,self.side,imu)
-          
-        else:
-          #keep ret
-          self.robot.toRet(targets,self.side)
-          
-
-    ##noballret
-      if self.robot.is_noballret:
-        if targets['ball']['ang']==999:
-          if targets[self.side]['dis']>=70:
-            #keep noballret
+          if targets['ball']['ang'] == 999:
             self.robot.toNoBallRet(targets,self.side)
             
-          else:
-            #go noballwait
-            self.robot.toNoBallWait(targets,self.side)
+        if self.robot.is_wait:
+          if targets['ball']['dis']>300:
+            self.robot.toWait(targets,self.side)          
+          elif targets['ball']['dis']<=300:
+            self.robot.toBlock(targets,self.side,imu)
             
-        else:
+        if self.robot.is_r_limit:
+          if targets['ball']['ang']<=0:
+            self.robot.toR_limit(targets,self.side,imu)
+          elif targets['ball']['ang']>0:
+            self.robot.toBlock(targets,self.side,imu)          
+          if twopoint[self.side]['right']>110:
+            self.robot.toBlock(targets,self.side,imu)          
+          if targets['ball']['dis']<=80:
+            self.robot.toPush(targets)          
+          if targets['ball']['ang']==999:
+            self.robot.toNoBallRet(targets,self.side)
+
+        if self.robot.is_l_limit:
+          if targets['ball']['ang']>=0:
+            self.robot.toL_limit(targets,self.side,imu)          
+          elif targets['ball']['ang']<0:
+            self.robot.toBlock(targets,self.side,imu)                     
+          if twopoint[self.side]['left']>110:
+            self.robot.toBlock(targets,self.side,imu)          
+          if targets['ball']['dis']<=80:
+            self.robot.toPush(targets)          
+          if targets['ball']['ang']==999:
+            self.robot.toNoBallRet(targets,self.side)
+            
+        if self.robot.is_push:
+          if targets['ball']['dis']<=80:
+            if targets[self.side]['dis']<120:                
+              self.robot.toPush(targets)            
+            else:                
+              self.robot.toRet(targets,self.side)            
+          elif targets['ball']['dis']>80 and not targets['ball']['dis']==999:         
+            self.robot.toRet(targets,self.side)         
+          if targets['ball']['ang']==999:           
+            self.robot.toNoBallWait(targets,self.side)            
+          elif targets['ball']['dis']>130 and not targets['ball']['dis']==999:            
+            self.robot.toRet(targets,self.side)          
+          if targets['ball']['ang']==999:               
+            self.robot.toNoBallWait(targets,self.side)    
+
+        if self.robot.is_ret:            
           if targets[self.side]['dis']<70:
             #go block
-            self.robot.toBlock(targets,self.side,imu)
+            self.robot.toBlock(targets,self.side,imu)          
           else:
-            if targets['ball']['dis']>80:
-              #go ret
-              self.robot.toRet(targets,self.side)
+            #keep ret
+            self.robot.toRet(targets,self.side)  
+
+        if self.robot.is_noballret:     
+          if targets['ball']['ang']==999:
+            if targets[self.side]['dis']>=70:
+              self.robot.toNoBallRet(targets,self.side)
             else:
-              #go push
-              self.robot.toPush(targets)
-
-    ##noballwait
-      if self.robot.is_noballwait:
-        if targets['ball']['ang']==999:
-          #keep noballwait
-          self.robot.toNoBallWait(targets,self.side)
-          
-        else:
-          #go push
-          self.robot.toBlock(targets,self.side,imu)
-
-    ##guardpenalty
-      if self.robot.is_guard_penalty:
-        if targets['ball']['dis']<=150:
-          if targets[self.side]['dis']<120:
-            #keep push
-            self.robot.toGuard_Penalty(targets)
-            
+              self.robot.toNoBallWait(targets,self.side)
           else:
-            #go ret
+            if targets[self.side]['dis']<70:
+              
+              self.robot.toBlock(targets,self.side,imu)
+            else:
+              if targets['ball']['dis']>80:
+                self.robot.toRet(targets,self.side)
+              else:                
+                self.robot.toPush(targets)
+    
+        if self.robot.is_noballwait:   
+          if targets['ball']['ang']==999:           
+            self.robot.toNoBallWait(targets,self.side)
+          else:            
+            self.robot.toBlock(targets,self.side,imu)
+      
+        if self.robot.is_guard_penalty:  
+          if targets['ball']['dis']<=150:
+            if targets[self.side]['dis']<120:            
+              self.robot.toGuard_Penalty(targets)
+            else:  
+              self.robot.toRet(targets,self.side)
+          elif targets['ball']['dis']>150 and not targets['ball']['dis']==999:         
             self.robot.toRet(targets,self.side)
-            
-        elif targets['ball']['dis']>150 and not targets['ball']['dis']==999:
-          #go ret
-          self.robot.toRet(targets,self.side)
-          
-        if targets['ball']['ang']==999:
-          #go noballwait
-          self.robot.toNoBallWait(targets,self.side)
-          
-    
+          if targets['ball']['ang']==999:            
+            self.robot.toNoBallWait(targets,self.side)
 
-      self.rate.sleep()
+        self.rate.sleep()
         
-
-  def Callback(self, config, level):
-    self.game_start = config['game_start']
-    self.game_state = config['game_state']
-    self.run_point  = config['run_point']
-    self.side       = config['our_goal']
-    self.opp_side   = 'Yellow' if config['our_goal'] == 'Blue' else 'Blue'
-    self.run_x      = config['run_x']
-    self.run_y      = config['run_y']
-    self.run_yaw    = config['run_yaw']
-    self.strategy_mode = config['strategy_mode']
-    self.orb_attack_ang  = config['orb_attack_ang']
-    self.atk_shoot_ang  = config['atk_shoot_ang']
-   #self.ROTATE_V_ang   = config['ROTATE_V_ang']
-    self.remaining_range_v   = config['remaining_range_v']
-    self.remaining_range_yaw = config['remaining_range_yaw']
-
-    self.robot.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
-    self.robot.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
-    self.robot.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
-    
-    self.run_point = config['run_point']
-
-    return config
-
 if __name__ == '__main__':
   try:
     if SysCheck(sys.argv[1:]) == "Native Mode":

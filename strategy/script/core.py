@@ -64,7 +64,6 @@ class Core(Robot, StateMachine):
     self.CC  = Chase()
     self.AC  = Attack()
     self.BC  = Behavior()
-    self.block = 0
     self.left_ang = 0
 
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
@@ -286,7 +285,6 @@ class Strategy(object):
   
   def main(self):
     while not rospy.is_shutdown():
-
       self.robot.PubCurrentState()
 
       targets = self.robot.GetObjectInfo()
