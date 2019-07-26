@@ -18,6 +18,10 @@ $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 $ sudo apt-get install ros-melodic-rosbridge-server ros-melodic-prosilica-camera
 $ sudo apt-get install ros-melodic-rosserial ros-melodic-rosserial-arduino
 ```
+### ROS2 Packages:
+```bash
+$ sudo apt-get install ros-dashing-ros1-bridge
+```
 ### Python packages:
 ```bash
 $ cd src/
@@ -40,6 +44,10 @@ $ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
 
 # Startup
 ### Environment Setting
+```bash
+$ echo "export RMW_IMPLEMENTATION=rmw_connext_cpp" >> ~/.bashrc
+```
+
 ```bash
 # Get Camera's serial number
 $ rosrun pointgrey_camera_driver list_cameras
