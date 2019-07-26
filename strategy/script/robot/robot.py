@@ -3,11 +3,9 @@ import rospy
 import math
 import time
 import numpy as np
-from nubot_common.msg import OminiVisionInfo
-from nubot_common.srv import Shoot
-from nubot_common.srv import BallHandle
-from transfer.msg import PPoint
+import time
 from simple_pid import PID
+from imu_3d.msg import inertia
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
@@ -15,37 +13,46 @@ from vision.msg import Two_point
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
-from imu_3d.msg import inertia
+from std_msgs.msg import Bool 
+from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Int32MultiArray
+from sensor_msgs.msg import JointState
+from strategy.msg import RobotState
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
 ROTATE_V_ANG = 90
 
-## Gazebo Simulator
-SIM_VISION_TOPIC = "nubot{}/omnivision/OmniVisionInfo"
-SIM_SHOOT_SRV  = "nubot{}/Shoot"
-SIM_HANDLE_SRV = "nubot{}/BallHandle"
-
-## Real Robot
+## Strategy Inputs
 VISION_TOPIC = "vision/object"
-CMDVEL_TOPIC = "motion/cmd_vel"
-SHOOT_TOPIC  = "motion/shoot"
 POSITION_TOPIC = "akf_pose"
 IMU            = "imu_3d"
 ## Strategy Outputs
-STRATEGY_STATE_TOPIC = "robot{}/strategy/state"
+STRATEGY_STATE_TOPIC = "strategy/state"
+CMDVEL_TOPIC = "motion/cmd_vel"
+SHOOT_TOPIC  = "motion/shoot"
 
 class Robot(object):
-  last_time = 0
-  __robot_info = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0}}
-  __object_info = {'ball':{'dis' : 0, 'ang' : 0 ,'global_x' : 0, 'global_y' : 0, \
-                           'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
-                   'Blue':{'dis' : 0, 'ang' : 0,'right' : 0 ,'left' : 0},
-                   'Yellow':{'dis' : 0, 'ang' : 0,'right' : 0 ,'left' : 0},
-                   'velocity' : 0 }
+  
   __twopoint_info = {'Blue':{'right' : 0,'left' : 0},
                      'Yellow':{'right' : 0,'left' : 0}}
-  __imu_info = {'imu':{'ang' : 0}} 
+
+  last_time = 0
+
+  __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
+                   'imu_3d' : {'yaw' : 0}}
+  __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
+                           'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
+                   'Blue':{'dis' : 0, 'ang' : 0},
+                   'Yellow':{'dis' : 0, 'ang' : 0},
+                   'velocity' : 0 }
+  __obstacle_info = {'angle' : {'min' : 0, 'max' : 0, 'increment' : math.pi / 180 * 3},
+		                 'scan' : 0,
+		                 'range' : {'min' : 0, 'max' : 0},
+                     'ranges' : [0],
+		                 'intensities' : [0]}
+
+  __ball_is_handled = False
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -57,9 +64,9 @@ class Robot(object):
   Ki_v = 0.0
   Kd_v = 0.1
   Cp_v = 0
-  Kp_w = 0.25
+  Kp_w = 0.5
   Ki_w = 0.0
-  Kd_w = 0.0
+  Kd_w = 0.1
   Cp_w = 0
 
   pid_v = PID(Kp_v, Ki_v, Kd_v, setpoint=Cp_v)
@@ -92,53 +99,32 @@ class Robot(object):
   def ShowRobotInfo(self):
     print("Robot informations: {}".format(self.__robot_info))
     print("Objects informations: {}".format(self.__object_info))
+    print("Obstacles informations: {}".format(self.__obstacle_info))
 
-  def __init__(self, robot_num, sim = False):
-    self.robot_number = robot_num
+  def __init__(self, sim = False):
+
+    rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
+    rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
+    rospy.Subscriber('BlackRealDis',Int32MultiArray,self._GetBlackItemInfo)
+    self.MotionCtrl = self.RobotCtrlS
+    self.RobotShoot = self.RealShoot
+    self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
+    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC, RobotState)
+    self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
 
     if not sim :
-      rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
-      rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
-      rospy.Subscriber('/interface/Two_point', Two_point, self._GetTwopoint)
+      rospy.Subscriber('interface/Two_point', Two_point, self._GetTwopoint)
       rospy.Subscriber(IMU,inertia,self._GetImu)
-      self.MotionCtrl = self.RobotCtrlS
       self.RobotBallHandle = self.RealBallHandle
-      self.RobotShoot = self.RealShoot
     else:
-      self._SimSubscriber(SIM_VISION_TOPIC.format(self.robot_number))
-      self.MotionCtrl = self.RobotCtrlS
+      self.sim_hold_pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
       self.RobotBallHandle = self.SimBallHandle
-      self.RobotShoot = self.SimShoot
+      rospy.Subscriber("BallIsHandle", Bool, self._CheckBallHandle)
       self.TuningVelocityContorller(1, 0, 0)
       self.TuningAngularVelocityContorller(0.1, 0, 0)
 
-    self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
-    self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC.format(self.robot_number), String)
-    self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
-
-  def _SimSubscriber(self, topic):
-    rospy.Subscriber(topic.format(self.robot_number), \
-                      OminiVisionInfo, \
-                      self._GetSimVision)
-    rospy.Subscriber((topic + "/GoalInfo").format(self.robot_number), \
-                      PPoint, \
-                      self._GetSimGoalInfo)
-
   def _Publisher(self, topic, mtype):
     return rospy.Publisher(topic, mtype, queue_size=1)
-
-  def _GetSimVision(self, vision):
-    self.__object_info['ball']['dis']    = vision.ballinfo.real_pos.radius
-    self.__object_info['ball']['ang']    = math.degrees(vision.ballinfo.real_pos.angle)
-    self.__robot_info['location']['x']   = vision.robotinfo[self.robot_number - 1].pos.x
-    self.__robot_info['location']['y']   = vision.robotinfo[self.robot_number - 1].pos.y
-    self.__robot_info['location']['yaw'] = math.degrees(vision.robotinfo[self.robot_number - 1].heading.theta)
-
-  def _GetSimGoalInfo(self, goal_info):
-    self.__object_info['Blue']['dis']    = goal_info.right_radius
-    self.__object_info['Blue']['ang']    = goal_info.right_angle
-    self.__object_info['Yellow']['dis']  = goal_info.left_radius
-    self.__object_info['Yellow']['ang']  = goal_info.left_angle
 
   def _GetVision(self, vision):
     rbx = vision.ball_dis * math.cos(math.radians(vision.ball_ang))
@@ -158,21 +144,27 @@ class Robot(object):
       self.__object_info['ball']['global_y'] = gby
       # print(spwmx, spwmy)
       Robot.last_time = time.time()
-    self.__object_info['ball']['dis']     = vision.ball_dis
-    self.__object_info['ball']['ang']     = vision.ball_ang
-    self.__object_info['Blue']['dis']     = vision.blue_dis
-    self.__object_info['Blue']['ang']     = vision.blue_ang
-    self.__object_info['Yellow']['dis']   = vision.yellow_dis
-    self.__object_info['Yellow']['ang']   = vision.yellow_ang
-    
+
+    self.__object_info['ball']['dis']    = vision.ball_dis
+    self.__object_info['ball']['ang']    = vision.ball_ang
+    self.__object_info['Blue']['dis']    = vision.blue_fix_dis
+    self.__object_info['Blue']['ang']    = vision.blue_fix_ang
+    self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
+    self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
+
+
   def _GetTwopoint(self,vision):
     self.__twopoint_info['Blue']['right']   = vision.blue_right
     self.__twopoint_info['Blue']['left']    = vision.blue_left
     self.__twopoint_info['Yellow']['right'] = vision.yellow_right
     self.__twopoint_info['Yellow']['left']  = vision.yellow_left   
 
-  def _GetImu(self,imu_3d):
-    self.__imu_info['imu']['ang']    = imu_3d.yaw
+
+  def _GetBlackItemInfo(self, vision):
+    self.__obstacle_info['ranges'] =vision.data
+
+  def _GetImu(self, imu_3d):
+    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
@@ -184,9 +176,23 @@ class Robot(object):
     self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180
 
   def RobotStatePub(self, state):
-    s = String()
-    s.data = state
-    self.state_pub.publish(s)
+    m = RobotState()
+    m.state = state
+    m.ball_is_handled = self.__ball_is_handled
+    m.ball_dis = self.__object_info['ball']['dis']
+    m.position.linear.x  = self.__robot_info['location']['x']
+    m.position.linear.y  = self.__robot_info['location']['y']
+    m.position.angular.z = self.__robot_info['location']['yaw']
+    self.state_pub.publish(m)
+
+  def ConvertSpeedToPWM(self, x, y):
+    reducer = 24
+    max_rpm = 7580
+    wheel_radius  = 0.11
+    circumference = 2 * math.pi * wheel_radius
+    _x = (x / circumference * reducer * 60)/max_rpm * 100
+    _y = (y / circumference * reducer * 60)/max_rpm * 100
+    return _x, _y
 
   def Rotate(self, x, y, theta):
     _x = x*math.cos(math.radians(theta)) - y*math.sin(math.radians(theta))
@@ -240,34 +246,25 @@ class Robot(object):
   def GetTwopoint(self):
     return self.__twopoint_info
 
-  def GetImu(self):
-    return self.__imu_info
-
-  def SimShoot(self, power, pos) :
-    rospy.wait_for_service(SIM_SHOOT_SRV.format(self.robot_number), 1)
-    try:
-      client = rospy.ServiceProxy(SIM_SHOOT_SRV.format(self.robot_number), Shoot)
-      resp1 = client(power, pos)
-      return resp1
-    except rospy.ServiceException :
-      print ("Service call failed")
+  def GetObstacleInfo(self):
+    return self.__obstacle_info
 
   def RealShoot(self, power, pos) :
     msg = Int32()
-    msg.data = 100
+    msg.data = power
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):
-    rospy.wait_for_service(SIM_HANDLE_SRV.format(self.robot_number), 1)
-    try:
-      client = rospy.ServiceProxy(SIM_HANDLE_SRV.format(self.robot_number), BallHandle)
-      resp1 = client(1)
-      return resp1.BallIsHolding
-    except rospy.ServiceException :
-      print ("Service call failed")
+    self.sim_hold_pub.publish(True)
+    return self.__ball_is_handled
+
+  def _CheckBallHandle(self, data):
+    self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-    if self.__object_info['ball']['dis'] < self.__handle_dis and self.__object_info['ball']['ang'] < self.__handle_ang:
+    if self.__object_info['ball']['dis'] <= self.__handle_dis and self.__object_info['ball']['ang'] <= self.__handle_ang:
+      self.__ball_is_handled = True
       return True
     else:
+      self.__ball_is_handled = False
       return False

@@ -1,7 +1,7 @@
 function listener(){
 		var listener = new ROSLIB.Topic({
 		  ros : ros,
-		  name : '/chatter',
+		  name : 'chatter',
 		  messageType : 'std_msgs/String'
 		});
 

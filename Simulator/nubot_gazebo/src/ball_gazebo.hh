@@ -2,9 +2,9 @@
 #define BALL_GAZEBO_HH
 
 #include <boost/bind.hpp>
-#include <gazebo/gazebo.hh>             // the core gazebo header files, including gazebo/math/gzmath.hh
-#include <gazebo/physics/physics.hh>
-#include <gazebo/common/common.hh>
+// #include <gazebo/gazebo.hh>             // the core gazebo header files, including gazebo/math/gzmath.hh
+// #include <gazebo/physics/physics.hh>
+// #include <gazebo/common/common.hh>
 // #include <gazebo/transport/TransportTypes.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/common/Events.hh>
@@ -17,6 +17,14 @@
 
 #include "nubot/core/core.hpp"
 
+/* add new */
+#include <functional>
+#include <gazebo/gazebo.hh>
+#include <gazebo/physics/physics.hh>
+#include <gazebo/common/common.hh>
+#include <ignition/math/Vector3.hh>
+#include <ignition/math/Quaternion.hh>
+// #include <ignition/math/Pose3d.hh>
 
 namespace gazebo{
 

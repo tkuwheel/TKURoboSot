@@ -379,8 +379,8 @@ int main(int argc,char **argv)
     ros::init(argc, argv, "imu_3d");
     ros::NodeHandle n;
     ros::Publisher imu_pub = n.advertise<imu_3d::inertia>("imu_3d",1000);
-    ros::Subscriber speed_sub = n.subscribe("/FIRA/R1/Strategy/PathPlan/RobotSpeed",100,speed_stationary);
-    ros::Subscriber angle_sub = n.subscribe("/imu_3d/angle_correction",100,angle_callback);
+    ros::Subscriber speed_sub = n.subscribe("FIRA/R1/Strategy/PathPlan/RobotSpeed",100,speed_stationary);
+    ros::Subscriber angle_sub = n.subscribe("imu_3d/angle_correction",100,angle_callback);
 
     ros::Rate loop_rate(100);
 
@@ -480,7 +480,7 @@ int main(int argc,char **argv)
             double last_time;
             double delta_t = 0;
             degree = 360+sensor.x-direct_tmp-angle_correction;
-            printf("%f\n",direct_tmp);
+            //printf("%f\n",direct_tmp);
             if(degree>=360)
                 degree = degree - 360;
             printf("Angle: %f\n",degree);

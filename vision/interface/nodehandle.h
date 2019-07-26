@@ -34,7 +34,7 @@
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
 #define WHITEITEM 0x10//WHITEITEM=robot
-#define VISION_TOPIC "/camera/image_raw"
+#define VISION_TOPIC "camera/image_raw"
 #define YAML_PATH ros::package::getPath("vision")+"/config/FIRA.yaml"
 #define BIN_PATH ros::package::getPath("vision")+"/config/HSVcolormap.bin"
 #define test "src/vision/1.bmp"
@@ -68,6 +68,7 @@ protected:
 	int OuterMsg;
 	int FrontMsg;
 	double Camera_HighMsg;
+  int HorizonMsg;
 //================scan======================
 	int Angle_Near_GapMsg;
 	int Magn_Near_GapMsg;
