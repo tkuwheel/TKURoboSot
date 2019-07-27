@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import rospy
 import math
 import numpy as np
 import time
+import message_filters
 from simple_pid import PID
 from imu_3d.msg import inertia
 from sensor_msgs.msg import JointState
@@ -33,7 +35,8 @@ SHOOT_TOPIC  = "motion/shoot"
 
 class Robot(object):
 
-  last_time = 0
+  ball_last_time = time.time()
+  sync_last_time = time.time()
 
   __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
                    'imu_3d' : {'yaw' : 0}}
@@ -49,6 +52,14 @@ class Robot(object):
 		                 'intensities' : [0]}
 
   __ball_is_handled = False
+
+  robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  r1_role = ""
+  r2_role = ""
+  r3_role = ""
+
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -107,6 +118,10 @@ class Robot(object):
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
     self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC, RobotState)
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
+    robot2_sub = message_filters.Subscriber('/robot2/strategy/state', RobotState)
+    robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
+    ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
+    ts.registerCallback(self.MulticastReceiver)
 
     if not sim :
       rospy.Subscriber(IMU,inertia,self._GetImu)
@@ -118,6 +133,65 @@ class Robot(object):
       self.TuningVelocityContorller(1, 0, 0)
       self.TuningAngularVelocityContorller(0.1, 0, 0)
 
+  def MulticastReceiver(self, r2_data, r3_data):
+    Robot.sync_last_time = time.time()
+    self.robot2['ball_is_handled'] = r2_data.ball_is_handled
+    self.robot2['ball_dis']        = r2_data.ball_dis
+    self.robot2['position']['x']   = r2_data.position.linear.x
+    self.robot2['position']['y']   = r2_data.position.linear.y
+    self.robot2['position']['yaw'] = r2_data.position.angular.z
+    self.robot3['ball_is_handled'] = r3_data.ball_is_handled
+    self.robot3['ball_dis']        = r3_data.ball_dis
+    self.robot3['position']['x']   = r3_data.position.linear.x
+    self.robot3['position']['y']   = r3_data.position.linear.y
+    self.robot3['position']['yaw'] = r3_data.position.angular.z
+
+  def Supervisor(self):
+    duration = time.time() - Robot.sync_last_time
+    if duration > 5:
+      print("Lossing Connection with teammates...{}".format(duration), end='\r')
+    else:
+      if self.robot2['ball_is_handled']:
+        self.r2_role = "Attacker"
+        self.r3_role = "Supporter"
+      elif self.robot3['ball_is_handled']:
+        self.r2_role = "Supporter"
+        self.r3_role = "Attacker"
+      else:
+        self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
+        self.r3_role = "Supporter" if self.robot2 is "Attacker" else "Attacker"
+
+  def GetState(self, robot_ns):
+    if "robot1" in robot_ns.lower():
+      return self.robot1
+    elif "robot2" in robot_ns.lower():
+      return self.robot2
+    elif "robot3" in robot_ns.lower():
+      return self.robot3
+    else:
+      print("Wrong Namespace")
+
+  def MyState(self):
+    if "robot1" in rospy.get_namespace():
+      return self.robot1
+    elif "robot2" in rospy.get_namespace():
+      return self.robot2
+    elif "robot3" in rospy.get_namespace():
+      return self.robot3
+    else:
+      print("Wrong Namespace")
+
+  def MyRole(self, my_ns):
+    if "robot1" in my_ns.lower():
+      return self.r1_role
+    elif "robot2" in my_ns.lower():
+      return self.r2_role
+    elif "robot3" in my_ns.lower():
+      return self.r3_role
+    else:
+      print("Wrong Namespace")
+      return "Wrong Namespace"
+
   def _Publisher(self, topic, mtype):
     return rospy.Publisher(topic, mtype, queue_size=1)
 
@@ -127,7 +201,7 @@ class Robot(object):
     rrbx, rrby = self.Rotate(rbx, rby, self.__robot_info['location']['yaw'])
     gbx = rrbx + self.__robot_info['location']['x']
     gby = rrby + self.__robot_info['location']['y']
-    if time.time() - Robot.last_time >= 0.5:
+    if time.time() - Robot.ball_last_time >= 0.5:
       spx = (gbx - self.__object_info['ball']['global_x']) * 0.02 # m / 0.5s
       spy = (gby - self.__object_info['ball']['global_y']) * 0.02
       spwmx, spwmy = self.ConvertSpeedToPWM(spx, spy)
@@ -138,7 +212,7 @@ class Robot(object):
       self.__object_info['ball']['global_x'] = gbx
       self.__object_info['ball']['global_y'] = gby
       # print(spwmx, spwmy)
-      Robot.last_time = time.time()
+      Robot.ball_last_time = time.time()
 
     self.__object_info['ball']['dis']    = vision.ball_dis
     self.__object_info['ball']['ang']    = vision.ball_ang

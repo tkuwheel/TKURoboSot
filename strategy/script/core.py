@@ -48,6 +48,7 @@ class Core(Robot, StateMachine):
     self.maximum_v = config['maximum_v']
     self.orb_attack_ang = config['orb_attack_ang']
     self.atk_shoot_ang = config['atk_shoot_ang']
+    self.my_role       = config['role']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -232,6 +233,12 @@ class Strategy(object):
     while not rospy.is_shutdown():
 
       self.robot.PubCurrentState()
+      self.robot.Supervisor()
+
+      print(self.robot.GetState("/robot1"))
+      print(self.robot.GetState("/robot2"))
+      print(self.robot.GetState("/robot3"))
+      print(self.robot.MyRole(rospy.get_namespace()))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -268,7 +275,6 @@ class Strategy(object):
           else:
             self.ToChase()
 
-
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if abs(targets[self.robot.opp_side]['ang']) <= self.robot.atk_shoot_ang:
@@ -286,7 +292,6 @@ class Strategy(object):
             else:
               self.ToMovement()
 
-
           elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.robot.strategy_mode = "Fast_break"
@@ -296,7 +301,7 @@ class Strategy(object):
 
           elif mode == "Fast_break":
             self.ToAttack()
-                      
+
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.ToChase()
@@ -307,7 +312,6 @@ class Strategy(object):
 
         if self.robot.is_shoot:
           self.ToAttack()
-
 
       ## Run point
       if self.robot.is_point:
