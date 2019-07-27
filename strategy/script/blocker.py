@@ -221,6 +221,6 @@ if __name__ == '__main__':
       log("Start Sim")
       s = Strategy(True)
     # s.main(sys.argv[1:])
-    s.main()
+
   except rospy.ROSInterruptException:
     pass
