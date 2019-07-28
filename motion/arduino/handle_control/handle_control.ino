@@ -11,11 +11,11 @@ float T;
 bool ballhandle;
 
 const int PWM_R      = 6;
-const int DIR_R_UP   = 7;
-const int DIR_R_DOWN = 8;
-const int PWM_L      = 9;
-const int DIR_L_UP   = 10;
-const int DIR_L_DOWN = 11;
+const int DIR_R_UP   = 4;
+const int DIR_R_DOWN = 5;
+const int PWM_L      = 10;
+const int DIR_L_UP   = 8;
+const int DIR_L_DOWN = 9;
 
 void messageCb( const geometry_msgs::Twist& msg){
   x   = msg.linear.x;
