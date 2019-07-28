@@ -67,6 +67,7 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
     nh.getParam("FIRA/vision/Center/Front", FrontMsg);
     nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Horizon", HorizonMsg);
     //==================掃瞄點參數=========================
     nh.getParam("FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
     nh.getParam("FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
@@ -145,6 +146,7 @@ void NodeHandle::centercall(const vision::center msg)
     OuterMsg = msg.Outer;
     FrontMsg = msg.Front;
     Camera_HighMsg = msg.Camera_High;
+    HorizonMsg = msg.Horizon;
 }
 //========================distance========================
 void NodeHandle::positioncall(const vision::position msg)

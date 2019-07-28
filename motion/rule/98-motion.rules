@@ -1,0 +1,1 @@
+KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idVendor}=="067b", MODE="0666", GROUP="dialout", SYMLINK+="communication/motion"

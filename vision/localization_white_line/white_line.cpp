@@ -69,7 +69,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
             FrameRate = Rate();
 
             Mat whiteline = White_Line(Source);
-            //Pub_whiteframe(whiteline);
+            Pub_whiteframe(whiteline);
             Pub_whitedis(whitedis);
         }
     }
@@ -85,7 +85,10 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     cv::Mat edge;
     cv::Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
     Mat visual_map(550, 750, CV_8UC3, Scalar(0,0,0));
-    int ground = OuterMsg-90;
+    int ground = OuterMsg-100;
+    if(HorizonMsg>0&&HorizonMsg<OuterMsg){
+        ground = HorizonMsg;
+    }
     vector<int> white_dis;
     whitedis.data.clear();
     //======================threshold===================
@@ -109,8 +112,8 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
         }
     }
     //cv::imshow("threshold", threshold);
-    Canny(threshold, edge, 50, 150, 3);
-    edge=convertTo3Channels(edge);
+    //Canny(threshold, edge, 50, 150, 3);
+    //edge=convertTo3Channels(edge);
     //cv::imshow("edge", edge);
 
 //=========================
@@ -164,7 +167,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     for(int i=0; i<360; i++){
         green_range[i]=0;
     }
-    mask=convertTo3Channels(mask);
+    //mask=convertTo3Channels(mask);
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + WhiteAngleMsg)
     {
         for (int r = ground; r >= InnerMsg; r--)
@@ -175,16 +178,30 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
             int y_ = r * Angle_sin[angle_be];
             int x = Frame_Area(CenterXMsg + x_, oframe.cols);
             int y = Frame_Area(CenterYMsg - y_, oframe.rows);
-            if (mask.data[(y * mask.cols + x)*3 + 0] == 255)
+            //if (mask.data[(y * mask.cols + x)*3 + 0] == 255)
+            if (mask.data[(y * mask.cols + x)] == 255)
             {
-                green_range[angle_be] = r-1;
+                green_range[angle_be] = r-3;
                 break;
             }
         }
     }
+    //畫場地
+    for (int i = 0; i < threshold.rows; i++)
+    {
+        for (int j = 0; j < threshold.cols; j++)
+        {
+            if (mask.data[(i * mask.cols + j)] == 255)
+            {
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 0] = 0;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 1] = 200;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 2] = 0;
+            }
+        }
+    }
     //=====================draw the scan line===========
-    Mat input = edge.clone();
-    oframe = edge.clone();
+    Mat input = threshold.clone();
+    oframe = threshold.clone();
     //oframe = threshold.clone();
     int line_count = 0;
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + WhiteAngleMsg)
@@ -202,7 +219,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
             int y_ = r * Angle_sin[angle_be];
             int x = Frame_Area(CenterXMsg + x_, oframe.cols);
             int y = Frame_Area(CenterYMsg - y_, oframe.rows);
-            if(green_range[angle_be] < r){
+            if(green_range[angle_be] <= r){
                 //cout<<"fuck"<<endl;
                 break;
             }
@@ -216,11 +233,12 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
                 }
                 else
                 {
-                    oframe.data[(y * oframe.cols + x) * 3 + 0] = 255;
-                    oframe.data[(y * oframe.cols + x) * 3 + 1] = 255;
+                    oframe.data[(y * oframe.cols + x) * 3 + 0] = 0;
+                    oframe.data[(y * oframe.cols + x) * 3 + 1] = 0;
                     oframe.data[(y * oframe.cols + x) * 3 + 2] = 255;
                 }
             }
+
             if (input.data[(y * input.cols + x) * 3 + 0] == 255)
             {
                 circle(oframe, Point(x, y), 2, Scalar(255, 0, 0), 1);
@@ -240,7 +258,6 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
                 //white_dis.push_back(Omni_distance(r));
                 break;
             }
-
         }
         line_count++;
     }
@@ -254,7 +271,6 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     circle(visual_map, Point(visual_map.cols/2, visual_map.rows/2), 5, Scalar(0, 0, 255), 1);
     line(visual_map, Point(visual_map.cols/2,visual_map.rows/2), Point(visual_map.cols/2+5,visual_map.rows/2), Scalar(0,0,255), 1);
     //cv::imshow("visual_map", visual_map);
-
     //cv::imshow("white_line", oframe);
     //cv::waitKey(10);
 

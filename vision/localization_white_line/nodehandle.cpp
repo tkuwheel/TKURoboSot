@@ -6,8 +6,8 @@ NodeHandle::NodeHandle()
     AngleLUT();
 
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
-    color_sub = nh.subscribe("interface/color", 1, &NodeHandle::colorcall, this);
-    //whiteframe_pub = nh.advertise<sensor_msgs::Image>("camera/white", 1);
+    //color_sub = nh.subscribe("interface/color", 1, &NodeHandle::colorcall, this);
+    whiteframe_pub = nh.advertise<sensor_msgs::Image>("camera/white", 1);
     //whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("vision/WhiteRealDis", 1);
     whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("vision/mcl/WhiteRealDis", 1);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
@@ -49,6 +49,7 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
     nh.getParam("FIRA/vision/Center/Front", FrontMsg);
     nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Horizon", HorizonMsg);
     //==================黑白掃描參數=======================
     nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
     nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);

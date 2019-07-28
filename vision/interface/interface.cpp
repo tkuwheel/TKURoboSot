@@ -123,6 +123,7 @@ cv::Mat Vision::CenterModel(const cv::Mat iframe)
     int outer = OuterMsg;
     int front = FrontMsg;
     int lengh = InnerMsg;
+    int horizon = HorizonMsg;
     int x = center.x + lengh * Angle_cos[front];
     int y = center.y - lengh * Angle_sin[front];
     //avoid code dump
@@ -135,6 +136,8 @@ cv::Mat Vision::CenterModel(const cv::Mat iframe)
     circle(oframe, center, inner, Scalar(0, 0, 255), 1);
     //外圈
     circle(oframe, center, outer, Scalar(0, 255, 0), 1);
+    //地平線
+    circle(oframe, center, horizon , Scalar(0, 255, 0), 1);
     //車頭角
     line(oframe, center, Point(x, y), Scalar(255, 0, 255), 1);
     return oframe;
@@ -399,7 +402,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     oframe = threshold.clone();
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle += WhiteAngleMsg)
     {
-        for (int r = InnerMsg; r <= OuterMsg; r++)
+        for (int r = InnerMsg; r <= HorizonMsg; r++)
         {
             int angle_be = Angle_Adjustment(angle);
 
@@ -433,6 +436,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     line(oframe, Point(CenterXMsg - InnerMsg, CenterYMsg), Point(CenterXMsg + InnerMsg, CenterYMsg), Scalar(0, 255, 0), 1);
     circle(oframe, Point(CenterXMsg, CenterYMsg), InnerMsg, Scalar(0, 255, 0), 0);
     circle(oframe, Point(CenterXMsg, CenterYMsg), OuterMsg, Scalar(0, 255, 0), 0);
+    circle(oframe, Point(CenterXMsg, CenterYMsg), HorizonMsg, Scalar(0, 255, 0), 0);
 
     return oframe;
 }
