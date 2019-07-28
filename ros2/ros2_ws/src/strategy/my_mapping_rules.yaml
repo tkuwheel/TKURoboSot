@@ -1,0 +1,5 @@
+-
+  ros1_package_name: 'strategy'
+  ros1_message_name: 'RobotState'
+  ros2_package_name: 'strategy'
+  ros2_message_name: 'RobotState'
