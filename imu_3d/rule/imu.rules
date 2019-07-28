@@ -1,0 +1,1 @@
+KERNEL=="*", SUBSYSTEM=="usb", ATTR{idVendor}=="1d5a", ATTR{idProduct}=="c0e0", MODE="0666", SYMLINK+="sensor/imu"

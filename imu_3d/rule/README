@@ -1,0 +1,3 @@
+$cd src/imu_3d/rule/
+$sudo cp imu.rules /etc/udev/rules.d
+打完指令後重新連接USB
