@@ -219,7 +219,8 @@ void PointGreyCamera::setVideoMode(FlyCapture2::VideoMode &videoMode)
   }
   else if(videoMode == VIDEOMODE_FORMAT7)
   {
-    frameRate = FRAMERATE_FORMAT7;
+    //frameRate = FRAMERATE_FORMAT7;
+    frameRate = FRAMERATE_120;
   }
   Error error = cam_.SetVideoModeAndFrameRate(videoMode, frameRate);
   PointGreyCamera::handleError("PointGreyCamera::setVideoMode Could not set video mode", error);
