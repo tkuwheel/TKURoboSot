@@ -27,3 +27,7 @@ signaltap
 build
 install
 log
+
+# Configs
+FIRA.yaml
+HSVcolormap.bin
