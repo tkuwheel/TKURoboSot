@@ -15,7 +15,7 @@ REMAINING_RANGE_YAW = 2
 
 class Behavior(Robot,Obstacle):
   def __init__(self):
-    pass
+    self.penalty_angle = []
 
   def Orbit(self, goal_ang):
     orbit_radius = 33.5 # 22.5 + 11 cm
@@ -77,27 +77,76 @@ class Behavior(Robot,Obstacle):
 
   def relative_ball(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
-    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    if ball_dis + goal_dis < 100:
 
-    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
-    door_y = goal_dis * math.sin(math.radians(goal_ang))
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
-    defence_x   = (5* ball_x + door_x ) / 6					#防守位置
-    defence_y   = (5* ball_y + door_y ) / 6
-    defence_yaw = 0
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+      defence_x   = 1				                                  	#avoid to go to the goal area
+      defence_y   = (7.5* ball_y + door_y ) / 10
+      defence_yaw = ball_ang
+
+    else:
+
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+      defence_x   = (7.5* ball_y + door_y ) / 10               	#防守位置
+      defence_y   = (7.5* ball_y + door_y ) / 10
+      defence_yaw = ball_ang
+
 
     return defence_x , defence_y , defence_yaw
 
-  def PenaltyTurning(self, side, dest_ang):
+  def PenaltyTurning(self, side, run_yaw):
     robot_info = self.GetObjectInfo()
-    if dest_ang == 0:
-      v_yaw = robot_info[side]['ang']      
+    position = self.GetRobotInfo()
+    if run_yaw == 0:
+      v_yaw = robot_info[side]['ang']
+    
+    else:
+      front_ang = math.degrees(position['imu_3d']['yaw'])-90
+      dest_ang  = front_ang - run_yaw
+      self.penalty_angle.append(dest_ang)
+      dest_ang = self.penalty_angle[0] 
+      v_yaw = front_ang - dest_ang
+
     v_x = 0
     v_y = 0
-   
     return v_x, v_y, v_yaw
 
+
+  def Post_up(self, goal_dis, goal_ang,ranges, angle_increment):
+    
+    
+    self.__goal_dis = goal_dis
+    self.__goal_ang = goal_ang
+    self.__ranges = ranges
+    self.__angle_increment = angle_increment
+
+
+    self.raw , object_dis= self.state(ranges) 
+    self.edit = self.filter(self.raw)        
+    obstacle_force_x , obstacle_force_y = self.Obstacle_segmentation(self.edit ,angle_increment , object_dis)
+    
+    if obstacle_force_x == 0 and obstacle_force_y == 0 :
+        v_x   = goal_dis * math.cos(math.radians(goal_ang))
+        v_y   = goal_dis * math.sin(math.radians(goal_ang))
+        v_yaw = goal_ang
+
+        return v_x , v_y , v_yaw
+
+    else :
+        v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis,0)
+
+    
+    return v_x, v_y, v_yaw
     
 
 

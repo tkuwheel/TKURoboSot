@@ -2,6 +2,7 @@
 from __future__ import print_function
 import rospy
 import math
+import time
 import numpy as np
 import time
 import message_filters
@@ -10,6 +11,7 @@ from imu_3d.msg import inertia
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from vision.msg import Object
+from vision.msg import Two_point
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from std_msgs.msg import String
 from std_msgs.msg import Int32
@@ -27,13 +29,15 @@ ROTATE_V_ANG = 90
 VISION_TOPIC = "vision/object"
 POSITION_TOPIC = "akf_pose"
 IMU            = "imu_3d"
-
 ## Strategy Outputs
 STRATEGY_STATE_TOPIC = "strategy/state"
 CMDVEL_TOPIC = "motion/cmd_vel"
 SHOOT_TOPIC  = "motion/shoot"
 
 class Robot(object):
+  
+  __twopoint_info = {'Blue':{'right' : 0,'left' : 0},
+                     'Yellow':{'right' : 0,'left' : 0}}
 
   ball_last_time = time.time()
   sync_last_time = time.time()
@@ -124,6 +128,7 @@ class Robot(object):
     ts.registerCallback(self.MulticastReceiver)
 
     if not sim :
+      rospy.Subscriber('interface/Two_point', Two_point, self._GetTwopoint)
       rospy.Subscriber(IMU,inertia,self._GetImu)
       self.RobotBallHandle = self.RealBallHandle
     else:
@@ -221,16 +226,24 @@ class Robot(object):
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
 
-    if self.__object_info['ball']['dis'] < self.__handle_dis and abs(self.__object_info['ball']['ang']) < self.__handle_ang:
+    if self.__object_info['ball']['dis'] <= self.__handle_dis and abs(self.__object_info['ball']['ang']) <= self.__handle_ang:
       self.__ball_is_handled = True
     else:
       self.__ball_is_handled = False
+
+  def _GetTwopoint(self,vision):
+    self.__twopoint_info['Blue']['right']   = vision.blue_right
+    self.__twopoint_info['Blue']['left']    = vision.blue_left
+    self.__twopoint_info['Yellow']['right'] = vision.yellow_right
+    self.__twopoint_info['Yellow']['left']  = vision.yellow_left
 
   def _GetBlackItemInfo(self, vision):
     self.__obstacle_info['ranges'] =vision.data
 
   def _GetImu(self, imu_3d):
-    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw
+    
+    front_ang = math.degrees(imu_3d.yaw) + 90 
+    self.__robot_info['imu']['front_ang'] = imu_3d.yaw  #caculate front angle by imu
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
@@ -239,8 +252,9 @@ class Robot(object):
     qy = loc.pose.pose.orientation.y
     qz = loc.pose.pose.orientation.z
     qw = loc.pose.pose.orientation.w
-    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz) / math.pi * 180
-
+    self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)\
+                                           / math.pi * 180  #caculate front angle by self_localization
+                                                                                                                                         
   def RobotStatePub(self, state):
     m = RobotState()
     m.state = state
@@ -263,6 +277,15 @@ class Robot(object):
   def Rotate(self, x, y, theta):
     _x = x*math.cos(math.radians(theta)) - y*math.sin(math.radians(theta))
     _y = x*math.sin(math.radians(theta)) + y*math.cos(math.radians(theta))
+    return _x, _y
+
+  def ConvertSpeedToPWM(self, x, y):
+    reducer = 24
+    max_rpm = 7580
+    wheel_radius  = 0.11
+    circumference = 2 * math.pi * wheel_radius
+    _x = (x / circumference * reducer * 60)/max_rpm * 100
+    _y = (y / circumference * reducer * 60)/max_rpm * 100
     return _x, _y
 
   def RobotCtrlS(self, x, y, yaw, pass_through=False):
@@ -299,6 +322,12 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
+<<<<<<< HEAD
+=======
+ 
+  def GetTwopoint(self):
+    return self.__twopoint_info
+>>>>>>> origin/robot3
 
   def GetObstacleInfo(self):
     return self.__obstacle_info
@@ -316,4 +345,8 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
+<<<<<<< HEAD
     return self.__ball_is_handled
+=======
+    return self.__ball_is_handled
+>>>>>>> origin/robot3
