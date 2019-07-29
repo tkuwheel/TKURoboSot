@@ -235,10 +235,7 @@ class Strategy(object):
       self.robot.PubCurrentState()
       self.robot.Supervisor()
 
-      print(self.robot.GetState("/robot1"))
-      print(self.robot.GetState("/robot2"))
-      print(self.robot.GetState("/robot3"))
-      print(self.robot.MyRole(rospy.get_namespace()))
+      print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole(rospy.get_namespace())))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
