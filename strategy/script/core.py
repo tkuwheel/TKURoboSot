@@ -334,7 +334,7 @@ class Strategy(object):
           else:
             self.ToChase()
 
-        if self.robot.is_movement:
+        if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
