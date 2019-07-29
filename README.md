@@ -16,6 +16,11 @@ $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ### ROS Packages:
 ```bash
 $ sudo apt-get install ros-melodic-rosbridge-server ros-melodic-prosilica-camera
+$ sudo apt-get install ros-melodic-rosserial ros-melodic-rosserial-arduino
+```
+### ROS2 Packages:
+```bash
+$ sudo apt-get install ros-dashing-ros1-bridge
 ```
 ### Python packages:
 ```bash
@@ -30,10 +35,19 @@ $ pip install -r requirements.txt
 $ catkin_make
 ```
 
+## Setup udev rules:
+```bash
+$ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
+```
+
 <hr>
 
 # Startup
 ### Environment Setting
+```bash
+$ echo "export RMW_IMPLEMENTATION=rmw_connext_cpp" >> ~/.bashrc
+```
+
 ```bash
 # Get Camera's serial number
 $ rosrun pointgrey_camera_driver list_cameras
@@ -46,6 +60,9 @@ $ roslaunch nubot_gazebo game_ready.launch
 
 # Strategy w/ simulation mode
 $ roslaunch strategy core.launch sim:=true
+
+# Launch robot devices
+$ roslaunch strategy main_7th_all.launch
 
 # GUI
 # using plugin of dynamic_reconfigure
