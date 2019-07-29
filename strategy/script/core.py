@@ -313,9 +313,9 @@ class Strategy(object):
         if self.robot.is_shoot:
           self.ToAttack()
 
-      ## Run point
-      if self.robot.is_point:
-        self.RunStatePoint()
+        ## Run point
+        if self.robot.is_point:
+          self.RunStatePoint()
 
       if rospy.is_shutdown():
         log('shutdown')
