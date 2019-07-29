@@ -256,12 +256,6 @@ class Strategy(object):
     mode = self.robot.attack_mode
     if mode == "Attack" :
       self.robot.toAttack("Classic")
-<<<<<<< HEAD
-    elif mode == "At_post_up":
-      self.robot.toAttack("Post_up")
-=======
-
->>>>>>> origin/robot3
     elif mode == "Cut":
       self.robot.toAttack("Cut")
     elif mode == "Post_up":
@@ -288,12 +282,7 @@ class Strategy(object):
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":
       self.robot.toMovement("Relative_goal")
-<<<<<<< HEAD
-    else :
-=======
-
     elif mode == "Fast_break":
->>>>>>> origin/robot3
       self.ToAttack()
   
   def main(self):
@@ -345,12 +334,7 @@ class Strategy(object):
           else:
             self.ToChase()
 
-<<<<<<< HEAD
         if self.robot.is_movement:          
-=======
-
-        if self.robot.is_movement:
->>>>>>> origin/robot3
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
@@ -367,8 +351,6 @@ class Strategy(object):
             else:
               self.ToMovement()
 
-<<<<<<< HEAD
-=======
           elif mode == 'At_Post_up':
             if targets[self.robot.opp_side]['dis'] <= self.robot.atk_shoot_dis:
               self.ToAttack()
@@ -377,8 +359,6 @@ class Strategy(object):
             else:
               self.ToMovement()              
 
-
->>>>>>> origin/robot3
           elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.dclient.update_configuration({"strategy_mode": "Fast_break"})

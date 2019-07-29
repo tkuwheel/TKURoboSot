@@ -322,12 +322,9 @@ class Robot(object):
 
   def GetRobotInfo(self):
     return self.__robot_info
-<<<<<<< HEAD
-=======
  
   def GetTwopoint(self):
     return self.__twopoint_info
->>>>>>> origin/robot3
 
   def GetObstacleInfo(self):
     return self.__obstacle_info
@@ -345,8 +342,4 @@ class Robot(object):
     self.__ball_is_handled = data.data
 
   def RealBallHandle(self):
-<<<<<<< HEAD
     return self.__ball_is_handled
-=======
-    return self.__ball_is_handled
->>>>>>> origin/robot3
