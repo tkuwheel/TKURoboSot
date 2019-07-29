@@ -159,10 +159,7 @@ class Robot(object):
         self.r3_role = "Attacker"
       else:
         self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
-        self.r3_role = "Supporter" if self.robot2 is "Attacker" else "Attacker"
-    print("Compare {}, {}".format(self.robot2['ball_dis'], self.robot3['ball_dis']))
-    print("R2 < R3 = {}".format(self.robot2['ball_dis'] < self.robot3['ball_dis']))
-    print("Role2, Role3: {}, {}".format(self.r2_role, self.r3_role))
+        self.r3_role = "Supporter" if self.r2_role is "Attacker" else "Attacker"
 
   def GetState(self, robot_ns):
     if "robot1" in robot_ns.lower():
