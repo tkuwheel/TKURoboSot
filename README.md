@@ -20,8 +20,6 @@ $ sudo apt-get install ros-melodic-rosserial ros-melodic-rosserial-arduino
 ```
 ### ROS2 Packages:
 ```bash
-~$ sudo apt-get install ros-dashing-ros1-bridge~
-# Build ros1_bridge from source
 $ sudo apt install ros-dashing-rmw-opensplice-cpp # for OpenSplice
 $ sudo apt install ros-dashing-rmw-connext-cpp # for RTI Connext (requires license agreement)
 $ sudo apt-get install python3-colcon-common-extensions
