@@ -243,7 +243,7 @@ class Robot(object):
   def _GetImu(self, imu_3d):
     
     front_ang = math.degrees(imu_3d.yaw) + 90 
-    self.__robot_info['imu']['front_ang'] = imu_3d.yaw  #caculate front angle by imu
+    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw  #caculate front angle by imu
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100

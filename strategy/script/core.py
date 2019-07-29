@@ -323,8 +323,6 @@ class Strategy(object):
               print('idle to chase')
               self.ToChase()
               
-          
-
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
             print('chase to move')
@@ -384,17 +382,17 @@ class Strategy(object):
           self.ToAttack()
 
       ## Run point
-      if self.robot.is_point:
-        if not self.robot.CheckBallHandle():
-          self.ToChase()
-        else:
-          self.RunStatePoint()
+        if self.robot.is_point:
+          if not self.robot.CheckBallHandle():
+            self.ToChase()
+          else:
+            self.RunStatePoint()
 
-      if rospy.is_shutdown():
-        log('shutdown')
-        break
+        if rospy.is_shutdown():
+          log('shutdown')
+          break
 
-      self.rate.sleep()
+        self.rate.sleep()
 
 if __name__ == '__main__':
   try:
