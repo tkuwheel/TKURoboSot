@@ -269,7 +269,7 @@ rqt_web
   </select><br/>
   run_point：
   <select name="run_point" id="run_point">
-    　<option value="empty_hand">ball_hand</option>
+    　<option value="empty_hand">empty_hand</option>
     　<option value="ball_hand">ball_hand</option>
     　<option value="none">none</option>
   </select><br/>
@@ -307,32 +307,32 @@ rqt_web
   </select><br/>
   <br/>
   orb_attack_ang：
-  <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="orb_attack_angInput" name="orb_attack_ang"  value="0" type="number" min="0.0" max="20.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 20.0<br/>
+  <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="orb_attack_angInput" name="orb_attack_ang"  value="5.0" type="number" min="0.0" max="20.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 20.0<br/>
   atk_shoot_ang：
-  <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="atk_shoot_angInput" name="atk_shoot_ang"  value="0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
+  <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="10.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_angInput" name="atk_shoot_ang"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
   atk_shoot_dis：
-  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="500.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="0" type="number" min="0.0" max="500.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
+  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="500.0" value="300" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="300" type="number" min="0.0" max="500.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
   minimum_w：
-  <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="minimum_wInput" name="minimum_w"  value="0" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_wInput" name="minimum_w"  value="1.2" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
   maximum_w：
-  <input id="maximum_wSlider" name="maximum_w" type="range" min="0.0" max="100.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="maximum_wInput" name="maximum_w"  value="0" type="number" min="0.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 100.0<br/>
+  <input id="maximum_wSlider" name="maximum_w" type="range" min="10.0" max="100.0" value="35" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_wInput" name="maximum_w"  value="35" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />10.0 to 100.0<br/>
   minimum_v：
-  <input id="minimum_vSlider" name="minimum_v" type="range" min=".0.0" max="5.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="minimum_vInput" name="minimum_v"  value="0.0" type="number" min="0.0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  <input id="minimum_vSlider" name="minimum_v" type="range" min="0.0" max="10.0" value="10" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_vInput" name="minimum_v"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
   maximum_v：
-  <input id="maximum_vSlider" name="maximum_v" type="range" min="0.0" max="100.0" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="maximum_vInput" name="maximum_v"  value="0" type="number" min="0.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 100.0<br/>
+  <input id="maximum_vSlider" name="maximum_v" type="range" min="10.0" max="100.0" value="50" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_vInput" name="maximum_v"  value="50" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 100.0<br/>
   ballhandle_dis：
-  <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="ballhandle_disInput" name="ballhandle_dis"  value="0" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="28" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_disInput" name="ballhandle_dis"  value="28" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
   ballhandle_ang：
-  <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="0" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="ballhandle_angInput" name="ballhandle_ang"  value="0" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_angInput" name="ballhandle_ang"  value="5" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
   
   <input type='button' name='submit' value='送出' onclick= processFormData() />
 </form>
