@@ -71,7 +71,7 @@ class Behavior(Robot,Obstacle):
 
     defence_x   = ( ball_x + door_x ) / 2				#防守位置
     defence_y   = ( ball_y + door_y ) / 2
-    defence_yaw = 0
+    defence_yaw = ball_ang
 
     return defence_x , defence_y , defence_yaw
 

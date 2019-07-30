@@ -19,7 +19,7 @@
  *	Define	
  ********************************/
 //typedef void * (*THREADFUNCPTR)(void *);
-//#define DEBUG
+#define DEBUG_
 bool flag = 0;
 void inturrupt(int signal)
 {
@@ -47,8 +47,11 @@ int main(int argc, char **argv)
     RobotCommand robotOdo = {0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
+
+    int count_cmd = 0; // command
+    int count_fb = 0; // feedback
+    ros::Rate loop_rate(CMD_FREQUENCY);
     std::cout << "FIRA6th MOTION IS RUNNING!\n";
-    bool is_activated = false;
     while(true){
         if(flag){
             Base.Close();
@@ -63,7 +66,8 @@ int main(int argc, char **argv)
             continue;
         }
         // Get Command
-        if(Node.getNodeFlag(is_activated)){
+        if(Node.getNodeFlag()){
+            count_cmd = 0;
 
             robotCMD = Node.getMotion();
 
@@ -72,16 +76,33 @@ int main(int argc, char **argv)
             printf("\n*****get motion******\n");
             Node.ShowCommand();
 #endif
+        }else{
+            if(count_cmd>=CMD_FREQUENCY/2){
+                printf("CANNOT GET COMMAND %d\n", count_cmd);
+                Base.Close();
+            }else{
+                count_cmd++;
+            }
         }
-        // Send Command
-        if(Base.GetBaseFlag(is_activated)){
+        // Get feedback
+        if(Base.GetBaseFlag()){
+            count_fb = 0;
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
 #ifdef DEBUG_
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
+        }else{
+            if(count_fb>=CMD_FREQUENCY/2){
+                printf("CANNOT GET FEETBACK %d\n", count_fb);
+            }else{
+                count_fb++;
+            }
         }
+       
+	ros::spinOnce();
+        loop_rate.sleep();
     }
     std::cout << "Close Attack Motion\n";
     return 0;

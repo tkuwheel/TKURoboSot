@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-#set(INCLUDE_DIR 
-#        ${PROJECT_SOURCE_DIR}/include)
 #include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 #add_executable(Single_n
@@ -25,3 +23,8 @@ add_executable(RX_Test
                 rx_test.cpp
 )
 target_link_libraries(RX_Test  ${catkin_LIBRARIES} csslLib)
+
+add_executable(Crc
+               get_crc.cpp
+)
+target_link_libraries(Crc crcLib)

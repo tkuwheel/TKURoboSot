@@ -168,13 +168,13 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
 
     bool filter = false;
     frame_counter++;
-    if (frame_counter == 2)
+    if (frame_counter > 10)
     {
         EndTime = ros::Time::now().toNSec();
         dt = (EndTime - StartTime)/1000000000;
         //cout<<dt<<endl;
         StartTime = EndTime;
-        if (dt != 0)
+        if (dt > 0.03)
         {
             static long double vx=0,vy=0,vw=0;
             double vx_,vy_,vw_;
