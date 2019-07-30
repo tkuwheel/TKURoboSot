@@ -221,7 +221,7 @@ class Strategy(object):
 
   def __init__(self, sim=False):
     rospy.init_node('core', anonymous=True)
-    self.rate = rospy.Rate(1000)
+    self.rate = rospy.Rate(200)
     self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
     self.main()
@@ -290,10 +290,7 @@ class Strategy(object):
       self.robot.PubCurrentState()
       self.robot.Supervisor()
 
-      # print(self.robot.GetState("/robot1"))
-      # print(self.robot.GetState("/robot2"))
-      # print(self.robot.GetState("/robot3"))
-      # print(self.robot.MyRole(rospy.get_namespace()))
+      print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole(rospy.get_namespace())))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -383,12 +380,12 @@ class Strategy(object):
         if self.robot.is_shoot:
           self.ToAttack()
 
-      ## Run point
-      if self.robot.is_point:
-        if not self.robot.CheckBallHandle():
-          self.ToChase()
-        else:
-          self.RunStatePoint()
+        ## Run point
+        if self.robot.is_point:
+          if not self.robot.CheckBallHandle():
+            self.ToChase()
+          else:
+            self.RunStatePoint()
 
       if rospy.is_shutdown():
         log('shutdown')

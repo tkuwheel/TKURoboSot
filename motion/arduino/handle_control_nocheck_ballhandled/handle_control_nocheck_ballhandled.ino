@@ -1,5 +1,5 @@
 #include <ros.h>
-#include <std_msgs/String.h>
+//#include <std_msgs/String.h>
 //#include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
 #include <strategy/RobotState.h>
@@ -10,12 +10,12 @@ float x, y, yaw;
 float T;
 bool ballhandle;
 
-const int PWM_R      = 6;
-const int DIR_R_UP   = 4;
-const int DIR_R_DOWN = 5;
-const int PWM_L      = 10;
-const int DIR_L_UP   = 8;
-const int DIR_L_DOWN = 9;
+const int PWM_R      = 10;
+const int DIR_R_UP   = 8;
+const int DIR_R_DOWN = 9;
+const int PWM_L      = 6;
+const int DIR_L_UP   = 4;
+const int DIR_L_DOWN = 5;
 
 void messageCb( const geometry_msgs::Twist& msg){
   x   = msg.linear.x;
@@ -23,15 +23,15 @@ void messageCb( const geometry_msgs::Twist& msg){
   yaw = msg.angular.z;
 }
 
-std_msgs::String str_msg;
-ros::Publisher chatter("chatter", &str_msg);
+//std_msgs::String str_msg;
+//ros::Publisher chatter("chatter", &str_msg);
 ros::Subscriber<geometry_msgs::Twist> motion_sub("motion/cmd_vel", &messageCb );
 
 void setup() {
   // put your setup code here, to run once:
   nh.initNode();
   nh.subscribe(motion_sub);
-  nh.advertise(chatter);
+  //nh.advertise(chatter);
   T=millis();
   pinMode(DIR_R_UP,OUTPUT);
   pinMode(DIR_R_DOWN,OUTPUT);
@@ -52,17 +52,17 @@ void loop() {
       digitalWrite(DIR_L_DOWN,HIGH);
       analogWrite(PWM_R,255*20/100);
       analogWrite(PWM_L,255*20/100);
-      str_msg.data ="Still_1";
-      chatter.publish( &str_msg );
+      //str_msg.data ="Still_1";
+      //chatter.publish( &str_msg );
     }else{
       digitalWrite(DIR_R_UP,LOW);
       digitalWrite(DIR_L_UP,LOW);
       digitalWrite(DIR_R_DOWN,HIGH);
       digitalWrite(DIR_L_DOWN,HIGH);
-      analogWrite(PWM_R,255*10/100);
-      analogWrite(PWM_L,255*10/100);
-      str_msg.data ="Still_2";
-      chatter.publish( &str_msg );
+      analogWrite(PWM_R,255*8/100);
+      analogWrite(PWM_L,255*8/100);
+      //str_msg.data ="Still_2";
+      //chatter.publish( &str_msg );
     }
   }
   else if(yaw==0 &(x!=0 or y!=0)){
@@ -75,8 +75,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,LOW);
           analogWrite(PWM_R,255*0/100);
           analogWrite(PWM_L,255*0/100);
-          str_msg.data ="Forward_STOP";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Forward_STOP";
+          //chatter.publish( &str_msg );
         }else{
           digitalWrite(DIR_R_UP,HIGH);
           digitalWrite(DIR_L_UP,HIGH);
@@ -84,8 +84,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,LOW);
           analogWrite(PWM_R,255*7.5/100);
           analogWrite(PWM_L,255*7.5/100);
-          str_msg.data ="Forward";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Forward";
+          //chatter.publish( &str_msg );
         }
       }else if(y<0){
         if(y>-61){
@@ -93,19 +93,19 @@ void loop() {
           digitalWrite(DIR_L_UP,LOW);
           digitalWrite(DIR_R_DOWN,HIGH);
           digitalWrite(DIR_L_DOWN,HIGH);
-          analogWrite(PWM_R,255*25/100);
-          analogWrite(PWM_L,255*25/100);
-          str_msg.data ="Back_slow";
-          chatter.publish( &str_msg );
+          analogWrite(PWM_R,255*20/100);
+          analogWrite(PWM_L,255*20/100);
+          //str_msg.data ="Back_slow";
+          //chatter.publish( &str_msg );
         }else{
           digitalWrite(DIR_R_UP,LOW);
           digitalWrite(DIR_L_UP,LOW);
           digitalWrite(DIR_R_DOWN,HIGH);
           digitalWrite(DIR_L_DOWN,HIGH);
-          analogWrite(PWM_R,255*(25+(abs(y)-60)*13/8)/100);
-          analogWrite(PWM_L,255*(25+(abs(y)-60)*13/8)/100);
-          str_msg.data ="Back_fast";
-          chatter.publish( &str_msg );
+          analogWrite(PWM_R,255*(20+(abs(y)-60)*13/8)/100);
+          analogWrite(PWM_L,255*(20+(abs(y)-60)*13/8)/100);
+          //str_msg.data ="Back_fast";
+          //chatter.publish( &str_msg );
         }
       }
     }else if(yaw==0 & x!=0 & y==0){
@@ -113,10 +113,10 @@ void loop() {
       digitalWrite(DIR_L_UP,LOW);
       digitalWrite(DIR_R_DOWN,HIGH);
       digitalWrite(DIR_L_DOWN,HIGH);
-      analogWrite(PWM_R,255*18/100);
-      analogWrite(PWM_L,255*18/100);
-      str_msg.data ="Traverse";
-      chatter.publish( &str_msg );
+      analogWrite(PWM_R,255*16/100);
+      analogWrite(PWM_L,255*16/100);
+      //str_msg.data ="Traverse";
+      //chatter.publish( &str_msg );
     }else{
       if(y>0){
         if(x>0){
@@ -126,8 +126,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,HIGH);
           analogWrite(PWM_R,255*20/100);
           analogWrite(PWM_L,255*10/100);
-          str_msg.data ="Move_other";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Move_other";
+          //chatter.publish( &str_msg );
         }else{
           digitalWrite(DIR_R_UP,LOW);
           digitalWrite(DIR_L_UP,LOW);
@@ -135,8 +135,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,HIGH);
           analogWrite(PWM_R,255*10/100);
           analogWrite(PWM_L,255*20/100);
-          str_msg.data ="Move_other";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Move_other";
+          //chatter.publish( &str_msg );
         }
       }else{
         if(x>0){
@@ -146,8 +146,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,HIGH);
           analogWrite(PWM_R,255*(30+abs(y)*0.2)/100);
           analogWrite(PWM_L,255*(15+abs(y)*0.1)/100);
-          str_msg.data ="Move_other";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Move_other";
+          //chatter.publish( &str_msg );
         }else{
           digitalWrite(DIR_R_UP,LOW);
           digitalWrite(DIR_L_UP,LOW);
@@ -155,8 +155,8 @@ void loop() {
           digitalWrite(DIR_L_DOWN,HIGH);
           analogWrite(PWM_R,255*(15+abs(y)*0.1)/100);
           analogWrite(PWM_L,255*(30+abs(y)*0.2)/100);
-          str_msg.data ="Move_other";
-          chatter.publish( &str_msg );
+          //str_msg.data ="Move_other";
+          //chatter.publish( &str_msg );
         }
       }
     }
@@ -169,8 +169,8 @@ void loop() {
     digitalWrite(DIR_L_DOWN,HIGH);
     analogWrite(PWM_R,255*(10+yaw*0.4)/100);
     analogWrite(PWM_L,255*(20+yaw*0.5)/100);
-    str_msg.data ="Rotate_Left";
-    chatter.publish( &str_msg );
+    //str_msg.data ="Rotate_Left";
+    //chatter.publish( &str_msg );
     T=millis();
   }
   else if(yaw<0){
@@ -180,8 +180,8 @@ void loop() {
     digitalWrite(DIR_L_DOWN,HIGH);
     analogWrite(PWM_R,255*(20+abs(yaw)*0.5)/100);
     analogWrite(PWM_L,255*(10+abs(yaw)*0.4)/100);
-    str_msg.data ="Rotate_Right";
-    chatter.publish( &str_msg );
+    //str_msg.data ="Rotate_Right";
+    //chatter.publish( &str_msg );
     T=millis();
   }
   nh.spinOnce();

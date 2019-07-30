@@ -28,6 +28,6 @@ build
 install
 log
 
-# Configs
+# Vision configs
 FIRA.yaml
 HSVcolormap.bin
