@@ -27,3 +27,7 @@ signaltap
 build
 install
 log
+
+# Vision configs
+FIRA.yaml
+HSVcolormap.bin
