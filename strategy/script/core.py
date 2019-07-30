@@ -185,7 +185,7 @@ class Strategy(object):
 
   def __init__(self, sim=False):
     rospy.init_node('core', anonymous=True)
-    self.rate = rospy.Rate(1000)
+    self.rate = rospy.Rate(200)
     self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("core", timeout=30, config_callback=None)
     self.main()
