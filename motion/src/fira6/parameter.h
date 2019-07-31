@@ -4,7 +4,7 @@
 #define VERSION FIRA_6_01
 #define HEAD_1 0xf6
 #define HEAD_2 0x01
-#define FB_FREQUENCY 500     //Hz
+#define FB_FREQUENCY 200     //Hz
 #define CMD_FREQUENCY 60   //Hz
 #define TX_PACKAGE_SIZE 12  //bytes
 #define RX_PACKAGE_SIZE 16  //bytes
