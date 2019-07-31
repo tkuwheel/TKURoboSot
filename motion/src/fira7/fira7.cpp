@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	printf("\033[0;32m***FIRA7 IS RUNNING!***\n\033[0;33m");
+	printf("\033[1;32m***FIRA7 IS RUNNING!***\n\033[0;37m");
 	ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
     unsigned int counter_fb = 0;
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
             robotCMD = Node.getMotion();
             Base.Send(robotCMD);
 #ifdef DEBUG
-            printf("\n*****get motion******\n");
+            printf("\033[0;37m\n*****get motion******\n\033[0;37m");
             Node.ShowCommand();
             Base.ShowCsslSend();
 #endif
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
                 Node.clearAll();
                 Base.Close();
                 counter++;
-                printf("\nCANNOT GET COMMAND--- %d\n", counter);
+                printf("\033[0;33m\nmCANNOT GET COMMAND--- %d\n\033[0;37m", counter);
             }else{
                 counter_cmd++;
             }

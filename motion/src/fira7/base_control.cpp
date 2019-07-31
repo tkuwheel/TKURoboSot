@@ -106,7 +106,7 @@ void BaseController::mRun()
                 m_motorCurrRPM.w3 = 0;
             }
             counter++;
-            printf("CANNOT GET FEEDBACK --%d\n", counter);
+            printf("\033[1;33m\nCANNOT GET FEEDBACK --%d\n\033[0;37m", counter);
         }
         if(mb_enable){
             mb_enable = false;
@@ -152,7 +152,6 @@ void BaseController::mRun()
 
 int BaseController::mCsslInit()
 {
-	std::cout << "==== Init cssl ====\n";
 	cssl_start();
 	if(!serial){
 		serial = cssl_open("/dev/communication/motion", mCsslCallback/*NULL*/, 0, 115200, 8, 0, 1);
@@ -160,15 +159,18 @@ int BaseController::mCsslInit()
 	}
 	if(!serial){
 		std::cout << cssl_geterrormsg() << std::endl;
-		std::cout << "===> ATTACK MOTION RS232 OPEN FAILED <===\n";
+		std::cout << "\033[1;31m===> ATTACK MOTION RS232 OPEN FAILED <===\n";
 		fflush(stdout);
 		//return 0;
-		std::cout << this->port << std::endl;
+		std::cout << "port= " << this->port << std::endl << "\033[0;37m";
 		exit(EXIT_FAILURE);
 
 	}else{
+		std::cout << "\033[1;32m********************************************************\n";
 		std::cout << "----> ATTACK MOTION RS232 OPEN SUCCESSFUL <----\n";
+		std::cout << "********************************************************\n\033[0;37m";
 		std::cout << "Initialize attack motion with port = "<< this->port << "...\n";
+		fflush(stdout);
 		cssl_setflowcontrol(serial, 0, 0);
 	}
 	return 1;
@@ -387,14 +389,11 @@ int16_t BaseController::mPWMRegularization(int16_t pwm)
 
 void BaseController::mShootRegularization(const RobotCommand &CMD)
 {
-	if(CMD.shoot_power == 0){
-		m_shoot_power = 0;
-	}else if(CMD.shoot_power >= 100){
-		m_shoot_power = 100;
-	}
-	else{
-		m_shoot_power = CMD.shoot_power;
-	}
+    if(CMD.shoot_power<=100){
+        m_shoot_power = CMD.shoot_power;
+    }else{
+        m_shoot_power = 0x80 & CMD.shoot_power;
+    }
 #ifdef DEBUG
 	std::cout << "shoot_regularization(DEBUG)\n";
 	std::cout << std::hex;
@@ -406,42 +405,18 @@ void BaseController::mShootRegularization(const RobotCommand &CMD)
 int BaseController::mDriverSetting()
 {
 // TODO
-    if(mb_close){
-        m_en_stop = 0;
-        m_motorCurrPWM.w1 = 0;
-        m_motorCurrPWM.w2 = 0;
-        m_motorCurrPWM.w3 = 0;
-        return 1;
-    }else{
-//        if((m_en_stop&0x1c) == 0x1c){
-//            m_en_stop = 0;
-//            return -1;
-//        }
+    m_en_stop = 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w1) >= 0)?  0x80 : 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
+    m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
+    if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
+    if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
+    if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
 
-        m_en_stop = 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w1) >= 0)?  0x80 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
-        m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
-        if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
-        if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
-        if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
-//        if((m_en_stop&0x10)==0x10){
-//            m_motorCurrPWM.w1 = MIN_PWM;
-//            m_en_stop -= 0x10;
-//        }
-//        if((m_en_stop&0x08)==0x08){
-//            m_motorCurrPWM.w2 = MIN_PWM;
-//            m_en_stop -= 0x08;
-//        }
-//        if((m_en_stop&0x04)==0x04){
-//            m_motorCurrPWM.w3 = MIN_PWM;
-//            m_en_stop -= 0x04;
-//        }
-
-    }
+    return 1;
 }
 
 int BaseController::mBaseControl()
@@ -670,10 +645,12 @@ void BaseController::SetStop()
 void BaseController::Close()
 {
     mb_close = true;
-//    printf("OAO\n");
-    mDriverSetting();
+    m_shoot_power = 0;
+    m_en_stop = 0;
+    m_motorCurrPWM.w1 = 0;
+    m_motorCurrPWM.w2 = 0;
+    m_motorCurrPWM.w3 = 0;
     mCsslSend2FPGA();
-
 }
 
 RobotCommand BaseController::GetOdometry()

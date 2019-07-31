@@ -25,9 +25,9 @@ Motion_nodeHandle::~Motion_nodeHandle()
 
 void Motion_nodeHandle::init(int argc, char **argv)
 {
-    std::cout << "==== Init node ====\n";
     ros::init(argc, argv, "Attack_motion");
 #ifdef DEBUG
+    std::cout << "==== Init node ====\n";
     std::cout << "nodeHandle init(DEBUG)\n";
     std::cout << "PATH= " << *argv << std::endl;
 #endif

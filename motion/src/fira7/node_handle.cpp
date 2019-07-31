@@ -25,9 +25,9 @@ Motion_nodeHandle::~Motion_nodeHandle()
 
 void Motion_nodeHandle::init(int argc, char **argv)
 {
-    std::cout << "==== Init node ====\n";
     ros::init(argc, argv, "Attack_motion");
 #ifdef DEBUG
+    std::cout << "==== Init node ====\n";
     std::cout << "nodeHandle init(DEBUG)\n";
     std::cout << "PATH= " << *argv << std::endl;
 #endif
@@ -36,6 +36,7 @@ void Motion_nodeHandle::init(int argc, char **argv)
     motionFB_pub = n->advertise<geometry_msgs::Twist>(motion_feedback_topic_name,1000);
     motion_sub = n->subscribe<geometry_msgs::Twist>(motion_topic_name, 1000, &Motion_nodeHandle::motionCallback, this);
     shoot_sub = n->subscribe<std_msgs::Int32>(shoot_topic_name, 1000, &Motion_nodeHandle::shootCallback, this);
+    force_back_sub = n->subscribe<std_msgs::Bool>(shoot_force_back_topic_name, 1000, &Motion_nodeHandle::shootForceBackCallback, this);
     remote_sub = n->subscribe<std_msgs::Bool>(remote_topic_name, 1000, &Motion_nodeHandle::remoteCallback, this);
     holdBall_sub = n->subscribe<std_msgs::Bool>(holdBall_topic_name, 1000, &Motion_nodeHandle::holdBallCallback, this);
     int p = pthread_create(&tid, NULL, (THREADFUNCPTR)&Motion_nodeHandle::mpThreadRun, this);
@@ -85,6 +86,15 @@ void Motion_nodeHandle::shootCallback(const std_msgs::Int32::ConstPtr &shoot_msg
     std::cout << "shoot power(%): " << robotCMD.shoot_power << std::endl;
     std::cout << std::endl;
 #endif
+}
+void Motion_nodeHandle::shootForceBackCallback(const std_msgs::Bool::ConstPtr &force_back_msg)
+{
+    if(force_back_msg->data){
+        robotCMD.shoot_power = 0x80;
+    }else{
+        robotCMD.shoot_power = 0;
+    }
+    motion_flag = true;
 }
 
 void Motion_nodeHandle::remoteCallback(const std_msgs::Bool::ConstPtr &remote_msg)
