@@ -11,14 +11,15 @@
 /********************************
  *	Include header files
  ********************************/
+#include "parameter.h"
 #include "motor_data.h"
-#include "motion_nodeHandle.h"
+#include "node_handle.h"
 #include "base_control.h"
 /********************************
  *	Define	
  ********************************/
 //typedef void * (*THREADFUNCPTR)(void *);
-#define DEBUG
+//#define DEBUG
 bool flag = 0;
 void inturrupt(int signal)
 {
@@ -32,43 +33,68 @@ int main(int argc, char **argv)
 //    ros::NodeHandle n;
 	BaseController Base(argc, argv, false);
 
-	RobotCommand robotCMD;
-    RobotCommand robotOdo;
+	RobotCommand robotCMD={0};
+    RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	std::cout << "ATTACK MOTION IS RUNNING!\n";
+	std::cout << "FIRA6th IS RUNNING!\n";
 	ros::Rate loop_rate(CMD_FREQUENCY);
-	while(true){
+    unsigned int counter_cmd = 0;
+    unsigned int counter_fb = 0;
+    unsigned int counter_shoot = 0;
+    unsigned int counter = 0;
+	while(ros::ok()){
         if(flag){
             Base.Close();
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
-//            printf("close\n");
-            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0)
+            if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0){
+                sleep(1);
                 break;
-            loop_rate.sleep();
+            }
+            sleep(1);
             continue;
         }
-//        Base.SetEnable();
+        if(robotCMD.shoot_power>0){
+            if(counter_shoot>=(CMD_FREQUENCY/2)){
+                Node.clearShoot();
+                counter_shoot = 0;
+            }else{
+                counter_shoot++;
+            }
+        }
         if(Node.getMotionFlag()){
+            counter_cmd = 0;
             robotCMD = Node.getMotion();
-#ifdef DEBUG
+            Base.Send(robotCMD);
+#ifdef DEBUG_
             printf("\n*****get motion******\n");
             Node.ShowCommand();
 #endif
-            Base.Send(robotCMD);
+        }else{
+            if(counter_cmd >= (CMD_FREQUENCY/2)){
+                counter_cmd = 0;
+                Node.clearAll();
+                Base.Close();
+                counter++;
+                printf("\nCANNOT GET COMMAND--- %d\n", counter);
+            }else{
+                counter_cmd++;
+            }
         }
+        // Send Command
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
-#ifdef DEBUG
+#ifdef DEBUG_
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
         }
+        ros::spinOnce();
 		loop_rate.sleep();
 	}
-	std::cout << "Close Attack Motion\n";
+	std::cout << "Close fira6th motion\n";
 	return 0;
 }
 

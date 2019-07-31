@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project(motion)
 add_definitions(-std=c++11)
+set(INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(${catkin_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 find_package(catkin REQUIRED COMPONENTS
 # qt_build
