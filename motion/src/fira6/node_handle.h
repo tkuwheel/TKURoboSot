@@ -1,10 +1,12 @@
-#ifndef motion_nodeHandle_H
-#define motion_nodeHandle_H
+#ifndef NodeHandle_H
+#define NodeHandle_H
 /*********************
  ** Include system
  *********************/
 #include <iostream>
 #include <cstring>
+#include <pthread.h>
+//#include <signal.h>
 /*********************
  ** Include ROS
  *********************/
@@ -15,7 +17,7 @@
 #include "nav_msgs/Odometry.h"
 
 /*********************
- ** Include library->
+ ** Include header files
  *********************/
 #include "motor_data.h"
 /*********************
@@ -26,11 +28,13 @@
 #define motion_topic_name "motion/cmd_vel"
 #define shoot_topic_name "motion/shoot"
 #define remote_topic_name "motion/remote"
+#define holdBall_topic_name "motion/hold_ball"
 
+typedef void * (*THREADFUNCPTR)(void *);
 //#define DEBUG 
 class Motion_nodeHandle{
 public:
-	Motion_nodeHandle(int argc, char **argv);
+	Motion_nodeHandle(int, char **);
 	virtual ~Motion_nodeHandle();
 	
 private:
@@ -39,18 +43,28 @@ private:
 	ros::Subscriber motion_sub;
 	ros::Subscriber shoot_sub;
 	ros::Subscriber remote_sub;
-	robot_command *node_robotCMD;
-	serial_rx* node_RX;
+    ros::Subscriber holdBall_sub;
+	RobotCommand robotCMD;
+    pthread_t tid;
 	bool remote;
+    bool holdBall;
+    bool motion_flag;
 private:
+    static void* mpThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
 	void remoteCallback(const std_msgs::Bool::ConstPtr &);
+    void holdBallCallback(const std_msgs::Bool::ConstPtr &);
 	void pub(const geometry_msgs::Twist &);
+    void mRun();
 public:
-	robot_command* getMotion();
-	void pub_robotFB(robot_command*);
-	void clear();
+//    void *run();
+	RobotCommand getMotion();
+	void    pub_robotFB(RobotCommand);
+	void    clearShoot();
+	int     clearAll();
+	bool    getMotionFlag();
+    void    ShowCommand();
 };
-#endif
+#endif //NodeHandle_H

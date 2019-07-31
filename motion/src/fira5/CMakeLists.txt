@@ -5,15 +5,19 @@ project(Defend_motion)
 add_definitions(-std=c++11)
 
 ##set including directory
+set(INCLUDE_DIR
+	../common
+	../common/cssl
+)
 
 ##include
 include_directories(${INCLUDE_DIR})
 
-add_executable(fira5th
+add_executable(Defend_motion_node 
 				motion.cpp 
 				motion_nodeHandle.cpp
 				base_control.cpp 
 				#CTest.cpp
 )
-target_link_libraries(fira5th ${catkin_LIBRARIES} csslLib motorDataLib)
+target_link_libraries(Defend_motion_node ${catkin_LIBRARIES} csslLib motorDataLib)
 
