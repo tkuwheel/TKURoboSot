@@ -33,16 +33,18 @@ user$: sudo apt-get install libraw1394-11 libgtkmm-2.4-1c2a libglademm-2.4-1c2a 
 ## 確認Linux核心版本 > 3.5.0，並開啟USB3.1
 ```bash
 $ uname -r      # checking linux version is newer than 3.5.0, if not, upgrade your kernel
-$ sudo modprobe usbcore usbfs_memory_mb=1000
+$ sudo modprobe usbcore usbfs_memory_mb=1024
 $ sudo vim /etc/default/grub
 # 把GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"這行修改成
-# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash usbcore.usbfs_memory_mb=1000"
+# GRUB_CMDLINE_LINUX_DEFAULT="quiet splash usbcore.usbfs_memory_mb=1024"
 $ sudo update-grub
 $ sudo reboot  # 重開機
-$ cat /sys/module/usbcore/parameters/usbfs_memory_mb # 檢查是否成功，應顯示1000
+$ cat /sys/module/usbcore/parameters/usbfs_memory_mb # 檢查是否成功，應顯示1024
 ```
 ## 到[FLEA官網](https://www.ptgrey.com/support/downloads)下載SDK並解壓縮
 [備用載點](https://drive.google.com/file/d/1_CFO2-nNe7urR_1hvsWBPZNZuqKSTozK/view?usp=sharing)
+or ```wget --no-check-certificate "https://drive.google.com/uc?export=download&id=1_CFO2-nNe7urR_1hvsWBPZNZuqKSTozK" -O flycapture.tgz```
+
 ```bash
 $ cd <Path to flycapture2-2.13.3.31-amd64>
 $ sudo ./install_flycapture.sh

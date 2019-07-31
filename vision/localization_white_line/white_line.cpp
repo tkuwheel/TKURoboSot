@@ -1,4 +1,6 @@
 #include "white_line.h"
+#include "omp.h"
+
 #define DEG2RAD  M_PI/180
 Vision::Vision()
 {
@@ -92,6 +94,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     vector<int> white_dis;
     whitedis.data.clear();
     //======================threshold===================
+    #pragma omp parallel for schedule(static) collapse(2)
     for (int i = 0; i < iframe.rows; i++)
     {
         for (int j = 0; j < iframe.cols; j++)
@@ -168,6 +171,10 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
         green_range[i]=0;
     }
     //mask=convertTo3Channels(mask);
+<<<<<<< HEAD
+=======
+    #pragma omp parallel for schedule(static) collapse(2)
+>>>>>>> 7b518a7978e035483b9f4b7b3388563b2ee07606
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + WhiteAngleMsg)
     {
         for (int r = ground; r >= InnerMsg; r--)
@@ -187,6 +194,10 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
         }
     }
     //畫場地
+<<<<<<< HEAD
+=======
+    #pragma omp parallel for schedule(static) collapse(2)
+>>>>>>> 7b518a7978e035483b9f4b7b3388563b2ee07606
     for (int i = 0; i < threshold.rows; i++)
     {
         for (int j = 0; j < threshold.cols; j++)
@@ -204,6 +215,7 @@ cv::Mat Vision::White_Line(const cv::Mat iframe)
     oframe = threshold.clone();
     //oframe = threshold.clone();
     int line_count = 0;
+    #pragma omp parallel for schedule(static) collapse(2)
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + WhiteAngleMsg)
     {
         int count = 0;

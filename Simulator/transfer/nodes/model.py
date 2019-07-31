@@ -14,28 +14,28 @@ class ModelTransfer(object):
         self.subscriber()
 
     def loadParam(self):
-        if rospy.has_param('/cyan/num'):
-            self.my_robot_num = rospy.get_param('/cyan/num')
-        if rospy.has_param('/magenta/num'):
-            self.oppo_robot_num = rospy.get_param('/magenta/num')
+        if rospy.has_param('cyan/num'):
+            self.my_robot_num = rospy.get_param('cyan/num')
+        if rospy.has_param('magenta/num'):
+            self.oppo_robot_num = rospy.get_param('magenta/num')
 
     def subscriber(self):
-        rospy.Subscriber('/gazebo/model_states', ModelStates, self.getModel)
+        rospy.Subscriber('gazebo/model_states', ModelStates, self.getModel)
 
     def publisher(self):
         if self.my_robot_num <= 0:
             raise('Robot number error')
             exit(1)
         if self.my_robot_num >= 1:
-            self.nubot1_goal_pub = rospy.Publisher('/nubot1/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
+            self.nubot1_goal_pub = rospy.Publisher('nubot1/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
         if self.my_robot_num >= 2:
-            self.nubot2_goal_pub = rospy.Publisher('/nubot2/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
+            self.nubot2_goal_pub = rospy.Publisher('nubot2/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
         if self.my_robot_num >= 3:
-            self.nubot3_goal_pub = rospy.Publisher('/nubot3/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
+            self.nubot3_goal_pub = rospy.Publisher('nubot3/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
         if self.my_robot_num >= 4:
-            self.nubot4_goal_pub = rospy.Publisher('/nubot4/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
+            self.nubot4_goal_pub = rospy.Publisher('nubot4/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
         if self.my_robot_num >= 5:
-            self.nubot5_goal_pub = rospy.Publisher('/nubot5/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
+            self.nubot5_goal_pub = rospy.Publisher('nubot5/omnivision/OmniVisionInfo/GoalInfo', PPoint, queue_size=100)
 
     def getModel(self, models):
 

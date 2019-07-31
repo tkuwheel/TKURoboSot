@@ -16,6 +16,14 @@ $ git clone https://github.com/tkuwheel/TKURoboSot.git src/
 ### ROS Packages:
 ```bash
 $ sudo apt-get install ros-melodic-rosbridge-server ros-melodic-prosilica-camera
+$ sudo apt-get install ros-melodic-rosserial ros-melodic-rosserial-arduino
+```
+### ROS2 Packages:
+```bash
+$ sudo apt install ros-dashing-rmw-opensplice-cpp # for OpenSplice
+$ sudo apt install ros-dashing-rmw-connext-cpp # for RTI Connext (requires license agreement)
+$ sudo apt-get install python3-colcon-common-extensions
+$ sudo apt-get install ros-dashing-launch*
 ```
 ### Python packages:
 ```bash
@@ -30,10 +38,33 @@ $ pip install -r requirements.txt
 $ catkin_make
 ```
 
+## Setup udev rules:
+```bash
+$ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
+```
+
+## Compiling ROS2
+```bash
+$ cd <ros1_ws>/src/ros2/ros2_ws
+# Build ros2 message first
+$ colcon build --symlink-install --packages-select strategy
+```
+## Build custom ros1_bridge
+```bash
+$ source /opt/ros/dashing/setup.bash
+$ source <ros1_ws>/devel/setup.bash
+$ source <ros2_ws>/install/setup.bash
+$ colcon build --symlink-install --packages-select ros1_bridge
+```
+
 <hr>
 
 # Startup
 ### Environment Setting
+```bash
+$ echo "export RMW_IMPLEMENTATION=rmw_connext_cpp" >> ~/.bashrc
+```
+
 ```bash
 # Get Camera's serial number
 $ rosrun pointgrey_camera_driver list_cameras
@@ -47,9 +78,17 @@ $ roslaunch nubot_gazebo game_ready.launch
 # Strategy w/ simulation mode
 $ roslaunch strategy core.launch sim:=true
 
+# Launch robot devices
+$ roslaunch strategy main_7th_all.launch
+
 # GUI
 # using plugin of dynamic_reconfigure
 $ rqt
+```
+
+```bash
+$ source <ros2_ws>/install/setup.bash
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
 # Troubleshooting

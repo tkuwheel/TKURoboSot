@@ -6,6 +6,7 @@ __pycache__
 .vscode
 CATKIN_IGNORE
 *.swp
+# *.txt
 *.swo
 *~
 
@@ -14,8 +15,19 @@ db
 export_db
 incremental_db
 output_files
+work
+signaltap
 
 *.stp
 *.qdf
 *.bak
 .DS_Store
+
+# ROS2 ignore
+build
+install
+log
+
+# Vision configs
+FIRA.yaml
+HSVcolormap.bin

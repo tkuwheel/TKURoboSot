@@ -8,46 +8,53 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
 #  image_transport
   message_filters
+  message_generation
+  genmsg
+  actionlib_msgs
+  actionlib
+  geometry_msgs
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
 # catkin_python_setup()
 
-# add_message_files(
-#    FILES
-#  )
+add_message_files(
+   FILES
+   RobotState.msg
+ )
 
 #add_service_files(
 #  FILES
 #  GameState.srv
 #)
 
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  Passing.action
+)
 
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  actionlib_msgs
+)
 
 generate_dynamic_reconfigure_options(
 #  cfg/GameState.cfg
   cfg/Robot.cfg
   cfg/Passing.cfg
+  cfg/Role.cfg
 )
 
 catkin_package(
 # INCLUDE_DIRS include
-  LIBRARIES strategy
-  CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs message_filters# dynamic_tutorials 
+#  LIBRARIES strategy
+  CATKIN_DEPENDS message_runtime dynamic_reconfigure roscpp rospy std_msgs message_filters# dynamic_tutorials 
   DEPENDS system_lib
 )
 
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 

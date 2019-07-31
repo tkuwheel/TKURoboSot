@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
+<script type="text/javascript">
+    // Connecting to ROS
+    // -----------------
+
+    var ros = new ROSLIB.Ros({
+        url : 'ws://192.168.50.82:9090'
+    });
+
+    ros.on('connection', function() {
+        console.log('Connected to websocket server.');
+    });
+
+    ros.on('error', function(error) {
+        console.log('Error connecting to websocket server: ', error);
+    });
+
+    ros.on('close', function() {
+        console.log('Connection to websocket server closed.');
+    });
+
+    // Setting dynamic_reconfigurable parameters using ROS services
+    // -----------------
+
+    var dynaRecClient = new ROSLIB.Service({
+        ros : ros,
+        name : '/robot1/core/set_parameters',
+        serviceType : 'dynamic_reconfigure/Reconfigure'
+    });
+
+    var myBoolean1 = new Boolean();
+    var myBoolean2 = new Boolean();
+    var myBoolean3 = new Boolean();
+    var myBoolean4 = new Boolean();
+
+
+        
+
+
+
+
+
+
+
+        
+    
+        
+
+
+        
+
+
+    function processFormData() {
+
+        
+        if(document.getElementById("chase_straight").checked) {
+           myBoolean2 = Boolean(1);
+        }else{
+           myBoolean2 = Boolean(0)
+         }
+         if(document.getElementById("Accelerate").checked) {
+           myBoolean3 = Boolean(1);
+         }else{
+           myBoolean3 = Boolean(0)
+         }
+         if(document.getElementById("ball_pwm").checked) {
+           myBoolean4 = Boolean(1);
+         }else{
+           myBoolean4 = Boolean(0)
+         }
+
+        
+        var chase_straight = new ROSLIB.Message({
+            data:  myBoolean2
+        });
+        var Accelerate = new ROSLIB.Message({
+            data:  myBoolean3
+        });
+        var ball_pwm = new ROSLIB.Message({
+            data:  myBoolean4
+        });
+
+
+        var ballhandle_dis = new ROSLIB.Message({
+            data: parseInt(document.getElementById("ballhandle_disInput").value)
+        });
+        var ballhandle_ang = new ROSLIB.Message({
+            data: parseInt(document.getElementById("ballhandle_angInput").value)
+        });
+
+
+
+        var orb_attack_ang = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("orb_attack_angInput").value)
+        });
+        var atk_shoot_ang = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("atk_shoot_angInput").value)
+        });
+        var atk_shoot_dis = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("atk_shoot_disInput").value)
+        });
+        var minimum_w = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("minimum_wInput").value)
+        });
+        var maximum_w = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("maximum_wInput").value)
+        });
+        var minimum_v = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("minimum_vInput").value)
+        });
+        var maximum_v = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("maximum_vInput").value)
+        });
+        var run_x = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("run_xInput").value)
+        });
+        var run_y = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("run_yInput").value)
+        });
+        var run_yaw = new ROSLIB.Message({
+        data: parseFloat(document.getElementById("run_yawInput").value)
+        });
+
+
+
+        var game_state = new ROSLIB.Message({
+        data: document.getElementById("game_state").value
+        });
+        var strategy_mode = new ROSLIB.Message({
+        data: document.getElementById("strategy_mode").value
+        });
+        var attack_mode = new ROSLIB.Message({
+        data: document.getElementById("attack_mode").value
+        });
+        var our_side = new ROSLIB.Message({
+        data: document.getElementById("our_side").value
+        });
+        var run_point = new ROSLIB.Message({
+        data: document.getElementById("run_point").value
+        });
+
+
+        
+        var request = new ROSLIB.ServiceRequest({
+        config: {
+            bools: [
+                {name: 'game_start', value: game_start.data},
+                {name: 'chase_straight', value: chase_straight.data},
+                {name: 'Accelerate', value: Accelerate.data},
+                {name: 'ball_pwm', value: ball_pwm.data},
+            ],
+            ints: [
+                {name: 'ballhandle_dis', value: ballhandle_dis.data},
+                {name: 'ballhandle_ang', value: ballhandle_ang.data},
+            ],
+            strs: [
+                {name: 'game_state', value: game_state.data},
+                {name: 'strategy_mode', value: strategy_mode.data},
+                {name: 'attack_mode', value: attack_mode.data},
+                {name: 'our_side', value: our_side.data},
+                {name: 'run_point', value: run_point.data},
+            ],
+            doubles: [
+                {name: 'orb_attack_ang', value: orb_attack_ang.data},
+                {name: 'atk_shoot_ang', value: atk_shoot_ang.data},
+                {name: 'atk_shoot_dis', value: atk_shoot_dis.data},
+                {name: 'minimum_w', value: minimum_w.data},
+                {name: 'minimum_w', value: minimum_w.data},
+                {name: 'maximum_w', value: maximum_w.data},
+                {name: 'minimum_v', value: minimum_v.data},
+                {name: 'maximum_v', value: maximum_v.data},
+                {name: 'run_x', value: run_x.data},
+                {name: 'run_y', value: run_y.data},
+                {name: 'run_yaw', value: run_yaw.data},
+            ],
+            groups: [
+                // {name: '', state: false, id: 0, parent: 0}
+            ]
+        }
+
+        });
+
+        dynaRecClient.callService(request, function(result) {
+        console.log('Result for service call on '
+            + dynaRecClient.name
+            + ': '
+            + JSON.stringify(result, null, 2));
+        });
+        
+    }
+
+    function gameStart(){
+        if(document.getElementById("game_start").checked) {
+            myBoolean1 = Boolean(1);
+         }else{
+            myBoolean1 = Boolean(0)
+         }
+        var game_start = new ROSLIB.Message({
+            data:  myBoolean1
+        });
+        
+         var request = new ROSLIB.ServiceRequest({
+        config: {
+            bools: [
+                {name: 'game_start', value: game_start.data},
+               
+            ]
+           
+        }
+
+        });
+        dynaRecClient.callService(request, function(result) {
+        console.log('Result for service call on '
+            + dynaRecClient.name
+            + ': '
+            + JSON.stringify(result, null, 2));
+        });
+    }
+
+    function ToInputValue(newValue, name, num) {
+    document.getElementsByName(name)[num].value = newValue;
+            }
+
+function ToSliderValue(newValue, name, num) {
+    /*if (newValue > 100) {
+        newValue = 100;
+    }*/
+    document.getElementsByName(name)[1].value = newValue;
+    document.getElementsByName(name)[num].value = newValue;
+}
+//======================================================================
+function JudgeShootInput(name, value) {
+    /*if (value > 100)
+        value = 100;*/
+    document.getElementsByName(name)[0].value = value;
+}
+
+
+    
+</script>
+</head>
+rqt_web
+<body>
+<form name='form' id='form'>
+  game_start:
+  <input id ='game_start'   type="checkbox"   onclick = gameStart() ><br/>
+  chase_straight：
+  <input id ='chase_straight'      type="checkbox" value = 'true'  name='chase_straight：' ><br/>
+  Accelerate：
+  <input id ='Accelerate'      type="checkbox" value = 'true'  name='Accelerate：' ><br/>
+  ball_pwm：
+  <input id ='ball_pwm'      type="checkbox" value = 'true'  name='ball_pwm：' ><br/>
+
+  game_state：
+  <select name="game_state" id = "game_state">
+    　<option value="Kick_Off">Kick_Off</option>
+    　<option value="Free_Kick">Free_Kick</option>
+    　<option value="Free_Ball">Free_Ball</option>
+    　<option value="Throw_In">Throw_In</option>
+      <option value="Coner_Kick">Coner_Kick</option>
+      <option value="Kick_Off">Penalty_Kick</option> 
+  </select><br/>
+  run_point：
+  <select name="run_point" id="run_point">
+    　<option value="empty_hand">empty_hand</option>
+    　<option value="ball_hand">ball_hand</option>
+    　<option value="none">none</option>
+  </select><br/>
+  <br/>
+  run_x：
+  <input id="run_xSlider" name="run_x" type="range" min="-300.0" max="300.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);"> 
+  <input id="run_xInput" name="run_x"  value="0.0" type="number" min="-300.0" max="300.0" oninput="ToSliderValue(this.value,this.name,0);" />-300 to 300<br/> 
+  run_y：
+  <input id="run_ySlider" name="run_y" type="range" min="-200.0" max="200.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="run_yInput" name="run_y"  value="0.0" type="number" min="-200.0" max="200.0" oninput="ToSliderValue(this.value,this.name,0);" />-200 to 200<br/> 
+  run_yaw：
+  <input id="run_yawSlider" name="run_yaw" type="range" min="-180.0" max="180" value="0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="run_yawInput" name="run_yaw"  value="0.0" type="number" min="-180.0" max="180.0" oninput="ToSliderValue(this.value,this.name,0);" />-180 to 180<br/>
+  <br/>
+  our_side：
+  <select name="our_side" id="our_side">
+    　<option value="Blue">Blue(Attack_Yellow)</option>
+    　<option value="Yellow">Yellow(Attack_Blue)</option>
+  </select><br/>
+  attack_mode：
+  <select name="attack_mode" id = "attack_mode">
+    　<option value="Attack">Attack</option>
+    　<option value="Orbit">Orbit</option>
+    　<option value="Cut">Cut</option>
+     <option value="Post_up">Post_up</option>
+     <option value="Defense">Defense</option>
+  </select><br/>
+  strategy_mode：
+  <select name="strategy_mode" id = strategy_mode>
+    　<option value="At_Orbit">At_Orbit</option>
+    　<option value="At_Post_up">Post_up</option>
+    　<option value="Defense_ball">Defense_ball</option>
+      <option value="Defense_goal">Defense_goal</option>
+      <option value="Fast_break">Fast_break</option>
+  </select><br/>
+  <br/>
+  orb_attack_ang：
+  <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="orb_attack_angInput" name="orb_attack_ang"  value="5.0" type="number" min="0.0" max="20.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 20.0<br/>
+  atk_shoot_ang：
+  <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="10.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_angInput" name="atk_shoot_ang"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
+  atk_shoot_dis：
+  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="500.0" value="300" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="300" type="number" min="0.0" max="500.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
+  minimum_w：
+  <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_wInput" name="minimum_w"  value="1.2" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  maximum_w：
+  <input id="maximum_wSlider" name="maximum_w" type="range" min="10.0" max="100.0" value="35" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_wInput" name="maximum_w"  value="35" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />10.0 to 100.0<br/>
+  minimum_v：
+  <input id="minimum_vSlider" name="minimum_v" type="range" min="0.0" max="10.0" value="10" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_vInput" name="minimum_v"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
+  maximum_v：
+  <input id="maximum_vSlider" name="maximum_v" type="range" min="10.0" max="100.0" value="50" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_vInput" name="maximum_v"  value="50" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 100.0<br/>
+  ballhandle_dis：
+  <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="28" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_disInput" name="ballhandle_dis"  value="28" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  ballhandle_ang：
+  <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_angInput" name="ballhandle_ang"  value="5" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  
+  <input type='button' name='submit' value='送出' onclick= processFormData() />
+</form>
+            
+</body>
+</html>
