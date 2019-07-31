@@ -541,9 +541,9 @@ void BaseController::mInverseKinematics()
 
 void BaseController::mForwardKinematics()
 {
-	m_baseSpeed.x = ( m_baseRX.w1 * (0.3333) + m_baseRX.w2 * (0.3333) + m_baseRX.w3 * (-0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseSpeed.y = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseSpeed.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))*wheel_radius/robot_radius / 2000 / 26;
+	m_baseSpeed.x = ( m_baseRX.w1 * (0.3333) + m_baseRX.w2 * (0.3333) + m_baseRX.w3 * (-0.6667)) * 2 * M_PI * wheel_radius / GEAR_RATIO / TICKS_PER_ROUND;
+	m_baseSpeed.y = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / GEAR_RATIO / TICKS_PER_ROUND;
+	m_baseSpeed.yaw = (-1) * (m_baseRX.w1  + m_baseRX.w2 + m_baseRX.w3) * (1.6667) * wheel_radius / robot_radius / GEAR_RATIO / TICKS_PER_ROUND;
 //	m_base.x = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
 //	m_base.y = ( m_baseRX.w1 * (-0.3333) + m_baseRX.w2 * (-0.3333) + m_baseRX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
 //	m_base.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;

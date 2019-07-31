@@ -8,7 +8,7 @@ add_library(crcLib crc_16.cpp)
 foreach(subdir
         test
         fira6
-# fira7
+        fira7
 )
 add_subdirectory(${subdir})
 endforeach()

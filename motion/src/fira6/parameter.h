@@ -14,4 +14,5 @@
 #define MIN_PWM 50  //rpm
 #define BUFFER_SIZE 100 
 #define TICKS_PER_ROUND 2000 
+#define GEAR_RATIO 26
 #endif

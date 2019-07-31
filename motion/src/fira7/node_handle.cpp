@@ -1,10 +1,10 @@
-#include "motion_nodeHandle.h"
+#include "node_handle.h"
 Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
 {
     this->robotCMD = {0, 0, 0, 0, 0};
+    robotCMD.hold_ball = true;
     this->motion_flag = false;
     this->remote = false;
-    this->holdBall = false;
 #ifdef DEBUG
     std::cout << "Motion_nodeHandle(DEBUG)\n";
     std::cout << "x_speed: " << this->robotCMD.x << std::endl;
@@ -38,11 +38,23 @@ void Motion_nodeHandle::init(int argc, char **argv)
     shoot_sub = n->subscribe<std_msgs::Int32>(shoot_topic_name, 1000, &Motion_nodeHandle::shootCallback, this);
     remote_sub = n->subscribe<std_msgs::Bool>(remote_topic_name, 1000, &Motion_nodeHandle::remoteCallback, this);
     holdBall_sub = n->subscribe<std_msgs::Bool>(holdBall_topic_name, 1000, &Motion_nodeHandle::holdBallCallback, this);
-    int p = 0;
-    p = pthread_create(&tid, NULL, (THREADFUNCPTR)&Motion_nodeHandle::pThreadRun, this);
+    int p = pthread_create(&tid, NULL, (THREADFUNCPTR)&Motion_nodeHandle::mpThreadRun, this);
     if(p != 0){
-        printf("motion thread error\n");
+        printf("node thread error\n");
         exit(EXIT_FAILURE);
+    }
+}
+
+void* Motion_nodeHandle::mpThreadRun(void* p)
+{
+    ((Motion_nodeHandle*)p)->mRun();
+    pthread_exit(NULL);
+}
+
+void Motion_nodeHandle::mRun()
+{
+    while(ros::ok()){
+        ros::spin();
     }
 }
 
@@ -91,7 +103,7 @@ void Motion_nodeHandle::remoteCallback(const std_msgs::Bool::ConstPtr &remote_ms
 
 void Motion_nodeHandle::holdBallCallback(const std_msgs::Bool::ConstPtr &holdBall_msg)
 {
-    this->robotCMD.hold_ball = holdBall_msg->data;
+    robotCMD.hold_ball = holdBall_msg->data;
     this->motion_flag = true;
 }
 
@@ -100,27 +112,8 @@ void Motion_nodeHandle::pub(const geometry_msgs::Twist &pub_msgs)
     motionFB_pub.publish(pub_msgs);
 }
 
-void Motion_nodeHandle::run()
-{
-
-    while(ros::ok()){
-        
-        ros::spin();
-    }
-    ros::shutdown();
-    std::cout << "ROS shutdown\n";
-}
-
-void* Motion_nodeHandle::pThreadRun(void* p)
-{
-    ((Motion_nodeHandle*)p)->run();
-    pthread_exit(NULL);
-    return NULL;
-}
-
 RobotCommand Motion_nodeHandle::getMotion()
 {
-    this->motion_flag = false;
     return robotCMD;
 }
 
@@ -136,7 +129,6 @@ void Motion_nodeHandle::pub_robotFB(RobotCommand robotFB)
 
 void Motion_nodeHandle::clearShoot()
 {
-//    this->motion_flag = false;
     robotCMD.shoot_power = 0;
 }
 
@@ -146,12 +138,16 @@ int Motion_nodeHandle::clearAll()
     robotCMD.y = 0;
     robotCMD.yaw = 0;
     robotCMD.shoot_power = 0;
-    robotCMD.hold_ball = false;
 }
 
 bool Motion_nodeHandle::getMotionFlag()
 {
-    return this->motion_flag;
+    if(motion_flag){
+        motion_flag = false;
+        return true;
+    }else{
+        return false;
+    }
 }
 
 void Motion_nodeHandle::ShowCommand()
@@ -160,4 +156,5 @@ void Motion_nodeHandle::ShowCommand()
     printf("y speed %f\n", robotCMD.y);
     printf("yaw speed %f\n", robotCMD.yaw);
     printf("shoot power %d\n", robotCMD.shoot_power);
+    printf("hold ball %d\n", robotCMD.hold_ball);
 }
