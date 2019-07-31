@@ -112,7 +112,7 @@ private:
       // Store CameraInfo binning information
       binning_x_ = 1;
       binning_y_ = 1;
-      /*
+
       if(config.video_mode == "640x480_mono8" || config.video_mode == "format7_mode1")
       {
         binning_x_ = 2;
@@ -128,7 +128,6 @@ private:
         binning_x_ = 0;
         binning_y_ = 0;
       }
-      */
 
       // Store CameraInfo RegionOfInterest information
       if(config.video_mode == "format7_mode0" || config.video_mode == "format7_mode1" || config.video_mode == "format7_mode2")
@@ -165,7 +164,8 @@ private:
     NODELET_DEBUG("Connect callback!");
     boost::mutex::scoped_lock scopedLock(connect_mutex_); // Grab the mutex.  Wait until we're done initializing before letting this function through.
     // Check if we should disconnect (there are 0 subscribers to our data)
-    if(it_pub_.getNumSubscribers() == 0 && pub_->getPublisher().getNumSubscribers() == 0)
+    //if(it_pub_.getNumSubscribers() == 0 && pub_->getPublisher().getNumSubscribers() == 0)
+    if(false)
     {
       if (pubThread_)
       {
@@ -290,14 +290,15 @@ private:
     // Publish topics using ImageTransport through camera_info_manager (gives cool things like compression)
     it_.reset(new image_transport::ImageTransport(nh));
     image_transport::SubscriberStatusCallback cb = boost::bind(&PointGreyCameraNodelet::connectCb, this);
-    it_pub_ = it_->advertiseCamera("image_raw", 5, cb, cb);
+    it_pub_ = it_->advertiseCamera("image_raw", 1, cb, cb);
 
     // Set up diagnostics
     updater_.setHardwareID("pointgrey_camera " + cinfo_name.str());
 
     // Set up a diagnosed publisher
     double desired_freq;
-    pnh.param<double>("desired_freq", desired_freq, 7.0);
+    //pnh.param<double>("desired_freq", desired_freq, 7.0);
+    pnh.param<double>("desired_freq", desired_freq, 120.0);
     pnh.param<double>("min_freq", min_freq_, desired_freq);
     pnh.param<double>("max_freq", max_freq_, desired_freq);
     double freq_tolerance; // Tolerance before stating error on publish frequency, fractional percent of desired frequencies.
@@ -518,25 +519,27 @@ private:
             pub_->publish(wfov_image);
 
             // Publish the message using standard image transport
-            if(it_pub_.getNumSubscribers() > 0)
+            //if(it_pub_.getNumSubscribers() > 0)
+            if(true)
             {
               sensor_msgs::ImagePtr image(new sensor_msgs::Image(wfov_image->image));
               
-              cv::Mat img;
-              cv_bridge::CvImagePtr cv_ptr;
-              cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
-              cv_ptr->image.copyTo(img);
+              //cv::Mat img;
+              //cv_bridge::CvImagePtr cv_ptr;
+              //cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
+              //cv_ptr->image.copyTo(img);
 
-              double scale = 0.4;
-              Mat frame = img;
-              Size dsize = Size(frame.cols * scale, frame.rows * scale);
-              resize(frame, frame, dsize);
-              
-              sensor_msgs::ImagePtr image_rot;
-              image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+              //double scale = 0.4;
+              //Mat frame = img;
+              ////Size dsize = Size(frame.cols * scale, frame.rows * scale);
+              //Size dsize = Size(640, 480);
+              //resize(frame, frame, dsize);
+              //
+              //sensor_msgs::ImagePtr image_rot;
+              //image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
 
-              it_pub_.publish(image_rot, ci_);
-              // it_pub_.publish(image, ci_);
+              //it_pub_.publish(image_rot, ci_);
+              it_pub_.publish(image, ci_);
             }
           }
           catch(CameraTimeoutException& e)

@@ -1,15 +1,15 @@
 Camera: {Focal: 13.971313932573906, High: 650.0}
-Center: {Camera_high: 670, Center_X: 321, Center_Y: 253, Front: 188, Horizon: 140,
-  Inner: 37, Outer: 223, X: 308, Y: 266}
-FPS: 20
+Center: {Camera_high: 654, Center_X: 302, Center_Y: 246, Front: 274, Horizon: 139,
+  Inner: 40, Outer: 229, X: 308, Y: 266}
+FPS: 17
 HSV:
-  Ball: [0, 34, 27, 100, 28, 100]
+  Ball: [283, 26, 26, 100, 34, 100]
   Blue: [170, 258, 64, 81, 36, 67]
   Green: [113, 208, 51, 70, 14, 33]
   White: [0, 360, 0, 27, 0, 31]
   Yellow: [30, 92, 28, 98, 24, 100]
-  black: {angle: 20, gray: 20}
-  white: {angle: 1, gray: 170}
+  black: {angle: 3, gray: 30}
+  white: {angle: 33, gray: 170}
 Parameterbutton: 4
 SCAN: {Angle_Near_Gap: 4, Angle_range_1: 2, Angle_range_2_3: 4, Dont_Search_Angle_1: 47,
   Dont_Search_Angle_2: 164, Dont_Search_Angle_3: 285, Magn_Far_End: 212, Magn_Far_Start: 141,

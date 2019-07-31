@@ -51,6 +51,7 @@ class NodeHandle
     int InnerMsg;
     int OuterMsg;
     int FrontMsg;
+    int HorizonMsg;
     double Camera_HighMsg;
     //================white===================
     int WhiteGrayMsg;

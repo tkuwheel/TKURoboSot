@@ -33,7 +33,6 @@ private:
     void draw_Line(Mat &frame_, int obj_distance_max, int obj_distance_min, int obj_angle);
     void draw_ellipse(Mat &frame_, DetectedObject &obj_, int color);
     void draw_point(cv::Mat &frame_, DetectedObject &obj_, string color, Scalar Textcolor);
-    void draw_shotpoint();
 //==========================================
     cv::Mat Source;
 };

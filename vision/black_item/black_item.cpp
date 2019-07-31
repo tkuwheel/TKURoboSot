@@ -1,4 +1,6 @@
 #include "black_item.h"
+#include "omp.h"
+
 Vision::Vision()
 {
     //image_sub = nh.subscribe(VISION_TOPIC, 1,static_cast<void (Vision::*)(const sensor_msgs::ImageConstPtr&)>(&Vision::imageCb),this);
@@ -83,6 +85,7 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
     cv::Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
     blackdis.data.clear();
     //======================threshold===================
+    #pragma omp parallel for schedule(static) collapse(2)
     for (int i = 0; i < iframe.rows; i++)
     {
         for (int j = 0; j < iframe.cols; j++)
@@ -103,6 +106,7 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
         }
     }
     //=====================draw the scan line===========
+    #pragma omp parallel for schedule(static) collapse(2)
     oframe = threshold.clone();
     for (double angle = FrontMsg; angle < 360 + FrontMsg; angle = angle + BlackAngleMsg)
     {

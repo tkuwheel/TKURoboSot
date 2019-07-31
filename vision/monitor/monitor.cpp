@@ -69,6 +69,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
         FrameRate = Rate();
         RateMsg = FrameRate;
         Monitor = Source.clone();
+        source2threshold();
         ObjectProcessing();
         Pub_monitor(Monitor);
         Pub_object();
@@ -80,10 +81,45 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
         return;
     }
 }
+void Vision::source2threshold(){
+    //======================threshold===================
+    Mat iframe = Source.clone();
+    Mat threshold(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
+    for (int i = 0; i < iframe.rows; i++)
+    {
+        for (int j = 0; j < iframe.cols; j++)
+        {
+            unsigned char gray = (iframe.data[(i * iframe.cols * 3) + (j * 3) + 0] + iframe.data[(i * iframe.cols * 3) + (j * 3) + 1] + iframe.data[(i * iframe.cols * 3) + (j * 3) + 2]) / 3;
+            if (gray < BlackGrayMsg)
+            {
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 0] = 0;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 1] = 0;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 2] = 0;
+            }
+            else
+            {
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 0] = 255;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 1] = 255;
+                threshold.data[(i * threshold.cols * 3) + (j * 3) + 2] = 255;
+            }
+        }
+    }
+
+    //開操作 (去除一些噪點)
+    Mat element = getStructuringElement(MORPH_RECT, Size(3, 3));
+    morphologyEx(threshold, threshold, MORPH_OPEN, element);
+
+    //閉操作 (連接一些連通域)
+    morphologyEx(threshold, threshold, MORPH_CLOSE, element);
+
+    Threshold=threshold.clone();
+}
 //===============================物件分割=======================================
 void Vision::ObjectProcessing()
 {
-    #pragma omp parallel sections
+    //平行處理
+    /*
+    #pragma omp parallel sections num_threads(3)
     {
         #pragma omp section
         {
@@ -98,8 +134,12 @@ void Vision::ObjectProcessing()
            Yellow_Item.Reset();
         }
     }
+    */
+    Red_Item.Reset();
+    Blue_Item.Reset();
+    Yellow_Item.Reset();
     draw_center();
-    #pragma omp parallel sections
+    #pragma omp parallel sections num_threads(3)
     {
         #pragma omp section
         {
@@ -129,9 +169,11 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     //find_point.clear();
     //FIND_Item.Reset();
 
-    for (int distance = Magn_Near_StartMsg; distance <= Magn_Far_EndMsg; distance += Magn_Near_GapMsg)
+    int distance, angle;
+    #pragma omp parallel for schedule(static) private(distance, angle)
+    for (distance = Magn_Near_StartMsg; distance <= Magn_Far_EndMsg; distance += Magn_Near_GapMsg)
     {
-        for (int angle = 0; angle < 360; angle += Angle_Interval(distance))
+        for (angle = 0; angle < 360; angle += Angle_Interval(distance))
         {
             if ((angle >= Unscaned_Angle[0] && angle <= Unscaned_Angle[1]) ||
                 (angle >= Unscaned_Angle[2] && angle <= Unscaned_Angle[3]) ||
@@ -160,6 +202,7 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
                 FIND_Item.dis_min = distance;
                 FIND_Item.ang_max = angle;
                 FIND_Item.ang_min = angle;
+
                 while (!find_point.empty())
                 {
                     dis = find_point.front();
@@ -275,6 +318,52 @@ void Vision::find_around(Mat &frame_, deque<int> &find_point, int distance, int 
         }
     }
 }
+void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance, int angle, int &size, int color)
+{
+    int x, y;
+    int x_, y_;
+    int dis_f, ang_f;
+    double angle_f;
+
+    for (int i = -1; i < 2; i++)
+    {
+        for (int j = -1; j < 2; j++)
+        {
+            dis_f = distance + i;
+            Magn_Near_GapMsg;
+
+            if (dis_f < Magn_Near_StartMsg)
+                dis_f = Magn_Near_StartMsg;
+
+            dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
+            ang_f = angle + j * Angle_Interval(dis_f);
+
+            while ((Angle_Adjustment(ang_f) > Unscaned_Angle[0] && Angle_Adjustment(ang_f) < Unscaned_Angle[1]) ||
+                   (Angle_Adjustment(ang_f) > Unscaned_Angle[2] && Angle_Adjustment(ang_f) < Unscaned_Angle[3]) ||
+                   (Angle_Adjustment(ang_f) > Unscaned_Angle[4] && Angle_Adjustment(ang_f) < Unscaned_Angle[5]) ||
+                   (Angle_Adjustment(ang_f) > Unscaned_Angle[6] && Angle_Adjustment(ang_f) < Unscaned_Angle[7]))
+            {
+                if (j < 0)
+                    ang_f += -1 * Angle_Interval(dis_f);
+                else
+                    ang_f += 1 * Angle_Interval(dis_f);
+            }
+
+            angle_f = Angle_Adjustment(ang_f);
+
+            x_ = dis_f * Angle_cos[angle_f];
+            y_ = dis_f * Angle_sin[angle_f];
+
+            x = Frame_Area(CenterXMsg + x_, frame_.cols);
+            y = Frame_Area(CenterYMsg - y_, frame_.rows);
+					
+            if (Threshold.data[(y * Threshold.cols + x) * 3 + 0] == 0 && frame_.data[(y * frame_.cols + x) * 3 + 0] == 0)
+            {
+                Mark_point(frame_, find_point, dis_f, ang_f, x, y, size, color);	
+            }
+        }
+    }
+}
 void Vision::Mark_point(Mat &frame_, deque<int> &find_point, int distance, int angle, int x, int y, int &size, int color)
 {
     frame_.data[(y * frame_.cols + x) * 3 + 0] = 255;
@@ -284,6 +373,7 @@ void Vision::Mark_point(Mat &frame_, deque<int> &find_point, int distance, int a
     find_point.push_back(angle);
     size += 1;
 }
+//找物體中心點
 void Vision::find_object_point(DetectedObject &obj_, int color)
 {
     int x, y;
@@ -385,6 +475,7 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
         obj_.LR = "Right";
     }
 }
+//找球門左右邊界點
 void Vision::find_edge_point(DetectedObject &obj_, int color)
 {
     int x, y;
@@ -477,17 +568,120 @@ void Vision::find_edge_point(DetectedObject &obj_, int color)
         obj_.left_dis = obj_.dis_min;
     }
 }
+//找球門射擊點
 void Vision::find_shoot_point(DetectedObject &obj_, int color)
 {
-    //========================================找最大範圍==============================
+    
     int x, y;
     int x_, y_;
+    int object_size;
+    int dis, ang;
+
+    
+    Mat iframe = Source.clone();
+    Mat frame_(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
+    Mat threshold=Threshold.clone();
+    DetectedObject FIND_Item;//找守門員位置
+    DetectedObject obj_item;
+    deque<int> find_point;
+    //cout<<BlackGrayMsg<<endl;
+    
+    
+    int angle_min = obj_.ang_min;
+    int angle_max = obj_.ang_max;
+    if(obj_.ang_min<0){
+        angle_min = angle_min+360;
+        angle_max = angle_max+360;
+    }
+    for (int distance = InnerMsg; distance <= obj_.dis_max*0.8; distance += Magn_Near_GapMsg)
+    {
+        for (int angle = angle_min; angle < angle_max; angle += Angle_Interval(distance))
+        {
+            int find_angle = Angle_Adjustment(angle);
+            if ((find_angle >= Unscaned_Angle[0] && angle <= Unscaned_Angle[1]) ||
+                (find_angle >= Unscaned_Angle[2] && angle <= Unscaned_Angle[3]) ||
+                (find_angle >= Unscaned_Angle[4] && angle <= Unscaned_Angle[5]) ||
+                (find_angle >= Unscaned_Angle[6] && angle <= Unscaned_Angle[7]))
+            {
+                continue;
+            }
+            object_size = 0;
+            FIND_Item.size = 0;
+
+            x_ = distance * Angle_cos[find_angle];
+            y_ = distance * Angle_sin[find_angle];
+
+            x = Frame_Area(CenterXMsg + x_, frame_.cols);
+            y = Frame_Area(CenterYMsg - y_, frame_.rows);
+
+            
+            if (threshold.data[(y * threshold.cols + x) * 3 + 0] == 0&&
+                threshold.data[(y * threshold.cols + x) * 3 + 1] == 0&&
+                threshold.data[(y * threshold.cols + x) * 3 + 2] == 0 )
+            {
+                Mark_point(frame_, find_point, distance, find_angle, x, y, object_size, color);
+
+                FIND_Item.dis_max = distance;
+                FIND_Item.dis_min = distance;
+                FIND_Item.ang_max = find_angle;
+                FIND_Item.ang_min = find_angle;
+                while (!find_point.empty())
+                {
+                    dis = find_point.front();
+                    find_point.pop_front();
+
+                    ang = find_point.front();
+                    find_point.pop_front();
+
+                    object_compare(FIND_Item, dis, ang);
+                    find_around_black(frame_, find_point, dis, ang, object_size, color);
+
+                }
+                FIND_Item.size = object_size;
+            }
+
+            find_point.clear();
+            if(FIND_Item.ang_min<obj_.ang_min){
+                FIND_Item.ang_min=FIND_Item.ang_min+360;
+                FIND_Item.ang_max=FIND_Item.ang_max+360;
+            }
+            if(FIND_Item.ang_max>obj_.ang_max){
+                FIND_Item.ang_min=FIND_Item.ang_min-360;
+                FIND_Item.ang_max=FIND_Item.ang_max-360;
+            }
+            if (FIND_Item.size > obj_item.size&&FIND_Item.ang_min>=obj_.ang_min&&FIND_Item.ang_max<=obj_.ang_max)
+            {
+                obj_item = FIND_Item;
+            }
+        }
+    }
+
+    if(obj_item.ang_min<obj_.ang_min){
+        obj_item.ang_min=obj_item.ang_min+360;
+        obj_item.ang_max=obj_item.ang_max+360;
+    }
+    if(obj_item.ang_max>obj_.ang_max){
+        obj_item.ang_min=obj_item.ang_min-360;
+        obj_item.ang_max=obj_item.ang_max-360;
+    }
+    //if (color == BLUEITEM){
+    //    cv::imshow("threshold", threshold);
+    //    waitKey(10);
+    //    cv::imshow("findmap", frame_);
+    //    waitKey(10);
+    //    cout<<obj_item.ang_min<<" "<<obj_item.ang_max<<" "<<obj_.ang_min<<" "<<obj_.ang_max<<endl;
+    //}
+
+    //========================================找最大範圍==============================
+    //int x, y;
+    //int x_, y_;
     int angle_;
     int angle_range;
     int find_angle;
     unsigned char B, G, R;
     int find_gap[2][7] = {0};
     int start = obj_.dis_min;
+/*
     if (obj_.dis_min > 130)
     {
         start = obj_.dis_min - 20;
@@ -581,6 +775,68 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
             }
         }
     }
+*/
+    //===================================
+    int right_gap = obj_.ang_max-obj_item.ang_max;
+    int left_gap = obj_item.ang_min-obj_.ang_min;
+    
+    if(obj_item.ang_max!=0||obj_item.ang_min!=0){
+      if(fabs(right_gap-left_gap)>fabs(obj_.ang_max-obj_.ang_min)*0.2){
+        if(right_gap>left_gap){
+            find_gap[0][2] = obj_item.ang_max;
+            find_gap[0][5] = obj_.ang_max;
+        }else{
+            find_gap[0][2] = obj_.ang_min;
+            find_gap[0][5] = obj_item.ang_min;
+        }
+        find_gap[0][6] = find_gap[0][5] - find_gap[0][2];
+      }else{
+        double right_center=Angle_Adjustment((obj_.ang_max+obj_item.ang_max)/2);
+        double left_center=Angle_Adjustment((obj_item.ang_min+obj_.ang_min)/2);
+        if(fabs(right_center-FrontMsg)<fabs(left_center-FrontMsg)){
+            find_gap[0][2] = obj_item.ang_max;
+            find_gap[0][5] = obj_.ang_max;
+        }else{
+            find_gap[0][2] = obj_.ang_min;
+            find_gap[0][5] = obj_item.ang_min;          
+        }
+        find_gap[0][6] = find_gap[0][5] - find_gap[0][2];
+      }
+    }
+    //==================================
+    /*
+    if (color == BLUEITEM)
+    {
+        if (b_end_gap > 0 && b_end_gap < 720 &&
+            find_gap[1][6] < ((obj_.ang_max - obj_.ang_min) * 0.4) &&
+            (abs(find_gap[1][5] + find_gap[1][2]) / 2 - b_end_gap) > ((obj_.ang_max - obj_.ang_min) * 0.3))
+        {
+        }
+        else
+        {
+            for (int i = 0; i < 7; i++)
+            {
+                find_gap[0][i] = find_gap[1][i];
+            }
+        }
+    }
+    if (color == YELLOWITEM)
+    {
+        if (y_end_gap > 0 && y_end_gap < 720 &&
+            find_gap[1][6] < ((obj_.ang_max - obj_.ang_min) * 0.4) &&
+            (abs(find_gap[1][5] + find_gap[1][2]) / 2 - y_end_gap) > ((obj_.ang_max - obj_.ang_min) * 0.3))
+        {
+        }
+        else
+        {
+            for (int i = 0; i < 7; i++)
+            {
+                find_gap[0][i] = find_gap[1][i];
+            }
+        }
+    }
+    */
+    //==================================
     obj_.fix_ang_min = find_gap[0][2];
     obj_.fix_ang_max = find_gap[0][5];
 
@@ -601,7 +857,9 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
         //if(y_end_gap > obj_.ang_max || y_end_gap < obj_.ang_min)(obj_.ang_max + obj_.ang_min) / 2;
     }
     //=============================找中心===================================
+    
     angle_ = Angle_Adjustment((find_gap[0][5] + find_gap[0][2]) / 2);
+    //angle_ = Angle_Adjustment((obj_item.ang_min + obj_item.ang_max) / 2);
     angle_range = 0.7 * Angle_Adjustment((find_gap[0][5] - find_gap[0][2]) / 2);
     for (int angle = 0; angle < angle_range; angle++)
     {

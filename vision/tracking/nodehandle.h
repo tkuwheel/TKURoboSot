@@ -15,8 +15,6 @@
 #include <fstream>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int32MultiArray.h>
-#include <geometry_msgs/Twist.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include "vision/center.h"
 #include "vision/bin.h"
 #define PI 3.14159265
@@ -87,16 +85,9 @@ public:
 //==============distance==================
 	double camera_f(double Omni_pixel);
 	double Omni_distance(double pixel_dis);
-//==============passing challenge==================
-    double pose_x;
-    double pose_y;
-    double pose_w;
-    Point shot_pose[4];
 private:
 	ros::NodeHandle nh;
 	ros::Subscriber save_sub;
-    ros::Subscriber pos_sub;
-    void posCallback(const geometry_msgs::PoseWithCovarianceStamped msg);
 	void SaveButton_setting(const vision::bin msg);
     void Set_Unscaned_Angle();
 	int SaveButton;
