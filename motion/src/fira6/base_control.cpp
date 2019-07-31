@@ -423,11 +423,11 @@ int BaseController::mDriverSetting()
         m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
-	if((m_en_stop & 0x10) == 0x10) m_motorCurrPWM.w1 = MIN_PWM;
         m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
-	if((m_en_stop & 0x08) == 0x08) m_motorCurrPWM.w2 = MIN_PWM;
         m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
-	if((m_en_stop & 0x04) == 0x04) m_motorCurrPWM.w3 = MIN_PWM;
+        if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
+        if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
+        if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
 //        if((m_en_stop&0x10)==0x10){
 //            m_motorCurrPWM.w1 = MIN_PWM;
 //            m_en_stop -= 0x10;

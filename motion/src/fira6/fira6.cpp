@@ -11,7 +11,6 @@
 /********************************
  *	Include header files
  ********************************/
-#include "parameter.h"
 #include "motor_data.h"
 #include "node_handle.h"
 #include "base_control.h"
@@ -28,6 +27,11 @@ void inturrupt(int signal)
 }
 int main(int argc, char **argv)
 {
+    if(argc >= 2){
+        if(strcmp(argv[1],"-D")==0){
+            printf("hi\n");
+        }
+    }
 	Motion_nodeHandle Node(argc, argv);
 //    ros::init(argc, argv, "Test");
 //    ros::NodeHandle n;
@@ -70,9 +74,10 @@ int main(int argc, char **argv)
             counter_cmd = 0;
             robotCMD = Node.getMotion();
             Base.Send(robotCMD);
-#ifdef DEBUG_
+#ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
+            Base.ShowCsslSend();
 #endif
         }else{
             if(counter_cmd >= (CMD_FREQUENCY/2)){
@@ -96,7 +101,7 @@ int main(int argc, char **argv)
         }
 		loop_rate.sleep();
 	}
-	std::cout << "Close fira6th motion\n";
+	std::cout << "Close FIRA6th Motion\n";
 	return 0;
 }
 
