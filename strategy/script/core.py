@@ -229,11 +229,11 @@ class Strategy(object):
   def RunStatePoint(self):
     print("run point")
     if self.robot.run_point == "ball_hand":
-      if self.robot.toPoint:
+      if self.robot.toPoint():
         self.dclient.update_configuration({"run_point": "none"})
         self.ToMovement()
     elif self.robot.run_point == "empty_hand":
-      if self.robot.toPoint:
+      if self.robot.toPoint():
         self.dclient.update_configuration({"run_point": "none"})
         self.ToChase()
 
@@ -381,11 +381,15 @@ class Strategy(object):
           self.ToAttack()
 
         ## Run point
-        if self.robot.is_point:
-          if not self.robot.CheckBallHandle():
-            self.ToChase()
+       if self.robot.is_point:
+          if point == "ball_hand":
+            if self.robot.CheckBallHandle():
+              self.RunStatePoint()
+            else:
+              self.ToChase(role)
           else:
             self.RunStatePoint()
+
 
       if rospy.is_shutdown():
         log('shutdown')
