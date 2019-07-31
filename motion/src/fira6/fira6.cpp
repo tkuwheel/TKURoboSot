@@ -43,7 +43,8 @@ int main(int argc, char **argv)
     unsigned int counter_fb = 0;
     unsigned int counter_shoot = 0;
     unsigned int counter = 0;
-	while(ros::ok()){
+	while(true){
+        // close 
         if(flag){
             Base.Close();
             Base.ShowCsslCallback();
@@ -55,6 +56,7 @@ int main(int argc, char **argv)
             sleep(1);
             continue;
         }
+        //reset shoot
         if(robotCMD.shoot_power>0){
             if(counter_shoot>=(CMD_FREQUENCY/2)){
                 Node.clearShoot();
@@ -63,6 +65,7 @@ int main(int argc, char **argv)
                 counter_shoot++;
             }
         }
+        // Get command
         if(Node.getMotionFlag()){
             counter_cmd = 0;
             robotCMD = Node.getMotion();
@@ -82,7 +85,7 @@ int main(int argc, char **argv)
                 counter_cmd++;
             }
         }
-        // Send Command
+        // Get feedback
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
@@ -91,7 +94,6 @@ int main(int argc, char **argv)
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
         }
-        ros::spinOnce();
 		loop_rate.sleep();
 	}
 	std::cout << "Close fira6th motion\n";

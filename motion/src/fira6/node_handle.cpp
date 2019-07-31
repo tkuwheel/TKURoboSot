@@ -38,6 +38,24 @@ void Motion_nodeHandle::init(int argc, char **argv)
     shoot_sub = n->subscribe<std_msgs::Int32>(shoot_topic_name, 1000, &Motion_nodeHandle::shootCallback, this);
     remote_sub = n->subscribe<std_msgs::Bool>(remote_topic_name, 1000, &Motion_nodeHandle::remoteCallback, this);
     holdBall_sub = n->subscribe<std_msgs::Bool>(holdBall_topic_name, 1000, &Motion_nodeHandle::holdBallCallback, this);
+    int p = pthread_create(&tid, NULL, (THREADFUNCPTR)&Motion_nodeHandle::mpThreadRun, this);
+    if(p != 0){
+        printf("node thread error\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void* Motion_nodeHandle::mpThreadRun(void* p)
+{
+    ((Motion_nodeHandle*)p)->mRun();
+    pthread_exit(NULL);
+}
+
+void Motion_nodeHandle::mRun()
+{
+    while(ros::ok()){
+        ros::spin();
+    }
 }
 
 void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &motion_msg)
