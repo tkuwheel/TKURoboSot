@@ -50,14 +50,14 @@ private:
     bool holdBall;
     bool motion_flag;
 private:
-    static void* pThreadRun(void* p);
+    static void* mpThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
 	void remoteCallback(const std_msgs::Bool::ConstPtr &);
     void holdBallCallback(const std_msgs::Bool::ConstPtr &);
 	void pub(const geometry_msgs::Twist &);
-    void run();
+    void mRun();
 public:
 //    void *run();
 	RobotCommand getMotion();
