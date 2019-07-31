@@ -2,9 +2,10 @@
 Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
 {
     this->robotCMD = {0, 0, 0, 0, 0};
+    robotCMD.hold_ball = true;
     this->motion_flag = false;
     this->remote = false;
-    this->holdBall = false;
+    this->holdBall = true;
 #ifdef DEBUG
     std::cout << "Motion_nodeHandle(DEBUG)\n";
     std::cout << "x_speed: " << this->robotCMD.x << std::endl;
