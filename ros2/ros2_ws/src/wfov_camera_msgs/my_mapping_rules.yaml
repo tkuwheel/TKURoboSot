@@ -1,0 +1,19 @@
+-
+  ros1_package_name: 'wfov_camera_msgs'
+  ros1_message_name: 'WFOVCompressedImage'
+  ros2_package_name: 'wfov_camera_msgs'
+  ros2_message_name: 'WFOVCompressedImage'
+  fields_1_to_2:
+    image: 'image'
+  ros1_package_name: 'wfov_camera_msgs'
+  ros1_message_name: 'WFOVImage'
+  ros2_package_name: 'wfov_camera_msgs'
+  ros2_message_name: 'WFOVImage'
+  fields_1_to_2:
+    image: 'image'
+  ros1_package_name: 'wfov_camera_msgs'
+  ros1_message_name: 'WFOVTrigger'
+  ros2_package_name: 'wfov_camera_msgs'
+  ros2_message_name: 'WFOVTrigger'
+  fields_1_to_2:
+    time_reference: 'time_reference'
