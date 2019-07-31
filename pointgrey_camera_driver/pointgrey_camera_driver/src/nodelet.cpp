@@ -524,21 +524,15 @@ private:
             {
               sensor_msgs::ImagePtr image(new sensor_msgs::Image(wfov_image->image));
               
-              cv::Mat img;
               cv_bridge::CvImagePtr cv_ptr;
-              cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
-              cv_ptr->image.copyTo(img);
+              cv_ptr = cv_bridge::toCvCopy(image, sensor_msgs::image_encodings::BGR8);
 
-              //double scale = 0.4;
-              Mat frame = img;
-              //Size dsize = Size(frame.cols * scale, frame.rows * scale);
               Size dsize = Size(640, 480);
-              resize(frame, frame, dsize);
+	      resize(cv_ptr->image, cv_ptr->image, dsize);
               sensor_msgs::ImagePtr image_rot;
-              image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+              image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cv_ptr->image).toImageMsg();
 
               it_pub_.publish(image_rot, ci_);
-              //it_pub_.publish(image, ci_);
             }
           }
           catch(CameraTimeoutException& e)

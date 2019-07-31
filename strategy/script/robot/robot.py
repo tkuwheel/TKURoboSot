@@ -121,8 +121,8 @@ class Robot(object):
   def __init__(self, sim = False):
 
     rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
-    rospy.Subscriber(POSITION_TOPIC,PoseWithCovarianceStamped,self._GetPosition)
-    rospy.Subscriber('BlackRealDis',Int32MultiArray,self._GetBlackItemInfo)
+    rospy.Subscriber(POSITION_TOPIC, PoseWithCovarianceStamped, self._GetPosition)
+    rospy.Subscriber('BlackRealDis', Int32MultiArray, self._GetBlackItemInfo)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
@@ -136,7 +136,7 @@ class Robot(object):
 
     if not sim :
       rospy.Subscriber('interface/Two_point', Two_point, self._GetTwopoint)
-      rospy.Subscriber(IMU,inertia,self._GetImu)
+      rospy.Subscriber(IMU, inertia, self._GetImu)
       self.RobotBallHandle = self.RealBallHandle
     else:
       self.sim_hold_pub = rospy.Publisher('motion/hold', Bool, queue_size=1)
@@ -317,9 +317,8 @@ class Robot(object):
     self.__obstacle_info['ranges'] =vision.data
 
   def _GetImu(self, imu_3d):
-    
     front_ang = math.degrees(imu_3d.yaw) + 90 
-    self.__robot_info['imu']['front_ang'] = imu_3d.yaw  #caculate front angle by imu
+    self.__robot_info['imu_3d']['yaw'] = imu_3d.yaw  #caculate front angle by imu
 
   def _GetPosition(self,loc):
     self.__robot_info['location']['x'] = loc.pose.pose.position.x*100
