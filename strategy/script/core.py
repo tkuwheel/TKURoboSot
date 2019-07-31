@@ -378,7 +378,7 @@ class Strategy(object):
           self.ToAttack()
 
         ## Run point
-       if self.robot.is_point:
+        if self.robot.is_point:
           if point == "ball_hand":
             if self.robot.CheckBallHandle():
               self.RunStatePoint()
