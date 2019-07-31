@@ -118,7 +118,8 @@ void Vision::source2threshold(){
 void Vision::ObjectProcessing()
 {
     //平行處理
-    #pragma omp parallel sections
+    /*
+    #pragma omp parallel sections num_threads(3)
     {
         #pragma omp section
         {
@@ -133,8 +134,12 @@ void Vision::ObjectProcessing()
            Yellow_Item.Reset();
         }
     }
+    */
+    Red_Item.Reset();
+    Blue_Item.Reset();
+    Yellow_Item.Reset();
     draw_center();
-    #pragma omp parallel sections
+    #pragma omp parallel sections num_threads(3)
     {
         #pragma omp section
         {
@@ -164,9 +169,11 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     //find_point.clear();
     //FIND_Item.Reset();
 
-    for (int distance = Magn_Near_StartMsg; distance <= Magn_Far_EndMsg; distance += Magn_Near_GapMsg)
+    int distance, angle;
+    #pragma omp parallel for schedule(static) private(distance, angle)
+    for (distance = Magn_Near_StartMsg; distance <= Magn_Far_EndMsg; distance += Magn_Near_GapMsg)
     {
-        for (int angle = 0; angle < 360; angle += Angle_Interval(distance))
+        for (angle = 0; angle < 360; angle += Angle_Interval(distance))
         {
             if ((angle >= Unscaned_Angle[0] && angle <= Unscaned_Angle[1]) ||
                 (angle >= Unscaned_Angle[2] && angle <= Unscaned_Angle[3]) ||
@@ -195,6 +202,7 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
                 FIND_Item.dis_min = distance;
                 FIND_Item.ang_max = angle;
                 FIND_Item.ang_min = angle;
+
                 while (!find_point.empty())
                 {
                     dis = find_point.front();
