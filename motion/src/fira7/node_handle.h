@@ -27,6 +27,7 @@
 #define motion_feedback_topic_name "motion/motionFB"
 #define motion_topic_name "motion/cmd_vel"
 #define shoot_topic_name "motion/shoot"
+#define shoot_force_back_topic_name "motion/force_back"
 #define remote_topic_name "motion/remote"
 #define holdBall_topic_name "motion/hold_ball"
 
@@ -42,6 +43,7 @@ private:
 	ros::Publisher motionFB_pub;
 	ros::Subscriber motion_sub;
 	ros::Subscriber shoot_sub;
+	ros::Subscriber force_back_sub;
 	ros::Subscriber remote_sub;
     ros::Subscriber holdBall_sub;
 	RobotCommand robotCMD;
@@ -54,6 +56,7 @@ private:
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
+	void shootForceBackCallback(const std_msgs::Bool::ConstPtr &);
 	void remoteCallback(const std_msgs::Bool::ConstPtr &);
     void holdBallCallback(const std_msgs::Bool::ConstPtr &);
 	void pub(const geometry_msgs::Twist &);
