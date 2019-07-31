@@ -68,6 +68,7 @@ protected:
 	int OuterMsg;
 	int FrontMsg;
 	double Camera_HighMsg;
+  int HorizonMsg;
 //================scan======================
 	int Angle_Near_GapMsg;
 	int Magn_Near_GapMsg;

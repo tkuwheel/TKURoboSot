@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   actionlib_msgs
   actionlib
+  geometry_msgs
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -34,6 +35,8 @@ add_action_files(
 
 generate_messages(
   DEPENDENCIES
+  std_msgs
+  geometry_msgs
   actionlib_msgs
 )
 
@@ -46,13 +49,12 @@ generate_dynamic_reconfigure_options(
 
 catkin_package(
 # INCLUDE_DIRS include
-  LIBRARIES strategy
+#  LIBRARIES strategy
   CATKIN_DEPENDS message_runtime dynamic_reconfigure roscpp rospy std_msgs message_filters# dynamic_tutorials 
   DEPENDS system_lib
 )
 
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 

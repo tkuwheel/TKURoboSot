@@ -146,6 +146,11 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/HSV/Yellow", HSV_yellow);
     nh.getParam("FIRA/vision/HSV/Green", HSV_green);
     nh.getParam("FIRA/vision/HSV/White", HSV_white);
+    //==================黑白掃描參數=======================
+    nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
+    nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
+    nh.getParam("FIRA/vision/HSV/black/gray", BlackGrayMsg);
+    nh.getParam("FIRA/vision/HSV/black/angle", BlackAngleMsg);
     //HSVmap();
     color_map = ColorFile();
 }

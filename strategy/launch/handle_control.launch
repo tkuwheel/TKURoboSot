@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch> 
+  <node name="rosserial" pkg="rosserial_arduino" type="serial_node.py"
+        output="screen" respawn="true" respawn_delay="5">
+    <param name="port" value="/dev/communication/arduino" />
+  </node>
+</launch>

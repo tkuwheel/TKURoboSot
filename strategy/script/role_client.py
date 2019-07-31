@@ -10,27 +10,19 @@ import actionlib
 # goal message and the result message.
 import actionlib_tutorials.msg
 import strategy.msg
+from role_selector import RoleSelector
 
 def fibonacci_client():
-    # Creates the SimpleActionClient, passing the type of the action
-    # (FibonacciAction) to the constructor.
-    client = actionlib.SimpleActionClient('/robot1/passing_action', strategy.msg.PassingAction)
-
-    # Waits until the action server has started up and started
-    # listening for goals.
-    client.wait_for_server()
-
-    # Creates a goal to send to the action server.
-    goal = strategy.msg.PassingGoal(catcher_req='')
-
-    # Sends the goal to the action server.
-    client.send_goal(goal)
-
-    # Waits for the server to finish performing the action.
-    client.wait_for_result()
-
-    # Prints out the result of executing the action
-    return client.get_result()  # A FibonacciResult
+    print("in")
+    rs = RoleSelector()
+    print("passing")
+    r = RoleSelector.PassingTo("/robot2")
+    print("end")
+    # myRole = RoleSelector.MyRole(rospy.get_namespace())
+    # print(myRole)
+    # print(RoleSelector.GetState("/robot2"))
+    # print(RoleSelector.GetState("/robot3"))
+    return r
 
 if __name__ == '__main__':
     try:
