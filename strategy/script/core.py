@@ -48,14 +48,16 @@ class Core(Robot, StateMachine):
     self.maximum_v = config['maximum_v']
     self.orb_attack_ang = config['orb_attack_ang']
     self.atk_shoot_ang = config['atk_shoot_ang']
-    self.my_role       = config['role']
     self.atk_shoot_dis = config['atk_shoot_dis']
+    self.my_role       = config['role']
     self.accelerate = config['Accelerate']
     self.ball_speed = config['ball_pwm']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
     self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
+
+    self.SetMyRole(self.my_role)
 
     return config
 
@@ -99,7 +101,6 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
-    
     t = self.GetObjectInfo()
     side = self.opp_side
     l = self.GetObstacleInfo()
@@ -237,12 +238,8 @@ class Strategy(object):
         self.dclient.update_configuration({"run_point": "none"})
         self.ToChase()
 
-
-
-
   def ToChase(self):
     mode = self.robot.attack_mode
-    
     if mode == "Defense":
       self.ToMovement()
 
@@ -290,7 +287,7 @@ class Strategy(object):
       self.robot.PubCurrentState()
       self.robot.Supervisor()
 
-      print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole(rospy.get_namespace())))
+      print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole()))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -319,8 +316,6 @@ class Strategy(object):
             else :
               print('idle to chase')
               self.ToChase()
-              
-          
 
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():

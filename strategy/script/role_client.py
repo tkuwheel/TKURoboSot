@@ -12,11 +12,18 @@ import actionlib_tutorials.msg
 import strategy.msg
 from role_selector import RoleSelector
 
+def PassingTo(catcher_ns):
+    _ac = actionlib.SimpleActionClient(catcher_ns + '/passing_action', strategy.msg.PassingAction)
+    _ac.wait_for_server()
+    goal = strategy.msg.PassingGoal(catcher_req='PleaseCatch')
+    _ac.send_goal(goal)
+    _ac.wait_for_result()
+    return _ac.get_result()
+
 def fibonacci_client():
     print("in")
-    rs = RoleSelector()
     print("passing")
-    r = RoleSelector.PassingTo("/robot2")
+    r = PassingTo('/robot2')
     print("end")
     # myRole = RoleSelector.MyRole(rospy.get_namespace())
     # print(myRole)
