@@ -2,9 +2,9 @@
 Motion_nodeHandle::Motion_nodeHandle(int argc, char** argv)
 {
     this->robotCMD = {0, 0, 0, 0, 0};
+    robotCMD.hold_ball = true;
     this->motion_flag = false;
     this->remote = false;
-    this->holdBall = false;
 #ifdef DEBUG
     std::cout << "Motion_nodeHandle(DEBUG)\n";
     std::cout << "x_speed: " << this->robotCMD.x << std::endl;
@@ -103,7 +103,7 @@ void Motion_nodeHandle::remoteCallback(const std_msgs::Bool::ConstPtr &remote_ms
 
 void Motion_nodeHandle::holdBallCallback(const std_msgs::Bool::ConstPtr &holdBall_msg)
 {
-    this->robotCMD.hold_ball = holdBall_msg->data;
+    robotCMD.hold_ball = holdBall_msg->data;
     this->motion_flag = true;
 }
 
@@ -138,7 +138,6 @@ int Motion_nodeHandle::clearAll()
     robotCMD.y = 0;
     robotCMD.yaw = 0;
     robotCMD.shoot_power = 0;
-//    robotCMD.hold_ball = true;
 }
 
 bool Motion_nodeHandle::getMotionFlag()
@@ -157,4 +156,5 @@ void Motion_nodeHandle::ShowCommand()
     printf("y speed %f\n", robotCMD.y);
     printf("yaw speed %f\n", robotCMD.yaw);
     printf("shoot power %d\n", robotCMD.shoot_power);
+    printf("hold ball %d\n", robotCMD.hold_ball);
 }
