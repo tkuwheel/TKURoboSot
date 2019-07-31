@@ -96,7 +96,8 @@ void BaseController::mRun()
         mOpenRecordFile();
     }
     gettimeofday(&m_serialLast, 0);
-    int counter = 0;
+    unsigned int counter = 0;
+    int sleep_time = 1000000 / FB_FREQUENCY ;
     while(true){
         if(!mCheckSerial()){
             if(mb_close){
@@ -104,9 +105,8 @@ void BaseController::mRun()
                 m_motorCurrRPM.w2 = 0;
                 m_motorCurrRPM.w3 = 0;
             }
-            printf("Cannot get feedback\n");
-//            sleep(1);
-            continue;
+            counter++;
+            printf("CANNOT GET FEEDBACK --%d\n", counter);
         }
         if(mb_enable){
             mb_enable = false;
@@ -145,6 +145,7 @@ void BaseController::mRun()
 #endif
             }
         }
+        usleep(sleep_time);
     }
     printf("exit base thread\n");
 }
@@ -389,10 +390,10 @@ void BaseController::mShootRegularization(const RobotCommand &CMD)
 	if(CMD.shoot_power == 0){
 		m_shoot_power = 0;
 	}else if(CMD.shoot_power >= 100){
-		m_shoot_power = 255;
+		m_shoot_power = 100;
 	}
 	else{
-		m_shoot_power = (255 * CMD.shoot_power / 100);
+		m_shoot_power = CMD.shoot_power;
 	}
 #ifdef DEBUG
 	std::cout << "shoot_regularization(DEBUG)\n";
@@ -424,18 +425,21 @@ int BaseController::mDriverSetting()
         m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
-        if((m_en_stop&0x10)==0x10){
-            m_motorCurrPWM.w1 = MIN_PWM;
-            m_en_stop -= 0x10;
-        }
-        if((m_en_stop&0x08)==0x08){
-            m_motorCurrPWM.w2 = MIN_PWM;
-            m_en_stop -= 0x08;
-        }
-        if((m_en_stop&0x04)==0x04){
-            m_motorCurrPWM.w3 = MIN_PWM;
-            m_en_stop -= 0x04;
-        }
+        if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
+        if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
+        if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
+//        if((m_en_stop&0x10)==0x10){
+//            m_motorCurrPWM.w1 = MIN_PWM;
+//            m_en_stop -= 0x10;
+//        }
+//        if((m_en_stop&0x08)==0x08){
+//            m_motorCurrPWM.w2 = MIN_PWM;
+//            m_en_stop -= 0x08;
+//        }
+//        if((m_en_stop&0x04)==0x04){
+//            m_motorCurrPWM.w3 = MIN_PWM;
+//            m_en_stop -= 0x04;
+//        }
 
     }
 }
@@ -537,9 +541,9 @@ void BaseController::mInverseKinematics()
 
 void BaseController::mForwardKinematics()
 {
-	m_baseSpeed.x = ( m_baseRX.w1 * (0.3333) + m_baseRX.w2 * (0.3333) + m_baseRX.w3 * (-0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseSpeed.y = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
-	m_baseSpeed.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))*wheel_radius/robot_radius / 2000 / 26;
+	m_baseSpeed.x = ( m_baseRX.w1 * (0.3333) + m_baseRX.w2 * (0.3333) + m_baseRX.w3 * (-0.6667)) * 2 * M_PI * wheel_radius / GEAR_RATIO / TICKS_PER_ROUND;
+	m_baseSpeed.y = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / GEAR_RATIO / TICKS_PER_ROUND;
+	m_baseSpeed.yaw = (-1) * (m_baseRX.w1  + m_baseRX.w2 + m_baseRX.w3) * (1.6667) * wheel_radius / robot_radius / GEAR_RATIO / TICKS_PER_ROUND;
 //	m_base.x = ( m_baseRX.w1 * (-0.5774) + m_baseRX.w2 * (0.5774) + m_baseRX.w3 * (0)) * 2 * M_PI * wheel_radius / 26 / 2000;
 //	m_base.y = ( m_baseRX.w1 * (-0.3333) + m_baseRX.w2 * (-0.3333) + m_baseRX.w3 * (0.6667)) * 2 * M_PI * wheel_radius / 26 / 2000;
 //	m_base.yaw = (-1) * (m_baseRX.w1 * (1.6667) + m_baseRX.w2 * (1.6667) + m_baseRX.w3 * (1.6667))  * 2 *M_PI* wheel_radius / 2000 / 26;
@@ -605,6 +609,7 @@ void BaseController::Send(const RobotCommand &CMD)
 {
 #ifdef DEBUG
 #endif
+    mb_close = false;
     m_baseCommand = CMD;
     mShootRegularization(m_baseCommand);
     mCommandRegularization(m_baseCommand);
@@ -665,7 +670,7 @@ void BaseController::SetStop()
 void BaseController::Close()
 {
     mb_close = true;
-    printf("OAO\n");
+//    printf("OAO\n");
     mDriverSetting();
     mCsslSend2FPGA();
 

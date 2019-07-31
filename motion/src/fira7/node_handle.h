@@ -1,5 +1,5 @@
-#ifndef motion_nodeHandle_H
-#define motion_nodeHandle_H
+#ifndef NodeHandle_H
+#define NodeHandle_H
 /*********************
  ** Include system
  *********************/
@@ -23,12 +23,12 @@
 /*********************
  ** Define 
  *********************/
-#define odometry_topic_name "/motion/odom"
-#define motion_feedback_topic_name "/motion/motionFB"
-#define motion_topic_name "/motion/cmd_vel"
-#define shoot_topic_name "/motion/shoot"
-#define remote_topic_name "/motion/remote"
-#define holdBall_topic_name "/motion/hold_ball"
+#define odometry_topic_name "motion/odom"
+#define motion_feedback_topic_name "motion/motionFB"
+#define motion_topic_name "motion/cmd_vel"
+#define shoot_topic_name "motion/shoot"
+#define remote_topic_name "motion/remote"
+#define holdBall_topic_name "motion/hold_ball"
 
 typedef void * (*THREADFUNCPTR)(void *);
 //#define DEBUG 
@@ -50,14 +50,14 @@ private:
     bool holdBall;
     bool motion_flag;
 private:
-    static void* pThreadRun(void* p);
+    static void* mpThreadRun(void* p);
 	void init(int argc, char **argv);
 	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
 	void shootCallback(const std_msgs::Int32::ConstPtr &);
 	void remoteCallback(const std_msgs::Bool::ConstPtr &);
     void holdBallCallback(const std_msgs::Bool::ConstPtr &);
 	void pub(const geometry_msgs::Twist &);
-    void run();
+    void mRun();
 public:
 //    void *run();
 	RobotCommand getMotion();
@@ -67,4 +67,4 @@ public:
 	bool    getMotionFlag();
     void    ShowCommand();
 };
-#endif
+#endif //NodeHandle_H

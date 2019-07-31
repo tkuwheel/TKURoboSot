@@ -12,13 +12,13 @@
  *	Include header files
  ********************************/
 #include "motor_data.h"
-#include "motion_nodeHandle.h"
+#include "node_handle.h"
 #include "base_control.h"
 /********************************
  *	Define	
  ********************************/
 //typedef void * (*THREADFUNCPTR)(void *);
-#define DEBUG
+//#define DEBUG
 bool flag = 0;
 void inturrupt(int signal)
 {
@@ -27,52 +27,70 @@ void inturrupt(int signal)
 }
 int main(int argc, char **argv)
 {
+    if(argc >= 2){
+        if(strcmp(argv[1],"-D")==0){
+            printf("hi\n");
+        }
+    }
 	Motion_nodeHandle Node(argc, argv);
 //    ros::init(argc, argv, "Test");
 //    ros::NodeHandle n;
 	BaseController Base(argc, argv, false);
 
-	RobotCommand robotCMD;
-    RobotCommand robotOdo;
+	RobotCommand robotCMD={0};
+    RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	std::cout << "ATTACK MOTION IS RUNNING!\n";
+	printf("\033[0;32m***FIRA7 IS RUNNING!***\n\033[0;33m");
 	ros::Rate loop_rate(CMD_FREQUENCY);
-    int counter = 0;
+    unsigned int counter_cmd = 0;
+    unsigned int counter_fb = 0;
+    unsigned int counter_shoot = 0;
+    unsigned int counter = 0;
 	while(true){
+        // close 
         if(flag){
             Base.Close();
             Base.ShowCsslCallback();
             currRPM = Base.GetCurrRPM();
-//            printf("close\n");
             if((currRPM.w1==0)&&(currRPM.w2==0)&&currRPM.w3==0){
-                loop_rate.sleep();
+                sleep(1);
                 break;
             }
-            loop_rate.sleep();
+            sleep(1);
             continue;
         }
-//        Base.SetEnable();
+        //reset shoot
+        if(robotCMD.shoot_power>0){
+            if(counter_shoot>=(CMD_FREQUENCY/2)){
+                Node.clearShoot();
+                counter_shoot = 0;
+            }else{
+                counter_shoot++;
+            }
+        }
+        // Get command
         if(Node.getMotionFlag()){
-
-            counter = 0;
+            counter_cmd = 0;
+            robotCMD = Node.getMotion();
+            Base.Send(robotCMD);
 #ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
+            Base.ShowCsslSend();
 #endif
         }else{
-            counter++;
-            if(counter >= (CMD_FREQUENCY/2)){
+            if(counter_cmd >= (CMD_FREQUENCY/2)){
+                counter_cmd = 0;
                 Node.clearAll();
-                printf("\nCANNOT GET COMMAND\n");
+                Base.Close();
+                counter++;
+                printf("\nCANNOT GET COMMAND--- %d\n", counter);
+            }else{
+                counter_cmd++;
             }
-
         }
-        robotCMD = Node.getMotion();
-        Base.Send(robotCMD);
-        if(robotCMD.shoot_power>0){
-            Node.clearShoot();
-        }
+        // Get feedback
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
@@ -83,7 +101,7 @@ int main(int argc, char **argv)
         }
 		loop_rate.sleep();
 	}
-	std::cout << "Close Attack Motion\n";
+	std::cout << "\033[0;32mClose FIRA7 Motion\n";
 	return 0;
 }
 

@@ -41,7 +41,7 @@ int main(int argc, char **argv)
     RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	std::cout << "FIRA6th IS RUNNING!\n";
+	printf("\033[0;32m***FIRA6 IS RUNNING!***\n\033[0;33m");
 	ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
     unsigned int counter_fb = 0;
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         }
 		loop_rate.sleep();
 	}
-	std::cout << "Close FIRA6th Motion\n";
+	std::cout << "\033[0;32mClose FIRA6 Motion\n";
 	return 0;
 }
 
