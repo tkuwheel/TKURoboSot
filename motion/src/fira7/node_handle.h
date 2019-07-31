@@ -1,5 +1,5 @@
-#ifndef motion_nodeHandle_H
-#define motion_nodeHandle_H
+#ifndef NodeHandle_H
+#define NodeHandle_H
 /*********************
  ** Include system
  *********************/
@@ -27,6 +27,7 @@
 #define motion_feedback_topic_name "motion/motionFB"
 #define motion_topic_name "motion/cmd_vel"
 #define shoot_topic_name "motion/shoot"
+#define shoot_force_back_topic_name "motion/force_back"
 #define remote_topic_name "motion/remote"
 #define holdBall_topic_name "motion/hold_ball"
 
@@ -38,27 +39,11 @@ public:
 	virtual ~Motion_nodeHandle();
 	
 private:
-    static void* pThreadRun(void* p);
-	void init(int argc, char **argv);
-	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
-	void shootCallback(const std_msgs::Int32::ConstPtr &);
-	void remoteCallback(const std_msgs::Bool::ConstPtr &);
-    void holdBallCallback(const std_msgs::Bool::ConstPtr &);
-	void pub(const geometry_msgs::Twist &);
-    void run();
-public:
-//    void *run();
-	RobotCommand getMotion();
-	void    pub_robotFB(RobotCommand);
-	void    clearShoot();
-	int     clearAll();
-	bool    getNodeFlag(bool &);
-    void    ShowCommand();
-private:
 	ros::NodeHandle *n;
 	ros::Publisher motionFB_pub;
 	ros::Subscriber motion_sub;
 	ros::Subscriber shoot_sub;
+	ros::Subscriber force_back_sub;
 	ros::Subscriber remote_sub;
     ros::Subscriber holdBall_sub;
 	RobotCommand robotCMD;
@@ -66,7 +51,23 @@ private:
 	bool remote;
     bool holdBall;
     bool motion_flag;
-    bool m_clear_flag;
-    bool m_is_activated;
+private:
+    static void* mpThreadRun(void* p);
+	void init(int argc, char **argv);
+	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
+	void shootCallback(const std_msgs::Int32::ConstPtr &);
+	void shootForceBackCallback(const std_msgs::Bool::ConstPtr &);
+	void remoteCallback(const std_msgs::Bool::ConstPtr &);
+    void holdBallCallback(const std_msgs::Bool::ConstPtr &);
+	void pub(const geometry_msgs::Twist &);
+    void mRun();
+public:
+//    void *run();
+	RobotCommand getMotion();
+	void    pub_robotFB(RobotCommand);
+	void    clearShoot();
+	int     clearAll();
+	bool    getMotionFlag();
+    void    ShowCommand();
 };
-#endif
+#endif //NodeHandle_H
