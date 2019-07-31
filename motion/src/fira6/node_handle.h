@@ -1,5 +1,5 @@
-#ifndef motion_nodeHandle_H
-#define motion_nodeHandle_H
+#ifndef NodeHandle_H
+#define NodeHandle_H
 /*********************
  ** Include system
  *********************/
@@ -67,4 +67,4 @@ public:
 	bool    getMotionFlag();
     void    ShowCommand();
 };
-#endif
+#endif //NodeHandle_H

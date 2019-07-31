@@ -96,7 +96,8 @@ void BaseController::mRun()
         mOpenRecordFile();
     }
     gettimeofday(&m_serialLast, 0);
-    int counter = 0;
+    unsigned int counter = 0;
+    int sleep_time = 1000000 / FB_FREQUENCY ;
     while(true){
         if(!mCheckSerial()){
             if(mb_close){
@@ -104,9 +105,8 @@ void BaseController::mRun()
                 m_motorCurrRPM.w2 = 0;
                 m_motorCurrRPM.w3 = 0;
             }
-            printf("Cannot get feedback\n");
-//            sleep(1);
-            continue;
+            counter++;
+            printf("CANNOT GET FEEDBACK --%d\n", counter);
         }
         if(mb_enable){
             mb_enable = false;
@@ -145,6 +145,7 @@ void BaseController::mRun()
 #endif
             }
         }
+        usleep(sleep_time);
     }
     printf("exit base thread\n");
 }
@@ -422,20 +423,23 @@ int BaseController::mDriverSetting()
         m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
         m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
+        m_motorCurrPWM.w1 = MIN_PWM;
         m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
+        m_motorCurrPWM.w2 = MIN_PWM;
         m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
-        if((m_en_stop&0x10)==0x10){
-            m_motorCurrPWM.w1 = MIN_PWM;
-            m_en_stop -= 0x10;
-        }
-        if((m_en_stop&0x08)==0x08){
-            m_motorCurrPWM.w2 = MIN_PWM;
-            m_en_stop -= 0x08;
-        }
-        if((m_en_stop&0x04)==0x04){
-            m_motorCurrPWM.w3 = MIN_PWM;
-            m_en_stop -= 0x04;
-        }
+        m_motorCurrPWM.w3 = MIN_PWM;
+//        if((m_en_stop&0x10)==0x10){
+//            m_motorCurrPWM.w1 = MIN_PWM;
+//            m_en_stop -= 0x10;
+//        }
+//        if((m_en_stop&0x08)==0x08){
+//            m_motorCurrPWM.w2 = MIN_PWM;
+//            m_en_stop -= 0x08;
+//        }
+//        if((m_en_stop&0x04)==0x04){
+//            m_motorCurrPWM.w3 = MIN_PWM;
+//            m_en_stop -= 0x04;
+//        }
 
     }
 }
@@ -666,7 +670,7 @@ void BaseController::SetStop()
 void BaseController::Close()
 {
     mb_close = true;
-    printf("OAO\n");
+//    printf("OAO\n");
     mDriverSetting();
     mCsslSend2FPGA();
 
