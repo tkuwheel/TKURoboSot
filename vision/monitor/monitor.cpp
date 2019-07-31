@@ -118,8 +118,12 @@ void Vision::source2threshold(){
 void Vision::ObjectProcessing()
 {
     //平行處理
+<<<<<<< HEAD
+    #pragma omp parallel sections
+=======
     /*
     #pragma omp parallel sections num_threads(3)
+>>>>>>> 7b518a7978e035483b9f4b7b3388563b2ee07606
     {
         #pragma omp section
         {
