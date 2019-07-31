@@ -516,7 +516,7 @@ private:
             wfov_image->info = *ci_;
 
             // Publish the full message
-            pub_->publish(wfov_image);
+            //pub_->publish(wfov_image);
 
             // Publish the message using standard image transport
             //if(it_pub_.getNumSubscribers() > 0)
@@ -524,22 +524,21 @@ private:
             {
               sensor_msgs::ImagePtr image(new sensor_msgs::Image(wfov_image->image));
               
-              //cv::Mat img;
-              //cv_bridge::CvImagePtr cv_ptr;
-              //cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
-              //cv_ptr->image.copyTo(img);
+              cv::Mat img;
+              cv_bridge::CvImagePtr cv_ptr;
+              cv_ptr = cv_bridge::toCvCopy(image,sensor_msgs::image_encodings::BGR8);
+              cv_ptr->image.copyTo(img);
 
               //double scale = 0.4;
-              //Mat frame = img;
-              ////Size dsize = Size(frame.cols * scale, frame.rows * scale);
-              //Size dsize = Size(640, 480);
-              //resize(frame, frame, dsize);
-              //
-              //sensor_msgs::ImagePtr image_rot;
-              //image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+              Mat frame = img;
+              //Size dsize = Size(frame.cols * scale, frame.rows * scale);
+              Size dsize = Size(640, 480);
+              resize(frame, frame, dsize);
+              sensor_msgs::ImagePtr image_rot;
+              image_rot = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
 
-              //it_pub_.publish(image_rot, ci_);
-              it_pub_.publish(image, ci_);
+              it_pub_.publish(image_rot, ci_);
+              //it_pub_.publish(image, ci_);
             }
           }
           catch(CameraTimeoutException& e)
