@@ -1,18 +1,75 @@
-Camera: {Focal: 13.971313932573906, High: 650.0}
-Center: {Camera_high: 660, Center_X: 327, Center_Y: 247, Front: 270, Horizon: 178,
-  Inner: 44, Outer: 278, X: 308, Y: 266}
+Camera:
+  Focal: 13.971313932573906
+  High: 650.0
+Center:
+  Camera_high: 665
+  Center_X: 327
+  Center_Y: 247
+  Front: 270
+  Horizon: 213
+  Inner: 44
+  Outer: 278
+  X: 308
+  Y: 266
 FPS: 15
 HSV:
-  Ball: [6, 31, 54, 100, 40, 100]
-  Blue: [187, 261, 61, 98, 19, 67]
-  Green: [108, 213, 36, 92, 24, 86]
-  White: [0, 360, 0, 27, 0, 31]
-  Yellow: [44, 70, 8, 56, 20, 86]
-  black: {angle: 3, gray: 24}
-  white: {angle: 3, gray: 172}
+  Ball:
+  - 6
+  - 31
+  - 54
+  - 100
+  - 40
+  - 100
+  Blue:
+  - 187
+  - 261
+  - 61
+  - 98
+  - 29
+  - 100
+  Green:
+  - 108
+  - 213
+  - 36
+  - 92
+  - 24
+  - 86
+  White:
+  - 0
+  - 360
+  - 0
+  - 27
+  - 0
+  - 38
+  Yellow:
+  - 44
+  - 70
+  - 8
+  - 56
+  - 20
+  - 100
+  black:
+    angle: 3
+    gray: 32
+  white:
+    angle: 3
+    gray: 172
 Parameterbutton: 4
-SCAN: {Angle_Near_Gap: 4, Angle_range_1: 1, Angle_range_2_3: 2, Dont_Search_Angle_1: 328,
-  Dont_Search_Angle_2: 89, Dont_Search_Angle_3: 213, Magn_Far_End: 270, Magn_Far_Start: 190,
-  Magn_Middle_Start: 110, Magn_Near_Gap: 2, Magn_Near_Start: 46}
-blackItem: {angle: 3, gray: 40}
-whiteline: {angle: 4, gray: 100}
+SCAN:
+  Angle_Near_Gap: 4
+  Angle_range_1: 1
+  Angle_range_2_3: 2
+  Dont_Search_Angle_1: 328
+  Dont_Search_Angle_2: 89
+  Dont_Search_Angle_3: 213
+  Magn_Far_End: 270
+  Magn_Far_Start: 190
+  Magn_Middle_Start: 110
+  Magn_Near_Gap: 2
+  Magn_Near_Start: 46
+blackItem:
+  angle: 3
+  gray: 40
+whiteline:
+  angle: 4
+  gray: 100

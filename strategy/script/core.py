@@ -127,6 +127,7 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo() 
     position = self.GetRobotInfo()
     side = self.opp_side
+    ourside = self.our_side
     l = self.GetObstacleInfo()
     log('move')
     if method == "Orbit":
@@ -134,15 +135,15 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
-      x, y, yaw = self.BC.relative_ball(t[side]['dis'],\
-                                             t[side]['ang'],\
+      x, y, yaw = self.BC.relative_ball(t[ourside]['dis'],\
+                                             t[ourside]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
    
     elif method == "Relative_goal":
-      x, y, yaw = self.BC.relative_goal(t[side]['dis'],\
-                                             t[side]['ang'],\
+      x, y, yaw = self.BC.relative_goal(t[ourside]['dis'],\
+                                             t[ourside]['ang'],\
                                              t['ball']['dis'],\
                                              t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
@@ -229,11 +230,12 @@ class Strategy(object):
   def RunStatePoint(self):
     print("run point")
     if self.robot.run_point == "ball_hand":
-      if self.robot.toPoint:
+      if self.robot.toPoint():
         self.dclient.update_configuration({"run_point": "none"})
         self.ToMovement()
     elif self.robot.run_point == "empty_hand":
-      if self.robot.toPoint:
+      if self.robot.toPoint():
+        log(22222)
         self.dclient.update_configuration({"run_point": "none"})
         self.ToChase()
 
@@ -318,6 +320,7 @@ class Strategy(object):
             elif state == "Penalty_Kick":
               self.ToMovement()
             elif self.robot.run_point == "empty_hand":
+              log(123)
               self.RunStatePoint()
             else :
               print('idle to chase')
@@ -360,8 +363,9 @@ class Strategy(object):
           elif mode == "Defense_ball" or mode == "Defense_goal":  
             if self.robot.CheckBallHandle():
               self.dclient.update_configuration({"strategy_mode": "Fast_break"})
+              self.dclient.update_configuration({"attack_mode": "Attack"})
 
-              self.ToAttack()
+              self.ToChase()
             else : 
               self.ToMovement()
 
@@ -383,8 +387,11 @@ class Strategy(object):
 
       ## Run point
         if self.robot.is_point:
-          if not self.robot.CheckBallHandle():
-            self.ToChase()
+          if point == "ball_hand" :
+            if self.robot.CheckBallHandle():
+              self.RunStatePoint()
+            else:
+              self.ToChase()
           else:
             self.RunStatePoint()
 

@@ -63,7 +63,7 @@ void Localization::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " mcl";
+        std::string temp = "rosparam load " + param + " /mcl";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
@@ -77,7 +77,7 @@ void Localization::Readyaml()
 void Localization::Saveyaml()
 {
     std::string param = YAML_PATH;
-    std::string temp = "rosparam dump " + param + " FIRA";
+    std::string temp = "rosparam dump " + param + " /FIRA";
     const char *save = temp.c_str();
     system(save);
 
@@ -168,13 +168,13 @@ void Localization::velCallback(const geometry_msgs::Twist msg)
 
     bool filter = false;
     frame_counter++;
-    if (frame_counter > 10)
+    if (frame_counter == 2)
     {
         EndTime = ros::Time::now().toNSec();
         dt = (EndTime - StartTime)/1000000000;
         //cout<<dt<<endl;
         StartTime = EndTime;
-        if (dt > 0.03)
+        if (dt != 0)
         {
             static long double vx=0,vy=0,vw=0;
             double vx_,vy_,vw_;

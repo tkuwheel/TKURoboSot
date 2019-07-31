@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 
     int count_cmd = 0; // command
     int count_fb = 0; // feedback
+    int count_shoot = 0;
     ros::Rate loop_rate(CMD_FREQUENCY);
     std::cout << "FIRA6th MOTION IS RUNNING!\n";
     while(true){
@@ -66,6 +67,13 @@ int main(int argc, char **argv)
             continue;
         }
         // Get Command
+	if(robotCMD.shoot_power>0){
+	    count_shoot++;
+	    if(count_shoot>CMD_FREQUENCY){
+		count_shoot = 0;
+		Node.clearShoot();
+	    }
+	}
         if(Node.getNodeFlag()){
             count_cmd = 0;
 
@@ -79,6 +87,7 @@ int main(int argc, char **argv)
         }else{
             if(count_cmd>=CMD_FREQUENCY/2){
                 printf("CANNOT GET COMMAND %d\n", count_cmd);
+		Node.clearAll();
                 Base.Close();
             }else{
                 count_cmd++;
