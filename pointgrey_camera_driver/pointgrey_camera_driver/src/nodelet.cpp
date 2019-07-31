@@ -516,7 +516,7 @@ private:
             wfov_image->info = *ci_;
 
             // Publish the full message
-            //pub_->publish(wfov_image);
+            pub_->publish(wfov_image);
 
             // Publish the message using standard image transport
             //if(it_pub_.getNumSubscribers() > 0)
