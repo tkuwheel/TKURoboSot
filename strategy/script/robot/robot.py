@@ -22,6 +22,7 @@ from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Int32MultiArray
 from sensor_msgs.msg import JointState
 from strategy.msg import RobotState
+from std_srvs.srv import *
 
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
@@ -43,7 +44,7 @@ class Robot(object):
 
   ball_last_time = time.time()
   sync_last_time = time.time()
-  action_last_time = time.time()
+  passing_last_time = time.time()
 
   __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
                    'imu_3d' : {'yaw' : 0}}
@@ -63,6 +64,8 @@ class Robot(object):
   robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  near_robot = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  near_robot_ns = ""
   r1_role = ""
   r2_role = ""
   r3_role = ""
@@ -129,11 +132,7 @@ class Robot(object):
     robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
     ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
     ts.registerCallback(self.MulticastReceiver)
-    # Actionlib
-    self._feedback = strategy.msg.PassingFeedback()
-    self._result   = strategy.msg.PassingResult()
-    self._as = actionlib.SimpleActionServer("passing_action", strategy.msg.PassingAction, execute_cb=self.execute_cb)
-    self._as.start()
+    s = rospy.Service('passing_service', Trigger, self._PassingServer)
 
     if not sim :
       rospy.Subscriber('interface/Two_point', Two_point, self._GetTwopoint)
@@ -146,44 +145,35 @@ class Robot(object):
       self.TuningVelocityContorller(1, 0, 0)
       self.TuningAngularVelocityContorller(0.1, 0, 0)
 
-  def execute_cb(self, goal):
-    success = True
-    Robot.action_last_time = time.time()
-    while not self.MyState()['ball_is_handled']:
-      ## Setting Cather Role
-      if "robot1" in rospy.get_namespace():
-        self.r1_role = "Catcher"
-      elif "robot2" in rospy.get_namespace():
-        self.r2_role = "Catcher"
-      elif "robot3" in rospy.get_namespace():
-        self.r3_role = "Catcher"
-
-      if self._as.is_preempt_requested():
-        rospy.loginfo('%s: Preempted' % self._action_name)
-        self._as.set_preempted()
-        success = False
-        break
-      if time.time() - Robot.action_last_time > 5:
-        rospy.loginfo("Can not catch the ball in time. Aborting")
-        self.SetMyRole(rospy.get_param('core/role'))
-        self._as.set_aborted()
-        success = False
-        break
-
-      self._feedback.catcher_ball_dis = self.MyState()['ball_dis']
-      self._as.publish_feedback(self._feedback)
-
-    if success:
-      self._result.catcher_res = True
-      self._as.set_succeeded(self._result)
+  def _PassingServer(self, req):
+    self.MyRole = "Catcher"
+    resp = TriggerResponse()
+    resp.success = True
+    resp.message = "Got it"
+    return resp
 
   def PassingTo(self, catcher_ns):
-    _ac = actionlib.SimpleActionClient(catcher_ns + '/passing_action', strategy.msg.PassingAction)
-    _ac.wait_for_server()
-    goal = strategy.msg.PassingGoal(catcher_req='PleaseCatch')
-    _ac.send_goal(goal)
-    _ac.wait_for_result()
-    return _ac.get_result()
+    self.MyRole = "Passer"
+    if catcher_ns is "nearest":
+      server = self.near_robot_ns + 'passing_action'
+    else:
+      server = catcher_ns + 'passing_action'
+
+    rospy.wait_for_service(server, timeout=3.0)
+    try:
+      client = rospy.ServiceProxy(server, Trigger)
+      req = TriggerRequest()
+      resp1  = client(req)
+      if resp1.success:
+        print("Passing Successed")
+      else:
+        print("Passing Failed")
+
+      ## Pass
+      self.RobotShoot(80, 0)
+
+    except rospy.ServiceException, e:
+      print("Service call failed: {}".format(e))
 
   def MulticastReceiver(self, r2_data, r3_data):
     Robot.sync_last_time = time.time()
@@ -197,6 +187,19 @@ class Robot(object):
     self.robot3['position']['x']   = r3_data.position.linear.x
     self.robot3['position']['y']   = r3_data.position.linear.y
     self.robot3['position']['yaw'] = r3_data.position.angular.z
+    if "robot1" in rospy.get_namespace():
+      dd12 = np.linalg.norm(np.array([self.__robot_info['locatoin']['x'] - self.robot2['position']['x'],
+                                      self.__robot_info['location']['y'] - self.robot2['position']['y']]))
+      dd13 = np.linalg.norm(np.array([self.__robot_info['locatoin']['x'] - self.robot3['position']['x'],
+                                      self.__robot_info['location']['y'] - self.robot3['position']['y']]))
+      self.near_robot_ns = "/robot2" if dd12 < dd13 else "/robot3"
+      self.near_robot = self.robot2 if dd12 < dd13 else self.robot3
+    elif "robot2" in rospy.get_namespace():
+      self.near_robot_ns = "/robot3"
+      self.near_robot = self.robot3
+    elif "robot3" in rospy.get_namespace():
+      self.near_robot_ns = "/robot2"
+      self.near_robot = self.robot2
 
   def Supervisor(self):
     duration = time.time() - Robot.sync_last_time
@@ -204,8 +207,17 @@ class Robot(object):
       print("Lossing Connection with teammates...{}".format(duration), end='\r')
       self.SetMyRole(rospy.get_param('core/role'))
     else:
-      if self.MyRole() is "Catcher":
-        pass
+      if self.MyRole() is "Catcher" or self.MyRole is "Passer":
+        if self.robot2['ball_is_handled']:
+          self.r2_role = "Attacker"
+          self.r3_role = "Supporter"
+        elif self.robot3['ball_is_handled']:
+          self.r2_role = "Supporter"
+          self.r3_role = "Attacker"
+        elif time.time() - Robot.passing_last_time > 5:
+          ## Passing Timeout
+          self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
+          self.r3_role = "Supporter" if self.r2_role is "Attacker" else "Attacker"
       else:
         if self.robot2['ball_is_handled']:
           self.r2_role = "Attacker"
@@ -224,6 +236,8 @@ class Robot(object):
       return self.robot2
     elif "robot3" in robot_ns.lower():
       return self.robot3
+    elif "near_robot" in robot_ns.lower():
+      return self.near_robot
     else:
       print("Wrong Namespace")
 

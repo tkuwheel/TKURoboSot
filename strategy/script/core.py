@@ -306,9 +306,11 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            if state == "Corner_Kick" or state == "Free_Kick" or state == "Throw_In":
+            if state == "Kick_Off" or "Throw_In":
+              if self.robot.CheckBallHandle():
+                self.robot.PassingTo("nearest")
+            elif state == "Corner_Kick" or state == "Free_Kick":
               self.robot.toShoot(80)
-
             elif state == "Penalty_Kick":
               self.ToMovement()
             elif self.robot.run_point == "empty_hand":
