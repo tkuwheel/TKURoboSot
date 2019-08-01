@@ -24,7 +24,7 @@
    {
       datum baseAddress
       {
-         value = "16785664";
+         value = "16785712";
          type = "String";
       }
    }
@@ -65,6 +65,30 @@
       datum _sortIndex
       {
          value = "3";
+         type = "int";
+      }
+   }
+   element hold_ball_L
+   {
+      datum _sortIndex
+      {
+         value = "19";
+         type = "int";
+      }
+   }
+   element hold_ball_R
+   {
+      datum _sortIndex
+      {
+         value = "20";
+         type = "int";
+      }
+   }
+   element hold_ball_dir
+   {
+      datum _sortIndex
+      {
+         value = "21";
          type = "int";
       }
    }
@@ -160,7 +184,7 @@
    {
       datum baseAddress
       {
-         value = "16785648";
+         value = "16785696";
          type = "String";
       }
    }
@@ -172,67 +196,11 @@
          type = "int";
       }
    }
-   element motor2_fb.s1
-   {
-      datum baseAddress
-      {
-         value = "16785568";
-         type = "String";
-      }
-   }
-   element motor2.s1
-   {
-      datum baseAddress
-      {
-         value = "16785616";
-         type = "String";
-      }
-   }
-   element motor3.s1
-   {
-      datum baseAddress
-      {
-         value = "16785600";
-         type = "String";
-      }
-   }
    element uart_rs232.s1
    {
       datum baseAddress
       {
          value = "16785440";
-         type = "String";
-      }
-   }
-   element shoot.s1
-   {
-      datum baseAddress
-      {
-         value = "16785488";
-         type = "String";
-      }
-   }
-   element motor1_fb.s1
-   {
-      datum baseAddress
-      {
-         value = "16785584";
-         type = "String";
-      }
-   }
-   element sdram.s1
-   {
-      datum baseAddress
-      {
-         value = "8388608";
-         type = "String";
-      }
-   }
-   element motor1.s1
-   {
-      datum baseAddress
-      {
-         value = "16785632";
          type = "String";
       }
    }
@@ -244,15 +212,15 @@
          type = "String";
       }
    }
-   element motor3_fb.s1
+   element motor3.s1
    {
       datum baseAddress
       {
-         value = "16785552";
+         value = "16785648";
          type = "String";
       }
    }
-   element led.s1
+   element rx.s1
    {
       datum baseAddress
       {
@@ -264,7 +232,47 @@
    {
       datum baseAddress
       {
-         value = "16785536";
+         value = "16785584";
+         type = "String";
+      }
+   }
+   element motor1.s1
+   {
+      datum baseAddress
+      {
+         value = "16785680";
+         type = "String";
+      }
+   }
+   element motor2_fb.s1
+   {
+      datum baseAddress
+      {
+         value = "16785616";
+         type = "String";
+      }
+   }
+   element motor3_fb.s1
+   {
+      datum baseAddress
+      {
+         value = "16785600";
+         type = "String";
+      }
+   }
+   element sdram.s1
+   {
+      datum baseAddress
+      {
+         value = "8388608";
+         type = "String";
+      }
+   }
+   element led.s1
+   {
+      datum baseAddress
+      {
+         value = "16785568";
          type = "String";
       }
    }
@@ -272,15 +280,55 @@
    {
       datum baseAddress
       {
-         value = "16785504";
+         value = "16785552";
          type = "String";
       }
    }
-   element rx.s1
+   element motor2.s1
+   {
+      datum baseAddress
+      {
+         value = "16785664";
+         type = "String";
+      }
+   }
+   element shoot.s1
+   {
+      datum baseAddress
+      {
+         value = "16785536";
+         type = "String";
+      }
+   }
+   element hold_ball_dir.s1
    {
       datum baseAddress
       {
          value = "16785472";
+         type = "String";
+      }
+   }
+   element motor1_fb.s1
+   {
+      datum baseAddress
+      {
+         value = "16785632";
+         type = "String";
+      }
+   }
+   element hold_ball_L.s1
+   {
+      datum baseAddress
+      {
+         value = "16785504";
+         type = "String";
+      }
+   }
+   element hold_ball_R.s1
+   {
+      datum baseAddress
+      {
+         value = "16785488";
          type = "String";
       }
    }
@@ -339,7 +387,7 @@
  <parameter name="projectName" value="" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1563442501348" />
+ <parameter name="timeStamp" value="1564647792802" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -418,6 +466,21 @@
    type="conduit"
    dir="end" />
  <interface name="rx" internal="rx.external_connection" type="conduit" dir="end" />
+ <interface
+   name="hold_ball_l"
+   internal="hold_ball_L.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hold_ball_r"
+   internal="hold_ball_R.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="hold_ball_dir"
+   internal="hold_ball_dir.external_connection"
+   type="conduit"
+   dir="end" />
  <module kind="clock_source" version="13.0" enabled="1" name="clk_0">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -697,7 +760,7 @@
   <parameter name="tightlyCoupledInstructionMaster2AddrWidth" value="1" />
   <parameter name="tightlyCoupledInstructionMaster3AddrWidth" value="1" />
   <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x800000' end='0x1000000' /><slave name='epcs_flash_controller_0.epcs_control_port' start='0x1001000' end='0x1001800' /><slave name='nios_processor.jtag_debug_module' start='0x1001800' end='0x1002000' /></address-map>]]></parameter>
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x800000' end='0x1000000' /><slave name='epcs_flash_controller_0.epcs_control_port' start='0x1001000' end='0x1001800' /><slave name='nios_processor.jtag_debug_module' start='0x1001800' end='0x1002000' /><slave name='sys_timer.s1' start='0x1002000' end='0x1002020' /><slave name='uart_rs232.s1' start='0x1002020' end='0x1002040' /><slave name='rx.s1' start='0x1002040' end='0x1002050' /><slave name='shoot.s1' start='0x1002050' end='0x1002060' /><slave name='motorSig.s1' start='0x1002060' end='0x1002070' /><slave name='led.s1' start='0x1002070' end='0x1002080' /><slave name='tx.s1' start='0x1002080' end='0x1002090' /><slave name='motor3_fb.s1' start='0x1002090' end='0x10020A0' /><slave name='motor2_fb.s1' start='0x10020A0' end='0x10020B0' /><slave name='motor1_fb.s1' start='0x10020B0' end='0x10020C0' /><slave name='motor3.s1' start='0x10020C0' end='0x10020D0' /><slave name='motor2.s1' start='0x10020D0' end='0x10020E0' /><slave name='motor1.s1' start='0x10020E0' end='0x10020F0' /><slave name='altpll.pll_slave' start='0x10020F0' end='0x1002100' /><slave name='jtag_uart.avalon_jtag_slave' start='0x1002100' end='0x1002108' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdram.s1' start='0x800000' end='0x1000000' /><slave name='epcs_flash_controller_0.epcs_control_port' start='0x1001000' end='0x1001800' /><slave name='nios_processor.jtag_debug_module' start='0x1001800' end='0x1002000' /><slave name='sys_timer.s1' start='0x1002000' end='0x1002020' /><slave name='uart_rs232.s1' start='0x1002020' end='0x1002040' /><slave name='hold_ball_dir.s1' start='0x1002040' end='0x1002050' /><slave name='hold_ball_R.s1' start='0x1002050' end='0x1002060' /><slave name='hold_ball_L.s1' start='0x1002060' end='0x1002070' /><slave name='rx.s1' start='0x1002070' end='0x1002080' /><slave name='shoot.s1' start='0x1002080' end='0x1002090' /><slave name='motorSig.s1' start='0x1002090' end='0x10020A0' /><slave name='led.s1' start='0x10020A0' end='0x10020B0' /><slave name='tx.s1' start='0x10020B0' end='0x10020C0' /><slave name='motor3_fb.s1' start='0x10020C0' end='0x10020D0' /><slave name='motor2_fb.s1' start='0x10020D0' end='0x10020E0' /><slave name='motor1_fb.s1' start='0x10020E0' end='0x10020F0' /><slave name='motor3.s1' start='0x10020F0' end='0x1002100' /><slave name='motor2.s1' start='0x1002100' end='0x1002110' /><slave name='motor1.s1' start='0x1002110' end='0x1002120' /><slave name='altpll.pll_slave' start='0x1002120' end='0x1002130' /><slave name='jtag_uart.avalon_jtag_slave' start='0x1002130' end='0x1002138' /></address-map>]]></parameter>
   <parameter name="clockFrequency" value="100000000" />
   <parameter name="deviceFamilyName" value="Cyclone IV E" />
   <parameter name="internalIrqMaskSystemInfo" value="31" />
@@ -991,6 +1054,60 @@
   <parameter name="width" value="1" />
   <parameter name="clockRate" value="100000000" />
  </module>
+ <module
+   kind="altera_avalon_pio"
+   version="13.0.1.99.2"
+   enabled="1"
+   name="hold_ball_L">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="8" />
+  <parameter name="clockRate" value="100000000" />
+ </module>
+ <module
+   kind="altera_avalon_pio"
+   version="13.0.1.99.2"
+   enabled="1"
+   name="hold_ball_R">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="8" />
+  <parameter name="clockRate" value="100000000" />
+ </module>
+ <module
+   kind="altera_avalon_pio"
+   version="13.0.1.99.2"
+   enabled="1"
+   name="hold_ball_dir">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="8" />
+  <parameter name="clockRate" value="100000000" />
+ </module>
  <connection
    kind="clock"
    version="13.0"
@@ -1030,7 +1147,7 @@
    start="nios_processor.data_master"
    end="altpll.pll_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020f0" />
+  <parameter name="baseAddress" value="0x01002120" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1044,7 +1161,7 @@
    start="nios_processor.data_master"
    end="jtag_uart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002100" />
+  <parameter name="baseAddress" value="0x01002130" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1107,7 +1224,7 @@
    start="nios_processor.data_master"
    end="motor1.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020e0" />
+  <parameter name="baseAddress" value="0x01002110" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1122,7 +1239,7 @@
    start="nios_processor.data_master"
    end="motor2.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020d0" />
+  <parameter name="baseAddress" value="0x01002100" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1137,7 +1254,7 @@
    start="nios_processor.data_master"
    end="motor3.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020c0" />
+  <parameter name="baseAddress" value="0x010020f0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1214,7 +1331,7 @@
    start="nios_processor.data_master"
    end="motor1_fb.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020b0" />
+  <parameter name="baseAddress" value="0x010020e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1228,7 +1345,7 @@
    start="nios_processor.data_master"
    end="motor2_fb.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x010020a0" />
+  <parameter name="baseAddress" value="0x010020d0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1254,7 +1371,7 @@
    start="nios_processor.data_master"
    end="motor3_fb.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002090" />
+  <parameter name="baseAddress" value="0x010020c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1277,7 +1394,7 @@
    start="nios_processor.data_master"
    end="tx.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002080" />
+  <parameter name="baseAddress" value="0x010020b0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1345,7 +1462,7 @@
    start="nios_processor.data_master"
    end="led.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002070" />
+  <parameter name="baseAddress" value="0x010020a0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1360,7 +1477,7 @@
    start="nios_processor.data_master"
    end="motorSig.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002060" />
+  <parameter name="baseAddress" value="0x01002090" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1376,7 +1493,7 @@
    start="nios_processor.data_master"
    end="shoot.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002050" />
+  <parameter name="baseAddress" value="0x01002080" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1392,7 +1509,7 @@
    start="nios_processor.data_master"
    end="rx.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01002040" />
+  <parameter name="baseAddress" value="0x01002070" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1400,6 +1517,66 @@
    version="13.0"
    start="nios_processor.jtag_debug_module_reset"
    end="rx.reset" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk_0.clk_reset"
+   end="hold_ball_L.reset" />
+ <connection kind="clock" version="13.0" start="altpll.c0" end="hold_ball_L.clk" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="nios_processor.jtag_debug_module_reset"
+   end="hold_ball_L.reset" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="nios_processor.data_master"
+   end="hold_ball_L.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x01002060" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection kind="clock" version="13.0" start="altpll.c0" end="hold_ball_R.clk" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk_0.clk_reset"
+   end="hold_ball_R.reset" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="nios_processor.jtag_debug_module_reset"
+   end="hold_ball_R.reset" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="nios_processor.data_master"
+   end="hold_ball_R.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x01002050" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk_0.clk_reset"
+   end="hold_ball_dir.reset" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="nios_processor.jtag_debug_module_reset"
+   end="hold_ball_dir.reset" />
+ <connection kind="clock" version="13.0" start="altpll.c0" end="hold_ball_dir.clk" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="nios_processor.data_master"
+   end="hold_ball_dir.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x01002040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>
