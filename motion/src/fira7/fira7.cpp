@@ -32,22 +32,22 @@ int main(int argc, char **argv)
             printf("hi\n");
         }
     }
-	Motion_nodeHandle Node(argc, argv);
-//    ros::init(argc, argv, "Test");
-//    ros::NodeHandle n;
-	BaseController Base(argc, argv, false);
+    Motion_nodeHandle Node(argc, argv);
+    //    ros::init(argc, argv, "Test");
+    //    ros::NodeHandle n;
+    BaseController Base(argc, argv, false);
 
-	RobotCommand robotCMD={0};
+    RobotCommand robotCMD={0};
     RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	printf("\033[1;32m***FIRA7 IS RUNNING!***\n\033[0;37m");
-	ros::Rate loop_rate(CMD_FREQUENCY);
+    printf("\033[1;32m***FIRA7 IS RUNNING!***\n\033[0;37m");
+    ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
     unsigned int counter_fb = 0;
     unsigned int counter_shoot = 0;
     unsigned int counter = 0;
-	while(true){
+    while(true){
         // close 
         if(flag){
             Base.Close();
@@ -99,10 +99,10 @@ int main(int argc, char **argv)
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
         }
-		loop_rate.sleep();
-	}
-	std::cout << "\033[0;32mClose FIRA7 Motion\n";
-	return 0;
+        loop_rate.sleep();
+    }
+    std::cout << "\033[0;32mClose FIRA7 Motion\n";
+    return 0;
 }
 
 

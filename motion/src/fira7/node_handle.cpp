@@ -79,7 +79,7 @@ void Motion_nodeHandle::shootCallback(const std_msgs::Int32::ConstPtr &shoot_msg
 {
     this->robotCMD.shoot_power = shoot_msg->data;
     this->motion_flag = true;
-    
+
 #ifdef DEBUG
     std::cout << "shootCallback(DEBUG)\n";
     std::cout << std::dec;

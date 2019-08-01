@@ -1,8 +1,8 @@
 #ifndef BaseControl_H
 #define BaseControl_H
 /*******************************
-  * Include system header
-  ******************************/
+ * Include system header
+ ******************************/
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,16 +15,16 @@
 #include <sys/time.h>
 #include <unistd.h>
 /*******************************
-  * Include header
-  ******************************/
+ * Include header
+ ******************************/
 //#include "motor_control.h"
 #include "parameter.h"
 #include "motor_data.h"
 #include "cssl.h"
 #include "crc_16.h"
 /*******************************
-  * Define 
-  ******************************/
+ * Define 
+ ******************************/
 //#define DEBUG
 //#define RECORD
 #define CSSL
@@ -38,30 +38,33 @@ typedef struct{
 }SerialData;
 
 typedef struct{
-	uint8_t head1;
-	uint8_t head2;
-	uint8_t w1_h;
-	uint8_t w1_l;
-	uint8_t w2_h;
-	uint8_t w2_l;
-	uint8_t w3_h;
-	uint8_t w3_l;
-//	uint8_t w4;
-	uint8_t enable_stop;
-	uint8_t shoot;
-	uint8_t crc_16_1;
-	uint8_t crc_16_2;
-	uint8_t checksum;
+    uint8_t head1;
+    uint8_t head2;
+    uint8_t w1_h;
+    uint8_t w1_l;
+    uint8_t w2_h;
+    uint8_t w2_l;
+    uint8_t w3_h;
+    uint8_t w3_l;
+    //	uint8_t w4;
+    uint8_t enable_stop;
+    uint8_t shoot;
+    uint8_t hold_ball_l;
+    uint8_t hold_ball_r;
+    uint8_t hold_ball_dir;
+    uint8_t crc_16_1;
+    uint8_t crc_16_2;
+    uint8_t checksum;
 }SerialTX;
 
 typedef struct{
-	int id;
+    int id;
     int size;
     std::string error;
     int error_times;
     suseconds_t duration;
-	int w1;
-	int w2;
+    int w1;
+    int w2;
     int w3;
 }SerialRX;
 
@@ -70,70 +73,71 @@ int16_t RPM2PWM(const double &);
 
 class BaseController{
 public: //constructor & destructor
-//    BaseControl();
+    //	  BaseControl();
     BaseController(int, char **, bool);
-	~BaseController();
+    ~BaseController();
 private: //const
-	const double m1_Angle = -M_PI/6;
-	const double m2_Angle = M_PI/6;
-	const double m3_Angle = -M_PI;
-//	const double robot_radius = 1;
-	const double robot_radius = 0.15;
-	const double wheel_radius = 0.0508;
+    const double m1_Angle = -M_PI/6;
+    const double m2_Angle = M_PI/6;
+    const double m3_Angle = -M_PI;
+    //	const double robot_radius = 1;
+    const double robot_radius = 0.15;
+    const double wheel_radius = 0.0508;
     std::string port = "/dev/communication/motion";
 
 public: //public function
-    bool    GetBaseFlag();
-    bool    GetErrFlag();
+    bool	GetBaseFlag();
+    bool	GetErrFlag();
     uint8_t* GetPacket();
     MotorSpeed GetCurrRPM();
     MotorSpeed GetCurrPWM();
     MotorSpeed GetTarRPM();
     MotorSpeed GetTarPWM();
-	void    Send(const RobotCommand &);
-    void    SetSingle(int, int16_t);
-    void    SetTriple(int16_t, int16_t, int16_t);
-    void    SetEnable();
-    void    SetStop();
-    void    ClearOdo();
-    void    Close();
+    void	Send(const RobotCommand &);
+    void	SetSingle(int, int16_t);
+    void	SetTriple(int16_t, int16_t, int16_t);
+    void	SetEnable();
+    void	SetStop();
+    void	ClearOdo();
+    void	Close();
     RobotCommand GetOdometry();
-//    RobotCommand GetTraj();
-    void    ShowCsslSend();
-    void    ShowCsslCallback();
-    void    ShowCommand();
-    void    ShowSerialPacket();
+    //	  RobotCommand GetTraj();
+    void	ShowCsslSend();
+    void	ShowCsslCallback();
+    void	ShowCommand();
+    void	ShowSerialPacket();
 private: //private function
     static void *mpThreadRun(void *p);
-    void    mRun();
-	int 	mCsslInit();
-    void 	mCsslFinish();
-	void 	mCsslSend2FPGA();
-	static void	mCsslCallback(int, uint8_t*, int);
-    bool    mCheckSerial();
-    bool    mSerialDecoder();
-    void    mOpenRecordFile();
-    void    mCloseRecordFile();
-    void    mCommandRegularization(RobotCommand &);
-    void    mSpeedRegularization();
-    void    mSpeedRegularization(double &, const int &);
+    void	mRun();
+    int		mCsslInit();
+    void	mCsslFinish();
+    void	mCsslSend2FPGA();
+    static void	mCsslCallback(int, uint8_t*, int);
+    bool	mCheckSerial();
+    bool	mSerialDecoder();
+    void	mOpenRecordFile();
+    void	mCloseRecordFile();
+    void	mCommandRegularization(RobotCommand &);
+    void	mSpeedRegularization();
+    void	mSpeedRegularization(double &, const int &);
     int16_t mPWMRegularization(int16_t );
-	void	mShootRegularization(const RobotCommand &);
-	int     mDriverSetting();
-    int     mBaseControl();
-    MotorSpeed  mTrapeziumSpeedPlan(const MotorSpeed &, const MotorSpeed &, MotorSpeed &);
-    void    mSetSlope(const MotorSpeed &, const MotorSpeed &, int &, double []);
-	void	mInverseKinematics();
-	void	mForwardKinematics();	
-    void    mTrajectory();
-    void    mOdometry();
-////    void    Filter();
-////    void    MotorSpeed();
+    void	mShootRegularization(const RobotCommand &);
+    int		mDriverSetting();
+    int		mBaseControl();
+    MotorSpeed	mTrapeziumSpeedPlan(const MotorSpeed &, const MotorSpeed &, MotorSpeed &);
+    void	mSetSlope(const MotorSpeed &, const MotorSpeed &, int &, double []);
+    void	mInverseKinematics();
+    void	mForwardKinematics();	
+    void	mTrajectory();
+    void	mOdometry();
+    int*	mHoldBallControl(const double &, const double &, const double &, int [], struct timeval &);
+    ////	void	Filter();
+    ////	void	MotorSpeed();
 private: //private variable
     std::fstream fp;
     std::string record_name;
     pthread_t tid;
-	cssl_t *serial;
+    cssl_t *serial;
 
     MotorSpeed m_motorCommand;
     MotorSpeed m_motorCommandRPM;
@@ -142,11 +146,11 @@ private: //private variable
     MotorSpeed m_motorTarPWM;
     MotorSpeed m_motorCurrRPM;
     MotorSpeed m_motorTarRPM;
-	RobotCommand m_baseCommand;
-	RobotCommand m_baseOdometry;
-	RobotCommand m_baseSpeed;
-	SerialTX m_baseTX;
-	SerialRX m_baseRX;
+    RobotCommand m_baseCommand;
+    RobotCommand m_baseOdometry;
+    RobotCommand m_baseSpeed;
+    SerialTX m_baseTX;
+    SerialRX m_baseRX;
     bool mb_success;
     bool mb_record;
     bool mb_clear_odo;
@@ -160,15 +164,17 @@ private: //private variable
     struct timeval m_commandTime;
     /* for serial callback*/
     static SerialData ms_serialData;
-//    static bool msb_decoder;
+    //	  static bool msb_decoder;
     static bool msb_serial;
-    static int  ms_length;
+    static int	ms_length;
 
-//    double  m_slope;
-    int     m_interval;
-    int     m_final_interval;
-    double  m_slope[3];
-    double  m_max_speed;
+    //	  double  m_slope;
+    int		m_hold_ball[6];
+    struct timeval	m_hold_ball_time;
+    int		m_interval;
+    int		m_final_interval;
+    double	m_slope[3];
+    double	m_max_speed;
     uint8_t m_en_stop;
     uint8_t m_shoot_power;
     bool mb_hold_ball;

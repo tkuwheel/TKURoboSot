@@ -6,7 +6,6 @@ __pycache__
 .vscode
 CATKIN_IGNORE
 *.swp
-# *.txt
 *.swo
 *~
 
