@@ -30,3 +30,7 @@ Makefile
 .cproject
 .force_relink
 .project
+*sopcinfo
+*.html
+*.cmp
+*.bsf
