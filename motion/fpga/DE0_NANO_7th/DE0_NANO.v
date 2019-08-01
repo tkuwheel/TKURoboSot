@@ -187,7 +187,7 @@ wire  		oMotor3_DIR;
 
 wire			oTXD;
 wire			iRXD;
-
+wire 	[7:0]		wLED;
 wire	[7:0]		iPower;
 wire	[15:0]	iCMD_Motor1;
 wire	[15:0]	iCMD_Motor2;
@@ -198,7 +198,11 @@ wire	[15:0]	wCMD_Motor1;
 wire	[15:0]	wCMD_Motor2;
 wire	[15:0]	wCMD_Motor3;
 wire	[7:0]		wSignal;
-
+wire	[7:0]		wHoldBall_L;
+wire	[7:0]		wHoldBall_R;
+wire	[3:0]		wHoldBall_DIR;
+wire				oWHoldBall_L;
+wire				oWHoldBall_R;
 
 wire	[31:0]	wFB_Motor1;
 wire	[31:0]	wFB_Motor2;
@@ -212,8 +216,9 @@ wire			wFB_FREQ3;
 
 wire			iRX;
 
-wire			wHoldBall;
+wire			waylight;
 wire			oKick;
+
 
 //=======================================================
 //  Structural coding
@@ -221,9 +226,13 @@ wire			oKick;
 assign iReset_n = KEY[0];
 
 
-assign LED[7:5] = iSignal[7:5];
-assign LED[4] = oKick;
-
+//assign LED[7:5] = iSignal[7:5];
+//assign LED[6] = oKick;
+//assign LED[7] = waylight;
+//assign LED[7:4] = wHoldBall_DIR;
+//assign LED[3] = wHoldBall_R;
+//assign LED = wHoldBall_L;
+//assign LED[7:0] =iPower[7:0];
 /*for 6th*/
 //assign GPIO_0_D[33] = oTXD;
 //assign iRXD = GPIO_0_D[11];
@@ -251,6 +260,19 @@ assign LED[4] = oKick;
 //
 //assign GPIO_0_D[29] = oKick;
 /*for 7th*/
+
+assign GPIO_0_D[0] = oKick;
+assign GPIO_0_D[1] = waylight;
+assign GPIO_0_D[2] = oWHoldBall_L;
+assign GPIO_0_D[3] = oWHoldBall_R;
+assign GPIO_0_D[7:4] = wHoldBall_DIR;
+
+assign LED = wLED;
+assign wLED[2] = oKick;
+assign wLED[3] = waylight;
+//assign wLED[4] = oWHoldBall_L;
+//assign wLED[5] = oWHoldBall_R;
+
 assign GPIO_1_D[9] = oTXD;
 assign iRXD = GPIO_1_D[7];
 
@@ -306,10 +328,13 @@ assign GPIO_1_D[14] = iSignal[2];
      .epcs_flash_controller_0_external_sce   (EPCS_NCSO),   //                                 .sce
      .epcs_flash_controller_0_external_sdo   (EPCS_ASDO),   //                                 .sdo
      .epcs_flash_controller_0_external_data0 (EPCS_DATA0),  //                                 .data0
-	  .led_export                             (LED[1:0]),    //                              led.export
+	  .led_export                             (wLED[1:0]),    //                              led.export
 	  .sig_export                             (iSignal),     //                              sig.export
 	  .shoot_export                           (iPower),      //                            shoot.export
-     .rx_export                              ()          //                               rx.export
+     .rx_export                              (),          //                               rx.export
+	  .hold_ball_l_export                     (wHoldBall_L),                     //                      hold_ball_l.export
+	  .hold_ball_r_export                     (wHoldBall_R),                     //                      hold_ball_r.export
+	  .hold_ball_dir_export                   (wHoldBall_DIR)                    //                    hold_ball_dir.export
  );
 
 assign wFB_FREQ = wFB_FREQ1 & wFB_FREQ2 & wFB_FREQ3;
@@ -357,22 +382,24 @@ MotorController MotorC (
 	.oFB_FREQ	(wFB_FREQ3)		// Feedback renew trigger
 );
 /* hold ball and shoot control */
-holdBall(.iC(CLOCK_50),
-			.oL(GPIO_0_D[4]),
-			.oR(GPIO_0_D[6]),
-			.iCMD1(wCMD_Motor1),
-			.iCMD2(wCMD_Motor2),
-			.iCMD3(wCMD_Motor3),
-			.iS(iSignal[0])
-//			.oLED(LED[1])
-			);
-
-ShootControl (
-			.iClk(CLOCK_50),
-			.iRst_n(iReset_n),
-			.iPower(iPower),
-			.oPower(oKick)
+holdball7(
+.holdPower(wHoldBall_L),
+.holdPower1(wHoldBall_R),
+.reset(iReset_n),
+.clk(CLOCK_50),
+.oPower(oWHoldBall_L),
+.oPower1(oWHoldBall_R)
 );
+
+shoot7(						
+
+.clk(CLOCK_50),
+.control(iPower[7]),
+.iSw(iPower[6:0]),
+.reset(iReset_n),
+.shoot(oKick),
+.dled(waylight)//direction light
+); 
 
 
 
