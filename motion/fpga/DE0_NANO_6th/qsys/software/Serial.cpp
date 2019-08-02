@@ -26,6 +26,7 @@ void Serial::Run() {
 
     	if(m_transmit == true)send(m_transmit);
     	if(m_receive == true)get(m_receive);
-
+    	usleep(1000);
     }
 }
+

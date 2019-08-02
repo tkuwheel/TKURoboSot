@@ -7,6 +7,7 @@
 
 #ifndef SERIAL_H_
 #define SERIAL_H_
+#include <unistd.h>
 #include "rx_handle.h"
 #include "tx_handle.h"
 class Serial {

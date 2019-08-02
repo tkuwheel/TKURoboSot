@@ -6,7 +6,8 @@
  */
 
 #include "rx_handle.h"
-alt_u8 rx_data[12];
+
+alt_u8 rx_data[15];
 int i;
 int error_count = 0;
 void handle_rx_interrupts(void* context)
@@ -48,7 +49,7 @@ void handle_rx_interrupts(void* context)
 
 
 
-			if(i>=12){
+			if(i>=15){
 				i=0;
 				*receive_ptr = true;
 			}
@@ -86,18 +87,21 @@ void init_rx_irq(bool &receive )
 void get(bool &receive)
 {
 	Crc_16 Crc;
-	alt_u8 crc_data[12];
-	alt_u8 data[12];
+	alt_u8 crc_data[15];
+	alt_u8 data[15];
 	alt_16 motor1, motor2, motor3;
 	alt_u8 signal = 0;
 	alt_u8 shoot = 0;
-	std::copy(rx_data, rx_data+12, data);
+	alt_u8 holdBall_L;
+	alt_u8 holdBall_R;
+	alt_u8 holdBall_DIR;
+	std::copy(rx_data, rx_data+15, data);
 //    	for(int head=0; head<12; head++){
 	if((data[0] == HEAD_1) && (data[1] == HEAD_2)){
-		for(int sort = 0; sort < 12; sort++){
-			crc_data[sort] = data[sort];
-		}
-		alt_u16 crc_16 = Crc.getCrc(crc_data, 12);
+//		for(int sort = 0; sort < 15; sort++){
+//			crc_data[sort] = data[sort];
+//		}
+		alt_u16 crc_16 = Crc.getCrc(data, 15);
 		if(crc_16 == 0){
 			IOWR_ALTERA_AVALON_PIO_DATA(RX_BASE,1);
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,2);
@@ -106,20 +110,31 @@ void get(bool &receive)
 			motor3 = ((data[6] << 8) + data[7]) & 0xffff;
 			signal = data[8] & 0xff;
 			shoot = data[9] & 0xff;
+			holdBall_L = data[10] & 0xff;
+			holdBall_R = data[11] & 0xff;
+			holdBall_DIR = data[12] & 0xff;
 			IOWR_ALTERA_AVALON_PIO_DATA(MOTOR1_BASE, motor1);
 			IOWR_ALTERA_AVALON_PIO_DATA(MOTOR2_BASE, motor2);
 			IOWR_ALTERA_AVALON_PIO_DATA(MOTOR3_BASE, motor3);
 			IOWR_ALTERA_AVALON_PIO_DATA(MOTORSIG_BASE, signal);
-//			IOWR_ALTERA_AVALON_PIO_DATA(SHOOT_BASE, shoot);
+			IOWR_ALTERA_AVALON_PIO_DATA(SHOOT_BASE, shoot);
+			IOWR_ALTERA_AVALON_PIO_DATA(HOLD_BALL_L_BASE, holdBall_L);
+			IOWR_ALTERA_AVALON_PIO_DATA(HOLD_BALL_R_BASE, holdBall_R);
+			IOWR_ALTERA_AVALON_PIO_DATA(HOLD_BALL_DIR_BASE, holdBall_DIR);
 //			IOWR_ALTERA_AVALON_PIO_DATA(RX_BASE,0);
 			IOWR_ALTERA_AVALON_PIO_DATA(LED_BASE,0);
 #ifdef _DEBUG
-				printf("motor1 %d motor2 %d motor3 %d en&stop %x shoot %x\n ", motor1, motor2, motor3, data[8], data[9]);
+			printf("motor1 %d motor2 %d motor3 %d en&stop %x shoot %x\n ", motor1, motor2, motor3, data[8], data[9]);
+			printf("pwm1 %d pwm2 %d dir %x\n ", holdBall_L, holdBall_R, holdBall_DIR);
 #endif
 		}else{
 			error_count++;
 #ifdef _DEBUG
 			printf("get %d wrong packet\n ", error_count);
+			for(int sort = 0; sort < 15; sort++){
+				printf("%x ", data[sort]);
+			}
+			printf("\n");
 #endif
 		}
 
