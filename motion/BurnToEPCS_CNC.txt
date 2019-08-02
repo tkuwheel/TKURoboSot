@@ -1,0 +1,22 @@
+Erase EPCS 指令:
+
+nios2-flash-programmer -e --base=0x1001000 --erase-all --override=c:/nios2-flash-override.txt
+nios2-flash-programmer -e --base=0x1001000 --erase 0x60000+0x30000 --override=c:/nios2-flash-override.txt
+
+
+Step 1: 轉sof跟elf檔案成flash燒錄檔指令
+
+sof2flash --input="../../../output_files/DE0_NANO.sof" --output="../../../output_files/v3.flash" --epcs --verbose
+elf2flash --input="fira.elf" --output="../../../output_files/fira.flsh" --epcs --after="../../../output_files/v3.flash" --verbose
+
+Step 2: 燒錄flash檔案 
+nios2-flash-programmer "../../../output_files/v3.flash" --base=0x0800 --epcs --sidp=0x0 --id=0x12345678 --accept-bad-sysid --device=1 --instance=0 '--cable=USB-Blaster on localhost [USB-0]' --program --verbose  --override=c:/nios2-flash-override.txt
+nios2-flash-programmer "../../../output_files/fira.flsh" --base=0x1800 --epcs --sidp=0x0 --id=0x12345678 --accept-bad-sysid --device=1 --instance=0 '--cable=USB-Blaster on localhost [USB-0]' --program --verbose --override=c:/nios2-flash-override.txt 
+
+sof2flash --input="../../../output_files/DE0_NANO.sof" --output="../../../output_files/v3.flash" --epcs --verbose 
+
+elf2flash --input="fira.elf" --output="../../../output_files/fira.flsh" --epcs --after="../../../output_files/v3.flash" --verbose 
+
+nios2-flash-programmer "../../../output_files/fira.flsh" --base=0x2001000 --epcs --accept-bad-sysid --device=1 --instance=0 '--cable=USB-Blaster on localhost [USB-0]' --program --verbose --override=c:/nios2-flash-override.txt
+
+nios2-flash-programmer "../../../output_files/fira.flsh" --base=0x2001000 --epcs --accept-bad-sysid --device=1 --instance=0 '--cable=USB-Blaster on localhost [USB-0]' --program --verbose --override=c:/nios2-flash-override.txt
