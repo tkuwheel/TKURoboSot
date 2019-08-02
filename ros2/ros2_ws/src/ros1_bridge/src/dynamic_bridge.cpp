@@ -527,6 +527,9 @@ int main(int argc, char * argv[])
             if (node_name == ros::this_node::getName()) {
               continue;
             }
+            if (node_name.find("camera_nodelet") != std::string::npos) {
+              break;
+            }
             active_publishers.insert(topic_name);
             break;
           }
@@ -541,6 +544,9 @@ int main(int argc, char * argv[])
             // ignore subscribers from the bridge itself
             if (node_name == ros::this_node::getName()) {
               continue;
+            }
+            if (node_name.find("camera_nodelet") != std::string::npos) {
+              break;
             }
             active_subscribers.insert(topic_name);
             break;
