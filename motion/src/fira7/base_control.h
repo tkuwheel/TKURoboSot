@@ -25,10 +25,10 @@
 /*******************************
  * Define 
  ******************************/
-//#define DEBUG
+//#define DEBUG_
 //#define RECORD
 #define CSSL
-#define FIRA_6_OLD
+#define FIRA_OLD
 //#define DEBUG_CSSLCALLBACK
 typedef void * (*THREADFUNCPTR)(void *);
 
@@ -93,7 +93,7 @@ public: //public function
     MotorSpeed GetCurrPWM();
     MotorSpeed GetTarRPM();
     MotorSpeed GetTarPWM();
-    void	Send(const RobotCommand &);
+    int 	Send(const RobotCommand &);
     void	SetSingle(int, int16_t);
     void	SetTriple(int16_t, int16_t, int16_t);
     void	SetEnable();

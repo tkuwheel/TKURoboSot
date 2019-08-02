@@ -77,7 +77,11 @@ void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &mot
 
 void Motion_nodeHandle::shootCallback(const std_msgs::Int32::ConstPtr &shoot_msg)
 {
-    this->robotCMD.shoot_power = shoot_msg->data;
+    if(shoot_msg->data>=100){
+        this->robotCMD.shoot_power = 100;
+    }else{
+        this->robotCMD.shoot_power = shoot_msg->data;
+    }
     this->motion_flag = true;
 
 #ifdef DEBUG
