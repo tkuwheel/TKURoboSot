@@ -20,6 +20,7 @@ Crc_16::Crc_16(unsigned char* msg, int size){
 Crc_16::~Crc_16(){
     // deconstructor do nothing 
 };
+
 unsigned short Crc_16::getCrc(unsigned char* msg, int size)
 {
     crc = genCrc(msg, size);
