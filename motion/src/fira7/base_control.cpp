@@ -37,7 +37,7 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
     mb_base = false;
     mb_enable = false;
     mb_stop = false;
-    mb_close = false;
+    mb_close = true;
     m_duration = 0;
     m_serialNow = {0};
     m_serialLast = {0};
@@ -64,7 +64,7 @@ BaseController::BaseController(int argc, char** argv, bool record = false):
 #ifdef CSSL
     mCsslInit();
 #endif
-#ifdef DEBUG
+#ifdef DEBUG_
     std::cout << "\nBaseController(DEBUG)\n";
 #endif
 }
@@ -78,7 +78,7 @@ BaseController::~BaseController()
         serial = NULL;
     }
     printf("close base thread\n");
-#ifdef DEBUG
+#ifdef DEBUG_
     std::cout << "\n~BaseController(DEBUG)\n";
 #endif
 }
@@ -109,20 +109,19 @@ void BaseController::mRun()
                 m_motorCurrRPM.w3 = 0;
             }
             counter++;
-            printf("\033[1;33m\nCANNOT GET FEEDBACK --%d\n\033[0;37m", counter);
+            printf("\033[1;33m\nFIRA7 CANNOT GET FEEDBACK --%d\n\033[0;37m", counter);
         }
-        if(mb_enable){
-            mb_enable = false;
-            mHoldBallControl(
-                    m_baseCommand.x, 
-                    m_baseCommand.y, 
-                    m_baseCommand.yaw, 
-                    m_hold_ball,
-                    m_hold_ball_time);
-            mBaseControl();
-            mDriverSetting();
-            mCsslSend2FPGA();
-        }
+
+        mBaseControl();
+        mHoldBallControl(
+                m_baseCommand.x, 
+                m_baseCommand.y, 
+                m_baseCommand.yaw, 
+                m_hold_ball,
+                m_hold_ball_time);
+        mDriverSetting();
+        mCsslSend2FPGA();
+
         if(msb_serial){
             mb_base = true;
             if(mSerialDecoder()){
@@ -154,6 +153,10 @@ void BaseController::mRun()
 #endif
             }
         }
+#ifdef DEBUG_
+        usleep(500000);
+        continue;
+#endif
         usleep(sleep_time);
     }
     printf("exit base thread\n");
@@ -229,7 +232,8 @@ void BaseController::mCsslSend2FPGA()
 #else
     msb_serial = true;
 #endif //CSSL
-#ifdef DEBUG
+#ifdef DEBUG_
+    ShowCommand();
     ShowCsslSend();
 #endif //DEBUG
 
@@ -403,15 +407,20 @@ int16_t BaseController::mPWMRegularization(int16_t pwm)
 
 void BaseController::mShootRegularization(const RobotCommand &CMD)
 {
-    if(CMD.shoot_power<=100){
-        m_shoot_power = CMD.shoot_power;
+    if((CMD.shoot_power & 0x80) == 0x80){
+        m_shoot_power = 0x80;
     }else{
-        m_shoot_power = 0x80 & CMD.shoot_power;
+        if(CMD.shoot_power >= 50){
+            m_shoot_power = 50;
+        }else{
+
+            m_shoot_power = CMD.shoot_power;
+        }
     }
 #ifdef DEBUG
     std::cout << "shoot_regularization(DEBUG)\n";
     std::cout << std::hex;
-    std::cout << "shoot byte(hex): " << (m_shoot_power) << std::endl;
+    std::cout << "shoot byte(hex): " << (int)(m_shoot_power) << std::endl;
     std::cout << std::endl;
 #endif
 }
@@ -419,28 +428,39 @@ void BaseController::mShootRegularization(const RobotCommand &CMD)
 int BaseController::mDriverSetting()
 {
     // TODO
-    m_en_stop = 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w1) >= 0)?  0x80 : 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
-    m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
-    if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
-    if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
-    if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
+    if(mb_close){
+        m_en_stop = 0;
+        return 0;
+    }else{
+        m_en_stop = 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) >= 0)?  0x80 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) >= 0)?  0x40 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) >= 0)?  0x20 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w1) == 0)?  0x10 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w2) == 0)?  0x08 : 0;
+        m_en_stop += (fabs(m_motorCurrPWM.w3) == 0)?  0x04 : 0;
+        if((m_en_stop&0x10)==0x10)m_motorCurrPWM.w1 = MIN_PWM;
+        if((m_en_stop&0x08)==0x08)m_motorCurrPWM.w2 = MIN_PWM;
+        if((m_en_stop&0x04)==0x04)m_motorCurrPWM.w3 = MIN_PWM;
 
-    return 1;
+        return 1;
+    }
 }
 
 int BaseController::mBaseControl()
 {
-    // TODO
-#ifdef FIRA_6_OLD
-    m_motorCurrPWM.w1 = RPM2PWM(m_motorCommandRPM.w1);
-    m_motorCurrPWM.w2 = RPM2PWM(m_motorCommandRPM.w2);
-    m_motorCurrPWM.w3 = RPM2PWM(m_motorCommandRPM.w3);
-    return 1;
+// TODO
+#ifdef FIRA_OLD
+    if(mb_close){
+        m_motorCurrPWM.w1 = 0;
+        m_motorCurrPWM.w2 = 0;
+        m_motorCurrPWM.w3 = 0;
+    }else{
+        m_motorCurrPWM.w1 = RPM2PWM(m_motorCommandRPM.w1);
+        m_motorCurrPWM.w2 = RPM2PWM(m_motorCommandRPM.w2);
+        m_motorCurrPWM.w3 = RPM2PWM(m_motorCommandRPM.w3);
+    }
+    return 0;
 #endif
     m_motorTarRPM = mTrapeziumSpeedPlan(m_motorCommandRPM, m_motorCurrRPM, m_motorTarRPM);
 
@@ -523,9 +543,6 @@ void BaseController::mInverseKinematics()
     printf("cmd %f %f %f\n", cmd1, cmd2, cmd3);
     printf("cmd rpm %f %f %f\n", m_motorCommandRPM.w1, m_motorCommandRPM.w2, m_motorCommandRPM.w3);
 #endif
-#ifdef FIRA_6_OLD
-    mb_enable = true; 
-#endif
 }
 
 void BaseController::mForwardKinematics()
@@ -564,11 +581,17 @@ int* BaseController::mHoldBallControl(const double &x,
     gettimeofday(&now, 0);
     long duration_s = now.tv_sec - T.tv_sec;
     long duration_us = now.tv_usec - T.tv_usec;
-    double time = duration_us / 1000 + duration_s * 1000;
+    long time = duration_us / 1000 + duration_s * 1000;
     int a,b;           //a=R_PWM ; b=L_PWM
+#ifdef DEBUG
+    printf("=================================\n");
+    printf("x %f y %f yaw %f\n", (double)x, (double)y, (double)yaw);
+    printf("duration %f\n", (double)time);
+    printf("=================================\n");
+#endif
 
-    if(yaw==0 & x==0 & y==0){             //停止
-        if(time<2500){
+    if(yaw==0 && x==0 && y==0){             //停止
+        if(time<1500){
             ballcontrol[0]= 20;
             ballcontrol[1]= 0;
             ballcontrol[2]= 1;
@@ -584,8 +607,8 @@ int* BaseController::mHoldBallControl(const double &x,
             ballcontrol[5]= 1;
         }
     }
-    else if(yaw==0 &(x!=0 or y!=0)){
-        if(yaw==0 & x==0 & y!=0){
+    else if(yaw==0 &&(x!=0 or y!=0)){
+        if(yaw==0 && x==0 && y!=0){
             if(y>0){
                 if(y<30){
                     ballcontrol[0]= 0;
@@ -621,7 +644,7 @@ int* BaseController::mHoldBallControl(const double &x,
                     ballcontrol[5]= 1;
                 }
             }
-        }else if(yaw==0 & x!=0 & y==0){    //Traverse
+        }else if(yaw==0 && x!=0 && y==0){    //Traverse
             ballcontrol[0]= 15;
             ballcontrol[1]= 0;
             ballcontrol[2]= 1;
@@ -736,16 +759,17 @@ MotorSpeed BaseController::GetTarPWM()
     return m_motorTarPWM;
 }
 
-void BaseController::Send(const RobotCommand &CMD)
+int BaseController::Send(const RobotCommand &CMD)
 {
-#ifdef DEBUG
-#endif
+#ifdef FIRA_OLD
     mb_close = false;
     m_baseCommand = CMD;
     mShootRegularization(m_baseCommand);
     mCommandRegularization(m_baseCommand);
     mInverseKinematics();
     mb_hold_ball = CMD.hold_ball;
+    return 0;
+#endif
     for(int i = 0; i<3;i++){
         *((double*)(&m_motorPreCmdCurrRPM )+i) = (*((double*)(&m_motorCurrRPM )+i)+*((double*)(&m_motorTarRPM )+i))/2;
     }
@@ -803,10 +827,9 @@ void BaseController::Close()
     mb_close = true;
     m_shoot_power = 0;
     m_en_stop = 0;
-    m_motorCurrPWM.w1 = 0;
-    m_motorCurrPWM.w2 = 0;
-    m_motorCurrPWM.w3 = 0;
-    mCsslSend2FPGA();
+    m_baseCommand.x = 0.0;
+    m_baseCommand.y = 0.0;
+    m_baseCommand.yaw = 0.0;
 }
 
 RobotCommand BaseController::GetOdometry()
@@ -839,16 +862,16 @@ void BaseController::ShowCsslSend()
     printf("w3_h: %x\n", (m_baseTX.w3_h));
     printf("w3_l: %x\n", (m_baseTX.w3_l));
     printf("enable_stop: %x\n", (m_baseTX.enable_stop));
-    printf("shoot: %x\n", (m_baseTX.shoot));
-    printf("holdBall_l: %x\n", (m_baseTX.hold_ball_l));
-    printf("holdBall_r: %x\n", (m_baseTX.hold_ball_r));
+    printf("shoot: %d\n", (m_baseTX.shoot));
+    printf("holdBall_l: %d\n", (int)(m_baseTX.hold_ball_l));
+    printf("holdBall_r: %d\n", (int)(m_baseTX.hold_ball_r));
     printf("holdBall dir: %x\n", (m_baseTX.hold_ball_dir));
     printf("crc16-1: %x\n", (m_baseTX.crc_16_1));
     printf("crc16-2: %x\n", (m_baseTX.crc_16_2));
     printf("crc16: %x\n", (m_baseTX.crc_16_1 << 8) + (m_baseTX.crc_16_2));
-    printf("w1: %d\n", ((m_baseTX.w1_h) << 8) + (m_baseTX.w1_l));
-    printf("w2: %d\n", ((m_baseTX.w2_h) << 8) + (m_baseTX.w2_l));
-    printf("w3: %d\n", ((m_baseTX.w3_h) << 8) + (m_baseTX.w3_l));
+    printf("w1: %d\n", (int16_t)((m_baseTX.w1_h) << 8) + (m_baseTX.w1_l));
+    printf("w2: %d\n", (int16_t)((m_baseTX.w2_h) << 8) + (m_baseTX.w2_l));
+    printf("w3: %d\n", (int16_t)((m_baseTX.w3_h) << 8) + (m_baseTX.w3_l));
 }
 
 void BaseController::ShowCsslCallback()
@@ -865,13 +888,12 @@ void BaseController::ShowCsslCallback()
 
 void BaseController::ShowCommand()
 {
-    std::cout << "Send\n";
-    printf("x command: %f", m_baseCommand.x);
-    printf("y command: %f", m_baseCommand.y);
-    printf("yaw command: %f", m_baseCommand.yaw);
+    std::cout << "\n****** Command ******\n";
+    printf("x command: %f\n", m_baseCommand.x);
+    printf("y command: %f\n", m_baseCommand.y);
+    printf("yaw command: %f\n", m_baseCommand.yaw);
     printf("shoot power: %d\n", m_baseCommand.shoot_power);
     printf("hold ball: %d\n", m_baseCommand.hold_ball);
-    printf("remote: %d\n\n", m_baseCommand.remote);
 }
 
 void BaseController::ShowSerialPacket()
@@ -905,10 +927,14 @@ double PWM2RPM(const int16_t &pwm)
 
 int16_t RPM2PWM(const double &rpm)
 {
-    if(rpm > 0) 
+    if(rpm > 0){
+//        printf("aaa---\n");
         return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM + MAX_PWM*0.1;
-    else if(rpm < 0)
+    }else if(rpm < 0){
+//        printf("bbb---\n");
         return rpm * (MAX_PWM-MAX_PWM*0.2)/MAX_MOTOR_RPM - MAX_PWM*0.1;
-    else 
+    }else{
+//        printf("ccc---\n");
         return 0;
+    }
 }
