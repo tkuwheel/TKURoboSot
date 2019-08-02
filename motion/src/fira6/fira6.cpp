@@ -41,12 +41,12 @@ int main(int argc, char **argv)
     RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-	printf("\033[1;32m***FIRA6 IS RUNNING!***\n\033[0;33m");
+	printf("\033[1;32m***FIRA6 IS RUNNING!***\n\033[0;37m");
 	ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
-    unsigned int counter_fb = 0;
-    unsigned int counter_shoot = 0;
     unsigned int counter = 0;
+    bool no_cmd = false;
+    bool cmd = false;
 	while(true){
         // close 
         if(flag){
@@ -60,20 +60,20 @@ int main(int argc, char **argv)
             sleep(1);
             continue;
         }
-        //reset shoot
-        if(robotCMD.shoot_power>0){
-            if(counter_shoot>=(CMD_FREQUENCY/2)){
-                Node.clearShoot();
-                counter_shoot = 0;
-            }else{
-                counter_shoot++;
-            }
-        }
         // Get command
         if(Node.getMotionFlag()){
             counter_cmd = 0;
             robotCMD = Node.getMotion();
             Base.Send(robotCMD);
+            if(robotCMD.shoot_power>0){
+                Node.clearShoot();
+            }
+            no_cmd = false;
+            if(!cmd){
+                cmd = true;
+                counter++;
+                printf("\033[1;32m\nFIRA6 GET COMMAND--- %d\n\033[0;37m", counter);
+            }
 #ifdef DEBUG
             printf("\n*****get motion******\n");
             Node.ShowCommand();
@@ -84,8 +84,12 @@ int main(int argc, char **argv)
                 counter_cmd = 0;
                 Node.clearAll();
                 Base.Close();
-                counter++;
-                printf("\033[0;33m\nCANNOT GET COMMAND--- %d\n\033[0;37m", counter);
+                cmd = false;
+                if(!no_cmd){
+                    no_cmd = true;
+                    counter++;
+                    printf("\033[0;33m\nFIRA6 CANNOT GET COMMAND--- %d\n\033[0;37m", counter);
+                }
             }else{
                 counter_cmd++;
             }
@@ -94,7 +98,7 @@ int main(int argc, char **argv)
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
-#ifdef DEBUG_
+#ifdef DEBUG
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif

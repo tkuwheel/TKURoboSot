@@ -35,39 +35,39 @@ typedef void * (*THREADFUNCPTR)(void *);
 //#define DEBUG 
 class Motion_nodeHandle{
 public:
-	Motion_nodeHandle(int, char **);
-	virtual ~Motion_nodeHandle();
-	
+    Motion_nodeHandle(int, char **);
+    virtual ~Motion_nodeHandle();
+
 private:
-	ros::NodeHandle *n;
-	ros::Publisher motionFB_pub;
-	ros::Subscriber motion_sub;
-	ros::Subscriber shoot_sub;
-	ros::Subscriber force_back_sub;
-	ros::Subscriber remote_sub;
+    ros::NodeHandle *n;
+    ros::Publisher motionFB_pub;
+    ros::Subscriber motion_sub;
+    ros::Subscriber shoot_sub;
+    ros::Subscriber force_back_sub;
+    ros::Subscriber remote_sub;
     ros::Subscriber holdBall_sub;
-	RobotCommand robotCMD;
+    RobotCommand robotCMD;
     pthread_t tid;
-	bool remote;
+    bool remote;
     bool holdBall;
     bool motion_flag;
 private:
     static void* mpThreadRun(void* p);
-	void init(int argc, char **argv);
-	void motionCallback(const geometry_msgs::Twist::ConstPtr &);
-	void shootCallback(const std_msgs::Int32::ConstPtr &);
-	void shootForceBackCallback(const std_msgs::Bool::ConstPtr &);
-	void remoteCallback(const std_msgs::Bool::ConstPtr &);
+    void init(int argc, char **argv);
+    void motionCallback(const geometry_msgs::Twist::ConstPtr &);
+    void shootCallback(const std_msgs::Int32::ConstPtr &);
+    void shootForceBackCallback(const std_msgs::Bool::ConstPtr &);
+    void remoteCallback(const std_msgs::Bool::ConstPtr &);
     void holdBallCallback(const std_msgs::Bool::ConstPtr &);
-	void pub(const geometry_msgs::Twist &);
+    void pub(const geometry_msgs::Twist &);
     void mRun();
 public:
-//    void *run();
-	RobotCommand getMotion();
-	void    pub_robotFB(RobotCommand);
-	void    clearShoot();
-	int     clearAll();
-	bool    getMotionFlag();
+    //    void *run();
+    RobotCommand getMotion();
+    void    pub_robotFB(RobotCommand);
+    void    clearShoot();
+    int     clearAll();
+    bool    getMotionFlag();
     void    ShowCommand();
 };
 #endif //NodeHandle_H
