@@ -48,6 +48,7 @@ class Core(Robot, StateMachine):
     self.maximum_v = config['maximum_v']
     self.orb_attack_ang = config['orb_attack_ang']
     self.atk_shoot_ang = config['atk_shoot_ang']
+    self.shooting_start = config['shooting_start']
     self.my_role       = config['role']
     self.atk_shoot_dis = config['atk_shoot_dis']
     self.accelerate = config['Accelerate']
@@ -88,10 +89,8 @@ class Core(Robot, StateMachine):
     elif method == "Defense":
       x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
     if self.accelerate:
-      print("accccccc")
       self.Accelerator(80)
     if self.ball_speed:
-      print("baaaaaaaaa")
       x = x + t['ball']['speed_pwm_x']
       y = y + t['ball']['speed_pwm_y']
       
@@ -99,7 +98,6 @@ class Core(Robot, StateMachine):
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
-    
     t = self.GetObjectInfo()
     side = self.opp_side
     l = self.GetObstacleInfo()
@@ -238,12 +236,8 @@ class Strategy(object):
         self.dclient.update_configuration({"run_point": "none"})
         self.ToChase()
 
-
-
-
   def ToChase(self):
     mode = self.robot.attack_mode
-    
     if mode == "Defense":
       self.ToMovement()
 
@@ -310,13 +304,9 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            if state == "Corner_Kick" or state == "Free_Kick" or state == "Throw_In":
-              self.robot.toShoot(80)
-
-            elif state == "Penalty_Kick":
+            if state == "Penalty_Kick":
               self.ToMovement()
             elif self.robot.run_point == "empty_hand":
-              log(123)
               self.RunStatePoint()
             else :
               print('idle to chase')
