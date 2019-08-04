@@ -132,7 +132,7 @@ class Robot(object):
     robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
     ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
     ts.registerCallback(self.MulticastReceiver)
-    s = rospy.Service('passing_service', Trigger, self._PassingServer)
+    s = rospy.Service('passing_action', Trigger, self._PassingServer)
 
     if not sim :
       rospy.Subscriber('interface/Two_point', Two_point, self._GetTwopoint)
@@ -370,7 +370,7 @@ class Robot(object):
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = yaw
-      #print(output_x, output_y, yaw)
+      print(output_x, output_y, yaw)
       self.cmdvel_pub.publish(msg)
     else:
       current_vector = math.hypot(x, y)
