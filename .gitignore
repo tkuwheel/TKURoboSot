@@ -5,8 +5,8 @@ __pycache__
 *.pyc
 .vscode
 CATKIN_IGNORE
+.qsys_edit
 *.swp
-# *.txt
 *.swo
 *~
 
@@ -16,12 +16,14 @@ export_db
 incremental_db
 output_files
 work
+sopc
 signaltap
+obj
+# *_bsp
 
 *.stp
 *.qdf
 *.bak
-.DS_Store
 
 # ROS2 ignore
 build
@@ -31,3 +33,15 @@ log
 # Vision configs
 FIRA.yaml
 HSVcolormap.bin
+*.qws
+*.elf
+*.map
+*.objdump
+Makefile
+.cproject
+.force_relink
+.project
+*sopcinfo
+*.html
+*.cmp
+*.bsf
