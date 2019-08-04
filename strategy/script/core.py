@@ -349,6 +349,7 @@ class Strategy(object):
               self.ToChase()
               
         if self.robot.is_chase:
+          log(self.dest_angle)
           if self.robot.CheckBallHandle():
             print('chase to move')
             # self.robot.goal_dis = 0
