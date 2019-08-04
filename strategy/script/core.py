@@ -97,6 +97,7 @@ class Core(Robot, StateMachine):
     if self.ball_speed:
       x = x + t['ball']['speed_pwm_x']
       y = y + t['ball']['speed_pwm_y']
+     
       
       
     self.MotionCtrl(x, y, yaw)
@@ -332,10 +333,8 @@ class Strategy(object):
             print(self.robot.shooting_start)
             if self.robot.shooting_start:
               if self.robot.CheckBallHandle():
-                log(123)
                 self.robot.RobotShoot(80, 1)
               else:
-                log(456)
                 for i in range(0,5000):                
                   self.robot.MotionCtrl(30, 0, 0)
               self.dclient.update_configuration({"shooting_start": False})
@@ -361,7 +360,6 @@ class Strategy(object):
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
-              log(123)
               print("stop") 
               self.robot.game_state = "Kick_Off"
               self.robot.toShoot(100)
