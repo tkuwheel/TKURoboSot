@@ -89,9 +89,9 @@ void Localization::get_parameter()
     cout << "get parameter" << endl;
     double a_fast,a_slow,wcmps;
     //===================FPS參數==========================
-    nh.getParam("FIRA/mcl/a_fast", a_fast);
-    nh.getParam("FIRA/mcl/a_slow", a_slow);
-    nh.getParam("FIRA/mcl/wcmps", wcmps);
+    nh.getParam("/FIRA/mcl/a_fast", a_fast);
+    nh.getParam("/FIRA/mcl/a_slow", a_slow);
+    nh.getParam("/FIRA/mcl/wcmps", wcmps);
     mcl.setAugmentParam(a_fast, a_slow);
     mcl.setCmpsWeight(wcmps);
 }

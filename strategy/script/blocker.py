@@ -54,8 +54,8 @@ class Core(Robot, StateMachine):
   def __init__(self, sim = False):
     super(Core, self).__init__(sim)
     StateMachine.__init__(self)
-    self.BK  = Block()
     self.BC  = Behavior()
+    self.BK  = Block()
     self.left_ang = 0
     self.cp_value = 0
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
@@ -75,7 +75,8 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
                                           t['ball']['ang'],\
                                           position['location']['yaw'],\
-                                          t['ball']['speed_pwm_y'], self.cp_value)
+                                          t['ball']['speed_pwm_x'], t['ball']['speed_pwm_y'],\
+                                          self.cp_value)
     elif methods == "Limit":
       log("to block limit")
       x = 0
@@ -96,9 +97,11 @@ class Core(Robot, StateMachine):
       x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, self.run_yaw)
     else :
       x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], self.cp_value)
+      arrived = 0
     
     self.MotionCtrl(x, y, yaw)
     log("Returnig")
+    return arrived
   
   def on_toPush(self):
     state = self.game_state
@@ -142,7 +145,7 @@ class Core(Robot, StateMachine):
 class Strategy(object):
   def __init__(self, sim=False):
     rospy.init_node('blocker', anonymous=True)
-    self.rate = rospy.Rate(1000)
+    self.rate = rospy.Rate(200)
     self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("blocker", timeout=30, config_callback=None)
     self.main()
@@ -155,7 +158,7 @@ class Strategy(object):
       twopoint = self.robot.GetTwopoint()
       state = self.robot.game_state
       our_side = self.robot.our_side
-
+      locate = self.robot.locate
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
         print("Can not find ball")
         self.robot.toIdle()
@@ -173,7 +176,11 @@ class Strategy(object):
               self.robot.toRet()
 
         if self.robot.is_ret:            
-          if targets[our_side]['dis'] <= 70:
+          if locate:
+            arrived = self.robot.toRet()
+            if arrived:
+              self.dclient.update_configuration({"locate" : False})
+          if targets[our_side]['dis'] <= 90:
             self.robot.toBlock()          
           else:
             self.robot.toRet() 

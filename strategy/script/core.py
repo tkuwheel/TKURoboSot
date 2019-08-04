@@ -54,7 +54,7 @@ class Core(Robot, StateMachine):
     self.atk_shoot_dis = config['atk_shoot_dis']
     self.my_role       = config['role']
     self.accelerate = config['Accelerate']
-    self.ball_speed = config['ball_pwm']=
+    self.ball_speed = config['ball_pwm']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -97,6 +97,7 @@ class Core(Robot, StateMachine):
     if self.ball_speed:
       x = x + t['ball']['speed_pwm_x']
       y = y + t['ball']['speed_pwm_y']
+     
       
       
     self.MotionCtrl(x, y, yaw)
@@ -151,7 +152,7 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw)
 
     elif method == "Penalty_Kick":
-      x, y, yaw = self.BC.PenaltyTurning(side, self.dest_angle)
+      x, y, yaw = self.BC.PenaltyTurning(side, self.run_yaw, self.dest_angle)
       self.left_ang = abs(yaw)
       self.MotionCtrl(x, y, yaw )
       
@@ -233,7 +234,7 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_goal_dis = t[opp_side]['dis']
       return False
-  def record_angle(self)
+  def record_angle(self):
     position = self.GetRobotInfo()
     self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
 
@@ -329,11 +330,13 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
+            print(self.robot.shooting_start)
             if self.robot.shooting_start:
               if self.robot.CheckBallHandle():
                 self.robot.RobotShoot(80, 1)
               else:
-                self.robot.MotionCtrl(10, 0, 0)
+                for i in range(0,5000):                
+                  self.robot.MotionCtrl(30, 0, 0)
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
               self.robot.record_angle()
@@ -431,4 +434,4 @@ if __name__ == '__main__':
       log("Start Sim")  
       s = Strategy(True)
   except rospy.ROSInterruptException:
-    pass
+    pass 

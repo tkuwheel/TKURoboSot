@@ -9,6 +9,9 @@ SOCCER_BALL_RADIUS = 0
 
 class Block(Robot):
 
+  def __init__(self):
+    pass
+
   def ClassicBlocking(self, ball_dis, ball_ang, front_ang, pwm_x, pwm_y, cp_value):
     t = self.GetRobotInfo()
     o_x   = - pwm_x
