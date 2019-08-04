@@ -306,7 +306,7 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            if state == "Kick_Off" or "Throw_In":
+            if state == "Kick_Off" or state == "Throw_In":
               if self.robot.CheckBallHandle():
                 self.robot.PassingTo("nearest")
             elif state == "Corner_Kick" or state == "Free_Kick":
