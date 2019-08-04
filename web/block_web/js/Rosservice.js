@@ -4,12 +4,7 @@
     var myBoolean4 = new Boolean()
 
     function processFormData() {
-        if(document.getElementById("chase_straight").checked) {
-           myBoolean2 = Boolean(1);
-        }else{
-           myBoolean2 = Boolean(0)
-         }
-         if(document.getElementById("Accelerate").checked) {
+         if(document.getElementById("locate").checked) {
            myBoolean3 = Boolean(1);
          }else{
            myBoolean3 = Boolean(0)
@@ -21,10 +16,8 @@
          }
 
         
-        var chase_straight = new ROSLIB.Message({
-            data:  myBoolean2
-        });
-        var Accelerate = new ROSLIB.Message({
+
+        var locate = new ROSLIB.Message({
             data:  myBoolean3
         });
         var ball_pwm = new ROSLIB.Message({
@@ -32,24 +25,11 @@
         });
 
 
-        var ballhandle_dis = new ROSLIB.Message({
-            data: parseInt(document.getElementById("ballhandle_disInput").value)
-        });
-        var ballhandle_ang = new ROSLIB.Message({
-            data: parseInt(document.getElementById("ballhandle_angInput").value)
-        });
 
 
 
-        var orb_attack_ang = new ROSLIB.Message({
-        data: parseFloat(document.getElementById("orb_attack_angInput").value)
-        });
-        var atk_shoot_ang = new ROSLIB.Message({
-        data: parseFloat(document.getElementById("atk_shoot_angInput").value)
-        });
-        var atk_shoot_dis = new ROSLIB.Message({
-        data: parseFloat(document.getElementById("atk_shoot_disInput").value)
-        });
+
+
         var minimum_w = new ROSLIB.Message({
         data: parseFloat(document.getElementById("minimum_wInput").value)
         });
@@ -75,18 +55,11 @@
         var game_state = new ROSLIB.Message({
         data: document.getElementById("game_state").value
         });
-        var strategy_mode = new ROSLIB.Message({
-        data: document.getElementById("strategy_mode").value
-        });
-        var attack_mode = new ROSLIB.Message({
-        data: document.getElementById("attack_mode").value
-        });
+
         var our_side = new ROSLIB.Message({
         data: document.getElementById("our_side").value
         });
-        var run_point = new ROSLIB.Message({
-        data: document.getElementById("run_point").value
-        });
+
 
 
 
@@ -94,25 +67,18 @@
         config: {
             bools: [
                 {name: 'game_start', value: game_start.data},
-                {name: 'chase_straight', value: chase_straight.data},
-                {name: 'Accelerate', value: Accelerate.data},
+                {name: 'locate', value: locate.data},
                 {name: 'ball_pwm', value: ball_pwm.data},
             ],
             ints: [
-                {name: 'ballhandle_dis', value: ballhandle_dis.data},
-                {name: 'ballhandle_ang', value: ballhandle_ang.data},
+                {name: 'ballhandle_dis', value: 0},
+                {name: 'ballhandle_ang', value: 0},
             ],
             strs: [
                 {name: 'game_state', value: game_state.data},
-                {name: 'strategy_mode', value: strategy_mode.data},
-                {name: 'attack_mode', value: attack_mode.data},
                 {name: 'our_side', value: our_side.data},
-                {name: 'run_point', value: run_point.data},
             ],
             doubles: [
-                {name: 'orb_attack_ang', value: orb_attack_ang.data},
-                {name: 'atk_shoot_ang', value: atk_shoot_ang.data},
-                {name: 'atk_shoot_dis', value: atk_shoot_dis.data},
                 {name: 'minimum_w', value: minimum_w.data},
                 {name: 'minimum_w', value: minimum_w.data},
                 {name: 'maximum_w', value: maximum_w.data},
