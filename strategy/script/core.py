@@ -235,8 +235,8 @@ class Core(Robot, StateMachine):
       return False
   def record_angle(self)
     position = self.GetRobotInfo()
-    dest_ang = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
-    return dest_ang
+    self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
+
 
   
 
@@ -336,7 +336,7 @@ class Strategy(object):
                 self.robot.MotionCtrl(10, 0, 0)
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
-              self.robot.dest_angle = self.robot.record_angle()
+              self.robot.record_angle()
               self.ToMovement()
             elif self.robot.run_point == "empty_hand":
               self.RunStatePoint()
@@ -345,6 +345,7 @@ class Strategy(object):
               self.ToChase()
               
         if self.robot.is_chase:
+          log(self.dest_angle)
           if self.robot.CheckBallHandle():
             print('chase to move')
             # self.robot.goal_dis = 0

@@ -173,7 +173,7 @@ class Strategy(object):
               self.robot.toRet()
 
         if self.robot.is_ret:            
-          if targets[our_side]['dis'] < 90:
+          if targets[our_side]['dis'] <= 70:
             self.robot.toBlock()          
           else:
             self.robot.toRet() 
