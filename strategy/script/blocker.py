@@ -35,21 +35,15 @@ class Core(Robot, StateMachine):
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
-    self.chase_straight = config['chase_straight']
     self.run_point  = config['run_point']
     self.our_side   = config['our_side']
     self.opp_side   = 'Blue' if self.our_side == 'Yellow' else 'Yellow'
     self.run_x      = config['run_x']
     self.run_y      = config['run_y']
     self.run_yaw    = config['run_yaw']
-    self.strategy_mode = config['strategy_mode']
-    self.attack_mode = config['attack_mode']
     self.maximum_v = config['maximum_v']
-    self.orb_attack_ang = config['orb_attack_ang']
-    self.atk_shoot_ang = config['atk_shoot_ang']
-    self.atk_shoot_dis = config['atk_shoot_dis']
-    self.accelerate = config['Accelerate']
     self.ball_speed = config['ball_pwm']
+    self.locate = config['locate']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -61,7 +55,9 @@ class Core(Robot, StateMachine):
     super(Core, self).__init__(sim)
     StateMachine.__init__(self)
     self.BK  = Block()
+    self.BC  = Behavior()
     self.left_ang = 0
+    self.cp_value = 0
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
     
 
@@ -79,7 +75,7 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
                                           t['ball']['ang'],\
                                           position['location']['yaw'],\
-                                          t['ball']['speed_pwm_y'])
+                                          t['ball']['speed_pwm_y'], self.cp_value)
     elif methods == "Limit":
       log("to block limit")
       x = 0
@@ -96,8 +92,11 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo()
     position = self.GetRobotInfo()
     twopoint = self.GetTwopoint()
-
-    x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'])
+    if self.locate:
+      x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, self.run_yaw)
+    else :
+      x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], self.cp_value)
+    
     self.MotionCtrl(x, y, yaw)
     log("Returnig")
   
@@ -135,6 +134,10 @@ class Core(Robot, StateMachine):
     else:
       Core.last_time = time.time()
       Core.last_ball_dis = t['ball']['dis']
+  def record(self):
+    position = self.GetRobotInfo()
+    self.cp_value = position['imu_3d']['yaw']     
+
 
 class Strategy(object):
   def __init__(self, sim=False):
@@ -143,7 +146,6 @@ class Strategy(object):
     self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("blocker", timeout=30, config_callback=None)
     self.main()
-
 
   def main(self):
     while not rospy.is_shutdown():      
@@ -167,6 +169,7 @@ class Strategy(object):
             if state == "Penalty_Kick":
               self.robot.toPush()
             else:
+              self.robot.record()
               self.robot.toRet()
 
         if self.robot.is_ret:            
@@ -179,9 +182,9 @@ class Strategy(object):
           if targets['ball']['dis'] > 300 and not targets['ball']['dis'] == 999:
             self.robot.toWait()
           else :
-            if twopoint[our_side]['left'] > 115 and twopoint[our_side]['left'] > twopoint[our_side]['right'] and targets['ball']['ang'] <= 0:
+            if twopoint[our_side]['left'] > 120 and twopoint[our_side]['left'] > twopoint[our_side]['right'] and targets['ball']['ang'] <= 0:
               self.robot.toBlock('Limit')
-            elif twopoint[our_side]['right'] > 115 and twopoint[our_side]['left'] < twopoint[our_side]['right'] and targets['ball']['ang'] >= 0:
+            elif twopoint[our_side]['right'] > 120 and twopoint[our_side]['left'] < twopoint[our_side]['right'] and targets['ball']['ang'] >= 0:
               self.robot.toBlock('Limit')
             elif targets['ball']['dis'] <= 45:
                 self.robot.toPush()                 

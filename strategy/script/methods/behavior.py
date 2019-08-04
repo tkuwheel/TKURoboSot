@@ -10,8 +10,8 @@ from robot.obstacle import Obstacle
 ORBIT_KP_V = -0.5
 ORBIT_KP_W = 4.2
 
-REMAINING_RANGE_V = 10
-REMAINING_RANGE_YAW = 2
+REMAINING_RANGE_V = 20
+REMAINING_RANGE_YAW = 7
 
 class Behavior(Robot,Obstacle):
   def __init__(self):
@@ -117,17 +117,14 @@ class Behavior(Robot,Obstacle):
 
     return defence_x , defence_y , defence_yaw
 
-  def PenaltyTurning(self, side, run_yaw):
+  def PenaltyTurning(self, side, dest_ang):
     robot_info = self.GetObjectInfo()
     position = self.GetRobotInfo()
     if run_yaw == 0:
       v_yaw = robot_info[side]['ang']
     
     else:
-      front_ang = math.degrees(position['imu_3d']['yaw'])-90
-      dest_ang  = front_ang - run_yaw
-      self.penalty_angle.append(dest_ang)
-      dest_ang = self.penalty_angle[0] 
+      front_ang = math.degrees(position['imu_3d']['yaw'])
       v_yaw = front_ang - dest_ang
 
     v_x = 0
@@ -136,13 +133,10 @@ class Behavior(Robot,Obstacle):
 
 
   def Post_up(self, goal_dis, goal_ang,ranges, angle_increment):
-    
-    
     self.__goal_dis = goal_dis
     self.__goal_ang = goal_ang
     self.__ranges = ranges
     self.__angle_increment = angle_increment
-
 
     self.raw , object_dis= self.state(ranges) 
     self.edit = self.filter(self.raw)        
@@ -154,11 +148,9 @@ class Behavior(Robot,Obstacle):
         v_yaw = goal_ang
 
         return v_x , v_y , v_yaw
-
     else :
         v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis,0)
 
-    
     return v_x, v_y, v_yaw
     
 
