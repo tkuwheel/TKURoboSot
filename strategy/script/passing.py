@@ -34,15 +34,44 @@ class Core(Robot, StateMachine):
   def Callback(self, config, level):
     self.game_level = config['level']
     self.game_start = config['game_start']
-    self.game_state = config['game_state']
-    self.run_point  = config['run_point']
-    self.our_side   = config['our_side']
-    self.opp_side   = 'Blue' if self.our_side == 'Yellow' else 'Yellow'
-    self.run_x      = config['run_x']
-    self.run_y      = config['run_y']
-    self.run_yaw    = config['run_yaw']
     self.strategy_mode = config['strategy_mode']
     self.maximum_v = config['maximum_v']
+    self.using_orbit = config['using_orbit']
+    self.passing_power = config['passing_power']
+    self.target_vision_red = config['target_vision_red']
+    self.target_vision_yellow = config['target_vision_yellow']
+    self.target_vision_blue = config['target_vision_blue']
+    self.target_vision_white = config['target_vision_white']
+    padding_ball = config['padding_ball']
+    padding_target = config['padding_target']
+    adjust_ball1_x = config['adjust_ball1_x']
+    adjust_ball1_y = config['adjust_ball1_y']
+    adjust_ball2_x = config['adjust_ball2_x']
+    adjust_ball2_y = config['adjust_ball2_y']
+    adjust_ball3_x = config['adjust_ball3_x']
+    adjust_ball3_y = config['adjust_ball3_y']
+    adjust_ball4_x = config['adjust_ball4_x']
+    adjust_ball4_y = config['adjust_ball4_y']
+    adjust_target1_x = config['adjust_target1_x']
+    adjust_target1_y = config['adjust_target1_y']
+    adjust_target2_x = config['adjust_target2_x']
+    adjust_target2_y = config['adjust_target2_y']
+    adjust_target3_x = config['adjust_target3_x']
+    adjust_target3_y = config['adjust_target3_y']
+    adjust_target4_x = config['adjust_target4_x']
+    adjust_target4_y = config['adjust_target4_y']
+    ball1 = (-115 + padding_ball + adjust_ball1_x, 120  + adjust_ball1_y)
+    ball2 = (-115 + padding_ball + adjust_ball2_x, 40   + adjust_ball2_y)
+    ball3 = (-115 + padding_ball + adjust_ball3_x, -40  + adjust_ball3_y)
+    ball4 = (-115 + padding_ball + adjust_ball4_x, -120 + adjust_ball4_y)
+    target1 = (115 + padding_target + adjust_target1_x, 120  + adjust_target1_y)
+    target2 = (115 + padding_target + adjust_target2_x, 40   + adjust_target2_y)
+    target3 = (115 + padding_target + adjust_target3_x, -40  + adjust_target3_y)
+    target4 = (115 + padding_target + adjust_target4_x, -120 + adjust_target4_y)
+    self.level1 = {'balls_point': [ball1], 'targets_point': [target1], 'targets_color': ['red']}
+    self.level2 = {'balls_point': [ball1, ball4], 'targets_point': [target1, target4], 'targets_color': ['red', 'yellow']}
+    self.level3 = {'balls_point': [ball1, ball2, ball4], 'targets_point': [target4, target2, target1], 'targets_color': ['yellow', 'blue', 'red']}
+    self.level4 = {'balls_point': [ball2, ball3, ball4, ball1], 'targets_point': [target4, target1, target2, target3], 'targets_color': ['yellow', 'red', 'blue', 'white']}
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -50,8 +79,8 @@ class Core(Robot, StateMachine):
 
     return config
 
-  def __init__(self, robot_num, sim = False):
-    super(Core, self).__init__(robot_num, sim)
+  def __init__(self, sim = False):
+    super(Core, self).__init__(sim)
     StateMachine.__init__(self)
     self.CC  = Chase()
     self.BC  = Behavior()
@@ -85,7 +114,7 @@ class Core(Robot, StateMachine):
     return arrived
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw)
+    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw, 3, 1)
 
     self.MotionCtrl(x, y, yaw)
     return arrived
@@ -118,41 +147,13 @@ class Strategy(object):
   can_shoot = False
   current_index = 0
   current_point = [0, 0, 0]
-  padding_ball  = 35
-  padding_target= 80
-  ball1 = (-115 + padding_ball, 120)
-  ball2 = (-115 + padding_ball, 40)
-  ball3 = (-115 + padding_ball, -40)
-  ball4 = (-115 + padding_ball, -120)
-  target1 = (115 - padding_target, 120)
-  target2 = (115 - padding_target, 40)
-  target3 = (115 - padding_target, -40)
-  target4 = (115 - padding_target, -120)
-  level1 = {'balls_point': [ball1], 'targets_point': [target1]}
-  level2 = {'balls_point': [ball1, ball4], 'targets_point': [target4, target1]}
-  level3 = {'balls_point': [ball1, ball2, ball4], 'targets_point': [target4, target2, target1]}
-  level4 = {'balls_point': [ball1, ball2, ball3, ball4], 'targets_point': [target3, target4, target1, target2]}
 
-  def __init__(self, num, sim=False):
+  def __init__(self, sim=False):
     rospy.init_node('passing', anonymous=True)
     self.rate = rospy.Rate(1000)
-    self.robot = Core(num, sim)
+    self.robot = Core(sim)
     self.dclient = dynamic_reconfigure.client.Client("passing", timeout=30, config_callback=None)
     self.main()
-
-  def ToChase(self):
-    mode = self.robot.strategy_mode
-    if mode == "Defense":
-      self.robot.toChase("Classic")
-    elif mode == "Attack":
-      pass
-    else: 
-      log("Unknown Chase Mode")
-
-  def ToMovement(self):
-    mode = self.robot.strategy_mode
-    if mode == "Attack":
-      pass
 
   def UpdateCurrentPoint(self, x, y, yaw):
     Strategy.current_point[0] = x
@@ -168,13 +169,13 @@ class Strategy(object):
       position = self.robot.GetRobotInfo()
 
       if self.robot.game_level == "Level1":
-        level = self.level1
+        level = self.robot.level1
       elif self.robot.game_level == "Level2":
-        level = self.level2
+        level = self.robot.level2
       elif self.robot.game_level == "Level3":
-        level = self.level3
+        level = self.robot.level3
       elif self.robot.game_level == "Level4":
-        level = self.level4
+        level = self.robot.level4
 
       if not self.robot.is_idle and not self.robot.game_start:
         self.robot.toIdle()
@@ -190,10 +191,28 @@ class Strategy(object):
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
             if Strategy.can_shoot:
-              self.robot.toShoot(80)
+              double_check = True
+              if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
+                if abs(targets['ball']['ang']) > 1:
+                  double_check = False
+                  self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
+              if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
+                if abs(targets['Blue']['ang']) > 1:
+                  double_check = False
+                  self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
+              if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
+                if abs(targets['Yellow']['ang']) > 1:
+                  double_check = False
+                  self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
+              if double_check:
+                self.robot.toShoot(self.robot.passing_power)
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
-              self.robot.toMovement(0 - position['location']['yaw'])
+              if self.robot.using_orbit:
+                self.robot.toMovement(0 - position['location']['yaw'])
+              else:
+                self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+                Strategy.can_shoot = True
           else:
             self.robot.toChase("Straight")
         else:
@@ -203,7 +222,6 @@ class Strategy(object):
         if self.robot.CheckBallHandle():
           self.UpdateCurrentPoint(0, 0, 90)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
-          # self.robot.toMovement(Strategy.current_point[2] - position['location']['yaw'])
         else:
           self.robot.toChase("Straight")
 
@@ -237,9 +255,9 @@ if __name__ == '__main__':
   try:
     if SysCheck(sys.argv[1:]) == "Native Mode":
       log("Start Native")
-      s = Strategy(1, False)
+      s = Strategy(False)
     elif SysCheck(sys.argv[1:]) == "Simulative Mode":
       log("Start Sim")  
-      s = Strategy(1, True)
+      s = Strategy(True)
   except rospy.ROSInterruptException:
     pass
