@@ -45,3 +45,4 @@ Makefile
 *.html
 *.cmp
 *.bsf
+.DS_Store
