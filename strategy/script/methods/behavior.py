@@ -10,14 +10,14 @@ from robot.obstacle import Obstacle
 ORBIT_KP_V = -0.5
 ORBIT_KP_W = 4.2
 
-REMAINING_RANGE_V = 20
-REMAINING_RANGE_YAW = 7
+#REMAINING_RANGE_V = 20
+#REMAINING_RANGE_YAW = 7
 
 class Behavior(Robot,Obstacle):
   def __init__(self):
     self.penalty_angle = []
 
-  def Orbit(self, goal_ang):
+  def Orbit(self, goal_ang, REMAINING_RANGE_YAW = 5):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang
     # velocity = velocity if abs(velocity) < 45 else 45 # maximum speed
@@ -35,7 +35,7 @@ class Behavior(Robot,Obstacle):
       arrived = False
     return v_x, v_y, o_yaw, arrived
 
-  def Go2Point(self, tx, ty, tyaw):
+  def Go2Point(self, tx, ty, tyaw, REMAINING_RANGE_V = 10, REMAINING_RANGE_YAW = 5):
     robot_info = self.GetRobotInfo()
 
     v_x   = tx - robot_info['location']['x']
