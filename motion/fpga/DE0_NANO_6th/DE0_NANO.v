@@ -358,6 +358,7 @@ MotorController MotorC (
 );
 /* hold ball and shoot control */
 holdBall(.iC(CLOCK_50),
+			.iRst_n(iReset_n),
 			.oL(GPIO_0_D[4]),
 			.oR(GPIO_0_D[6]),
 			.iCMD1(iCMD_Motor1),
