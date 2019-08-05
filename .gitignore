@@ -42,7 +42,6 @@ Makefile
 .force_relink
 .project
 *sopcinfo
-*.html
 *.cmp
 *.bsf
 .DS_Store
