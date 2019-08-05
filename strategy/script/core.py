@@ -336,10 +336,8 @@ class Strategy(object):
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
               log("stop") 
-              self.robot.game_state = "Kick_Off"
-              #self.robot.toShoot(100)
-              self.robot.RobotShoot(100, 1)
-              self.Tochase()
+              self.robot.toShoot(100)
+              self.dclient.update_configuration({"game_state": "Kick_Off"})
             else:
               self.ToMovement()
                     
