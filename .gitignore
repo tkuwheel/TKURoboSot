@@ -44,3 +44,4 @@ Makefile
 *sopcinfo
 *.cmp
 *.bsf
+.DS_Store
