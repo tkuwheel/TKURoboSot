@@ -132,7 +132,7 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     ourside = self.our_side
     l = self.GetObstacleInfo()
-    log('move')
+    #log('move')
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
@@ -177,8 +177,6 @@ class Core(Robot, StateMachine):
     else :
       yaw = self.run_yaw
     x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, yaw)
-    #else:
-      #log("Unknown Game State")
 
     self.MotionCtrl(x, y, yaw)
     return arrived
@@ -268,13 +266,13 @@ class Strategy(object):
     mode = self.robot.strategy_mode
     state = self.robot.game_state
     point = self.robot.run_point
-    log(point)
+    #log(point)
     if point == "ball_hand":
       self.RunStatePoint()
     elif state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
     elif mode == "At_Post_up":
-      log("movement")
+      #log("movement")
       self.robot.toMovement("At_Post_up")
     elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
@@ -290,8 +288,6 @@ class Strategy(object):
     while not rospy.is_shutdown():
       self.robot.PubCurrentState()
       self.robot.Supervisor()
-
-      #print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole()))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -327,11 +323,9 @@ class Strategy(object):
               self.ToChase()
               
         if self.robot.is_chase:
-          log(self.dest_angle)
+          #log(self.robot.dest_angle)
           if self.robot.CheckBallHandle():
             print('chase to move')
-            # self.robot.goal_dis = 0
-            # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
           else:
             self.ToChase()
@@ -339,10 +333,11 @@ class Strategy(object):
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
-              print("stop") 
+              log("stop") 
               self.robot.game_state = "Kick_Off"
               #self.robot.toShoot(100)
-              self.robot.RobotShoot(100,1)
+              self.robot.RobotShoot(100, 1)
+              self.Tochase()
             else:
               self.ToMovement()
                     
@@ -372,7 +367,6 @@ class Strategy(object):
               self.ToMovement()
 
           elif mode == "Fast_break":
-            
             self.ToAttack()
 
         if self.robot.is_attack:
