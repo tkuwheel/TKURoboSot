@@ -310,8 +310,10 @@ class Strategy(object):
               if self.robot.CheckBallHandle():
                 self.robot.RobotShoot(80, 1)
               else:
-                for i in range(0,5000):                
+                x = time.time()
+                while 1:                
                   self.robot.MotionCtrl(30, 0, 0)
+                  if (time.time() - x ) > 1: break
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
               self.robot.record_angle()
