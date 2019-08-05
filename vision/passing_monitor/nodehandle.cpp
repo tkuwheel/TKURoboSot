@@ -63,7 +63,8 @@ NodeHandle::NodeHandle()
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
     monitor_pub = nh.advertise<sensor_msgs::Image>("camera/image_monitor", 1);
-    object_pub = nh.advertise<vision::Object>("vision/object", 1);
+    //object_pub = nh.advertise<vision::Object>("vision/object", 1);
+    object_pub = nh.advertise<vision::PassingObject>("vision/object", 1);
     Two_point_pub = nh.advertise<vision::Two_point>("interface/Two_point", 1);
 }
 void NodeHandle::AngleLUT()
@@ -431,70 +432,54 @@ void NodeHandle::Pub_monitor(Mat Monitor)
 }
 void NodeHandle::Pub_object()
 {
-    vision::Object object_msg;
+    vision::PassingObject object_msg;
     //===================default===============
     object_msg.fps = 999;
-    object_msg.ball_x = 999;
-    object_msg.ball_y = 999;
-    object_msg.ball_LR = "Null";
     object_msg.ball_ang = 999;
     object_msg.ball_dis = 999;
 
-    object_msg.blue_x = 999;
-    object_msg.blue_y = 999;
-    object_msg.blue_LR = "Null";
     object_msg.blue_ang = 999;
     object_msg.blue_dis = 999;
-    object_msg.blue_fix_x = 999;
-    object_msg.blue_fix_y = 999;
-    object_msg.blue_fix_ang = 999;
-    object_msg.blue_fix_dis = 999;
 
-    object_msg.yellow_x = 999;
-    object_msg.yellow_y = 999;
-    object_msg.yellow_LR = "Null";
     object_msg.yellow_ang = 999;
     object_msg.yellow_dis = 999;
-    object_msg.yellow_fix_x = 999;
-    object_msg.yellow_fix_y = 999;
-    object_msg.yellow_fix_ang = 999;
-    object_msg.yellow_fix_dis = 999;
+
+    object_msg.red_ang = 999;
+    object_msg.red_dis = 999;
+
+    object_msg.white_ang = 999;
+    object_msg.white_dis = 999;
     //==========================================
     object_msg.fps = RateMsg;
 
     if (Red_Item.size > SizeFilter)
     {
-        object_msg.ball_x = Red_Item.x - CenterXMsg;
-        object_msg.ball_y = 0 - (Red_Item.y - CenterYMsg);
-        object_msg.ball_LR = Red_Item.LR;
         object_msg.ball_ang = Strategy_Angle(Angle_Adjustment(Red_Item.angle));
         object_msg.ball_dis = Omni_distance(Red_Item.distance);
     }
 
     if (Blue_Item.size > SizeFilter)
     {
-        object_msg.blue_x = Blue_Item.x - CenterXMsg;
-        object_msg.blue_y = 0 - (Blue_Item.y - CenterYMsg);
-        object_msg.blue_LR = Blue_Item.LR;
         object_msg.blue_ang = Strategy_Angle(Angle_Adjustment(Blue_Item.angle));
         object_msg.blue_dis = Omni_distance(Blue_Item.distance);
-        object_msg.blue_fix_x = Blue_Item.fix_x - CenterXMsg;
-        object_msg.blue_fix_y = 0 - (Blue_Item.fix_y - CenterYMsg);
-        object_msg.blue_fix_ang = Strategy_Angle(Angle_Adjustment(Blue_Item.fix_angle));
-        object_msg.blue_fix_dis = Omni_distance(Blue_Item.fix_distance);
     }
 
     if (Yellow_Item.size > SizeFilter)
     {
-        object_msg.yellow_x = Yellow_Item.x - CenterXMsg;
-        object_msg.yellow_y = 0 - (Yellow_Item.y - CenterYMsg);
-        object_msg.yellow_LR = Yellow_Item.LR;
         object_msg.yellow_ang = Strategy_Angle(Angle_Adjustment(Yellow_Item.angle));
         object_msg.yellow_dis = Omni_distance(Yellow_Item.distance);
-        object_msg.yellow_fix_x = Yellow_Item.fix_x - CenterXMsg;
-        object_msg.yellow_fix_y = 0 - (Yellow_Item.fix_y - CenterYMsg);
-        object_msg.yellow_fix_ang = Strategy_Angle(Angle_Adjustment(Yellow_Item.fix_angle));
-        object_msg.yellow_fix_dis = Omni_distance(Yellow_Item.fix_distance);
+    }
+
+    if (Green_Item.size > SizeFilter)
+    {
+        object_msg.red_ang = Strategy_Angle(Angle_Adjustment(Green_Item.angle));
+        object_msg.red_dis = Omni_distance(Green_Item.distance);
+    }
+
+    if (White_Item.size > SizeFilter)
+    {
+        object_msg.white_ang = Strategy_Angle(Angle_Adjustment(White_Item.angle));
+        object_msg.white_dis = Omni_distance(White_Item.distance);
     }
     object_pub.publish(object_msg);
 }

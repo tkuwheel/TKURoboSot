@@ -15,6 +15,7 @@
 #include <fstream>
 #include "vision/Two_point.h"
 #include "vision/Object.h"
+#include "vision/PassingObject.h"
 #include "vision/bin.h"
 #include "vision/view.h"
 
@@ -91,7 +92,7 @@ class NodeHandle
     double Omni_distance(double pixel_dis);
     int Angle_Interval(int radius);
     double RateMsg;
-    DetectedObject Red_Item, Blue_Item, Yellow_Item;
+    DetectedObject Red_Item, Blue_Item, Yellow_Item, Green_Item, White_Item;
     //======================================
     //===============publisher==============
     void Pub_monitor(Mat Monitor);

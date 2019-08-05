@@ -1,0 +1,1131 @@
+@font-face {
+    font-family: "DSEG7";
+    src: url("DSEG7Classic-Regular.woff");
+}
+
+#interface {
+    width: 750px;
+    height: 600px;
+    z-index: -1;
+}
+#HSVcircle{
+    width: 300px;
+    height: 80px;
+}
+#HSVrect{
+    width: 100px;
+    height: 80px;
+}
+#colorBox{
+    width: 100px;
+    height: 80px;
+}
+#MonitorElement1{
+ width: 18px;
+}
+#MonitorElement2{
+ width: 95px;
+}
+#MonitorElement3{
+ width: 33px;
+}
+#MonitorElement4{
+ width: 41px;
+}
+/*===========================================*/
+#info { 
+    width: 500px; 
+    height: 50px; 
+    padding: 6px; 
+    overflow-y: scroll; 
+    word-break: break-all; 
+    background: #e0e0e0; 
+    position: absolute;
+    top: 1.5%;
+    left: 40%;
+} 
+/*==============================================*/
+
+#InterfaceWifi {
+    border: 0px solid #d3d3d3;
+}
+
+#InterfaceWifi span {
+    cursor: pointer;
+    position: absolute;
+    top: 1%;
+    right: 5%;
+}
+
+#Setting_Wifi {
+    height: 100%;
+    width: 50px;
+}
+
+#WifiLight {
+    width: 45px;
+    height: 45px;
+    border: 0px solid #d3d3d3;
+    position: absolute;
+    top: 1.5%;
+    left: 13%;
+}
+
+.Wifimodal_content {
+    position: relative;
+    background-color: #FFFFFF;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+
+/*==============================================*/
+
+.modal-content {
+    position: relative;
+    background-color: #696969;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+.modal-title {
+    color: black;
+    font-size: 25px;
+}
+
+#InterfaceParameter {
+    width: 1100px;
+    height: 600px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    /*position: fixed;
+    top: 18%;
+    left: 20%;*/
+    background-color: lightgrey;
+}
+
+/*==========================================================*/
+
+.Button {
+    background-color: white;
+    font-size: 15px;
+    /*background-color: #99CCFF;*/
+    color: #8B0000;
+    border-radius: 1px;
+    position: relative;
+    box-shadow: -1px 2px #A9A9A9;
+}
+
+.Button:hover {
+    background-color: #FFFAF0;
+    border-color: #FFFAF0;
+}
+
+
+/*slider type-1*/
+
+.Slider1Label {
+    width: 70px;
+}
+
+.Slider1Input {
+    width: 180px;
+}
+
+.Slider2Label {
+    width: 260px;
+    height: 20px;
+}
+
+.Slider2td {
+    align: center;
+    rowspan: 2;
+}
+
+
+/*==========================================================*/
+
+#ParameterButton {
+    width: 370px;
+    height: 100px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 3%;
+    left: 3%;
+    background-color: white;
+}
+
+#ParameterButton table {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    text-align: center;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+
+/*=====================================================*/
+
+#ParameterCamera {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 3%;
+    background-color: white;
+}
+
+#CameraButton {
+    background-image: none;
+    font-size: 14px;
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#CameraButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#CameraSlider {
+    width: 330px;
+    height: 110px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 5%;
+    left: 5%;
+    align: center;
+    border-color: #778899;
+}
+
+#CameraSlider table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#CameraButtonDiv {
+    width: 250px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 3%;
+    left: 80%;
+}
+
+#CameraButtonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+
+/*=============================================================*/
+
+#CenterButton{
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#CenterButton.ui-state-active {
+    font-size: 14px;
+    background-color: #FFCC00;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#ParameterCenter {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 3%;
+    background-color: white;
+}
+
+#CenterSlider {
+    width: 330px;
+    height: 200px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 5%;
+    left: 5%;
+    border-color: #778899;
+}
+
+#CenterSlider table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#CenterButtonDiv {
+    width: 80px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 6%;
+    left: 80%;
+}
+
+#CameraHigh {
+    width: 200px;
+    height: 100px;
+    z-index: 1;
+    position: relative;
+    top: 8%;
+    left: 20%;
+}
+
+#CameraHigh table {
+    width: 100%;
+    height: 100%;
+}
+
+#CameraHighInput {
+    width: 70px;
+}
+
+/*==============================================================*/
+
+#ScanButton {
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#ScanButton.ui-state-active {
+    font-size: 14px;
+    background-color: #FFCC00;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#ParameterScan {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 3%;
+    background-color: white;
+}
+
+#ScanSlider1 {
+    width: 330px;
+    height: 210px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 2%;
+    left: 5%;
+    color: #2F4F4F;
+    border-color: #778899;
+}
+
+#ScanSlider1 table {
+    width: 100%;
+    height: 100%;
+}
+
+#ScanSlider2 {
+    width: 330px;
+    height: 110px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 3%;
+    left: 5%;
+    color: #2F4F4F;
+    border-color: #778899;
+}
+
+#ScanSlider2 table {
+    width: 100%;
+    height: 100%;
+}
+
+#ScanSlider3 {
+    width: 330px;
+    height: 75px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 5%;
+    color: #2F4F4F;
+    border-color: #778899;
+}
+
+#ScanSlider3 table {
+    width: 100%;
+    height: 100%;
+}
+
+#LabelScan {
+    width: 250px;
+    height: 3px;
+    z-index: 1;
+    border-radius: 3px;
+    position: relative;
+}
+
+.RobotRange3 {
+    height: 1px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+}
+
+.RBS1 {
+    width: 65px;
+    height: 30px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    font-size: 17px;
+    color: #000000;
+	font-family: DSEG7;
+	text-align: right;
+}
+
+#ScanButtonDiv {
+    width: 80px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 6.5%;
+    left: 80%;
+}
+
+
+/*==============================================================*/
+
+
+/*#DistanceButton {
+    background-image: none;
+    font-size: 14px;
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#DistanceButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#ParameterDistance {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 2%;
+    background-color: white;
+}
+
+#DistanceSlider {
+    width: 330px;
+    height: 70px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 2%;
+    left: 5%;
+    border-color: #778899;
+}
+
+#DistanceSlider table {
+    width: 100%;
+    height: 100%;
+}
+
+#DistanceSlider table td {
+    text-align: center;
+}
+
+
+
+#DistanceSetting {
+    width: 330px;
+    height: 200px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 5%;
+    border-color: #778899;
+    overflow: auto;
+}
+
+.myCheck {
+    width: 30px;
+    height: 15px;
+    z-index: 1;
+}
+
+.Distance_font {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    border-radius: 3px;
+    position: relative;
+    color: #708090;
+}
+
+.RobotRange4 {
+    width: 200px;
+    height: -3px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+}
+
+#DistanceButtonDiv {
+    width: 80px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 15%;
+    left: 80%;
+}
+
+*/
+
+
+/*================================================================*/
+
+#ParameterColorButton {
+    width: 360px;
+    height: 40px;
+    z-index: 1;
+    border: none;
+    border-radius: 3px;
+    position: relative;
+    background-color: white;
+}
+
+#ParameterColorButton table {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    text-align: center;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+#ColorButton{
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+#ColorButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#ParameterColor {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 3%;
+    background-color: white;
+}
+
+#HSVButton {
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#HSVButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#HSVSlider1 {
+    width: 360px;
+    height: 210px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    left: 1%;
+    align: center;
+    border-color: #778899;
+}
+
+#HSVSlider1 table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#HSVSlider1 table label {
+    font-size: 20px;
+}
+
+#HSVSlider2 {
+    width: 370px;
+    z-index: 1;
+    border-radius: 1px;
+    position: relative;
+    top: 2%;
+    align: center;
+    border-color: none;
+}
+
+#HSVSlider2 table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#HSVSelect {
+    width: 50%;
+    font-size: 17px;
+    color: saddlebrown;
+}
+
+.RobotRange5 {
+    width: 250px;
+    height: 1px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+}
+
+#draggable {
+    width: 150px;
+    height: 150px;
+    padding: 0.5em;
+    position: relative;
+}
+
+.RBS2 {
+    width: 65px;
+    height: 30px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    color: #4169E1;
+    font-size: 17px;
+	
+	color: #000000;
+	font-family: DSEG7;
+	text-align: right;
+}
+
+#WhiteButton {
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#WhiteButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#WhiteSlider {
+    width: 330px;
+    height: 110px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 5%;
+    left: 5%;
+    align: center;
+    border-color: #778899;
+}
+
+#WhiteSlider table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#WhiteButtonDiv {
+    width: 250px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 3%;
+    left: 80%;
+}
+
+#WhiteButtonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+#BlackButton {
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#BlackButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#BlackSlider {
+    width: 330px;
+    height: 110px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 5%;
+    left: 5%;
+    align: center;
+    border-color: #778899;
+}
+
+#BlackSlider table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#BlackButtonDiv {
+    width: 250px;
+    height: 80px;
+    z-index: 1;
+    position: relative;
+    top: 3%;
+    left: 80%;
+}
+
+#BlackButtonDiv table {
+    width: 100%;
+    height: 100%;
+}
+
+#ParameterHSV {
+    width: 200px;
+    height: 150px;
+    z-index: 1;
+    border-radius: 3px;
+    position: relative;
+    top: 1%;
+    left: 1%;
+    background-color: white;
+}
+
+
+/*================================================================*/
+
+#MonitorButton {
+    background-image: none;
+    font-size: 14px;
+    /*background-color: #99CCFF;*/
+    color: #663D00;
+    border-radius: 3px;
+}
+
+#MonitorButton.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+    border-radius: 3px;
+}
+
+#ParameterMonitor {
+    width: 370px;
+    height: 470px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 4%;
+    left: 3%;
+    background-color: white;
+}
+
+#MonitorViewCheck {
+    width: 80px;
+    position: relative;
+    top: 5%;
+    left: 5%;
+}
+
+#MonitorViewCheck label {
+    font-size: 18px;
+}
+
+#MonitorInformation {
+    width: 340px;
+    height: 300px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    top: 10%;
+    left: 4%;
+    border-color: #778899;
+}
+
+#MonitorInformation table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#MonitorInformation table label {
+    font-size: 16px;
+}
+
+.Monitortrborder {
+    border-bottom-style: solid;
+}
+
+
+/*====================================*/
+
+#InterfaceCamera {
+    width: 659px;
+    height: 493px;
+    /*width: 640px;
+    height: 480px;*/
+    z-index: 1;
+    border: 1px solid black;
+    align: center;
+    position: relative;
+    bottom: 92.4%;
+    left: 37%;
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+    border: 1px solid red;
+    background: #000;
+}
+
+#playerfunction {
+    height: 493px;
+    width: 659px;
+    position: absolute;
+    top: 0%;
+    z-index: 2;
+}
+
+
+/*========================================================*/
+
+#InterfaceCheckCamera {
+    width: 660px;
+    height: 75px;
+    z-index: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    position: relative;
+    bottom: 93.5%;
+    left: 37%;
+    background-color: white;
+}
+
+#InterfaceCheckCamera div {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 30%;
+    left: 3%
+}
+
+#InterfaceCheckCamera div label {
+    font-size: 18px;
+}
+
+#CameraX {
+    width: 50px;
+    font-size: 18px;
+}
+
+#CameraY {
+    width: 50px;
+    font-size: 18px;
+}
+
+#CameraAngle{
+    width: 70px;
+    font-size: 18px;
+}
+
+#CenterDis{
+    width: 50px;
+    font-size: 18px;
+}
+/*========================Bar=============================*/
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    margin: 1px 0;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #b0e0e6;
+    border-radius: 1px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -1px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #c3e8ec;
+}
+
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #b0e0e6;
+    border-radius: 1px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+}
+
+input[type=range]::-ms-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+    background: #9dd8e0;
+    border: 0px solid #000101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]::-ms-fill-upper {
+    background: #b0e0e6;
+    border: 0px solid #000101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]::-ms-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+    height: 6px;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+    background: #b0e0e6;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+    background: #c3e8ec;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    margin: 1px 0;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #b0e0e6;
+    border-radius: 1px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -1px;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #c3e8ec;
+}
+
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    background: #b0e0e6;
+    border-radius: 1px;
+    border: 0px solid #000101;
+}
+
+input[type=range]::-moz-range-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+}
+
+input[type=range]::-ms-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+    background: #9dd8e0;
+    border: 0px solid #000101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]::-ms-fill-upper {
+    background: #b0e0e6;
+    border: 0px solid #000101;
+    border-radius: 2px;
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]::-ms-thumb {
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    border: 0px solid rgba(0, 0, 0, 0);
+    height: 8px;
+    width: 6px;
+    border-radius: 0px;
+    background: #778899;
+    cursor: pointer;
+    height: 6px;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+    background: #b0e0e6;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+    background: #c3e8ec;
+}
+
+
+/*==================================================================*/
+body{
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
