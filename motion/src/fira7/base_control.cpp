@@ -117,6 +117,7 @@ void BaseController::mRun()
                 m_baseCommand.x, 
                 m_baseCommand.y, 
                 m_baseCommand.yaw, 
+                mb_hold_ball,
                 m_hold_ball,
                 m_hold_ball_time);
         mDriverSetting();
@@ -210,7 +211,7 @@ void BaseController::mCsslSend2FPGA()
     m_baseTX.w3_h = (int16_t)m_motorCurrPWM.w3 >> 8;
 
     // TODO
-    m_baseTX.enable_stop = m_en_stop + mb_hold_ball;
+    m_baseTX.enable_stop = m_en_stop;
     m_baseTX.shoot = m_shoot_power;
     m_baseTX.hold_ball_l = m_hold_ball[3];
     m_baseTX.hold_ball_r = m_hold_ball[0];
@@ -570,11 +571,13 @@ void BaseController::mOdometry()
     m_baseOdometry.yaw += m_baseSpeed.yaw;
 }
 
-int* BaseController::mHoldBallControl(const double &x, 
+int* BaseController::mHoldBallControl(
+        const double &x, 
         const double &y, 
         const double &yaw, 
+        const bool &hold_ball
         int ballcontrol[],
-        struct timeval &T // time
+        struct timeval &T, // time
         ) 
 {
     struct timeval now;
@@ -590,6 +593,14 @@ int* BaseController::mHoldBallControl(const double &x,
     printf("=================================\n");
 #endif
 
+  if(hold_ball == false){
+    ballcontrol[0]= 15; 
+    ballcontrol[1]= 0;
+    ballcontrol[2]= 1;
+    ballcontrol[3]= 15;
+    ballcontrol[4]= 0;
+    ballcontrol[5]= 1;   
+  }else{
     if(yaw==0 && x==0 && y==0){             //停止
         if(time<1500){
             ballcontrol[0]= 20;
@@ -627,10 +638,10 @@ int* BaseController::mHoldBallControl(const double &x,
                 }
             }else if(y<0){
                 if(y>-61){
-                    ballcontrol[0]= a;
+                    ballcontrol[0]= 25;
                     ballcontrol[1]= 0;
                     ballcontrol[2]= 1;
-                    ballcontrol[3]= b;
+                    ballcontrol[3]= 25;
                     ballcontrol[4]= 0;
                     ballcontrol[5]= 1;
                 }else{
@@ -694,6 +705,14 @@ int* BaseController::mHoldBallControl(const double &x,
         T=now;
     }
     else if(yaw>0){ //Rotate_Left
+      if(yaw<= 10 && y>= 30 ){
+        ballcontrol[0]= 7;
+        ballcontrol[1]= 1;
+        ballcontrol[2]= 0;
+        ballcontrol[3]= 7;
+        ballcontrol[4]= 1;
+        ballcontrol[5]= 0;
+      }else{
         a = (10+abs(y)*0.4);
         b = (20+abs(y)*0.5);
         ballcontrol[0]= a;
@@ -702,9 +721,18 @@ int* BaseController::mHoldBallControl(const double &x,
         ballcontrol[3]= b;
         ballcontrol[4]= 0;
         ballcontrol[5]= 1;
-        T=now;
+      }
+      T=now;
     }
     else if(yaw<0){ //Rotate_Right
+      if(yaw>= -10 && y>= 30 ){
+        ballcontrol[0]= 7;
+        ballcontrol[1]= 1;
+        ballcontrol[2]= 0;
+        ballcontrol[3]= 7;
+        ballcontrol[4]= 1;
+        ballcontrol[5]= 0;
+      }else{
         a = (20+abs(y)*0.5);
         b = (10+abs(y)*0.4);
         ballcontrol[0]= a;
@@ -713,9 +741,11 @@ int* BaseController::mHoldBallControl(const double &x,
         ballcontrol[3]= b;
         ballcontrol[4]= 0;
         ballcontrol[5]= 1;
-        T=now;
+      }
+      T=now;
     }
-    return ballcontrol;
+  }
+  return ballcontrol;
 }
 
 bool BaseController::GetBaseFlag()
