@@ -41,10 +41,10 @@ int main(int argc, char * argv[])
   auto ros2_node = rclcpp::Node::make_shared("ros_bridge");
 
   // bridge one example topic
-  std::string topic_name = "chatter";
-  std::string ros1_type_name = "std_msgs/String";
-  std::string ros2_type_name = "std_msgs/String";
-  size_t queue_size = 10;
+  std::string topic_name = "strategy/state";
+  std::string ros1_type_name = "strategy/RobotState";
+  std::string ros2_type_name = "strategy/msg/RobotState";
+  size_t queue_size = 1;
 
   auto handles = ros1_bridge::create_bidirectional_bridge(
     ros1_node, ros2_node, ros1_type_name, ros2_type_name, topic_name, queue_size);
