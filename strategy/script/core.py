@@ -168,21 +168,6 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo()
     our_side = self.our_side
     opp_side = self.opp_side
-    #if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-60, 0, 0)
-    #elif self.game_state == "Kick_Off" and self.our_side == "Blue" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(60, 0, 180)
-    #elif self.game_state == "Free_Kick" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(100, 100, 90)
-    #elif self.game_state == "Free_Ball" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 180)
-    #elif self.game_state == "Throw_In" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 270)
-    #elif self.game_state == "Coner_Kick":
-    #  x, y, yaw, arrived = self.BC.Go2Point(300, 200, 45)
-    #elif self.game_state == "Penalty_Kick" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, 100, 135)
-    #elif self.game_state == "Run_Specific_Point" :
     if self.run_yaw == 0:
       yaw = t[our_side]['ang']
     elif self.run_yaw == 180:
@@ -238,11 +223,7 @@ class Core(Robot, StateMachine):
     position = self.GetRobotInfo()
     self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
 
-
-  
-
 class Strategy(object):
-
   def __init__(self, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(200)
@@ -289,7 +270,6 @@ class Strategy(object):
     point = self.robot.run_point
     log(point)
     if point == "ball_hand":
-      print("ppppppppppp")
       self.RunStatePoint()
     elif state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
@@ -330,7 +310,6 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            print(self.robot.shooting_start)
             if self.robot.shooting_start:
               if self.robot.CheckBallHandle():
                 self.robot.RobotShoot(80, 1)
@@ -362,7 +341,8 @@ class Strategy(object):
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
               print("stop") 
               self.robot.game_state = "Kick_Off"
-              self.robot.toShoot(100)
+              #self.robot.toShoot(100)
+              self.robot.RobotShoot(100,1)
             else:
               self.ToMovement()
                     
