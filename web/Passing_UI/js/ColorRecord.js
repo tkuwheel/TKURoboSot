@@ -31,5 +31,11 @@ function ColorRecord(value){
             	document.getElementsByName('HSVElement2')[i].value = WhiteBox[i];
             }
             break;
+        case 5:
+            for (var i = 0; i < 6; i++) {
+            	document.getElementsByName('HSVElement')[i].value = RedconeBox[i];
+            	document.getElementsByName('HSVElement2')[i].value = RedconeBox[i];
+            }
+            break;
     }
 }

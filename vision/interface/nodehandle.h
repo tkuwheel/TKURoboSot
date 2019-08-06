@@ -31,6 +31,7 @@
 #define FRAME_ROWS 493 //height y493
 #define REDITEM 0x01
 #define GREENITEM 0x02
+#define REDCONEITEM 0x20
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
 #define WHITEITEM 0x10//WHITEITEM=robot
@@ -89,6 +90,7 @@ protected:
 	int ColorModeMsg;
 	vector<int> HSV_red;
 	vector<int> HSV_green;
+	vector<int> HSV_redcone;
 	vector<int> HSV_blue;
 	vector<int> HSV_yellow;
 	vector<int> HSV_white;

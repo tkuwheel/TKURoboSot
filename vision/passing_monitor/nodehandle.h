@@ -24,6 +24,7 @@
 #define FRAME_ROWS 493 //height y493
 #define REDITEM 0x01
 #define GREENITEM 0x02
+#define REDCONEITEM 0x20
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
 #define WHITEITEM 0x10 //WHITEITEM=robot
@@ -92,7 +93,7 @@ class NodeHandle
     double Omni_distance(double pixel_dis);
     int Angle_Interval(int radius);
     double RateMsg;
-    DetectedObject Red_Item, Blue_Item, Yellow_Item, Green_Item, White_Item;
+    DetectedObject Red_Item, Blue_Item, Yellow_Item, Green_Item, White_Item, Redcone_Item;
     //======================================
     //===============publisher==============
     void Pub_monitor(Mat Monitor);
@@ -101,6 +102,7 @@ class NodeHandle
     //==============subscriber=============
     vector<int> HSV_red;
     vector<int> HSV_green;
+    vector<int> HSV_redcone;
     vector<int> HSV_blue;
     vector<int> HSV_yellow;
     vector<int> HSV_white;

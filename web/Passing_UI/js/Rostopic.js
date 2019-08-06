@@ -174,6 +174,11 @@ function topicColorTransfer() {
                 WhiteBox[i] = parseInt(document.getElementsByName('HSVElement')[i].value);
             }
             break;
+        case 5:
+            for (var i = 0; i < 6; i++) {
+                RedconeBox[i] = parseInt(document.getElementsByName('HSVElement')[i].value);
+            }
+            break;
     }
     topicROSColor(mode);
 }
@@ -186,6 +191,7 @@ function topicROSColor(mode) {
         BlueHSVBox: BlueBox,
         YellowHSVBox: YellowBox,
         WhiteHSVBox: WhiteBox,
+        RedconeHSVBox: RedconeBox,
     });
     TopicColor.publish(Color);
 }

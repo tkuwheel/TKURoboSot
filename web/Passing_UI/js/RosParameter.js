@@ -352,6 +352,10 @@ var ParameterHSV_White = new ROSLIB.Param({
     ros: ros,
     name: 'FIRA/vision/HSV/White',
 });
+var ParameterHSV_Redcone = new ROSLIB.Param({
+    ros: ros,
+    name: 'FIRA/vision/HSV/Redcone',
+});
 
 ParameterHSV_Ball.get(function(value) {
     if (value != null) {
@@ -401,11 +405,22 @@ ParameterHSV_White.get(function(value) {
     }
 });
 
+ParameterHSV_Redcone.get(function(value) {
+    if (value != null) {
+        var obj = document.getElementsByName("HSVElement");
+        for (var i = 0; i < obj.length; i++) {
+            RedconeBox[i] = value[i];
+            console.log(RedconeBox)
+        }
+    }
+});
+
 
 function ParameterHSVTransfer() {
     var mode = parseInt(document.getElementById('HSVSelect').value);
     var box = [];
     let str = "";
+    console.log("fuck");
     switch (mode) {
         case 0:
             for (let i = 0; i < 6; i++) {
@@ -442,7 +457,15 @@ function ParameterHSVTransfer() {
             str += "Sent White Parameter: ";
             ParameterHSV_White.set(box);
             break;
+        case 5:
+            for (var i = 0; i < 6; i++) {
+                box[i] = parseInt(document.getElementsByName('HSVElement')[i].value);
+            }
+            str += "Sent Redcone Parameter: ";
+            ParameterHSV_Redcone.set(box);
+            break;
     }
+    console.log(str);
     for(let i=0; i<6; i++){
         str += box[i];
         if(i!=5){

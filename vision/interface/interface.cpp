@@ -178,7 +178,7 @@ cv::Mat Vision::ColorModel(const cv::Mat iframe)
     //cvtColor(oframe,hsv,CV_BGR2HSV);
 
     int hmin, hmax, smin, smax, vmin, vmax;
-    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty())
+    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty() && !HSV_redcone.empty())
     {
         switch (ColorModeMsg)
         {
@@ -222,6 +222,14 @@ cv::Mat Vision::ColorModel(const cv::Mat iframe)
             smax = HSV_white[3];
             vmin = HSV_white[4];
             vmax = HSV_white[5];
+            break;
+        case 5:
+            hmin = HSV_redcone[0];
+            hmax = HSV_redcone[1];
+            smin = HSV_redcone[2];
+            smax = HSV_redcone[3];
+            vmin = HSV_redcone[4];
+            vmax = HSV_redcone[5];
             break;
         }
 
@@ -360,6 +368,26 @@ cv::Mat Vision::ColorModel(const cv::Mat iframe)
                         {
                             oframe.data[(i * oframe.cols * 3) + (j * 3) + 0] = 100;
                             oframe.data[(i * oframe.cols * 3) + (j * 3) + 1] = 0;
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 2] = 255;
+                        }
+                    }
+                    break;
+                case 5:
+                    if (hmax >= hmin)
+                    {
+                        if ((H <= hmax) && (H >= hmin) && (S <= smax) && (S >= smin) && (V <= vmax) && (V >= vmin))
+                        {
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 0] = 100;
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 1] = 150;
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 2] = 255;
+                        }
+                    }
+                    else
+                    {
+                        if (((H <= hmax) || (H >= hmin)) && (S <= smax) && (S >= smin) && (V <= vmax) && (V >= vmin))
+                        {
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 0] = 100;
+                            oframe.data[(i * oframe.cols * 3) + (j * 3) + 1] = 150;
                             oframe.data[(i * oframe.cols * 3) + (j * 3) + 2] = 255;
                         }
                     }
