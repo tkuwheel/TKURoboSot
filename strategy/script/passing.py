@@ -154,6 +154,7 @@ class Core(Robot, StateMachine):
 
 class Strategy(object):
 
+  aim_target_ang = 0
   can_shoot = False
   current_index = 0
   current_point = [0, 0, 0]
@@ -198,6 +199,12 @@ class Strategy(object):
           self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
+      if self.robot.is_aim:
+        if self.robot.toAim(Strategy.aim_target_ang):
+          self.robot.toShoot(self.robot.passing_power)
+        else:
+          self.robot.toAim(Strategy.aim_target_ang)
+
       if self.robot.is_point:
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
@@ -207,24 +214,29 @@ class Strategy(object):
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
                 if abs(targets['Red']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
+                  Strategy.aim_target_ang = targets['ball']['ang']
+                  # self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
               if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
                 if abs(targets['Blue']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
+                  Strategy.aim_target_ang = targets['Blue']['ang']
+                  # self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
               if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
                 print("Using vision: ", targets['Yellow']['ang'])
                 if abs(targets['Yellow']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
+                  Strategy.aim_target_ang = targets['Yellow']['ang']
+                  # self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
               if level['targets_color'][Strategy.current_index] == 'white' and self.robot.target_vision_white:
                 if abs(targets['White']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['White']['ang'])
+                  Strategy.aim_target_ang = targets['White']['ang']
+                  # self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
                 self.robot.toShoot(self.robot.passing_power)
               else:
                 print("Check again")
+                self.robot.toAim(Strategy.aim_target_ang)
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
