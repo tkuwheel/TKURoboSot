@@ -9,7 +9,7 @@ from std_msgs.msg import String
 from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
-from methods.behavior import Behavior
+from methods.passing_behavior import Behavior
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from strategy.cfg import PassingConfig
 import dynamic_reconfigure.client
@@ -64,10 +64,10 @@ class Core(Robot, StateMachine):
     ball2 = (-115 + padding_ball + adjust_ball2_x, 40   + adjust_ball2_y)
     ball3 = (-115 + padding_ball + adjust_ball3_x, -40  + adjust_ball3_y)
     ball4 = (-115 + padding_ball + adjust_ball4_x, -120 + adjust_ball4_y)
-    target1 = (115 + padding_target + adjust_target1_x, 120  + adjust_target1_y)
-    target2 = (115 + padding_target + adjust_target2_x, 40   + adjust_target2_y)
-    target3 = (115 + padding_target + adjust_target3_x, -40  + adjust_target3_y)
-    target4 = (115 + padding_target + adjust_target4_x, -120 + adjust_target4_y)
+    target1 = (115 - padding_target + adjust_target1_x, 120  + adjust_target1_y)
+    target2 = (115 - padding_target + adjust_target2_x, 40   + adjust_target2_y)
+    target3 = (115 - padding_target + adjust_target3_x, -40  + adjust_target3_y)
+    target4 = (115 - padding_target + adjust_target4_x, -120 + adjust_target4_y)
     self.level1 = {'balls_point': [ball1], 'targets_point': [target1], 'targets_color': ['red']}
     self.level2 = {'balls_point': [ball1, ball4], 'targets_point': [target1, target4], 'targets_color': ['red', 'yellow']}
     self.level3 = {'balls_point': [ball1, ball2, ball4], 'targets_point': [target4, target2, target1], 'targets_color': ['yellow', 'blue', 'red']}
@@ -93,15 +93,15 @@ class Core(Robot, StateMachine):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
-  def on_toChase(self, method = "Classic"):
+  def on_toChase(self, method = "Straight"):
     t = self.GetObjectInfo()
-    side = self.opp_side
-    if method == "Classic":
-      x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
-                                          t['ball']['dis'],\
-                                          t['ball']['ang'])
-    elif method == "Straight":
-      x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
+    # side = self.opp_side
+    # if method == "Classic":
+    #   x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
+    #                                       t['ball']['dis'],\
+    #                                       t['ball']['ang'])
+    # elif method == "Straight":
+    x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
     self.MotionCtrl(x, y, yaw)
 
