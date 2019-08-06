@@ -130,7 +130,7 @@ private: //private function
     void	mForwardKinematics();	
     void	mTrajectory();
     void	mOdometry();
-    int*	mHoldBallControl(const double &, const double &, const double &, int [], struct timeval &);
+    int*	mHoldBallControl(const double &, const double &, const double &, const bool &, int [], struct timeval &);
     ////	void	Filter();
     ////	void	MotorSpeed();
 private: //private variable

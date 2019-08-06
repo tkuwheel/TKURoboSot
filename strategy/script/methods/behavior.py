@@ -10,14 +10,14 @@ from robot.obstacle import Obstacle
 ORBIT_KP_V = -0.5
 ORBIT_KP_W = 4.2
 
-REMAINING_RANGE_V = 5
-REMAINING_RANGE_YAW = 2
+#REMAINING_RANGE_V = 20
+#REMAINING_RANGE_YAW = 7
 
 class Behavior(Robot,Obstacle):
   def __init__(self):
     self.penalty_angle = []
 
-  def Orbit(self, goal_ang):
+  def Orbit(self, goal_ang, REMAINING_RANGE_YAW = 5):
     orbit_radius = 33.5 # 22.5 + 11 cm
     velocity = goal_ang
     # velocity = velocity if abs(velocity) < 45 else 45 # maximum speed
@@ -35,7 +35,7 @@ class Behavior(Robot,Obstacle):
       arrived = False
     return v_x, v_y, o_yaw, arrived
 
-  def Go2Point(self, tx, ty, tyaw):
+  def Go2Point(self, tx, ty, tyaw, REMAINING_RANGE_V = 10, REMAINING_RANGE_YAW = 5):
     robot_info = self.GetRobotInfo()
 
     v_x   = tx - robot_info['location']['x']
@@ -52,7 +52,7 @@ class Behavior(Robot,Obstacle):
 
     remaining_v   = math.sqrt(o_x**2 + o_y**2)
     remaining_yaw = o_yaw
-    if abs(remaining_v) < REMAINING_RANGE_V and abs(remaining_yaw) < REMAINING_RANGE_YAW:
+    if remaining_v < REMAINING_RANGE_V and abs(remaining_yaw) < REMAINING_RANGE_YAW:
       arrived = True
     else:
       arrived = False
@@ -63,21 +63,34 @@ class Behavior(Robot,Obstacle):
 
   def relative_goal(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
-    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    if ball_dis + goal_dis < 250:
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
-    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
-    door_y = goal_dis * math.sin(math.radians(goal_ang))
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-    defence_x   = ( ball_x + door_x ) / 2				#防守位置
-    defence_y   = ( ball_y + door_y ) / 2
-    defence_yaw = 0
+      defence_x   = ( 3.5 * ball_x + door_x ) / 2				#防守位置
+      defence_y   = (   2 * ball_y + door_y ) / 2
+      defence_yaw = ball_ang
+ 
+    else:
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+      defence_x   = ( ball_x + door_x ) / 2				#防守位置
+      defence_y   = ( ball_y + door_y ) / 2
+      defence_yaw = ball_ang
+
 
     return defence_x , defence_y , defence_yaw
 
   def relative_ball(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    if ball_dis + goal_dis < 100:
+    if ball_dis + goal_dis < 150:
 
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
       ball_y = ball_dis * math.sin(math.radians(ball_ang))
@@ -85,8 +98,8 @@ class Behavior(Robot,Obstacle):
       door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
       door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = 1				                                  	#avoid to go to the goal area
-      defence_y   = (7.5* ball_y + door_y ) / 10
+      defence_x   = (7.5*ball_x + door_x ) / 10                                	#avoid to go to the goal area
+      defence_y   = (7.5*ball_y + door_y ) / 10
       defence_yaw = ball_ang
 
     else:
@@ -97,26 +110,21 @@ class Behavior(Robot,Obstacle):
       door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
       door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = (7.5* ball_y + door_y ) / 10               	#防守位置
-      defence_y   = (7.5* ball_y + door_y ) / 10
+      defence_x   = (7.5*ball_x +door_x ) / 10               	#防守位置
+      defence_y   = (7.5*ball_y +door_y ) / 10
       defence_yaw = ball_ang
 
 
     return defence_x , defence_y , defence_yaw
 
-  def PenaltyTurning(self, side, run_yaw):
+  def PenaltyTurning(self, side, run_yaw, dest_ang):
     robot_info = self.GetObjectInfo()
+      
     position = self.GetRobotInfo()
+    front_ang = math.degrees(position['imu_3d']['yaw'])
+    v_yaw = front_ang - dest_ang
     if run_yaw == 0:
       v_yaw = robot_info[side]['ang']
-    
-    else:
-      front_ang = math.degrees(position['imu_3d']['yaw'])-90
-      dest_ang  = front_ang - run_yaw
-      self.penalty_angle.append(dest_ang)
-      dest_ang = self.penalty_angle[0] 
-      v_yaw = front_ang - dest_ang
-
     v_x = 0
     v_y = 0
     return v_x, v_y, v_yaw

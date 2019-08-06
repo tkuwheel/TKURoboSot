@@ -133,8 +133,8 @@ class Obstacle(object):
         k = 1
 
     if mode== 0 :
-        v_x = goal_dis * math.cos(math.radians(goal_ang)) - 40 * obstacle_force_x
-        v_y = goal_dis * math.sin(math.radians(goal_ang)) - 40 * obstacle_force_y
+        v_x = goal_dis * math.cos(math.radians(goal_ang)) - 80 * obstacle_force_x
+        v_y = goal_dis * math.sin(math.radians(goal_ang)) - 80 * obstacle_force_y
 
     elif mode==1 :
         v_x = goal_dis * math.cos(math.radians(goal_ang))

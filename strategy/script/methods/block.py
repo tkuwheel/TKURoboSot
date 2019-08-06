@@ -9,14 +9,17 @@ SOCCER_BALL_RADIUS = 0
 
 class Block(Robot):
 
-  cp_value = 0
+  def __init__(self):
+    pass
 
-  def ClassicBlocking(self, ball_dis, ball_ang, front_ang, pwm_y):
-    o_x   = 0
-    o_y   = ball_dis * math.sin(math.radians(ball_ang))
+  def ClassicBlocking(self, ball_dis, ball_ang, front_ang, pwm_x, pwm_y, cp_value):
+    t = self.GetRobotInfo()
+    o_x   = - pwm_x
+    o_y   = ball_dis * math.sin(math.radians(ball_ang)) + pwm_y
     v_x, v_y = self.Rotate(o_x, o_y, front_ang) 
-    v_y = v_y + pwm_y
-    v_yaw = self.cp_value - front_ang
+    v_yaw = cp_value - front_ang
+    if v_x < 0 :
+      v_x = 0
     return v_x, v_y, v_yaw
 
   def GuardPenalting(self, ball_dis, ball_ang, pwm_x, pwm_y):
@@ -26,11 +29,12 @@ class Block(Robot):
     v_yaw = ball_ang
     return v_x, v_y, v_yaw
 
-  def Return(self,goal_dis, goal_ang, front_ang):
+  def Return(self,goal_dis, goal_ang, front_ang, cp_value):
     distance = 70
-    v_x   = distance - abs(goal_dis * math.cos(math.radians(goal_ang)))
-    v_y   = goal_dis * math.sin(math.radians(goal_ang))
-    v_yaw = self.cp_value-front_ang
+    o_x   = distance - abs(goal_dis * math.cos(math.radians(goal_ang)))
+    o_y   = goal_dis * math.sin(math.radians(goal_ang))
+    v_yaw = cp_value - front_ang
+    v_x, v_y = self.Rotate(o_x, o_y, front_ang)
     return v_x, v_y, v_yaw
 
   def ClassicPushing(self, ball_dis, ball_ang, front_ang):
@@ -40,6 +44,8 @@ class Block(Robot):
     v_x, v_y = self.Rotate(o_x, o_y, front_ang)
     v_yaw = ball_ang
     return v_x, v_y, v_yaw
+
+  
 
 
 
