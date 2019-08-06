@@ -575,9 +575,9 @@ int* BaseController::mHoldBallControl(
         const double &x, 
         const double &y, 
         const double &yaw, 
-        const bool &hold_ball
+        const bool &hold_ball,
         int ballcontrol[],
-        struct timeval &T, // time
+        struct timeval &T // time
         ) 
 {
     struct timeval now;
