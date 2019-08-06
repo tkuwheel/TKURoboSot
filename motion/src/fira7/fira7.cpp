@@ -45,8 +45,11 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
     unsigned int counter = 0;
+    unsigned int counter_shoot = 0;
     bool no_cmd = false;
     bool cmd = false;
+    struct timeval last, now;
+    gettimeofday(&last, 0);
     while(true){
         // close 
         if(flag){
@@ -66,6 +69,12 @@ int main(int argc, char **argv)
             robotCMD = Node.getMotion();
             Base.Send(robotCMD);
             if(robotCMD.shoot_power>0){
+//                gettimeofday(&now, 0);
+//                int s = (now.tv_sec - last.tv_sec)*1000;
+//                double us = (now.tv_usec - last.tv_usec)/1000;
+//                printf("%d shoot %f\n", counter_shoot++, (double)s+us);
+//                fflush(stdout); 
+//                last = now;
                 Node.clearShoot();
             }
             no_cmd = false;
