@@ -195,23 +195,26 @@ class Strategy(object):
               double_check = True
               print("This level color is ", level['targets_color'][Strategy.current_index])
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
-                if abs(targets['Red']['ang']) > 0.2 and abs(targets['Red']['ang']) < 2:
+                if abs(targets['Red']['ang']) > 2:
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
               if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
-                if abs(targets['Blue']['ang']) > 0.2 and abs(targets['Blue']['ang']) < 2:
+                if abs(targets['Blue']['ang']) > 2:
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
               if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
-                if abs(targets['Yellow']['ang']) > 0.2 and abs(targets['Yellow']['ang']) < 2:
+                print("Using vision: ", targets['Yellow']['ang'])
+                if abs(targets['Yellow']['ang']) > 2:
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
               if level['targets_color'][Strategy.current_index] == 'white' and self.robot.target_vision_white:
-                if abs(targets['White']['ang']) > 0.2 and abs(targets['White']['ang']) < 2:
+                if abs(targets['White']['ang']) > 2:
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
                 self.robot.toShoot(self.robot.passing_power)
+              else:
+                print("Check again")
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
