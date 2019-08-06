@@ -588,37 +588,37 @@ int* BaseController::mHoldBallControl(
     int a,b;           //a=R_PWM ; b=L_PWM
 #ifdef DEBUG
     printf("=================================\n");
+    printf("hold_ball %f\n", (bool)hold_ball);
     printf("x %f y %f yaw %f\n", (double)x, (double)y, (double)yaw);
     printf("duration %f\n", (double)time);
     printf("=================================\n");
 #endif
 
-  if(hold_ball == false){
-    ballcontrol[0]= 15; 
-    ballcontrol[1]= 0;
-    ballcontrol[2]= 1;
-    ballcontrol[3]= 15;
-    ballcontrol[4]= 0;
-    ballcontrol[5]= 1;   
-  }else{
-    if(yaw==0 && x==0 && y==0){             //停止
-        if(time<1500){
-            ballcontrol[0]= 20;
-            ballcontrol[1]= 0;
-            ballcontrol[2]= 1;
-            ballcontrol[3]= 20;
-            ballcontrol[4]= 0;
-            ballcontrol[5]= 1;   
-        }else{
-            ballcontrol[0]= 8;
-            ballcontrol[1]= 0;
-            ballcontrol[2]= 1;
-            ballcontrol[3]= 8;
-            ballcontrol[4]= 0;
-            ballcontrol[5]= 1;
-        }
-    }
-    else if(yaw==0 &&(x!=0 or y!=0)){
+    if(!hold_ball){
+        ballcontrol[0]= 15; 
+        ballcontrol[1]= 0;
+        ballcontrol[2]= 1;
+        ballcontrol[3]= 15;
+        ballcontrol[4]= 0;
+        ballcontrol[5]= 1;   
+    }else{
+        if(yaw==0 && x==0 && y==0){             //停止
+            if(time<1500){
+                ballcontrol[0]= 20;
+                ballcontrol[1]= 0;
+                ballcontrol[2]= 1;
+                ballcontrol[3]= 20;
+                ballcontrol[4]= 0;
+                ballcontrol[5]= 1;   
+            }else{
+                ballcontrol[0]= 8;
+                ballcontrol[1]= 0;
+                ballcontrol[2]= 1;
+                ballcontrol[3]= 8;
+                ballcontrol[4]= 0;
+                ballcontrol[5]= 1;
+            }
+    }else if(yaw==0 &&(x!=0 or y!=0)){
         if(yaw==0 && x==0 && y!=0){
             if(y>0){
                 if(y<30){
@@ -703,46 +703,44 @@ int* BaseController::mHoldBallControl(
             }
         }
         T=now;
-    }
-    else if(yaw>0){ //Rotate_Left
-      if(yaw<= 10 && y>= 30 ){
-        ballcontrol[0]= 7;
-        ballcontrol[1]= 1;
-        ballcontrol[2]= 0;
-        ballcontrol[3]= 7;
-        ballcontrol[4]= 1;
-        ballcontrol[5]= 0;
-      }else{
-        a = (10+abs(y)*0.4);
-        b = (20+abs(y)*0.5);
-        ballcontrol[0]= a;
-        ballcontrol[1]= 0;
-        ballcontrol[2]= 1;
-        ballcontrol[3]= b;
-        ballcontrol[4]= 0;
-        ballcontrol[5]= 1;
-      }
-      T=now;
-    }
-    else if(yaw<0){ //Rotate_Right
-      if(yaw>= -10 && y>= 30 ){
-        ballcontrol[0]= 7;
-        ballcontrol[1]= 1;
-        ballcontrol[2]= 0;
-        ballcontrol[3]= 7;
-        ballcontrol[4]= 1;
-        ballcontrol[5]= 0;
-      }else{
-        a = (20+abs(y)*0.5);
-        b = (10+abs(y)*0.4);
-        ballcontrol[0]= a;
-        ballcontrol[1]= 0;
-        ballcontrol[2]= 1;
-        ballcontrol[3]= b;
-        ballcontrol[4]= 0;
-        ballcontrol[5]= 1;
-      }
-      T=now;
+    }else if(yaw>0){ //Rotate_Left
+        if(yaw<= 10 && y>= 30 ){
+            ballcontrol[0]= 7;
+            ballcontrol[1]= 1;
+            ballcontrol[2]= 0;
+            ballcontrol[3]= 7;
+            ballcontrol[4]= 1;
+            ballcontrol[5]= 0;
+        }else{
+            a = (10+abs(y)*0.4);
+            b = (20+abs(y)*0.5);
+            ballcontrol[0]= a;
+            ballcontrol[1]= 0;
+            ballcontrol[2]= 1;
+            ballcontrol[3]= b;
+            ballcontrol[4]= 0;
+            ballcontrol[5]= 1;
+        }
+        T=now;
+    }else if(yaw<0){ //Rotate_Right
+        if(yaw>= -10 && y>= 30 ){
+            ballcontrol[0]= 7;
+            ballcontrol[1]= 1;
+            ballcontrol[2]= 0;
+            ballcontrol[3]= 7;
+            ballcontrol[4]= 1;
+            ballcontrol[5]= 0;
+        }else{
+            a = (20+abs(y)*0.5);
+            b = (10+abs(y)*0.4);
+            ballcontrol[0]= a;
+            ballcontrol[1]= 0;
+            ballcontrol[2]= 1;
+            ballcontrol[3]= b;
+            ballcontrol[4]= 0;
+            ballcontrol[5]= 1;
+        }
+        T=now;
     }
   }
   return ballcontrol;
