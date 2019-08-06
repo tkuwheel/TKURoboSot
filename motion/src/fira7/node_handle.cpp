@@ -54,9 +54,7 @@ void* Motion_nodeHandle::mpThreadRun(void* p)
 
 void Motion_nodeHandle::mRun()
 {
-    while(ros::ok()){
-        ros::spin();
-    }
+    ros::spin();
 }
 
 void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &motion_msg)

@@ -1,16 +1,30 @@
-module holdBall(iC,oL,oR,iCMD1,iCMD2,,iCMD3,iS,oLED);
+module holdBall(iC,iRst_n,oL,oR,iCMD1,iCMD2,,iCMD3,iS,oLED);
 inout iC,iS;
+input iRst_n;
 input [7:0]iCMD1,iCMD2,iCMD3;
 output reg oL,oR,oLED/*,oL1,oR1*/;
 reg [1:0]cont;
 reg [32:0]con;
 reg [6:0]spd1,spd2,spd3;
 always@(posedge iC)begin
+if(!iRst_n)begin
+	oL <= 1'b1;
+	oR <= 1'b1;
+end
+	if(iS == 0)begin
+		oL <= 1'b1;//停止<
+		oR <= 1'b1;
 
+	end 
+	else begin
+		oL <= 1'b0;
+		oR <= 1'b0;
+	end
+/*
 	spd1 <= iCMD1[6:0];
 	spd2 <= iCMD2[6:0];
 	spd3 <= iCMD3[6:0];
-
+*/	
 	
 /*	if(iS == 0)begin
 		oL = 1'b1;//停止
@@ -36,6 +50,7 @@ always@(posedge iC)begin
 	end
 
 */
+/*
 if(iS == 0)begin
 	oL = 1'b1;//停止
 	oR = 1'b1;
@@ -50,6 +65,6 @@ end else begin
 		oR <= 1'b0;
 	end
 end
-
-end
+*/
+end 
 endmodule 

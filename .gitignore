@@ -19,11 +19,14 @@ work
 sopc
 signaltap
 obj
-# *_bsp
+software
 
-*.stp
 *.qdf
 *.bak
+*.rpt
+*.qws
+*.bsf
+*.cmp
 
 # ROS2 ignore
 build
@@ -33,15 +36,4 @@ log
 # Vision configs
 FIRA.yaml
 HSVcolormap.bin
-*.qws
-*.elf
-*.map
-*.objdump
-Makefile
-.cproject
-.force_relink
-.project
-*sopcinfo
-*.cmp
-*.bsf
 .DS_Store
