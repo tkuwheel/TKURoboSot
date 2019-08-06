@@ -28,10 +28,10 @@ class Core(Robot, StateMachine):
 
   toIdle   = chase.to(idle) |  movement.to(idle) | point.to(idle) | idle.to.itself() | shoot.to(idle)
   toChase  = idle.to(chase) |  chase.to.itself() | movement.to(chase) | point.to(chase)
-  toShoot  = movement.to(shoot) | point.to(shoot)
+  toShoot  = movement.to(shoot) | point.to(shoot) | aim.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself() | point.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | chase.to(point) | movement.to(point) | shoot.to(point)
-  toAim    = point.to.(aim) | aim.to.itself()
+  toAim    = point.to(aim) | aim.to.itself()
 
   def Callback(self, config, level):
     self.game_level = config['level']
@@ -95,8 +95,21 @@ class Core(Robot, StateMachine):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
-  def on_toAim(self, ta):
-    if ta < 1:
+  def on_toAim(self):
+    t = self.GetObjectInfo()
+    print("Aim to ", Strategy.aim_target)
+    if Strategy.aim_target == "Red":
+      ta = t['Red']['ang']
+    elif Strategy.aim_target == "Blue":
+      ta = t['Blue']['ang']
+    elif Strategy.aim_target == "Yellow":
+      ta = t['Yellow']['ang']
+    elif Strategy.aim_target == "White":
+      ta = t['White']['ang']
+    else:
+      ta = 0
+
+    if abs(ta) < 1:
       print("It's okay")
       return True
     else:
@@ -154,7 +167,7 @@ class Core(Robot, StateMachine):
 
 class Strategy(object):
 
-  aim_target_ang = 0
+  aim_target = ""
   can_shoot = False
   current_index = 0
   current_point = [0, 0, 0]
@@ -200,10 +213,10 @@ class Strategy(object):
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
 
       if self.robot.is_aim:
-        if self.robot.toAim(Strategy.aim_target_ang):
+        if self.robot.toAim():
           self.robot.toShoot(self.robot.passing_power)
         else:
-          self.robot.toAim(Strategy.aim_target_ang)
+          self.robot.toAim()
 
       if self.robot.is_point:
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
@@ -214,29 +227,29 @@ class Strategy(object):
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
                 if abs(targets['Red']['ang']) > 2:
                   double_check = False
-                  Strategy.aim_target_ang = targets['ball']['ang']
+                  Strategy.aim_target = "Red"
                   # self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
               if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
                 if abs(targets['Blue']['ang']) > 2:
                   double_check = False
-                  Strategy.aim_target_ang = targets['Blue']['ang']
+                  Strategy.aim_target = "Blue"
                   # self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
               if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
                 print("Using vision: ", targets['Yellow']['ang'])
                 if abs(targets['Yellow']['ang']) > 2:
                   double_check = False
-                  Strategy.aim_target_ang = targets['Yellow']['ang']
+                  Strategy.aim_target = "Yellow"
                   # self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
               if level['targets_color'][Strategy.current_index] == 'white' and self.robot.target_vision_white:
                 if abs(targets['White']['ang']) > 2:
                   double_check = False
-                  Strategy.aim_target_ang = targets['White']['ang']
+                  Strategy.aim_target = "White"
                   # self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
                 self.robot.toShoot(self.robot.passing_power)
               else:
                 print("Check again")
-                self.robot.toAim(Strategy.aim_target_ang)
+                self.robot.toAim()
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
