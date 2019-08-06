@@ -182,6 +182,7 @@ class Strategy(object):
 
       if self.robot.is_idle:
         if self.robot.game_start:
+          print("This level is ", self.robot.game_level)
           Strategy.current_index = 0
           Strategy.can_shoot = False
           self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
@@ -191,7 +192,6 @@ class Strategy(object):
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
             if Strategy.can_shoot:
-              self.robot.toShoot(self.robot.passing_power)
               double_check = True
               print("This level color is ", level['targets_color'][Strategy.current_index])
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
@@ -211,7 +211,7 @@ class Strategy(object):
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
-                print("Shoot: ", self.robot.passing_power)
+                self.robot.toShoot(self.robot.passing_power)
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
