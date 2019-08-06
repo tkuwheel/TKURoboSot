@@ -132,7 +132,7 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     ourside = self.our_side
     l = self.GetObstacleInfo()
-    log('move')
+    #log('move')
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
@@ -168,21 +168,6 @@ class Core(Robot, StateMachine):
     t = self.GetObjectInfo()
     our_side = self.our_side
     opp_side = self.opp_side
-    #if self.game_state == "Kick_Off" and self.our_side == "Yellow" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-60, 0, 0)
-    #elif self.game_state == "Kick_Off" and self.our_side == "Blue" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(60, 0, 180)
-    #elif self.game_state == "Free_Kick" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(100, 100, 90)
-    #elif self.game_state == "Free_Ball" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 180)
-    #elif self.game_state == "Throw_In" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, -100, 270)
-    #elif self.game_state == "Coner_Kick":
-    #  x, y, yaw, arrived = self.BC.Go2Point(300, 200, 45)
-    #elif self.game_state == "Penalty_Kick" :
-    #  x, y, yaw, arrived = self.BC.Go2Point(-100, 100, 135)
-    #elif self.game_state == "Run_Specific_Point" :
     if self.run_yaw == 0:
       yaw = t[our_side]['ang']
     elif self.run_yaw == 180:
@@ -192,8 +177,6 @@ class Core(Robot, StateMachine):
     else :
       yaw = self.run_yaw
     x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, yaw)
-    #else:
-      #log("Unknown Game State")
 
     self.MotionCtrl(x, y, yaw)
     return arrived
@@ -238,11 +221,7 @@ class Core(Robot, StateMachine):
     position = self.GetRobotInfo()
     self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
 
-
-  
-
 class Strategy(object):
-
   def __init__(self, sim=False):
     rospy.init_node('core', anonymous=True)
     self.rate = rospy.Rate(200)
@@ -287,14 +266,13 @@ class Strategy(object):
     mode = self.robot.strategy_mode
     state = self.robot.game_state
     point = self.robot.run_point
-    log(point)
+    #log(point)
     if point == "ball_hand":
-      print("ppppppppppp")
       self.RunStatePoint()
     elif state == "Penalty_Kick":
       self.robot.toMovement("Penalty_Kick")
     elif mode == "At_Post_up":
-      log("movement")
+      #log("movement")
       self.robot.toMovement("At_Post_up")
     elif mode == "At_Orbit":
       self.robot.toMovement("Orbit")
@@ -310,8 +288,6 @@ class Strategy(object):
     while not rospy.is_shutdown():
       self.robot.PubCurrentState()
       self.robot.Supervisor()
-
-      #print("My Namespace: {}, My Role: {}".format(rospy.get_namespace(), self.robot.MyRole()))
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -330,13 +306,14 @@ class Strategy(object):
 
         if self.robot.is_idle:          
           if self.robot.game_start:
-            print(self.robot.shooting_start)
             if self.robot.shooting_start:
               if self.robot.CheckBallHandle():
                 self.robot.RobotShoot(80, 1)
               else:
-                for i in range(0,5000):                
+                x = time.time()
+                while 1:                
                   self.robot.MotionCtrl(30, 0, 0)
+                  if (time.time() - x ) > 1: break
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
               self.robot.record_angle()
@@ -348,11 +325,9 @@ class Strategy(object):
               self.ToChase()
               
         if self.robot.is_chase:
-          log(self.dest_angle)
+          #log(self.robot.dest_angle)
           if self.robot.CheckBallHandle():
             print('chase to move')
-            # self.robot.goal_dis = 0
-            # self.robot.Accelerate(0,targets,self.maximum_v) 
             self.ToMovement()
           else:
             self.ToChase()
@@ -360,9 +335,9 @@ class Strategy(object):
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
-              print("stop") 
-              self.robot.game_state = "Kick_Off"
+              log("stop") 
               self.robot.toShoot(100)
+              self.dclient.update_configuration({"game_state": "Kick_Off"})
             else:
               self.ToMovement()
                     
@@ -392,7 +367,6 @@ class Strategy(object):
               self.ToMovement()
 
           elif mode == "Fast_break":
-            
             self.ToAttack()
 
         if self.robot.is_attack:
