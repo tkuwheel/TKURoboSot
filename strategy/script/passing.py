@@ -24,12 +24,14 @@ class Core(Robot, StateMachine):
   shoot  = State('Shoot')
   point  = State('Point')
   movement = State('Movement')
+  aim    = State('Aim')
 
   toIdle   = chase.to(idle) |  movement.to(idle) | point.to(idle) | idle.to.itself() | shoot.to(idle)
   toChase  = idle.to(chase) |  chase.to.itself() | movement.to(chase) | point.to(chase)
   toShoot  = movement.to(shoot) | point.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself() | point.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | chase.to(point) | movement.to(point) | shoot.to(point)
+  toAim    = point.to.(aim) | aim.to.itself()
 
   def Callback(self, config, level):
     self.game_level = config['level']
@@ -92,6 +94,14 @@ class Core(Robot, StateMachine):
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
+
+  def on_toAim(self, ta):
+    if ta < 1:
+      print("It's okay")
+      return True
+    else:
+      self.MotionCtrl(0, 0, ta)
+      return False
 
   def on_toChase(self, method = "Straight"):
     t = self.GetObjectInfo()
