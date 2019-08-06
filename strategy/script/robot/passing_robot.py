@@ -173,7 +173,7 @@ class Robot(object):
         print("Passing Failed")
 
       ## Pass
-      self.RobotShoot(80, 0)
+      self.RobotShoot(88, 0)
 
     except rospy.ServiceException, e:
       print("Service call failed: {}".format(e))
@@ -414,6 +414,7 @@ class Robot(object):
   def RealShoot(self, power, pos) :
     msg = Int32()
     msg.data = power
+    print("Real shooting: ", power)
     self.shoot_pub.publish(msg)
 
   def SimBallHandle(self):

@@ -114,7 +114,7 @@ class Core(Robot, StateMachine):
     return arrived
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw, 3, 1)
+    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw, 5, 1)
 
     self.MotionCtrl(x, y, yaw)
     return arrived
@@ -191,7 +191,9 @@ class Strategy(object):
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
             if Strategy.can_shoot:
+              self.robot.toShoot(self.robot.passing_power)
               double_check = True
+              print("This level color is ", level['targets_color'][Strategy.current_index])
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
                 if abs(targets['Red']['ang']) > 0.2 and abs(targets['Red']['ang']) < 2:
                   double_check = False
@@ -209,7 +211,7 @@ class Strategy(object):
                   double_check = False
                   self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
-                self.robot.toShoot(self.robot.passing_power)
+                print("Shoot: ", self.robot.passing_power)
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
