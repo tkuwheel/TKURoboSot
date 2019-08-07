@@ -37,6 +37,7 @@ IMU            = "imu_3d"
 STRATEGY_STATE_TOPIC = "strategy/state"
 CMDVEL_TOPIC = "motion/cmd_vel"
 SHOOT_TOPIC  = "motion/shoot"
+HOLD_TOPIC  = "motion/hold_ball"
 
 class Robot(object):
   
@@ -131,6 +132,7 @@ class Robot(object):
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
     self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC, RobotState)
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
+    self.hold_pub  = self._Publisher(HOLD_TOPIC, Bool)
     robot2_sub = message_filters.Subscriber('/robot2/strategy/state', RobotState)
     robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
     ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
@@ -173,7 +175,7 @@ class Robot(object):
         print("Passing Failed")
 
       ## Pass
-      self.RobotShoot(80, 0)
+      self.RobotShoot(88, 0)
 
     except rospy.ServiceException, e:
       print("Service call failed: {}".format(e))
@@ -412,9 +414,19 @@ class Robot(object):
     return self.__obstacle_info
 
   def RealShoot(self, power, pos) :
+    msg = Twist()
+    msg.linear.x   = 0
+    msg.linear.y   = 0
+    msg.angular.z  = 0
+    self.cmdvel_pub.publish(msg)
+    self.hold_pub.publish(False)
+    time.sleep(1)
     msg = Int32()
     msg.data = power
+    print("Real shooting: ", power)
     self.shoot_pub.publish(msg)
+    time.sleep(1)
+    self.hold_pub.publish(True)
 
   def SimBallHandle(self):
     self.sim_hold_pub.publish(True)

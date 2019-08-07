@@ -11,10 +11,12 @@
 <script src="jquery-ui-1.11.4/jquery-ui.js"></script>
 <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
 <script src="js/eventemitter2.min.js"></script>
+<script src="js/Keyboard_control.js"></script>
 
 <link rel="contents" href="bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="css/form.css">
+
 </head>
 
 <body>
@@ -50,9 +52,9 @@ strategy_web
 
   run_point：
   <select name="run_point" id="run_point">
+      <option value="none">none</option>
     　<option value="empty_hand">empty_hand</option>
     　<option value="ball_hand">ball_hand</option>
-    　<option value="none">none</option>
   </select><br/>
 
   run_x：
@@ -80,11 +82,11 @@ strategy_web
   </select><br/>
   strategy_mode：
   <select name="strategy_mode" id = strategy_mode>
+      <option value="Fast_break">Fast_break</option>
     　<option value="At_Orbit">At_Orbit</option>
     　<option value="At_Post_up">Post_up</option>
     　<option value="Defense_ball">Defense_ball</option>
-      <option value="Defense_goal">Defense_goal</option>
-      <option value="Fast_break">Fast_break</option>
+      <option value="Defense_goal">Defense_goal</option>    
   </select><br/>
 
   orb_attack_ang：
@@ -94,8 +96,8 @@ strategy_web
   <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="10.0" oninput="ToInputValue(this.value,this.name,1);">
   <input id="atk_shoot_angInput" name="atk_shoot_ang"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
   atk_shoot_dis：
-  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="500.0" value="300" oninput="ToInputValue(this.value,this.name,1);">
-  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="300" type="number" min="0.0" max="500.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
+  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="1000.0" value="300" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="300" type="number" min="0.0" max="1000.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
   minimum_w：
   <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" oninput="ToInputValue(this.value,this.name,1);">
   <input id="minimum_wInput" name="minimum_w"  value="1.2" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
