@@ -425,7 +425,7 @@ class Robot(object):
     msg.data = power
     print("Real shooting: ", power)
     self.shoot_pub.publish(msg)
-    # time.sleep(1)
+    time.sleep(0.5)
     self.hold_pub.publish(True)
 
   def SimBallHandle(self):
