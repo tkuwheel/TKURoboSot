@@ -261,11 +261,11 @@ assign iReset_n = KEY[0];
 //assign GPIO_0_D[29] = oKick;
 /*for 7th*/
 
-assign GPIO_0_D[0] = oKick;
-assign GPIO_0_D[1] = waylight;
-assign GPIO_0_D[2] = oWHoldBall_L;
-assign GPIO_0_D[3] = oWHoldBall_R;
-assign GPIO_0_D[7:4] = wHoldBall_DIR;
+assign GPIO_1_D[16] = oKick;
+assign GPIO_1_D[18] = waylight;
+assign GPIO_0_D[0] = oWHoldBall_L;
+assign GPIO_0_D[1] = oWHoldBall_R;
+assign GPIO_0_D[5:2] = wHoldBall_DIR;
 
 assign LED = wLED;
 assign wLED[2] = oKick;

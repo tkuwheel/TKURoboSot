@@ -1,3 +1,14 @@
+ //
+//
+// Major Functions: holdball control
+//
+// --------------------------------------------------------------------
+//
+// Revision History :
+// --------------------------------------------------------------------
+//   Ver  :| Author            :| Mod. Date  :|  Changes Made:
+//   1.0  :| Yin-Chen,Li       :| 2019/08/06 :|  Shoot7
+// --------------------------------------------------------------------
 module holdball7(holdPower,holdPower1,reset,oPower,oPower1,clk);
 
 input [6:0]holdPower;
@@ -11,7 +22,7 @@ wire pwmclk;
 
 
 Clkdiv #(
-	.EXPECTCLK (1000*100)
+	.EXPECTCLK (500*100)
 )u2(
 
 .iClk(clk), 
@@ -20,14 +31,14 @@ Clkdiv #(
 	
 );
 
-ishootpwm (
+holdpwm (
 .clk(pwmclk),
 .reset(reset),
 .iSw(holdPower),
 .oPwm(oPower)
 );
 
-ishootpwm u1 (
+holdpwm u1 (
 .clk(pwmclk),
 .reset(reset),
 .iSw(holdPower1),
