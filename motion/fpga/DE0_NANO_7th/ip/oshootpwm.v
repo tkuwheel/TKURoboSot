@@ -6,7 +6,7 @@ output reg oPwm;
 reg [7:0]counter;
 
 
-parameter iPwm=10;//determine the output power
+parameter iPwm=7;//determine the output power
 
 	always@(posedge clk) begin
 		if(!reset)begin
