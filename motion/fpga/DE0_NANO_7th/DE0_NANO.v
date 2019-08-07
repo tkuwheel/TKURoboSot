@@ -270,6 +270,7 @@ assign GPIO_0_D[5:2] = wHoldBall_DIR;
 assign LED = wLED;
 assign wLED[2] = oKick;
 assign wLED[3] = waylight;
+assign wLED[7:5] = iSignal[7:5];
 //assign wLED[4] = oWHoldBall_L;
 //assign wLED[5] = oWHoldBall_R;
 
