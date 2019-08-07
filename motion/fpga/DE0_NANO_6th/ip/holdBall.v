@@ -8,8 +8,8 @@ reg [32:0]con;
 reg [6:0]spd1,spd2,spd3;
 always@(posedge iC)begin
 if(!iRst_n)begin
-	oL <= 1'b1;
-	oR <= 1'b1;
+	oL <= 1'b0;
+	oR <= 1'b0;
 end
 	if(iS == 0)begin
 		oL <= 1'b1;//停止<
