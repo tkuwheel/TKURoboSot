@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+<script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+<script src="js/Rosservice.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="jquery-ui-1.11.4/jquery-ui.js"></script>
+<script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+<script src="js/eventemitter2.min.js"></script>
+<script src="js/Keyboard_control.js"></script>
+
+<link rel="contents" href="bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+strategy_web
+<div id="WifiLight">
+    <canvas id="Light"></canvas>
+</div>
+<form name='form' id='form'>
+
+  game_start:
+  <input id ='game_start'   type="checkbox"   onclick = gameStart() ><br/>
+  <input type='button' name='submit' value='送出' onclick= processFormData() /><br/>
+
+  level：
+  <select name="level" id = "level">
+    　<option value="Level1">Level1</option>
+      <option value="Level2">Level2</option>
+      <option value="Level3">Level3</option>
+      <option value="Level4">Level4</option>
+  </select><br/>
+
+  passing_power：
+  <input id ='passing_power'      type="checkbox" value = 'true'  name='passing_power' ><br/>
+  using_orbit：
+  <input id ='using_orbit'      type="checkbox" value = 'true'  name='using_orbit' ><br/>
+  
+  target_vision_red：
+  <input id ='target_vision_red'      type="checkbox" value = 'true'  name='target_vision_red' ><br/>
+  target_vision_yellow:
+  <input id ='target_vision_yellow'      type="checkbox" value = 'true'  name='target_vision_yellow' ><br/>
+  target_vision_blue:
+  <input id ='target_vision_blue'      type="checkbox" value = 'true'  name='target_vision_blue' ><br/>
+  target_vision_white:
+  <input id ='target_vision_white'      type="checkbox" value = 'true'  name='target_vision_white' ><br/>
+
+
+  passing_power：
+  <input id="passing_power：Slider" name="passing_power：" type="range"  min="0.0" max="150.0"  value="35.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="passing_power：Input"  name="passing_power："  type="number" min="0.0" max="150.0" value="35.0" oninput="ToSliderValue(this.value,this.name,0);" />0 to 150<br/>
+  
+  
+  padding_ball：
+  <input id="padding_ballSlider" name="padding_ball" type="range"  min="0.0" max="150.0"  value="35.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="padding_ballInput"  name="padding_ball"  type="number" min="0.0" max="150.0" value="35.0" oninput="ToSliderValue(this.value,this.name,0);" />0 to 150<br/> 
+  padding_target：
+  <input id="padding_targetSlider" name="padding_target" type="range"  min="0.0" max="150.0" value="90.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="padding_targetInput" name="padding_target"  type="number" min="0.0" max="150.0" value="90.0" oninput="ToSliderValue(this.value,this.name,0);" />0 to 150<br/>
+
+
+
+  strategy_mode：
+  <select name="strategy_mode" id = strategy_mode>
+      <option value="Fast_break">Defense</option>
+      <option value="Fast_break">Attack</option>    
+  </select><br/>
+
+  orb_attack_ang：
+  <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="orb_attack_angInput" name="orb_attack_ang"  value="5.0" type="number" min="0.0" max="20.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 20.0<br/>
+  
+
+  minimum_w：
+  <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_wInput" name="minimum_w"  value="1.2" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  maximum_w：
+  <input id="maximum_wSlider" name="maximum_w" type="range" min="10.0" max="100.0" value="35" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_wInput" name="maximum_w"  value="35" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />10.0 to 100.0<br/>
+  minimum_v：
+  <input id="minimum_vSlider" name="minimum_v" type="range" min="0.0" max="5.0" value="0.2" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_vInput" name="minimum_v"  value="0.2" type="number" min="0.0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  maximum_v：
+  <input id="maximum_vSlider" name="maximum_v" type="range" min="10.0" max="100.0" value="60" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_vInput" name="maximum_v"  value="60" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />10.0 to 100.0<br/>
+ 
+  ballhandle_dis：
+  <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="28" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_disInput" name="ballhandle_dis"  value="28" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  ballhandle_ang：
+  <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_angInput" name="ballhandle_ang"  value="5" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  
+  adjust_ball1_x：
+  <input id="adjust_ball1_xSlider" name="adjust_ball1_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball1_xInput" name="adjust_ball1_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball1_y:
+  <input id="adjust_ball1_ySlider" name="adjust_ball1_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball1_yInput" name="adjust_ball1_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball2_x:
+  <input id="adjust_ball2_xSlider" name="adjust_ball2_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball2_xInput" name="adjust_ball2_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball2_y:
+  <input id="adjust_ball2_ySlider" name="adjust_ball2_y"  type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball2_yInput"  name="adjust_ball2_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball3_x:
+  <input id="adjust_ball3_xSlider" name="adjust_ball3_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball3_xInput" name="adjust_ball3_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball3_y:
+  <input id="adjust_ball3_ySlider" name="adjust_ball3_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball3_yInput" name="adjust_ball3_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball4_x:
+  <input id="adjust_ball4_xSlider" name="adjust_ball4_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball4_xInput" name="adjust_ball4_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_ball4_y:
+  <input id="adjust_ball4_ySlider" name="adjust_ball4_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_ball4_yInput" name="adjust_ball4_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target1_x:
+  <input id="adjust_target1_xSlider" name="adjust_target1_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target1_xInput" name="adjust_target1_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target1_y:
+  <input id="adjust_target1_ySlider" name="adjust_target1_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target1_yInput" name="adjust_target1_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target2_x:
+  <input id="adjust_target2_xSlider" name="adjust_target2_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target2_xInput" name="adjust_target2_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target2_y:
+  <input id="adjust_target2_ySlider" name="adjust_target2_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target2_yInput" name="adjust_target2_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target3_x:
+  <input id="adjust_target3_xSlider" name="adjust_target3_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target3_xInput" name="adjust_target3_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target3_y:
+  <input id="adjust_target3_ySlider" name="adjust_target3_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target3_yInput" name="adjust_target3_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target4_x:
+  <input id="adjust_target4_xSlider" name="adjust_target4_x" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target4_xInput" name="adjust_target4_x"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  adjust_target4_y:
+  <input id="adjust_target4_ySlider" name="adjust_target4_y" type="range"  min="-10.0" max="10.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="adjust_target4_yInput" name="adjust_target4_y"  type="number" min="-10.0" max="10.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);" />-10.0 to 10.0<br/>
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</form>
+    <div class="Wifimodal_content">
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label for="RobotIPDATA" class="control-label">Robot_IP:</label>
+                    <input name="RobotIPDATA" type="text" class="form-control" id="RobotIP" value=IP.textContent>
+                </div>
+                <div class="form-group">
+                    <label for="RobotHostDATA" class="control-label">Robot_Host:</label>
+                    <input name="RobotHostDATA" type="text" class="form-control" id="RobotHost" value=Host.textContent>
+                </div>
+            </form>
+                </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ros.close();">Close</button>
+            <button type="button" class="btn btn-primary" id="send-message" onclick="RobotConnect();history.go(0);">Connect</button>
+        </div>
+    </div>
+    <script src="js/RobotConnect.js"></script>
+    <script src="js/variable.js"></script>
+
+</body>
+</html>
