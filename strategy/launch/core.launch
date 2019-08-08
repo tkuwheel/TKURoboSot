@@ -15,4 +15,8 @@
 </group>
 <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
 <!-- <node name="dynamic_reconfigure_load" pkg="dynamic_reconfigure" type="dynparam" args="load /core $(find strategy)/cfg/game_state.yaml" /> -->
+<node name="mapping_ball_handle" pkg="topic_tools" type="transform"
+      args="$(env ROBOT_NS)/strategy/state $(env ROBOT_NS)/motion/hold_ball std_msgs/Bool
+            'std_msgs.msg.Bool(
+             data=m.ball_is_handled)' --import std_msgs" />
 </launch>
