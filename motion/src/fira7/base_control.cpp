@@ -704,14 +704,14 @@ int* BaseController::mHoldBallControl(
             }
             T=now;
         }else if(yaw>0){ //Rotate_Left
-            if(yaw<= 10 && y>= 30 ){
+           /* if(yaw<= 20 && y>= 30 ){
                 ballcontrol[0]= 7;
                 ballcontrol[1]= 1;
                 ballcontrol[2]= 0;
                 ballcontrol[3]= 7;
                 ballcontrol[4]= 1;
                 ballcontrol[5]= 0;
-            }else{
+           }else{*/
                 a = (10+abs(y)*0.4);
                 b = (20+abs(y)*0.5);
                 ballcontrol[0]= a;
@@ -720,17 +720,17 @@ int* BaseController::mHoldBallControl(
                 ballcontrol[3]= b;
                 ballcontrol[4]= 0;
                 ballcontrol[5]= 1;
-            }
+            //}
             T=now;
         }else if(yaw<0){ //Rotate_Right
-            if(yaw>= -10 && y>= 30 ){
+           /* if(yaw>= -20 && y>= 30 ){
                 ballcontrol[0]= 7;
                 ballcontrol[1]= 1;
                 ballcontrol[2]= 0;
                 ballcontrol[3]= 7;
                 ballcontrol[4]= 1;
                 ballcontrol[5]= 0;
-            }else{
+            }else{*/
                 a = (20+abs(y)*0.5);
                 b = (10+abs(y)*0.4);
                 ballcontrol[0]= a;
@@ -739,7 +739,7 @@ int* BaseController::mHoldBallControl(
                 ballcontrol[3]= b;
                 ballcontrol[4]= 0;
                 ballcontrol[5]= 1;
-            }
+           // }
             T=now;
         }
     }
