@@ -154,6 +154,7 @@ foreach(
     localization_white_line
     tracking
     passing_monitor
+    passing_interface
 )
 add_subdirectory(${subdir})
 endforeach()
