@@ -71,7 +71,7 @@ function RobotConnect() {
 }
 var dynaRecClient = new ROSLIB.Service({
     ros : ros,
-    name : '/robot1/core/set_parameters',
+    name : '/passing/set_parameters',
     serviceType : 'dynamic_reconfigure/Reconfigure'
 });
 

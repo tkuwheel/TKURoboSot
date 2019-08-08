@@ -2,7 +2,9 @@
     var myBoolean2 = new Boolean();
     var myBoolean3 = new Boolean();
     var myBoolean4 = new Boolean();
-    var myBoolean5 = new Boolean()
+    var myBoolean5 = new Boolean();
+    var myBoolean6 = new Boolean();
+
 
     function processFormData() {
         if(document.getElementById("target_vision_red").checked) {
@@ -25,6 +27,11 @@
          }else{
            myBoolean5 = Boolean(0)
          }
+         if(document.getElementById("passing_power").checked) {
+            myBoolean6 = Boolean(1);
+          }else{
+            myBoolean6 = Boolean(0)
+          }
 
         
         var target_vision_red = new ROSLIB.Message({
@@ -39,7 +46,9 @@
         var target_vision_white = new ROSLIB.Message({
             data:  myBoolean5
         });
-
+        var passing_power = new ROSLIB.Message({
+            data:  myBoolean6
+        });
 
 
         var ballhandle_dis = new ROSLIB.Message({
@@ -54,9 +63,7 @@
         var padding_target = new ROSLIB.Message({
             data: parseInt(document.getElementById("padding_targetInput").value)
         });
-        var passing_power = new ROSLIB.Message({
-            data: parseInt(document.getElementById("passing_powerInput").value)
-        });
+       
         
 
 
@@ -128,9 +135,7 @@
             
         
 
-        var game_state = new ROSLIB.Message({
-        data: document.getElementById("game_state").value
-        });
+        
         var strategy_mode = new ROSLIB.Message({
         data: document.getElementById("strategy_mode").value
         });
@@ -148,13 +153,14 @@
                 {name: 'target_vision_yellow', value: target_vision_yellow.data},
                 {name: 'target_vision_blue', value: target_vision_blue.data},
                 {name: 'target_vision_white', value: target_vision_white.data},
+                {name: 'passing_power', value: passing_power.data},
             ],
             ints: [
                 {name: 'ballhandle_dis', value: ballhandle_dis.data},
                 {name: 'ballhandle_ang', value: ballhandle_ang.data},
                 {name: 'padding_ball', value: padding_ball.data},
                 {name: 'padding_target', value: padding_target.data},
-                {name: 'passing_power', value: passing_power.data},
+                
                 {name: 'adjust_ball1_x', value: adjust_ball1_x.data},
                 {name: 'adjust_ball1_y', value: adjust_ball1_y.data},
                 {name: 'adjust_ball2_x', value: adjust_ball2_x.data},
@@ -173,7 +179,6 @@
                 {name: 'adjust_target4_y', value: adjust_target4_y.data},
             ],
             strs: [
-                {name: 'game_state', value: game_state.data},
                 {name: 'strategy_mode', value: strategy_mode.data},
                 {name: 'level', value: level.data},
             ],
