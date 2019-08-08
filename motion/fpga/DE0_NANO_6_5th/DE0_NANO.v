@@ -392,16 +392,12 @@ holdball7(
 .oPower1(oWHoldBall_R)
 );
 
-shoot7(						
-
-.clk(CLOCK_50),
-.control(iPower[7]),
-.iSw(iPower[6:0]),
-.reset(iReset_n),
-.shoot(oKick),
-.dled(waylight)//direction light
-); 
-
+ShootControl(
+	.iClk(CLOCK_50),
+	.iRst_n(iReset_n),
+	.iPower(iPower),
+	.oPower(oKick)	
+);
 
 
 // Combine feedbacks to package
