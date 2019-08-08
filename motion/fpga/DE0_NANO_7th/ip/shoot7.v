@@ -37,8 +37,11 @@ parameter S2=4'b0011;
 parameter S3=4'b0100;  
 parameter S4=4'b0101;
 parameter S5=4'b0110;
-parameter S6=4'b0111;
-parameter S7=4'b1000;
+parameter S6=4'b0110;
+parameter S7=4'b0111;
+parameter S8=4'b1000;
+parameter S9=4'b1001;
+parameter S10=4'b1010;
 
 
 Clkdiv #(
@@ -167,7 +170,7 @@ always@(posedge clk) begin
 			en<=0;
 			shoot<=0;
 			resetPower<=0;
-			if(counter>=5000000)begin//wait for a 0.1 second
+			if(counter>=5000000)begin//wait for a 0.1 second,and change the direction
 				state <=S6;
 				counter <= 0;
 			end
@@ -181,7 +184,7 @@ always@(posedge clk) begin
 			en<=0;
 			shoot<=0;
 			resetPower<=0;
-			if(counter>=50000000)begin//wait for a second
+			if(counter>=50000000)begin//wait for a second,back to the INIT
 				state <=INIT;
 				counter <= 0;
 			end
@@ -191,25 +194,71 @@ always@(posedge clk) begin
 				state <= S6;
 			end			
 		end
+		
 		S7: begin
 				en<=0;
 				resetPower<=0;
-			if(counter>=15000000)begin//output a pwm value for 0.3 second(special case)
-				state <=INIT;
+				shoot <= 0;
+			if(counter>=5000000)begin//wait for 0.1s
+				state <=S8;
+				counter <= 0;
+			end
+			else begin
+				dled<=1'b0;
+				state <= S7;
+				counter<=counter+1;
+			end			
+		end
+		S8: begin
+				en<=0;
+				resetPower<=0;
+			if(counter>=15000000)begin//output a pwm value for 0.3 second
+				state <=S9;
 				counter <= 0;
 				shoot <= 0;
 			end
 			else begin
 				dled<=1'b0;
-				state <= S7;
+				state <= S8;
 				shoot<=pwm1;
 				counter<=counter+1;
 			end			
 		end
+		S9: begin
+				en<=0;
+				resetPower<=0;
+				shoot <= 0;
+			if(counter>=5000000)begin//wait for 0.1s
+				state <=S10;
+				counter <= 0;
+			end
+			else begin
+				dled<=1'b0;
+				state <= S9;
+				counter<=counter+1;
+			end			
+		end
+		S10: begin
+			en<=0;
+			shoot<=0;
+			resetPower<=0;
+			if(counter>=5000000)begin//wait for 1s
+				state <=INIT;
+				counter <= 0;
+			end
+			else begin
+				counter<=counter+1;
+				dled<=1'b1;
+				state <= S10;
+			end			
+		end
+
+
 		default:begin
 				shoot<=0;
 				dled<=0;
 				en<=0;
+				resetPower<=0;
 		end
 		
 		endcase
