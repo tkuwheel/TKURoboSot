@@ -88,7 +88,6 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/HSV/Yellow", HSV_yellow);
     nh.getParam("FIRA/vision/HSV/Green", HSV_green);
     nh.getParam("FIRA/vision/HSV/White", HSV_white);
-    nh.getParam("FIRA/vision/HSV/Redcone", HSV_redcone);
     //==================黑白掃描參數=======================
     nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
     nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
@@ -343,18 +342,12 @@ void NodeHandle::colorcall(const vision::color msg)
             WhiteHSVBoxMsg[i] = msg.WhiteHSVBox[i];
         HSV_white.assign(WhiteHSVBoxMsg, WhiteHSVBoxMsg + sizeof(WhiteHSVBoxMsg) / sizeof(int));
         break;
-    case 5:
-        int RedconeHSVBoxMsg[6];
-        for (int i = 0; i < 6; i++)
-            RedconeHSVBoxMsg[i] = msg.RedconeHSVBox[i];
-        HSV_redcone.assign(RedconeHSVBoxMsg, RedconeHSVBoxMsg + sizeof(RedconeHSVBoxMsg) / sizeof(int));
-        break;
     }
 }
 void NodeHandle::HSVmap()
 {
     unsigned char *HSVmap = new unsigned char[256 * 256 * 256];
-    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty() && !HSV_redcone.empty())
+    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty())
     {
         //cout<<"get all hsv"<<endl;
         for (int b = 0; b < 256; b++)
@@ -450,16 +443,6 @@ void NodeHandle::HSVmap()
                     {
                         if ((H_sum >= HSV_white[0]) || (H_sum <= HSV_white[1]) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | WHITEITEM;
-                    }
-                    if (HSV_redcone[0] < HSV_redcone[1])
-                    {
-                        if ((H_sum >= HSV_redcone[0]) && (H_sum <= HSV_redcone[1]) && (S_sum >= HSV_redcone[2]) && (S_sum <= HSV_redcone[3]) && (V_sum >= HSV_redcone[4]) && (V_sum <= HSV_redcone[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDCONEITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_redcone[0]) || (H_sum <= HSV_redcone[1]) && (S_sum >= HSV_redcone[2]) && (S_sum <= HSV_redcone[3]) && (V_sum >= HSV_redcone[4]) && (V_sum <= HSV_redcone[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDCONEITEM;
                     }
                 }
             }

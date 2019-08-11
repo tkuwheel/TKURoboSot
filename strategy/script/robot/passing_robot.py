@@ -420,12 +420,12 @@ class Robot(object):
     msg.angular.z  = 0
     self.cmdvel_pub.publish(msg)
     self.hold_pub.publish(False)
-    time.sleep(1)
+    time.sleep(0.5)
     msg = Int32()
     msg.data = power
     print("Real shooting: ", power)
     self.shoot_pub.publish(msg)
-    time.sleep(1)
+    time.sleep(0.5)
     self.hold_pub.publish(True)
 
   def SimBallHandle(self):

@@ -228,23 +228,19 @@ class Strategy(object):
                 if abs(targets['Red']['ang']) > 2:
                   double_check = False
                   Strategy.aim_target = "Red"
-                  # self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
               if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
                 if abs(targets['Blue']['ang']) > 2:
                   double_check = False
                   Strategy.aim_target = "Blue"
-                  # self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
               if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
                 print("Using vision: ", targets['Yellow']['ang'])
                 if abs(targets['Yellow']['ang']) > 2:
                   double_check = False
                   Strategy.aim_target = "Yellow"
-                  # self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
               if level['targets_color'][Strategy.current_index] == 'white' and self.robot.target_vision_white:
                 if abs(targets['White']['ang']) > 2:
                   double_check = False
                   Strategy.aim_target = "White"
-                  # self.robot.MotionCtrl(0, 0, targets['White']['ang'])
               if double_check:
                 self.robot.toShoot(self.robot.passing_power)
               else:
@@ -264,7 +260,9 @@ class Strategy(object):
 
       if self.robot.is_chase:
         if self.robot.CheckBallHandle():
-          self.UpdateCurrentPoint(0, 0, 90)
+          cpx = (level['balls_point'][Strategy.current_index][0] + level['targets_point'][Strategy.current_index][0])*0.5
+          cpy = (level['balls_point'][Strategy.current_index][1] + level['targets_point'][Strategy.current_index][1])*0.5
+          self.UpdateCurrentPoint(cpx, cpy, 90)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
         else:
           self.robot.toChase("Straight")

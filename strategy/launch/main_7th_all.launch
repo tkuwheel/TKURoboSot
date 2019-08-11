@@ -8,9 +8,5 @@
   <include file="$(find strategy)/launch/vision.launch" />
   <include file="$(find strategy)/launch/localization.launch" />
   <!--include file="$(find strategy)/launch/handle_control.launch" /-->
-  <node name="mapping_ball_handle" pkg="topic_tools" type="transform"
-        args="$(env ROBOT_NS)/strategy/state $(env ROBOT_NS)/motion/hold_ball std_msgs/Bool
-              'std_msgs.msg.Bool(
-               data=m.ball_is_handled)' --import std_msgs" />
 </group>
 </launch>

@@ -618,131 +618,131 @@ int* BaseController::mHoldBallControl(
                 ballcontrol[4]= 0;
                 ballcontrol[5]= 1;
             }
-    }else if(yaw==0 &&(x!=0 or y!=0)){
-        if(yaw==0 && x==0 && y!=0){
-            if(y>0){
-                if(y<30){
-                    ballcontrol[0]= 0;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= 0;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
-                }else{
-                    ballcontrol[0]= 7;
-                    ballcontrol[1]= 1;
-                    ballcontrol[2]= 0;
-                    ballcontrol[3]= 7;
-                    ballcontrol[4]= 1;
-                    ballcontrol[5]= 0;  
+        }else if(yaw==0 &&(x!=0 or y!=0)){
+            if(yaw==0 && x==0 && y!=0){
+                if(y>0){
+                    if(y<30){
+                        ballcontrol[0]= 0;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= 0;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
+                    }else{
+                        ballcontrol[0]= 7;
+                        ballcontrol[1]= 1;
+                        ballcontrol[2]= 0;
+                        ballcontrol[3]= 7;
+                        ballcontrol[4]= 1;
+                        ballcontrol[5]= 0;  
+                    }
+                }else if(y<0){
+                    if(y>-61){
+                        ballcontrol[0]= 25;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= 25;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
+                    }else{
+                        a =22+(abs(y)-60)*13/8;
+                        b =22+(abs(y)-60)*13/8;
+                        ballcontrol[0]= a;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= b;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
+                    }
                 }
-            }else if(y<0){
-                if(y>-61){
-                    ballcontrol[0]= 25;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= 25;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
-                }else{
-                    a =22+(abs(y)-60)*13/8;
-                    b =22+(abs(y)-60)*13/8;
-                    ballcontrol[0]= a;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= b;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
-                }
-            }
-        }else if(yaw==0 && x!=0 && y==0){    //Traverse
-            ballcontrol[0]= 15;
-            ballcontrol[1]= 0;
-            ballcontrol[2]= 1;
-            ballcontrol[3]= 15;
-            ballcontrol[4]= 0;
-            ballcontrol[5]= 1;
-        }else{
-            if(y>0){
-                if(x>0){  //Move_other
-                    ballcontrol[0]= 20;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= 10;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;      
-                }else{
-                    ballcontrol[0]= 10;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= 20;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
-                }
+            }else if(yaw==0 && x!=0 && y==0){    //Traverse
+                ballcontrol[0]= 15;
+                ballcontrol[1]= 0;
+                ballcontrol[2]= 1;
+                ballcontrol[3]= 15;
+                ballcontrol[4]= 0;
+                ballcontrol[5]= 1;
             }else{
-                if(x>0){
-                    a = (30+abs(y)*0.2);
-                    b = (15+abs(y)*0.1);
-                    ballcontrol[0]= a;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= b;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
+                if(y>0){
+                    if(x>0){  //Move_other
+                        ballcontrol[0]= 20;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= 10;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;      
+                    }else{
+                        ballcontrol[0]= 10;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= 20;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
+                    }
                 }else{
-                    a = (15+abs(y)*0.1);
-                    b = (30+abs(y)*0.2);
-                    ballcontrol[0]= a;
-                    ballcontrol[1]= 0;
-                    ballcontrol[2]= 1;
-                    ballcontrol[3]= b;
-                    ballcontrol[4]= 0;
-                    ballcontrol[5]= 1;
+                    if(x>0){
+                        a = (30+abs(y)*0.2);
+                        b = (15+abs(y)*0.1);
+                        ballcontrol[0]= a;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= b;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
+                    }else{
+                        a = (15+abs(y)*0.1);
+                        b = (30+abs(y)*0.2);
+                        ballcontrol[0]= a;
+                        ballcontrol[1]= 0;
+                        ballcontrol[2]= 1;
+                        ballcontrol[3]= b;
+                        ballcontrol[4]= 0;
+                        ballcontrol[5]= 1;
 
+                    }
                 }
             }
+            T=now;
+        }else if(yaw>0){ //Rotate_Left
+           /* if(yaw<= 20 && y>= 30 ){
+                ballcontrol[0]= 7;
+                ballcontrol[1]= 1;
+                ballcontrol[2]= 0;
+                ballcontrol[3]= 7;
+                ballcontrol[4]= 1;
+                ballcontrol[5]= 0;
+           }else{*/
+                a = (10+abs(y)*0.4);
+                b = (20+abs(y)*0.5);
+                ballcontrol[0]= a;
+                ballcontrol[1]= 0;
+                ballcontrol[2]= 1;
+                ballcontrol[3]= b;
+                ballcontrol[4]= 0;
+                ballcontrol[5]= 1;
+            //}
+            T=now;
+        }else if(yaw<0){ //Rotate_Right
+           /* if(yaw>= -20 && y>= 30 ){
+                ballcontrol[0]= 7;
+                ballcontrol[1]= 1;
+                ballcontrol[2]= 0;
+                ballcontrol[3]= 7;
+                ballcontrol[4]= 1;
+                ballcontrol[5]= 0;
+            }else{*/
+                a = (20+abs(y)*0.5);
+                b = (10+abs(y)*0.4);
+                ballcontrol[0]= a;
+                ballcontrol[1]= 0;
+                ballcontrol[2]= 1;
+                ballcontrol[3]= b;
+                ballcontrol[4]= 0;
+                ballcontrol[5]= 1;
+           // }
+            T=now;
         }
-        T=now;
-    }else if(yaw>0){ //Rotate_Left
-        if(yaw<= 10 && y>= 30 ){
-            ballcontrol[0]= 7;
-            ballcontrol[1]= 1;
-            ballcontrol[2]= 0;
-            ballcontrol[3]= 7;
-            ballcontrol[4]= 1;
-            ballcontrol[5]= 0;
-        }else{
-            a = (10+abs(y)*0.4);
-            b = (20+abs(y)*0.5);
-            ballcontrol[0]= a;
-            ballcontrol[1]= 0;
-            ballcontrol[2]= 1;
-            ballcontrol[3]= b;
-            ballcontrol[4]= 0;
-            ballcontrol[5]= 1;
-        }
-        T=now;
-    }else if(yaw<0){ //Rotate_Right
-        if(yaw>= -10 && y>= 30 ){
-            ballcontrol[0]= 7;
-            ballcontrol[1]= 1;
-            ballcontrol[2]= 0;
-            ballcontrol[3]= 7;
-            ballcontrol[4]= 1;
-            ballcontrol[5]= 0;
-        }else{
-            a = (20+abs(y)*0.5);
-            b = (10+abs(y)*0.4);
-            ballcontrol[0]= a;
-            ballcontrol[1]= 0;
-            ballcontrol[2]= 1;
-            ballcontrol[3]= b;
-            ballcontrol[4]= 0;
-            ballcontrol[5]= 1;
-        }
-        T=now;
     }
-  }
   return ballcontrol;
 }
 

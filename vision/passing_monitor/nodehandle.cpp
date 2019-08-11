@@ -57,7 +57,7 @@ NodeHandle::NodeHandle()
     //Parameter_default();
     Readyaml();
     AngleLUT();
-    SizeFilter = 10;
+    SizeFilter = 8;
     connect_srv = nh.advertiseService("monitor/connect", &NodeHandle::connectcall, this);
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
