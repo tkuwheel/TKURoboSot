@@ -170,7 +170,7 @@ class Robot(object):
         print("Passing Failed")
 
       ## Pass
-      self.RobotShoot(80, 0)
+      self.RobotShoot(88, 0)
 
     except rospy.ServiceException, e:
       print("Service call failed: {}".format(e))
@@ -204,7 +204,7 @@ class Robot(object):
   def Supervisor(self):
     duration = time.time() - Robot.sync_last_time
     if duration > 5:
-      print("Lossing Connection with teammates...{}".format(duration), end='\r')
+      #print("Lossing Connection with teammates...{}".format(duration), end='\r')
       self.SetMyRole(rospy.get_param('core/role'))
     else:
       if self.MyRole() is "Catcher" or self.MyRole is "Passer":

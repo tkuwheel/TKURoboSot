@@ -13,7 +13,44 @@ function keysdown(e) {
     if (start == true) {
         var speed = document.getElementById("SpeedInput").value;
         keys[e.keyCode] = true;
+        
+        //m reset imu
+        if (keys[86]) {
+            //console.log(e.keyCode);
+            ImuReset();
+        }
 
+        //, hold_ball control
+        if (keys[67]) {
+            //console.log(e.keyCode);
+            let hold_ball_checked = document.getElementById("HoldBallButton1").checked;
+            //console.log(hold_ball_checked);
+
+           if (hold_ball_checked) {
+                $("#HoldBallButton1").remove();
+                var holdball_i = $(document.createElement('i'))
+                    .attr("class", "fa fa-futbol-o fa-3x")
+                    .attr("aria-hidden", "true")
+                    .attr("id", "HoldBallButton1")
+                holdball_i.appendTo("#HoldBallDiv1");
+                this.value = 0;
+                HoldBallSwitch(0,1);
+                $('#HoldBallButton1').prop('checked',false);
+                $('#HoldBallButton1').change();
+            } else {
+                $("#HoldBallButton1").remove();
+                var holdball_i = $(document.createElement('i'))
+                    .attr("class", "fa fa-futbol-o fa-3x fa-spin")
+                    .attr("aria-hidden", "true")
+                    .attr("id", "HoldBallButton1")
+                    .attr("style","color: #FFCC00;")
+                holdball_i.appendTo("#HoldBallDiv1");
+                this.value = 1;
+                HoldBallSwitch(1,1);
+                $('#HoldBallButton1').prop('checked',true);
+                $('#HoldBallButton1').change();
+            }
+        }
         //Strategy_Choose
         if (keys[32] && keys[49]) {
             SetBehaviorKeyborard([0, 1, 1, 0, 0, 0, 0]);
@@ -179,13 +216,12 @@ function releasebutton(state) {
     //    console.log("stop");
     //    PublishTopicCmdVel(vec3);
     //}
-    console.log("stop");
     PublishTopicCmdVel(vec3);
 }
 
 function keyuped(e) {
     if (start) {
-      console.log("start moving");
+      //console.log("start moving");
         if (keys[e.keyCode] == true) releasebutton(e.keyCode);
         //else if (keys[69] == true) releasebutton(69);
         //else if (keys[87] == true) releasebutton(87);

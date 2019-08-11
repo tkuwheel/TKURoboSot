@@ -9,7 +9,7 @@ from std_msgs.msg import String
 from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
-from methods.behavior import Behavior
+from methods.passing_behavior import Behavior
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from strategy.cfg import PassingConfig
 import dynamic_reconfigure.client
@@ -24,12 +24,14 @@ class Core(Robot, StateMachine):
   shoot  = State('Shoot')
   point  = State('Point')
   movement = State('Movement')
+  aim    = State('Aim')
 
   toIdle   = chase.to(idle) |  movement.to(idle) | point.to(idle) | idle.to.itself() | shoot.to(idle)
   toChase  = idle.to(chase) |  chase.to.itself() | movement.to(chase) | point.to(chase)
-  toShoot  = movement.to(shoot) | point.to(shoot)
+  toShoot  = movement.to(shoot) | point.to(shoot) | aim.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself() | point.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | chase.to(point) | movement.to(point) | shoot.to(point)
+  toAim    = point.to(aim) | aim.to.itself()
 
   def Callback(self, config, level):
     self.game_level = config['level']
@@ -64,10 +66,10 @@ class Core(Robot, StateMachine):
     ball2 = (-115 + padding_ball + adjust_ball2_x, 40   + adjust_ball2_y)
     ball3 = (-115 + padding_ball + adjust_ball3_x, -40  + adjust_ball3_y)
     ball4 = (-115 + padding_ball + adjust_ball4_x, -120 + adjust_ball4_y)
-    target1 = (115 + padding_target + adjust_target1_x, 120  + adjust_target1_y)
-    target2 = (115 + padding_target + adjust_target2_x, 40   + adjust_target2_y)
-    target3 = (115 + padding_target + adjust_target3_x, -40  + adjust_target3_y)
-    target4 = (115 + padding_target + adjust_target4_x, -120 + adjust_target4_y)
+    target1 = (115 - padding_target + adjust_target1_x, 120  + adjust_target1_y)
+    target2 = (115 - padding_target + adjust_target2_x, 40   + adjust_target2_y)
+    target3 = (115 - padding_target + adjust_target3_x, -40  + adjust_target3_y)
+    target4 = (115 - padding_target + adjust_target4_x, -120 + adjust_target4_y)
     self.level1 = {'balls_point': [ball1], 'targets_point': [target1], 'targets_color': ['red']}
     self.level2 = {'balls_point': [ball1, ball4], 'targets_point': [target1, target4], 'targets_color': ['red', 'yellow']}
     self.level3 = {'balls_point': [ball1, ball2, ball4], 'targets_point': [target4, target2, target1], 'targets_color': ['yellow', 'blue', 'red']}
@@ -93,15 +95,36 @@ class Core(Robot, StateMachine):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
-  def on_toChase(self, method = "Classic"):
+  def on_toAim(self):
     t = self.GetObjectInfo()
-    side = self.opp_side
-    if method == "Classic":
-      x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
-                                          t['ball']['dis'],\
-                                          t['ball']['ang'])
-    elif method == "Straight":
-      x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
+    print("Aim to ", Strategy.aim_target)
+    if Strategy.aim_target == "Red":
+      ta = t['Red']['ang']
+    elif Strategy.aim_target == "Blue":
+      ta = t['Blue']['ang']
+    elif Strategy.aim_target == "Yellow":
+      ta = t['Yellow']['ang']
+    elif Strategy.aim_target == "White":
+      ta = t['White']['ang']
+    else:
+      ta = 0
+
+    if abs(ta) < 1:
+      print("It's okay")
+      return True
+    else:
+      self.MotionCtrl(0, 0, ta)
+      return False
+
+  def on_toChase(self, method = "Straight"):
+    t = self.GetObjectInfo()
+    # side = self.opp_side
+    # if method == "Classic":
+    #   x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
+    #                                       t['ball']['dis'],\
+    #                                       t['ball']['ang'])
+    # elif method == "Straight":
+    x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
     self.MotionCtrl(x, y, yaw)
 
@@ -114,7 +137,7 @@ class Core(Robot, StateMachine):
     return arrived
 
   def on_toPoint(self, tx, ty, tyaw):
-    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw, 3, 1)
+    x, y, yaw, arrived = self.BC.Go2Point(tx, ty, tyaw, 5, 1)
 
     self.MotionCtrl(x, y, yaw)
     return arrived
@@ -144,6 +167,7 @@ class Core(Robot, StateMachine):
 
 class Strategy(object):
 
+  aim_target = ""
   can_shoot = False
   current_index = 0
   current_point = [0, 0, 0]
@@ -182,34 +206,46 @@ class Strategy(object):
 
       if self.robot.is_idle:
         if self.robot.game_start:
+          print("This level is ", self.robot.game_level)
           Strategy.current_index = 0
           Strategy.can_shoot = False
           self.UpdateCurrentPoint(level['balls_point'][Strategy.current_index][0], level['balls_point'][Strategy.current_index][1], 180)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
+
+      if self.robot.is_aim:
+        if self.robot.toAim():
+          self.robot.toShoot(self.robot.passing_power)
+        else:
+          self.robot.toAim()
 
       if self.robot.is_point:
         if self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2]):
           if self.robot.CheckBallHandle():
             if Strategy.can_shoot:
               double_check = True
+              print("This level color is ", level['targets_color'][Strategy.current_index])
               if level['targets_color'][Strategy.current_index] == 'red' and self.robot.target_vision_red:
-                if abs(targets['Red']['ang']) > 0.2 and abs(targets['Red']['ang']) < 2:
+                if abs(targets['Red']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['ball']['ang'])
+                  Strategy.aim_target = "Red"
               if level['targets_color'][Strategy.current_index] == 'blue' and self.robot.target_vision_blue:
-                if abs(targets['Blue']['ang']) > 0.2 and abs(targets['Blue']['ang']) < 2:
+                if abs(targets['Blue']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['Blue']['ang'])
+                  Strategy.aim_target = "Blue"
               if level['targets_color'][Strategy.current_index] == 'yellow' and self.robot.target_vision_yellow:
-                if abs(targets['Yellow']['ang']) > 0.2 and abs(targets['Yellow']['ang']) < 2:
+                print("Using vision: ", targets['Yellow']['ang'])
+                if abs(targets['Yellow']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['Yellow']['ang'])
+                  Strategy.aim_target = "Yellow"
               if level['targets_color'][Strategy.current_index] == 'white' and self.robot.target_vision_white:
-                if abs(targets['White']['ang']) > 0.2 and abs(targets['White']['ang']) < 2:
+                if abs(targets['White']['ang']) > 2:
                   double_check = False
-                  self.robot.MotionCtrl(0, 0, targets['White']['ang'])
+                  Strategy.aim_target = "White"
               if double_check:
                 self.robot.toShoot(self.robot.passing_power)
+              else:
+                print("Check again")
+                self.robot.toAim()
             else:
               self.UpdateCurrentPoint(level['targets_point'][Strategy.current_index][0], level['targets_point'][Strategy.current_index][1], 0)
               if self.robot.using_orbit:
@@ -224,7 +260,9 @@ class Strategy(object):
 
       if self.robot.is_chase:
         if self.robot.CheckBallHandle():
-          self.UpdateCurrentPoint(0, 0, 90)
+          cpx = (level['balls_point'][Strategy.current_index][0] + level['targets_point'][Strategy.current_index][0])*0.5
+          cpy = (level['balls_point'][Strategy.current_index][1] + level['targets_point'][Strategy.current_index][1])*0.5
+          self.UpdateCurrentPoint(cpx, cpy, 90)
           self.robot.toPoint(Strategy.current_point[0], Strategy.current_point[1], Strategy.current_point[2])
         else:
           self.robot.toChase("Straight")

@@ -57,7 +57,7 @@ NodeHandle::NodeHandle()
     //Parameter_default();
     Readyaml();
     AngleLUT();
-    SizeFilter = 10;
+    SizeFilter = 8;
     connect_srv = nh.advertiseService("monitor/connect", &NodeHandle::connectcall, this);
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
@@ -147,6 +147,7 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/HSV/Yellow", HSV_yellow);
     nh.getParam("FIRA/vision/HSV/Green", HSV_green);
     nh.getParam("FIRA/vision/HSV/White", HSV_white);
+    nh.getParam("FIRA/vision/HSV/Redcone", HSV_redcone);
     //==================黑白掃描參數=======================
     nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
     nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
@@ -244,7 +245,7 @@ void NodeHandle::HSVmap()
     string vision_path = ros::package::getPath("vision");
     string FILE_PATH = "/config/HSVcolormap.bin";
     unsigned char *HSVmap = new unsigned char[256 * 256 * 256];
-    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty())
+    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty() && !HSV_redcone.empty())
     {
         //cout<<"get all hsv"<<endl;
         for (int b = 0; b < 256; b++)
@@ -340,6 +341,16 @@ void NodeHandle::HSVmap()
                     {
                         if ((H_sum >= HSV_white[0]) || (H_sum <= HSV_white[1]) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | WHITEITEM;
+                    }
+                    if (HSV_redcone[0] < HSV_redcone[1])
+                    {
+                        if ((H_sum >= HSV_redcone[0]) && (H_sum <= HSV_redcone[1]) && (S_sum >= HSV_redcone[2]) && (S_sum <= HSV_redcone[3]) && (V_sum >= HSV_redcone[4]) && (V_sum <= HSV_redcone[5]))
+                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDCONEITEM;
+                    }
+                    else
+                    {
+                        if ((H_sum >= HSV_redcone[0]) || (H_sum <= HSV_redcone[1]) && (S_sum >= HSV_redcone[2]) && (S_sum <= HSV_redcone[3]) && (V_sum >= HSV_redcone[4]) && (V_sum <= HSV_redcone[5]))
+                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDCONEITEM;
                     }
                 }
             }
@@ -470,10 +481,10 @@ void NodeHandle::Pub_object()
         object_msg.yellow_dis = Omni_distance(Yellow_Item.distance);
     }
 
-    if (Green_Item.size > SizeFilter)
+    if (Redcone_Item.size > SizeFilter)
     {
-        object_msg.red_ang = Strategy_Angle(Angle_Adjustment(Green_Item.angle));
-        object_msg.red_dis = Omni_distance(Green_Item.distance);
+        object_msg.red_ang = Strategy_Angle(Angle_Adjustment(Redcone_Item.angle));
+        object_msg.red_dis = Omni_distance(Redcone_Item.distance);
     }
 
     if (White_Item.size > SizeFilter)

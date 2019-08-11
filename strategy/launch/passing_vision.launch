@@ -2,7 +2,7 @@
 <launch> 
   <rosparam command="load" file="$(find strategy)/cfg/vision/prosilica_driver.yaml" ns="prosilica_driver"/>
   <rosparam command="load" file="$(find vision)/config/FIRA.yaml" ns="FIRA"/>
-  <node name="interface" pkg="vision" type="interface" respawn="true" respawn_delay="5"/>
+  <node name="passing_interface" pkg="vision" type="passing_interface" respawn="true" respawn_delay="5" />
   <node name="localization_white_line" pkg="vision" type="localization_white_line" respawn="true" respawn_delay="5"/>
   <node name="passing_monitor" pkg="vision" type="passing_monitor" respawn="true" respawn_delay="5" />
 </launch>

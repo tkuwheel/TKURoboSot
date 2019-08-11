@@ -63,17 +63,27 @@ class Behavior(Robot,Obstacle):
 
   def relative_goal(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    if ball_dis + goal_dis < 250:
+    if ball_dis < 100 and goal_dis > 150:
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
       ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
       door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
       door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = ( 3.5 * ball_x + door_x ) / 2				#防守位置
-      defence_y   = (   2 * ball_y + door_y ) / 2
+      defence_x   = ( 10000 * ball_x + door_x ) / 2				        #防守位置
+      defence_y   = ( 10000 * ball_y + door_y ) / 2
       defence_yaw = ball_ang
  
+    elif ball_dis  < 150 and goal_dis < 150:
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+      defence_x   = 0		                                		#avoid to go to the goal area
+      defence_y   = 0
+      defence_yaw = ball_ang
     else:
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
       ball_y = ball_dis * math.sin(math.radians(ball_ang))
@@ -90,7 +100,18 @@ class Behavior(Robot,Obstacle):
 
   def relative_ball(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    if ball_dis + goal_dis < 150:
+    if ball_dis < 100 and goal_dis > 150:
+      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+      door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+      defence_x   = (10000*ball_x + door_x ) / 10                              	#avoid to go to the goal area
+      defence_y   = (10000*ball_y + door_y ) / 10
+      defence_yaw = ball_ang
+
+    elif ball_dis  < 150 and goal_dis < 150:
 
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
       ball_y = ball_dis * math.sin(math.radians(ball_ang))
@@ -98,10 +119,10 @@ class Behavior(Robot,Obstacle):
       door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
       door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = (7.5*ball_x + door_x ) / 10                                	#avoid to go to the goal area
-      defence_y   = (7.5*ball_y + door_y ) / 10
+      defence_x   = 0		                                		#avoid to go to the goal area
+      defence_y   = 0
       defence_yaw = ball_ang
-
+ 
     else:
 
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標

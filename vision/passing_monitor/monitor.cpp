@@ -139,6 +139,7 @@ void Vision::ObjectProcessing()
     Blue_Item.Reset();
     Yellow_Item.Reset();
     Green_Item.Reset();
+    Redcone_Item.Reset();
     White_Item.Reset();
     draw_center();
     #pragma omp parallel sections num_threads(3)
@@ -157,7 +158,7 @@ void Vision::ObjectProcessing()
         }
         #pragma omp section
         {
-           objectdet_change(GREENITEM, Green_Item);
+           objectdet_change(REDCONEITEM, Redcone_Item);
         }
         #pragma omp section
         {
@@ -252,8 +253,8 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
             draw_point(Monitor, Blue_Item, "B", Scalar(255, 0, 0));
         if (color == YELLOWITEM)
             draw_point(Monitor, Yellow_Item, "Y", Scalar(0, 255, 255));
-        if (color == GREENITEM)
-            draw_point(Monitor, Green_Item, "G", Scalar(0, 255, 0));
+        if (color == REDCONEITEM)
+            draw_point(Monitor, Redcone_Item, "G", Scalar(0, 255, 0));
         if (color == WHITEITEM)
             draw_point(Monitor, White_Item, "W", Scalar(255, 255, 255));
     }
@@ -399,7 +400,7 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
 
     unsigned char B, G, R;
 
-    if (color == REDITEM || color == GREENITEM || color == WHITEITEM)
+    if (color == REDITEM || color == REDCONEITEM || color == WHITEITEM)
     {
         //cout<<obj_.dis_max<<"  "<<obj_.dis_max-obj_.dis_min<<endl;
         //fix catch ball distance        
