@@ -77,12 +77,13 @@ class Core(Robot, StateMachine):
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
   def on_toIdle(self):
-    self.goal_dis = 0
+    Core.last_goal_dis = 0
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
     log("To Idle1")
 
   def on_toChase(self, method = "Classic"):
+    Core.last_goal_dis = 0
     t = self.GetObjectInfo()
     side = self.opp_side
     if method == "Classic":
@@ -99,9 +100,6 @@ class Core(Robot, StateMachine):
     if self.ball_speed:
       x = x + t['ball']['speed_pwm_x']
       y = y + t['ball']['speed_pwm_y']
-     
-      
-      
     self.MotionCtrl(x, y, yaw)
 
   def on_toAttack(self, method = "Classic"):
@@ -109,6 +107,8 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     l = self.GetObstacleInfo()      
     if method == "Classic":
+      if self.change_plan:
+        self.Change_Plan(80):
       x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
     elif method == "Cut":
       x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'],self.run_yaw)
@@ -206,7 +206,7 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_ball_dis = t['ball']['dis']
 
-  def Change_plan(self):
+  def Change_Plan(self, exceed = 100):
     t = self.GetObjectInfo()
     opp_side = self.opp_side 
     if Core.last_goal_dis == 0:
@@ -214,11 +214,15 @@ class Core(Robot, StateMachine):
       Core.last_goal_dis = t[opp_side]['dis']
     elif t[opp_side]['dis'] >= Core.last_goal_dis:
       if time.time() - Core.last_time >= 3:
-        return True
+        y = time.time()
+        while (time.time() - y) < 1 :
+          self.robot.MotionCtrl(-15, 0, 0)
+        self.ChangeVelocityRange(self.minimun, exceed )
+        Core.last_goal_dis = 0
     else:
       Core.last_time = time.time()
       Core.last_goal_dis = t[opp_side]['dis']
-      return False
+      
 
   def record_angle(self):
     position = self.GetRobotInfo()
@@ -257,6 +261,9 @@ class Strategy(object):
   def ToAttack(self):
     mode = self.robot.attack_mode
     if mode == "Attack" :
+      if self.robot.change_plan:
+        self.robot.Change_Plan(80):
+          self.robot.last_goal_dis = 0
       self.robot.toAttack("Classic")
     elif mode == "Cut":
       self.robot.toAttack("Cut")
@@ -374,19 +381,9 @@ class Strategy(object):
 
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
-            self.robot.last_goal_dis = 0
             self.ToChase()
-          elif self.robot.change_plan:
-            if self.robot.Change_plan():
-              y = time.time()
-              while 1:
-                self.robot.MotionCtrl(-15, 0, 0)
-                if(time.time() - y) > 1: break
-              self.robot.ChangeVelocityRange(0, 80)
-              self.robot.last_goal_dis = 0
-  
-          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and \
-                abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
+          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and 
+                  \ abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
             self.robot.toShoot(100)
           else:
             self.ToAttack()
