@@ -47,14 +47,16 @@ class Core(Robot, StateMachine):
     self.strategy_mode = config['strategy_mode']
     self.attack_mode = config['attack_mode']
     self.maximum_v = config['maximum_v']
+    self.minimum_v = config['minimum_v']
     self.orb_attack_ang = config['orb_attack_ang']
     self.atk_shoot_ang = config['atk_shoot_ang']
     self.shooting_start = config['shooting_start']
-    self.Change_Plan = config['Change_Plan']
+    self.Change_Plan = config['change_plan']
     self.atk_shoot_dis = config['atk_shoot_dis']
     self.my_role       = config['role']
     self.accelerate = config['Accelerate']
     self.ball_speed = config['ball_pwm']
+    self.change_plan = config['change_plan']
 
     self.ChangeVelocityRange(config['minimum_v'], config['maximum_v'])
     self.ChangeAngularVelocityRange(config['minimum_w'], config['maximum_w'])
@@ -187,7 +189,7 @@ class Core(Robot, StateMachine):
   def CheckBallHandle(self):
     if self.RobotBallHandle():
       ## Back to normal from Accelerator
-      self.ChangeVelocityRange(0, self.maximum_v)
+      self.ChangeVelocityRange(self.minimum_v, self.maximum_v)
       Core.last_ball_dis = 0
 
     return self.RobotBallHandle()
@@ -204,7 +206,7 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_ball_dis = t['ball']['dis']
 
-  def change_plan(self):
+  def Change_plan(self):
     t = self.GetObjectInfo()
     opp_side = self.opp_side 
     if Core.last_goal_dis == 0:
@@ -217,6 +219,7 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_goal_dis = t[opp_side]['dis']
       return False
+
   def record_angle(self):
     position = self.GetRobotInfo()
     self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
@@ -373,6 +376,15 @@ class Strategy(object):
           if not self.robot.CheckBallHandle():
             self.robot.last_goal_dis = 0
             self.ToChase()
+          elif self.robot.change_plan:
+            if self.robot.Change_plan():
+              y = time.time()
+              while 1:
+                self.robot.MotionCtrl(-15, 0, 0)
+                if(time.time() - y) > 1: break
+              self.robot.ChangeVelocityRange(0, 80)
+              self.robot.last_goal_dis = 0
+  
           elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and \
                 abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
             self.robot.toShoot(100)
