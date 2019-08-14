@@ -312,7 +312,7 @@ class Strategy(object):
               else:
                 x = time.time()
                 while 1:                
-                  self.robot.MotionCtrl(30, 0, 0)
+                  self.robot.MotionCtrl(-15, 0, 0)
                   if (time.time() - x ) > 1: break
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
