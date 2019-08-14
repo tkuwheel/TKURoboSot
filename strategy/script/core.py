@@ -223,7 +223,6 @@ class Core(Robot, StateMachine):
       Core.last_time = time.time()
       Core.last_goal_dis = t[opp_side]['dis']
       
-
   def record_angle(self):
     position = self.GetRobotInfo()
     self.dest_angle = math.degrees(position['imu_3d']['yaw']) - self.run_yaw
@@ -262,8 +261,7 @@ class Strategy(object):
     mode = self.robot.attack_mode
     if mode == "Attack" :
       if self.robot.change_plan:
-        self.robot.Change_Plan(80):
-          self.robot.last_goal_dis = 0
+        self.robot.Change_Plan(80)
       self.robot.toAttack("Classic")
     elif mode == "Cut":
       self.robot.toAttack("Cut")
@@ -321,9 +319,8 @@ class Strategy(object):
                 self.robot.RobotShoot(80, 1)
               else:
                 x = time.time()
-                while 1:                
+                while (time.time() - x ) < 1 :                
                   self.robot.MotionCtrl(-15, 0, 0)
-                  if (time.time() - x ) > 1: break
               self.dclient.update_configuration({"shooting_start": False})
             elif state == "Penalty_Kick":
               self.robot.record_angle()
@@ -382,8 +379,8 @@ class Strategy(object):
         if self.robot.is_attack:
           if not self.robot.CheckBallHandle():
             self.ToChase()
-          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and 
-                  \ abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
+          elif  abs(targets[self.robot.opp_side]['ang']) < self.robot.atk_shoot_ang and /
+                                abs(targets[self.robot.opp_side]['dis']) < self.robot.atk_shoot_dis:
             self.robot.toShoot(100)
           else:
             self.ToAttack()
@@ -400,7 +397,6 @@ class Strategy(object):
               self.ToChase()
           else:
             self.RunStatePoint()
-
 
         if rospy.is_shutdown():
           log('shutdown')
