@@ -12,11 +12,7 @@
         }else{
            myBoolean2 = Boolean(0)
          }
-        if(document.getElementById("change_plan").checked) {
-           myBoolean6 = Boolean(1);
-         }else{
-           myBoolean6 = Boolean(0)
-         }
+        
         if(document.getElementById("Accelerate").checked) {
             myBoolean3 = Boolean(1);
         }else{
@@ -46,9 +42,7 @@
         var shooting_start = new ROSLIB.Message({
             data:  myBoolean5
         });
-        var change_plan = new ROSLIB.Message({
-            data:  myBoolean6
-        });
+        
 
 
 
@@ -180,6 +174,26 @@
         }
 
         });
+    function chg(){
+            if(document.getElementById("change_plan").checked) {
+                myBoolean6 = Boolean(1);
+              }else{
+                myBoolean6 = Boolean(0)
+              }
+              var change_plan = new ROSLIB.Message({
+                data:  myBoolean6
+            });
+            
+            var request = new ROSLIB.ServiceRequest({
+            config: {
+                bools: [
+                    {name: 'change_plan', value: change_plan.data},
+                   
+                ]
+               
+            }
+    
+            });
         dynaRecClient.callService(request, function(result) {
         console.log('Result for service call on '
             + dynaRecClient.name
@@ -192,7 +206,7 @@
     document.getElementsByName(name)[num].value = newValue;
             }
 
-function ToSliderValue(newValue, name, num) {
+    function ToSliderValue(newValue, name, num) {
     /*if (newValue > 100) {
         newValue = 100;
     }*/

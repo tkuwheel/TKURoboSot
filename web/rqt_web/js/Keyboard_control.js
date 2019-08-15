@@ -15,6 +15,14 @@ function keysdown(e){
         else  items.checked = true;
         gameStart();
     }
+    if (keys[71]) {
+        var items = document.getElementById("change_plan");
+        if (items.checked == true){
+            items.checked = false;
+        }
+        else  items.checked = true;
+        chg();
+    }
     if (keys[68]) {
         processFormData();
     }
