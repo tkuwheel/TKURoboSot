@@ -24,8 +24,8 @@
         data: document.getElementById("game_state").value
         });
         
-        var our_side = new ROSLIB.Message({
-        data: document.getElementById("our_side").value
+        var our_goal = new ROSLIB.Message({
+        data: document.getElementById("our_goal").value
         });
 
 
@@ -42,9 +42,9 @@
             //],
             strs: [
                 {name: 'game_state', value: game_state.data},
+                {name: 'our_goal', value: our_goal.data},
             ],
             doubles: [
-                {name: 'minimum_w', value: minimum_w.data},
                 {name: 'minimum_w', value: minimum_w.data},
                 {name: 'maximum_w', value: maximum_w.data},
                 {name: 'minimum_v', value: minimum_v.data},

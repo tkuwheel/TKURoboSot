@@ -139,7 +139,10 @@
         var strategy_mode = new ROSLIB.Message({
         data: document.getElementById("strategy_mode").value
         });
-
+        var level = new ROSLIB.Message({
+        data: document.getElementById("level").value
+        });
+    
        
 
 
