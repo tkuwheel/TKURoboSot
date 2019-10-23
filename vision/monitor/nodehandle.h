@@ -11,6 +11,7 @@
 #include <math.h>
 #include <signal.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <std_srvs/Empty.h>
 #include <fstream>
 #include "vision/Two_point.h"
@@ -26,7 +27,8 @@
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
 #define WHITEITEM 0x10 //WHITEITEM=robot
-#define VISION_TOPIC "/camera/image_raw"
+#define VISION_TOPIC "camera/image_raw"
+#define USB_CAM_TOPIC "usb_cam/image_raw"
 #define YAML_PATH ros::package::getPath("vision") + "/config/FIRA.yaml"
 #define BIN_PATH ros::package::getPath("vision") + "/config/HSVcolormap.bin"
 #define IMAGE "/src/vision/1.bmp"
@@ -70,9 +72,7 @@ class NodeHandle
     NodeHandle();
     void Readyaml();
     void Parameter_getting();
-    void Pub_monitor(Mat Monitor);
-    void Pub_object();
-    void Pub_goal_edge();
+
     vector<double> Angle_sin;
     vector<double> Angle_cos;
     int SizeFilter;
@@ -91,10 +91,13 @@ class NodeHandle
     double camera_f(double Omni_pixel);
     double Omni_distance(double pixel_dis);
     int Angle_Interval(int radius);
-    //===============publisher==============
     double RateMsg;
     DetectedObject Red_Item, Blue_Item, Yellow_Item;
     //======================================
+    //===============publisher==============
+    void Pub_monitor(Mat Monitor);
+    void Pub_object();
+    void Pub_goal_edge();
     //==============subscriber=============
     vector<int> HSV_red;
     vector<int> HSV_green;
@@ -119,7 +122,14 @@ class NodeHandle
     int Angle_range_1Msg;
     int Angle_range_2_3Msg;
     int Unscaned_Angle[8];
-    //======================================
+    //================white===================
+    int WhiteGrayMsg;
+    int WhiteAngleMsg;
+    //================black===================
+    int BlackGrayMsg;
+    int BlackAngleMsg;
+    //========================================
+    vector <DetectedObject> obstacles;
   private:
     ros::NodeHandle nh;
     ros::Subscriber save_sub;
@@ -128,11 +138,13 @@ class NodeHandle
     //ros::Subscriber view_sub;
     //void View(const vision::view msg);
     //int viewcheck;
+    ros::Subscriber obstacle_sub;
+    void obstaclecall(const std_msgs::Int32MultiArray msg);
     ros::Publisher monitor_pub;
     ros::Publisher object_pub;
     ros::Publisher Two_point_pub;
     //====================================
     ros::ServiceServer connect_srv;
     bool connectcall(std_srvs::Empty::Request  &req,
-                 std_srvs::Empty::Response &res);
+                     std_srvs::Empty::Response &res);
 };

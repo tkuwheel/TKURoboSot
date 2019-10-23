@@ -15,8 +15,8 @@ NodeHandle::NodeHandle()
     color_sub = nh.subscribe("interface/color", 1, &NodeHandle::colorcall, this);
     white_sub = nh.subscribe("interface/white", 1, &NodeHandle::whitecall, this);
     black_sub = nh.subscribe("interface/black", 1, &NodeHandle::blackcall, this);
-    distance_pub = nh.advertise<vision::dis>("/interface/CenterDis", 1);
-    interface_pub = nh.advertise<sensor_msgs::Image>("/camera/image", 1);
+    distance_pub = nh.advertise<vision::dis>("interface/CenterDis", 1);
+    interface_pub = nh.advertise<sensor_msgs::Image>("camera/image", 1);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
 }
 void NodeHandle::AngleLUT()
@@ -35,74 +35,85 @@ void NodeHandle::Readyaml()
     const char *parampath = param.c_str();
     if (ifstream(parampath))
     {
-        std::string temp = "rosparam load " + param + " /FIRA/vision";
+        std::string temp = "rosparam load " + param + " FIRA/vision";
         const char *load = temp.c_str();
         system(load);
         cout << "Read the yaml file" << endl;
     }
     else
     {
-        cout << "yaml file does not exist" << endl;
+	ROS_ERROR("YAML file does NOT exist");
+        //cout << "yaml file does not exist" << endl;
     }
     Parameter_getting();
 }
 void NodeHandle::Saveyaml()
 {
     std::string param = YAML_PATH;
-    std::string temp = "rosparam dump " + param + " /FIRA/vision";
+    std::string temp = "rosparam dump " + param + " FIRA/vision";
     const char *save = temp.c_str();
     system(save);
     cout << "Save the yaml file" << endl;
     Parameter_getting();
 }
+void NodeHandle::Saveprosilica()
+{
+    std::string param = PROSILICA_PATH;
+    std::string temp = "rosparam dump " + param + " prosilica_driver";
+    const char *save = temp.c_str();
+    system(save);
+    cout << "Save prosilica_driver parameter" << endl;
+}
 void NodeHandle::Parameter_getting()
 {
     cout << "get parameter" << endl;
     //===================FPS參數==========================
-    nh.getParam("/FIRA/vision/FPS", fpsMsg);
+    nh.getParam("FIRA/vision/FPS", fpsMsg);
     //===================中心參數=========================
-    nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
-    nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
-    nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
-    nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
-    nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
-    nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Center_X", CenterXMsg);
+    nh.getParam("FIRA/vision/Center/Center_Y", CenterYMsg);
+    nh.getParam("FIRA/vision/Center/Inner", InnerMsg);
+    nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
+    nh.getParam("FIRA/vision/Center/Front", FrontMsg);
+    nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Horizon", HorizonMsg);
     //==================掃瞄點參數=========================
-    nh.getParam("/FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
     Set_Unscaned_Angle();
     //===================色模參數=========================
-    nh.getParam("/FIRA/vision/HSV/ColorMode", ColorModeMsg);
-    nh.getParam("/FIRA/vision/HSV/Ball", HSV_red);
-    nh.getParam("/FIRA/vision/HSV/Blue", HSV_blue);
-    nh.getParam("/FIRA/vision/HSV/Yellow", HSV_yellow);
-    nh.getParam("/FIRA/vision/HSV/Green", HSV_green);
-    nh.getParam("/FIRA/vision/HSV/White", HSV_white);
+    nh.getParam("FIRA/vision/HSV/ColorMode", ColorModeMsg);
+    nh.getParam("FIRA/vision/HSV/Ball", HSV_red);
+    nh.getParam("FIRA/vision/HSV/Blue", HSV_blue);
+    nh.getParam("FIRA/vision/HSV/Yellow", HSV_yellow);
+    nh.getParam("FIRA/vision/HSV/Green", HSV_green);
+    nh.getParam("FIRA/vision/HSV/White", HSV_white);
     //==================黑白掃描參數=======================
-    nh.getParam("/FIRA/vision/HSV/white/gray", WhiteGrayMsg);
-    nh.getParam("/FIRA/vision/HSV/white/angle", WhiteAngleMsg);
-    nh.getParam("/FIRA/vision/HSV/black/gray", BlackGrayMsg);
-    nh.getParam("/FIRA/vision/HSV/black/angle", BlackAngleMsg);
+    nh.getParam("FIRA/vision/HSV/white/gray", WhiteGrayMsg);
+    nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
+    nh.getParam("FIRA/vision/HSV/black/gray", BlackGrayMsg);
+    nh.getParam("FIRA/vision/HSV/black/angle", BlackAngleMsg);
 }
 
 //======================前置處理結束=======================
 //========================save===========================
 bool NodeHandle::savecall(std_srvs::Empty::Request  &req,
-         std_srvs::Empty::Response &res)
+                          std_srvs::Empty::Response &res)
 {
-	//cout<<"Save\n";
+    //cout<<"Save\n";
     Saveyaml();
+    Saveprosilica();
     HSVmap();
-	return true;
+    return true;
 }
 //========================mode===========================
 void NodeHandle::modebuttoncall(const vision::parameterbutton msg)
@@ -119,7 +130,7 @@ void NodeHandle::cameracall(const vision::camera msg)
 void NodeHandle::get_campara()
 {
     camera_exposure = 0.025;
-    nh.getParam("/prosilica_driver/exposure", camera_exposure);
+    nh.getParam("prosilica_driver/exposure", camera_exposure);
 }
 void NodeHandle::set_campara(int value_ex)
 {
@@ -133,7 +144,7 @@ void NodeHandle::set_campara(int value_ex)
     conf.doubles.push_back(double_param);
 
     srv_req.config = conf;
-    ros::service::call("/prosilica_driver/set_parameters", srv_req, srv_resp);
+    ros::service::call("prosilica_driver/set_parameters", srv_req, srv_resp);
 }
 
 //========================center==========================
@@ -145,6 +156,7 @@ void NodeHandle::centercall(const vision::center msg)
     OuterMsg = msg.Outer;
     FrontMsg = msg.Front;
     Camera_HighMsg = msg.Camera_High;
+    HorizonMsg = msg.Horizon;
 }
 //========================distance========================
 void NodeHandle::positioncall(const vision::position msg)

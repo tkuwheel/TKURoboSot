@@ -65,27 +65,27 @@ void NodeHandle::get_param()
 {
 	cout<<"get parameter"<<endl;
     //====================中心參數============================
-	nh.getParam("/FIRA/vision/Center/Center_X", CenterXMsg);
-	nh.getParam("/FIRA/vision/Center/Center_Y", CenterYMsg);
-	nh.getParam("/FIRA/vision/Center/Inner", InnerMsg);
-	nh.getParam("/FIRA/vision/Center/Outer", OuterMsg);
-	nh.getParam("/FIRA/vision/Center/Front", FrontMsg);
-	nh.getParam("/FIRA/vision/Center/Camera_high", Camera_HighMsg);
+	nh.getParam("FIRA/vision/Center/Center_X", CenterXMsg);
+	nh.getParam("FIRA/vision/Center/Center_Y", CenterYMsg);
+	nh.getParam("FIRA/vision/Center/Inner", InnerMsg);
+	nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
+	nh.getParam("FIRA/vision/Center/Front", FrontMsg);
+	nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
     //====================色彩參數============================
-    nh.getParam("/FIRA/vision/HSV/Ball", HSV_red);
-    nh.getParam("/FIRA/vision/HSV/Green", HSV_green);
+    nh.getParam("FIRA/vision/HSV/Ball", HSV_red);
+    nh.getParam("FIRA/vision/HSV/Green", HSV_green);
     //==================掃瞄點參數=========================
-    nh.getParam("/FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
-    nh.getParam("/FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
-    nh.getParam("/FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
-    nh.getParam("/FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_Near_Gap", Angle_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Gap", Magn_Near_GapMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Near_Start", Magn_Near_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Middle_Start", Magn_Middle_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_Start", Magn_Far_StartMsg);
+    nh.getParam("FIRA/vision/SCAN/Magn_Far_End", Magn_Far_EndMsg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_1", Dont_Search_Angle_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_2", Dont_Search_Angle_2Msg);
+    nh.getParam("FIRA/vision/SCAN/Dont_Search_Angle_3", Dont_Search_Angle_3Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
+    nh.getParam("FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
     Set_Unscaned_Angle();
 }
 //===================前置處理結束=========================

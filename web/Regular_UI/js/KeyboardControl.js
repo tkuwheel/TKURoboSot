@@ -106,39 +106,75 @@ function keysdown(e) {
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[69]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.5;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: -parseFloat(speed)
+                z: -parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[81]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.5;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: parseFloat(speed)
+                z: parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         }
+        //shoot key space
+        if(keys[74]){
+            PublishTopicShoot(parseInt(document.getElementById('ShootInput').value));
+        }
+        if(keys[73]){
+            if (RemoteState) {
+                if (ChooseRobot == 1) {
+                    holdball(1);
+                } else if (ChooseRobot == 2) {
+                    holdball(2);
+                } else if (ChooseRobot == 3) {
+                    holdball(3);
+                }
+            }
+        }
         //SwitchRobot
+        // P stop
         if (keys[80]) {
             PublishTopicGameState(0);
             StrategyStop();
-        } else if (keys[79]) {
+            $('#StartInput').prop('checked',false);
+            $('#StartInput').change();
+            $('#StopInput').prop('checked',true);
+            $('#StopInput').change();
+            all_stop();
+        }
+        // O start 
+        else if (keys[79]) {
             PublishTopicGameState(1);
+            $('#StartInput').prop('checked',true);
+            $('#StartInput').change();
+            $('#StopInput').prop('checked',false);
+            $('#StopInput').change();
+            start_state();
         }
 
     }
 }
 
 function releasebutton(state) {
-    let vec3_ = new ROSLIB.Message({
+    let vec3 = new ROSLIB.Message({
         x: 0,
         y: 0,
         z: 0
@@ -167,13 +203,17 @@ function releasebutton(state) {
         vec3.y = 0;
         vec3.Z = 0;
     }
+    //if(state==81||state==69||state==87||state==65||state==83||state==68){
+    //    console.log("stop");
+    //    PublishTopicCmdVel(vec3);
+    //}
+    console.log("stop");
     PublishTopicCmdVel(vec3);
-    //PublishTopicCmdVel(vec3);
 }
 
 function keyuped(e) {
     if (start) {
-      console.log(1111);
+        //console.log("start moving");
         if (keys[e.keyCode] == true) releasebutton(e.keyCode);
         //else if (keys[69] == true) releasebutton(69);
         //else if (keys[87] == true) releasebutton(87);

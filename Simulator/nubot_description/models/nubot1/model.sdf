@@ -43,13 +43,19 @@
          <visual name="visual">
             <pose>0 0.04 -0.68 0 0 1.57</pose>
             <geometry>
-               <mesh>
-                  <!-- <scale>1.0 1.0 1.1</scale> -->
-                  <scale>0.001 0.001 0.001</scale>
-                  <uri>file://meshes/nubot_frame/robot6th.stl</uri>
-                  <!-- <uri>file://meshes/nubot_frame/nubot_frame1.dae</uri> -->
-               </mesh>
+              <mesh>
+                <!-- <scale>1.0 1.0 1.1</scale> -->
+                <scale>0.001 0.001 0.001</scale>
+                <uri>file://meshes/nubot_frame/robot6th.stl</uri>
+                <!-- <uri>file://meshes/nubot_frame/nubot_frame1.dae</uri> -->
+              </mesh>
             </geometry>
+            <material>
+             <script>
+               <uri>file://media/materials/scripts/gazebo.material</uri>
+               <name>Gazebo/Black</name>
+             </script>
+            </material>
          </visual>
          <velocity_decay>
             <linear>0</linear>

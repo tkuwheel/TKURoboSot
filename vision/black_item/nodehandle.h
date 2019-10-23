@@ -21,7 +21,7 @@
 #define PI 3.14159265
 #define FRAME_COLS 659 //width  x659
 #define FRAME_ROWS 493 //height y493
-#define VISION_TOPIC "/camera/image_raw"
+#define VISION_TOPIC "camera/image_raw"
 #define YAML_PATH ros::package::getPath("vision") + "/config/FIRA.yaml"
 #define IMAGE "/src/vision/1.bmp"
 

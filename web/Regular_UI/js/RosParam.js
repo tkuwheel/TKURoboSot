@@ -2,15 +2,15 @@
 //RobotNumber
 var RobotNumber1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/RobotNumber',
+    name: 'FIRA/RobotNumber',
 });
 var RobotNumber2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/RobotNumber',
+    name: 'FIRA/RobotNumber',
 });
 var RobotNumber3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/RobotNumber',
+    name: 'FIRA/RobotNumber',
 });
 
 function ChooseRobotNumber(priority, value) {
@@ -55,29 +55,29 @@ function SetParamRobotNum() {
 
 var SPlanningVelocityBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/SPlanning_Velocity'
+    name: 'FIRA/SPlanning_Velocity'
 });
 var PathPlanBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/General_PathPlan'
+    name: 'FIRA/General_PathPlan'
 });
 
 var SPlanningVelocityBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/SPlanning_Velocity'
+    name: 'FIRA/SPlanning_Velocity'
 });
 var PathPlanBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/General_PathPlan'
+    name: 'FIRA/General_PathPlan'
 });
 
 var SPlanningVelocityBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/SPlanning_Velocity'
+    name: 'FIRA/SPlanning_Velocity'
 });
 var PathPlanBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/General_PathPlan'
+    name: 'FIRA/General_PathPlan'
 });
 
 function GetGeneralValue() {
@@ -195,113 +195,113 @@ PathPlanBox3.get(function(value) {
 
 var AttackStrategyBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Attack_Strategy'
+    name: 'FIRA/Attack_Strategy'
 });
 var ChaseStrategyBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Chase_Strategy'
+    name: 'FIRA/Chase_Strategy'
 });
 var ZoneAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Zone_Attack'
+    name: 'FIRA/Zone_Attack'
 });
 var TypeSAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/TypeS_Attack'
+    name: 'FIRA/TypeS_Attack'
 });
 var PGoalkeeperBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Goalkeeper'
+    name: 'FIRA/Goalkeeper'
 });
 var SideSpeedUpBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/SideSpeedUp'
+    name: 'FIRA/SideSpeedUp'
 });
 var DorsadAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Dorsad_Attack'
+    name: 'FIRA/Dorsad_Attack'
 });
 var CornerKickBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Corner_Kick'
+    name: 'FIRA/Corner_Kick'
 });
 var PenaltyKickBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/Penalty_Kick'
+    name: 'FIRA/Penalty_Kick'
 });
 
 var AttackStrategyBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Attack_Strategy'
+    name: 'FIRA/Attack_Strategy'
 });
 var ChaseStrategyBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Chase_Strategy'
+    name: 'FIRA/Chase_Strategy'
 });
 var ZoneAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Zone_Attack'
+    name: 'FIRA/Zone_Attack'
 });
 var TypeSAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/TypeS_Attack'
+    name: 'FIRA/TypeS_Attack'
 });
 var TypeUAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/TypeU_Attack'
+    name: 'FIRA/TypeU_Attack'
 });
 var SideSpeedUpBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/SideSpeedUp'
+    name: 'FIRA/SideSpeedUp'
 });
 var DorsadAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Dorsad_Attack'
+    name: 'FIRA/Dorsad_Attack'
 });
 var CornerKickBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Corner_Kick'
+    name: 'FIRA/Corner_Kick'
 });
 var PenaltyKickBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/Penalty_Kick'
+    name: 'FIRA/Penalty_Kick'
 });
 
 var AttackStrategyBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Attack_Strategy'
+    name: 'FIRA/Attack_Strategy'
 });
 var ChaseStrategyBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Chase_Strategy'
+    name: 'FIRA/Chase_Strategy'
 });
 var ZoneAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Zone_Attack'
+    name: 'FIRA/Zone_Attack'
 });
 var TypeSAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/TypeS_Attack'
+    name: 'FIRA/TypeS_Attack'
 });
 var TypeUAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/TypeU_Attack'
+    name: 'FIRA/TypeU_Attack'
 });
 var SideSpeedUpBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/SideSpeedUp'
+    name: 'FIRA/SideSpeedUp'
 });
 var DorsadAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Dorsad_Attack'
+    name: 'FIRA/Dorsad_Attack'
 });
 var CornerKickBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Corner_Kick'
+    name: 'FIRA/Corner_Kick'
 });
 var PenaltyKickBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/Penalty_Kick'
+    name: 'FIRA/Penalty_Kick'
 });
 
 function GetPathplanValue() {
@@ -350,7 +350,7 @@ function GetPathplanValue() {
     $("[name=TypeSAttackElement1]").each(function() {
         TSABox1.push(parseFloat($(this).val()));
     });
-    $("[name=PGoalkeeperElement1]").each(function() {
+    $("[name=GoalkeeperElement1]").each(function() {
         PGKBox1.push(parseFloat($(this).val()));
     });
     $("[name=SideSpeedUpElement1]").each(function() {
@@ -760,31 +760,31 @@ PenaltyKickBox3.get(function(value) {
 //Behavior_variable
 var StateChaseBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Chase_Strategy'
+    name: 'FIRA_Behavior/Chase_Strategy'
 });
 var StateAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Attack_Strategy'
+    name: 'FIRA_Behavior/Attack_Strategy'
 });
 var GoalkeeperBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Goalkeeper'
+    name: 'FIRA_Behavior/Goalkeeper'
 });
 var StateTypeSAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/TypeS_Attack'
+    name: 'FIRA_Behavior/TypeS_Attack'
 });
 var StateSideSpeedUPBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Side_Speed_UP'
+    name: 'FIRA_Behavior/Side_Speed_UP'
 });
 var StateZoneAttackBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Zone_Attack'
+    name: 'FIRA_Behavior/Zone_Attack'
 });
 var StateCornerKickBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Corner_Kick'
+    name: 'FIRA_Behavior/Corner_Kick'
 });
 var StrategySelectBox1 = new ROSLIB.Param({
     ros: ros,
@@ -792,41 +792,41 @@ var StrategySelectBox1 = new ROSLIB.Param({
 });
 var StrategySelectPrefixBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/PrefixSetting',
+    name: 'FIRA_Behavior/PrefixSetting',
 });
 var SupportStrategyBox1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA_Behavior/Support_Strategy',
+    name: 'FIRA_Behavior/Support_Strategy',
 });
 
 
 var StateChaseBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Chase_Strategy'
+    name: 'FIRA_Behavior/Chase_Strategy'
 });
 var StateAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Attack_Strategy'
+    name: 'FIRA_Behavior/Attack_Strategy'
 });
 var StateTypeUChaseBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/TypeU_Chase'
+    name: 'FIRA_Behavior/TypeU_Chase'
 });
 var StateTypeSAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/TypeS_Attack'
+    name: 'FIRA_Behavior/TypeS_Attack'
 });
 var StateSideSpeedUPBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Side_Speed_UP'
+    name: 'FIRA_Behavior/Side_Speed_UP'
 });
 var StateZoneAttackBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Zone_Attack'
+    name: 'FIRA_Behavior/Zone_Attack'
 });
 var StateCornerKickBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Corner_Kick'
+    name: 'FIRA_Behavior/Corner_Kick'
 });
 var StrategySelectBox2 = new ROSLIB.Param({
     ros: ros2,
@@ -834,41 +834,41 @@ var StrategySelectBox2 = new ROSLIB.Param({
 });
 var StrategySelectPrefixBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/PrefixSetting',
+    name: 'FIRA_Behavior/PrefixSetting',
 });
 var SupportStrategyBox2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA_Behavior/Support_Strategy',
+    name: 'FIRA_Behavior/Support_Strategy',
 });
 
 
 var StateChaseBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Chase_Strategy'
+    name: 'FIRA_Behavior/Chase_Strategy'
 });
 var StateAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Attack_Strategy'
+    name: 'FIRA_Behavior/Attack_Strategy'
 });
 var StateTypeUChaseBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/TypeU_Chase'
+    name: 'FIRA_Behavior/TypeU_Chase'
 });
 var StateTypeSAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/TypeS_Attack'
+    name: 'FIRA_Behavior/TypeS_Attack'
 });
 var StateSideSpeedUPBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Side_Speed_UP'
+    name: 'FIRA_Behavior/Side_Speed_UP'
 });
 var StateZoneAttackBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Zone_Attack'
+    name: 'FIRA_Behavior/Zone_Attack'
 });
 var StateCornerKickBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Corner_Kick'
+    name: 'FIRA_Behavior/Corner_Kick'
 });
 var StrategySelectBox3 = new ROSLIB.Param({
     ros: ros3,
@@ -876,11 +876,11 @@ var StrategySelectBox3 = new ROSLIB.Param({
 });
 var StrategySelectPrefixBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/PrefixSetting',
+    name: 'FIRA_Behavior/PrefixSetting',
 });
 var SupportStrategyBox3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA_Behavior/Support_Strategy',
+    name: 'FIRA_Behavior/Support_Strategy',
 });
 
 
@@ -1555,15 +1555,15 @@ SupportStrategyBox3.get(function(value) {
 //IsSimulator
 var IsSimulator1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/IsSimulator',
+    name: 'FIRA/IsSimulator',
 });
 var IsSimulator2 = new ROSLIB.Param({
     ros: ros2,
-    name: '/FIRA/IsSimulator',
+    name: 'FIRA/IsSimulator',
 });
 var IsSimulator3 = new ROSLIB.Param({
     ros: ros3,
-    name: '/FIRA/IsSimulator',
+    name: 'FIRA/IsSimulator',
 });
 
 function SetParamIsSimulator(checked) {

@@ -1,0 +1,8 @@
+#goal definition
+string catcher_req
+---
+#result definition
+bool catcher_res
+---
+#feedback
+int32 catcher_ball_dis

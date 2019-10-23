@@ -14,31 +14,36 @@ function keysdown(e) {
         var speed = document.getElementById("SpeedInput").value;
         keys[e.keyCode] = true;
 
-        //Strategy_Choose
-        if (keys[32] && keys[49]) {
-            SetBehaviorKeyborard([0, 1, 1, 0, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[50]) {
-            SetBehaviorKeyborard([1, 0, 1, 0, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[51]) {
-            SetBehaviorKeyborard([0, 1, 0, 0, 1, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[52]) {
-            SetBehaviorKeyborard([1, 0, 0, 0, 1, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[53]) {
-            SetBehaviorKeyborard([0, 1, 0, 0, 0, 1, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[54]) {
-            SetBehaviorKeyborard([1, 0, 0, 0, 0, 1, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[55]) {
-            SetBehaviorKeyborard([0, 1, 0, 1, 0, 0, 0]);
-            e.preventDefault();
-        } else if (keys[32] && keys[56]) {
-            SetBehaviorKeyborard([1, 0, 0, 1, 0, 0, 0]);
-            e.preventDefault();
+        // m imu reset
+        if (keys[77]) {
+            ImuReset();
+        }
+       
+        // , hold ball
+        if (keys[188]) {
+            //console.log(e.keyCode);
+            holdball();
+        }
+        // . start
+        if (keys[190]) {
+            topicROSGameState(9);
+        }
+        // / stop
+        if (keys[191]) {
+            topicROSGameState(0);
+        }
+        // N chase switch
+        if (keys[78]) {
+            let chase = document.getElementById("ChaseButton").checked;
+            if(chase){
+                $('#ChaseButton').prop('checked',false);
+                $('#ChaseButton').change();
+                chase_switch();
+            }else{
+                $('#ChaseButton').prop('checked',true);
+                $('#ChaseButton').change();
+                chase_switch();
+            }
         }
         //RobotControl
         if (keys[87] && keys[68]) {
@@ -106,22 +111,30 @@ function keysdown(e) {
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[69]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.6;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: -parseFloat(speed)
+                z: -parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
         } else if (keys[81]) {
-            //if (speed > 30)
-            //    speed = speed * 0.5;
+            var speed_;
+            if (Math.abs(parseFloat(speed)) > 15){
+              speed_ = parseFloat(speed) * 0.6;
+            }else{
+              speed_ = speed;
+            }
             vec3 = new ROSLIB.Message({
                 x: 0,
                 y: 0,
-                z: parseFloat(speed)
+                z: parseFloat(speed_)
             });
             PublishTopicCmdVel(vec3);
             //PublishTopicCmdVel(vec3);
@@ -138,7 +151,7 @@ function keysdown(e) {
 }
 
 function releasebutton(state) {
-    let vec3_ = new ROSLIB.Message({
+    let vec3 = new ROSLIB.Message({
         x: 0,
         y: 0,
         z: 0
@@ -167,8 +180,12 @@ function releasebutton(state) {
         vec3.y = 0;
         vec3.Z = 0;
     }
+    //if(state==81||state==69||state==87||state==65||state==83||state==68){
+    //    console.log("stop");
+    //    PublishTopicCmdVel(vec3);
+    //}
+    console.log("stop");
     PublishTopicCmdVel(vec3);
-    //PublishTopicCmdVel(vec3);
 }
 
 function keyuped(e) {

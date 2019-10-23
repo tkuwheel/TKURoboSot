@@ -9,7 +9,7 @@ var CheckGetParm = 0;
 var obj;
 
 //Choose_Robot
-var ChooseRobot = 2;
+var ChooseRobot = null;
 
 //Remote_state
 var RemoteState = 0;

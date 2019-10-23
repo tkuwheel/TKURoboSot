@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background: #FFFFFF;
     -moz-background-size: cover;
     background-size: cover;
     height: 100%;
@@ -14,6 +14,7 @@ body {
 
 
 /*====================WIFI============================*/
+
 
 #InterfaceSetting {
     position: absolute;
@@ -144,7 +145,7 @@ body {
 
 #Joystick {
     position: relative;
-    top: 50%;
+    top: 65%;
     left: 60%;
     width: 210px;
     height: 210px;
@@ -206,49 +207,58 @@ body {
 }
 
 /*==========================================================*/
-#KeyboardControlButton {
+#KeyboardControlLable {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
-    color: #424242;
-    background-color: #ededed;
+    color: #663D00;
     
 }
-#KeyboardControlButton.ui-state-hover {
+#KeyboardControlLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
-    background-color: #ffffff
+    background-color: #FFF;
 }
 
-#KeyboardControlButton.ui-state-active {
-    background-color: #ffffdb;
+#KeyboardControlLable.ui-state-active {
+    background-color: #FFCC00;
     font-size: 17px;
-    color: #424242;
+    color: #1A1A65;
 }
 /*==========================================================*/
-#StandbyButton {
+#StandbyLable {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
-    color: #424242;
-    background-color: #ededed;
+    color: #663D00;
     
 }
 
-#StandbyButton.ui-state-hover {
+#StandbyLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
-    background-color: #ffffff;
+    background-color: #FFF;
 }
 
-#StandbyButton.ui-state-active {
-    background-color: #ffffdb;
+#StandbyLable.ui-state-active {
+    background-color: #FFCC00;
     font-size: 17px;
-    color: #424242;
+    color: #1A1A65;
 }
-
+/*===========================================*/
+#HoldBallButton1 {
+    position: relative;
+    left: 13px;
+    top: 0px;
+}
+/*===========================================*/
+#ShootDiv {
+    position: relative;
+    left: 13px;
+    top: 10px; 
+}
 /*===========================================*/
 #info { 
     position: absolute;

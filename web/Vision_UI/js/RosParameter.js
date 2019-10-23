@@ -1,7 +1,7 @@
 //ParameterCamera
 var ParameterCamera = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/FPS',
+    name: 'FIRA/vision/FPS',
 });
 
 ParameterCamera.get(function(value) {
@@ -21,7 +21,7 @@ function ParameterCameraValue() {
 //ParameterCenter_X
 var ParameterCenter_X = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Center_X',
+    name: 'FIRA/vision/Center/Center_X',
 });
 
 ParameterCenter_X.get(function(value) {
@@ -36,7 +36,7 @@ ParameterCenter_X.get(function(value) {
 //ParameterCenter_Y
 var ParameterCenter_Y = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Center_Y',
+    name: 'FIRA/vision/Center/Center_Y',
 });
 
 ParameterCenter_Y.get(function(value) {
@@ -52,7 +52,7 @@ ParameterCenter_Y.get(function(value) {
 //ParameterCenter_inner
 var ParameterCenter_Inner = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Inner',
+    name: 'FIRA/vision/Center/Inner',
 });
 
 ParameterCenter_Inner.get(function(value) {
@@ -68,7 +68,7 @@ ParameterCenter_Inner.get(function(value) {
 //ParameterCenter_Outer
 var ParameterCenter_Outer = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Outer',
+    name: 'FIRA/vision/Center/Outer',
 });
 
 ParameterCenter_Outer.get(function(value) {
@@ -83,7 +83,7 @@ ParameterCenter_Outer.get(function(value) {
 //ParameterCenter_Front
 var ParameterCenter_Front = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Front',
+    name: 'FIRA/vision/Center/Front',
 });
 
 ParameterCenter_Front.get(function(value) {
@@ -98,7 +98,7 @@ ParameterCenter_Front.get(function(value) {
 //ParameterCenter_Camera_high
 var ParameterCenter_Camera_high = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/Center/Camera_high',
+    name: 'FIRA/vision/Center/Camera_high',
 });
 
 ParameterCenter_Camera_high.get(function(value) {
@@ -107,20 +107,32 @@ ParameterCenter_Camera_high.get(function(value) {
         obj[5].value = value;
     }
 });
+//ParameterCenter_Horizon
+var ParameterCenter_Horizon = new ROSLIB.Param({
+    ros: ros,
+    name: 'FIRA/vision/Center/Horizon',
+});
 
+ParameterCenter_Horizon.get(function(value) {
+    if (value != null) {
+        var obj = document.getElementsByName("HorizonElement");
+        obj[0].value = value;
+        document.getElementsByName("HorizonLabel")[0].value = value;
+    }
+});
 function ParameterCenterTransfer() {
     let value = new Array();
     for(let i=0; i<6; i++){
         value[i] = parseInt(document.getElementsByName('CenterElement')[i].value);
     }
-   
+    let horizonmsg = parseInt(document.getElementsByName('HorizonElement')[0].value);
     ParameterCenter_X.set(value[0]);
     ParameterCenter_Y.set(value[1]);
     ParameterCenter_Inner.set(value[2]);
     ParameterCenter_Outer.set(value[3]);
     ParameterCenter_Front.set(value[4]);
     ParameterCenter_Camera_high.set(value[5]);
-
+    ParameterCenter_Horizon.set(horizonmsg);
     let str = "Sent Center Parameter: ";
     for(let i=0; i<6; i++){
         str += value[i];
@@ -128,6 +140,7 @@ function ParameterCenterTransfer() {
             str +=", ";        
         }
     }
+    str+=", "+horizonmsg;
     console.log(str);
     SendMsgs(str);
 }
@@ -135,7 +148,7 @@ function ParameterCenterTransfer() {
 //ParameterScan_Angel_Near_Gap
 var ParameterScan1 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Angle_Near_Gap',
+    name: 'FIRA/vision/SCAN/Angle_Near_Gap',
 });
 
 ParameterScan1.get(function(value) {
@@ -150,7 +163,7 @@ ParameterScan1.get(function(value) {
 //ParameterScan_Magn_Near_Gap
 var ParameterScan2 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Magn_Near_Gap',
+    name: 'FIRA/vision/SCAN/Magn_Near_Gap',
 });
 
 ParameterScan2.get(function(value) {
@@ -164,7 +177,7 @@ ParameterScan2.get(function(value) {
 //ParameterScan_Magn_Near_Start
 var ParameterScan3 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Magn_Near_Start',
+    name: 'FIRA/vision/SCAN/Magn_Near_Start',
 });
 
 ParameterScan3.get(function(value) {
@@ -178,7 +191,7 @@ ParameterScan3.get(function(value) {
 //ParameterScan_Magn_Middel_Start
 var ParameterScan4 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Magn_Middle_Start',
+    name: 'FIRA/vision/SCAN/Magn_Middle_Start',
 });
 
 ParameterScan4.get(function(value) {
@@ -192,7 +205,7 @@ ParameterScan4.get(function(value) {
 //ParameterScan_Magn_Far_Start
 var ParameterScan5 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Magn_Far_Start',
+    name: 'FIRA/vision/SCAN/Magn_Far_Start',
 });
 
 ParameterScan5.get(function(value) {
@@ -206,7 +219,7 @@ ParameterScan5.get(function(value) {
 //ParameterScan_Magn_Far_End
 var ParameterScan6 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Magn_Far_End',
+    name: 'FIRA/vision/SCAN/Magn_Far_End',
 });
 
 ParameterScan6.get(function(value) {
@@ -221,7 +234,7 @@ ParameterScan6.get(function(value) {
 //ParameterScan_Dont_Search_Angle_1
 var ParameterScan7 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Dont_Search_Angle_1',
+    name: 'FIRA/vision/SCAN/Dont_Search_Angle_1',
 });
 
 ParameterScan7.get(function(value) {
@@ -236,7 +249,7 @@ ParameterScan7.get(function(value) {
 //ParameterScan_Dont_Search_Angle_2
 var ParameterScan8 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Dont_Search_Angle_2',
+    name: 'FIRA/vision/SCAN/Dont_Search_Angle_2',
 });
 
 ParameterScan8.get(function(value) {
@@ -250,7 +263,7 @@ ParameterScan8.get(function(value) {
 //ParameterScan_Dont_Search_Angle_3
 var ParameterScan9 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Dont_Search_Angle_3',
+    name: 'FIRA/vision/SCAN/Dont_Search_Angle_3',
 });
 
 ParameterScan9.get(function(value) {
@@ -264,7 +277,7 @@ ParameterScan9.get(function(value) {
 //ParameterScan_Angle_range_1
 var ParameterScan10 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Angle_range_1',
+    name: 'FIRA/vision/SCAN/Angle_range_1',
 });
 
 ParameterScan10.get(function(value) {
@@ -278,7 +291,7 @@ ParameterScan10.get(function(value) {
 //ParameterScan_Angle_range_2_3
 var ParameterScan11 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/SCAN/Angle_range_2_3',
+    name: 'FIRA/vision/SCAN/Angle_range_2_3',
 });
 
 ParameterScan11.get(function(value) {
@@ -321,23 +334,23 @@ function ParameterScanTransfer() {
 //ParameterHSV
 var ParameterHSV_Ball = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/Ball',
+    name: 'FIRA/vision/HSV/Ball',
 });
 var ParameterHSV_Green = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/Green',
+    name: 'FIRA/vision/HSV/Green',
 });
 var ParameterHSV_Blue = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/Blue',
+    name: 'FIRA/vision/HSV/Blue',
 });
 var ParameterHSV_Yellow = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/Yellow',
+    name: 'FIRA/vision/HSV/Yellow',
 });
 var ParameterHSV_White = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/White',
+    name: 'FIRA/vision/HSV/White',
 });
 
 ParameterHSV_Ball.get(function(value) {
@@ -443,7 +456,7 @@ function ParameterHSVTransfer() {
 //==========================================
 var ParameterWhite_gray = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/white/gray',
+    name: 'FIRA/vision/HSV/white/gray',
 });
 
 ParameterWhite_gray.get(function(value) {
@@ -456,7 +469,7 @@ ParameterWhite_gray.get(function(value) {
 
 var ParameterWhite_angle = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/white/angle',
+    name: 'FIRA/vision/HSV/white/angle',
 });
 
 ParameterWhite_angle.get(function(value) {
@@ -486,7 +499,7 @@ function ParameterWhiteTransfer() {
 //=================================
 var ParameterWhite_gray2 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/HSV/white/gray',
+    name: 'FIRA/HSV/white/gray',
 });
 
 ParameterWhite_gray2.get(function(value) {
@@ -499,7 +512,7 @@ ParameterWhite_gray2.get(function(value) {
 
 var ParameterWhite_angle2 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/HSV/white/angle',
+    name: 'FIRA/HSV/white/angle',
 });
 
 ParameterWhite_angle2.get(function(value) {
@@ -531,7 +544,7 @@ function ParameterWhiteTransfer2() {
 //ParameterBlack
 var ParameterBlack_angle = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/black/angle',
+    name: 'FIRA/vision/HSV/black/angle',
 });
 
 ParameterBlack_angle.get(function(value) {
@@ -545,7 +558,7 @@ ParameterBlack_angle.get(function(value) {
 
 var ParameterBlack_gray = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/black/gray',
+    name: 'FIRA/vision/HSV/black/gray',
 });
 
 ParameterBlack_gray.get(function(value) {
@@ -560,7 +573,7 @@ function ParameterBlackTransfer() {
     let str = "";
     value[0]=parseInt(document.getElementsByName('BlackElement')[0].value);
     value[1]=parseInt(document.getElementsByName('BlackElement')[1].value);
-    ParameterWhite_gray.set(value[0]);
+    ParameterBlack_gray.set(value[0]);
     ParameterBlack_angle.set(value[1]);
     str += "Sent Black_Item Parameter: ";
     for(let i=0; i<2; i++){
@@ -575,7 +588,7 @@ function ParameterBlackTransfer() {
 //======================================
 var ParameterBlack_angle2 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/black/angle',
+    name: 'FIRA/vision/HSV/black/angle',
 });
 
 ParameterBlack_angle2.get(function(value) {
@@ -589,7 +602,7 @@ ParameterBlack_angle2.get(function(value) {
 
 var ParameterBlack_gray2 = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/vision/HSV/black/gray',
+    name: 'FIRA/vision/HSV/black/gray',
 });
 
 ParameterBlack_gray2.get(function(value) {
@@ -604,7 +617,7 @@ function ParameterBlackTransfer2() {
     let str = "";
     value[0]=parseInt(document.getElementsByName('BlackElement')[0].value);
     value[1]=parseInt(document.getElementsByName('BlackElement')[1].value);
-    ParameterWhite_gray2.set(value[0]);
+    ParameterBlack_gray2.set(value[0]);
     ParameterBlack_angle2.set(value[1]);
     str += "Sent Black_Item Parameter: ";
     for(let i=0; i<2; i++){
@@ -616,3 +629,4 @@ function ParameterBlackTransfer2() {
     //SendMsgs(str);
     
 }
+

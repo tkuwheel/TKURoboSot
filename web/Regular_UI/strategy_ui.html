@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/TeamStrategy.css">
     <link rel="stylesheet" href="css/ChooseShow.css">
     <link rel="stylesheet" href="css/wifi.css">
-    <link rel="stylesheet" href="css/ButtionStyle.css">
+    <link rel="stylesheet" href="css/ButtonStyle.css">
     <link rel="stylesheet" href="css/RangeStyle.css">
     <!-- jQuery UI-->
     <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
@@ -28,15 +28,351 @@
     <script src="js/roslib.js"></script>
     <script src="js/CloseReverseOut.js"></script>
     <script src="js/CloseCenterRightButton.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
 
 </head>
 
-<body onload="joystick_main();setTimeout(PublishTopicSaveParam(),3000);;MonitorSwitch(false);">
+<body onload="joystick_main();PublishTopicSaveParam();MonitorSwitch(false);">
     <div>
+        
+        <!----h2 class="animated infinite bounce"> Hello World!/h2-->
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title">Strategy UI</h4>
+                </div>
+                <div>
+                    <form style="width:420px;" name='form' id='new_strategy'>
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <label>role</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="role" id = "role" onclick= "processFormData();">
+                                        <option value="Attacker">Attacker</option>
+                                        <option value="Supporter">Supporter</option>
+                                        <!----option value="Passer">Passer</option-->  
+                                    </select><br/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>game_start</label>
+                                </td>
+                                <td colspan="4" >
+                                    <input  id ="game_start" type="checkbox" onclick = "gameStart()" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>chase_straight</label>
+                                </td>
+                                <td colspan="4">
+                                    <input id ="chase_straight" type="checkbox" onclick= "processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Accelerate</label>
+                                </td>
+                                <td colspan="4">
+                                    <input id ="Accelerate" type="checkbox" onclick= "processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>ball_pwm</label>
+                                </td>
+                                <td colspan="4">
+                                    <input id ="ball_pwm" type="checkbox" onclick= "processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>shooting_start</label>
+                                </td>
+                                <td>
+                                    <input id ="shooting_start" type="checkbox" name="shooting_start" onclick= "processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>game_state</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="game_state" id = "game_state" onclick= "processFormData();">
+                                      　<option value="Kick_Off">Kick_Off</option>
+                                        <option value="Free_Kick">Free_Kick</option>
+                                        <option value="Free_Ball">Free_Ball</option>
+                                        <option value="Throw_In">Throw_In</option>
+                                        <option value="Coner_Kick">Coner_Kick</option>
+                                        <option value="Penalty_Kick">Penalty_Kick</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>run_point</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="run_point" id="run_point" onclick= "processFormData();">
+                                        <option value="none">none</option>
+                                　      <option value="empty_hand">empty_hand</option>
+                                    　  <option value="ball_hand">ball_hand</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>run_x</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>-300.0</label>
+                                </td>
+                                <td>
+                                    <input id="run_xSlider" name="run_x" type="range" min="-300.0" max="300.0" value="0.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>300.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="run_xInput" name="run_x"  value="0.0" type="number" min="-300.0" max="300.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>run_y</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>-200.0</label>
+                                </td>
+                                <td>
+                                    <input id="run_ySlider" name="run_y" type="range" min="-200.0" max="200.0" value="0.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>200.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="run_yInput" name="run_y" type="number" min="-200.0" max="200.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>run_yaw</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>-180.0</label>
+                                </td>
+                                <td>
+                                    <input id="run_yawSlider" name="run_yaw" type="range" min="-180.0" max="180.0" value="0.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>180.0</label>
+                                </td> 
+                                <td>
+                                    <input style="width:60px" id="run_yawInput" name="run_yaw" type="number" min="-180.0" max="180.0" value="0.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" style="text-align:center;">
+                                    <input type='button' value="輸入定位點" onclick = "point_input()" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>our_side</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="our_side" id="our_side" onclick= "processFormData();">
+                                    　  <option value="Blue">Attack_Yellow(Blue)</option>
+                                      　<option value="Yellow">Attack_Blue(Yellow)</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>attack_mode</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="attack_mode" id = "attack_mode" onclick= "processFormData();">
+                                        <option value="Attack">Attack</option>
+                                    　  <option value="Orbit">Orbit</option>
+                                    　  <option value="Cut">Cut</option>
+                                        <option value="Post_up">Post_up</option>
+                                        <option value="Defense">Defense</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>strategy_mode</label>
+                                </td>
+                                <td colspan="4">
+                                    <select style="width:300px" name="strategy_mode" id = strategy_mode onclick= "processFormData();">
+                                        <option value="Fast_break">Fast_break</option>
+                                    　  <option value="At_Orbit">At_Orbit</option>
+                                    　  <option value="At_Post_up">Post_up</option>
+                                      　<option value="Defense_ball">Defense_ball</option>
+                                        <option value="Defense_goal">Defense_goal</option>    
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>orb_attack_ang</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0.0</label>
+                                </td>
+                                <td>
+                                    <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="5.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>20.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="orb_attack_angInput" name="orb_attack_ang" type="number" min="0.0" max="20.0" value="5.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>atk_shoot_ang</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0.0</label>
+                                </td>
+                                <td>
+                                    <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="10.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>10.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="atk_shoot_angInput" name="atk_shoot_ang" type="number" min="0.0" max="10.0" value="10.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>atk_shoot_dis</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0.0</label>
+                                </td>
+                                <td>
+                                    <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="500.0" value="300.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>500.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="atk_shoot_disInput" name="atk_shoot_dis" type="number" min="0.0" max="500.0" value="300.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();" >
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>minimum_w</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0.0</label>
+                                </td>
+                                <td>
+                                    <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>5.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" style="width:60px" id="minimum_wInput" name="minimum_w" type="number" min="0.0" max="5.0" value="1.2" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>maximum_w</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>10.0</label>
+                                </td>
+                                <td>
+                                    <input id="maximum_wSlider" name="maximum_w" type="range" min="10.0" max="100.0" value="35.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>100.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="maximum_wInput" name="maximum_w" type="number" min="10.0" max="100.0" value="35.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>minimum_v</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0.0</label>
+                                </td>
+                                <td>
+                                    <input id="minimum_vSlider" name="minimum_v" type="range" min="0.0" max="5.0" value="5.0" step="0.1" oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>5.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="minimum_vInput" name="minimum_v" type="number" min="0.0" max="5.0" value="5.0" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>maximum_v</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>10.0</label>
+                                </td>
+                                <td>
+                                    <input id="maximum_vSlider" name="maximum_v" type="range" min="10.0" max="100.0" value="50.0" step="0.1"  oninput="ToInputValue(this.value,this.name,1);change_maxw(this.value);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>10.0</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="maximum_vInput" name="maximum_v" type="number" min="10.0" max="100.0" value="50.0" oninput="ToSliderValue(this.value,this.name,0);change_maxw(this.value);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>ballhandle_dis</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0</label>
+                                </td>
+                                <td>
+                                    <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="28"  oninput="ToInputValue(this.value,this.name,1);processFormData();">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>50</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="ballhandle_disInput" name="ballhandle_dis" type="number" min="0" max="50" value="28" oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>ballhandle_ang</label>
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>0</label>
+                                </td>
+                                <td>
+                                    <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="5"  oninput="ToInputValue(this.value,this.name,1);">
+                                </td>
+                                <td style="text-align:center;">
+                                    <label>50</label>
+                                </td>
+                                <td>
+                                    <input style="width:60px" id="ballhandle_angInput" name="ballhandle_ang" type="number" min="0" max="50" value="5"  oninput="ToSliderValue(this.value,this.name,0);processFormData();">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
                 </div>
                 <!-- TopButttonDiv -->
                 <div id="ClickMeDiv">
@@ -47,14 +383,14 @@
                         <tr>
                             <td>
                                 <div>
-                                    <input id="StartButton" type="radio" name="SwitchButton" onclick="PublishTopicGameState(1);" />
-                                    <label id="StartButton" for="StartButton">Start</label>
+                                    <input id="StartInput" type="radio" name="SwitchButton" onclick="PublishTopicGameState(1);start_state();" />
+                                    <label id="StartButton" for="StartInput">Start</label>
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input id="StopButton" type="radio" checked="checked" name="SwitchButton" onclick="PublishTopicGameState(0);StrategyStop()" />
-                                    <label id="StopButton" for="StopButton">Stop</label>
+                                    <input id="StopInput" type="radio" checked="checked" name="SwitchButton" onclick="PublishTopicGameState(0);StrategyStop();all_stop();" />
+                                    <label id="StopButton" for="StopInput">Stop</label>
                                 </div>
                             </td>
                         </tr>
@@ -65,14 +401,14 @@
                         <tr>
                             <td>
                                 <div>
-                                    <input id="YellowButton" type="radio" name="TeamButton" onclick="PublishTopicTeamColor('Yellow');" />
-                                    <label id="YellowButton" for="YellowButton">Yellow</label>
+                                    <input id="YellowButton" type="radio" name="TeamButton" onclick="PublishTopicTeamColor('Yellow');attack_way();change_side();" />
+                                    <label id="YellowButtonlable" for="YellowButton">Yellow</label>
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <input id="BlueButton" type="radio" name="TeamButton" onclick="PublishTopicTeamColor('Blue');" />
-                                    <label id="BlueButton" for="BlueButton">Blue</label>
+                                    <input id="BlueButton" type="radio" name="TeamButton" onclick="PublishTopicTeamColor('Blue');attack_way();change_side();" />
+                                    <label id="BlueButtonlable" for="BlueButton">Blue</label>
                                 </div>
                             </td>
                         </tr>
@@ -92,15 +428,8 @@
                                     <input id="KeyboardControlButton" type="checkbox" name="KeyboardControl" onclick="KeyboardState(this.checked)" />
                                     <label id="KeyboardControlButton" for="KeyboardControlButton">KeyboardControl</label>
                                 </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <input autocomplete="off" id="CameraSwitch" type="checkbox" onclick="MonitorSwitch(this.checked);">
-                                    <label id="CameraSwitch" for="CameraSwitch">Camera</label>
-                                </div>
-                            </td>
-
-                        </tr>
+                            </td> 
+                        </tr>   
                     </table>
                 </div>
                 <!--Setting Button-->
@@ -122,9 +451,103 @@
                 </div>
                 <div class="modal-body" id="StrategyFunction">
                     <div id="StrategyParameter" class="form-group">
+                        <table>
+                            <tr>
+                              <td>
+                                  <div>
+                                      <input autocomplete="off" id="GroundButton" type="checkbox" onclick="GroundSwitch(this.checked);">
+                                      <label id="GroundButton" for="GroundButton">Field Roate</label>
+                                  </div>
+                              </td>
+                              <td>
+                                <div>
+                                    <input autocomplete="off" name="visionelement" id="CameraSwitch" type="checkbox" onclick="MonitorSwitch(this.checked);">
+                                    <label name="visionelement" id=CameraSwitchTest for="CameraSwitch">Camera</label>
+                                      <!-- tkc 改掉label的for "CameraSwitchTest"，以及input的id "CameraSwitchTest" -->
+                                </div>
+                              </td>
+                              <td>
+                                <div>
+                                    <input autocomplete="off" name="visionelement" id="MCLmap" type="checkbox" onclick="Mclmap(this.checked);">
+                                    <label name="visionelement"  id=MCLmapTest for="MCLmap">MCLmap</label>
+                                    <!-- tkc 改掉label的for "MCLmapTest"，以及input的id "MCLmapTest" -->
+                                </div>
+                              </td>
+<!--
+                               <td>
+                                  <div>
+                                      <input autocomplete="on" name="visionelement" checked="checked" id="Fieldmap" type="checkbox" onclick="MonitorSwitch(false);">
+                                      <label name="visionelement" id="Fieldmap" for="Fieldmap">Fieldmap</label>
+                                  </div>
+                              </td>
+-->
+                              <td>
+                                  <div>
+                                      <input id="imuButton" type="button" value="陀螺儀校正" onclick="ImuReset()">
+                                      <!--label id="resetButton" for="resetButton">Reset</label-->
+                                  </div>
+                              </td>
+                              <td>
+                                  <div>
+                                      <input id="resetButton" type="button" value="定位重置" onclick="CoordReset()">
+                                      <!--label id="resetButton" for="resetButton">Reset</label-->
+                                  </div>
+                              </td>
+                              <td>
+                                  <div>
+                                      <input id="locReverseButton" type="button" value="定位反轉" onclick="CoordReverse()">
+                                      <!--label id="resetButton" for="resetButton">Reset</label-->
+                                  </div>
+                              </td>
+                            </tr>
+                        </table>
                         <!-- Map -->
                         <div id="MapArea">
-                            <img id="MapCanvas"></img>
+                            <img id="MapCanvas"><img>
+                            <canvas id="caution_map" class="DrawRect" width="659" height="493" ></canvas>
+                            <canvas id="attack_map" class="DrawRect" width="659" height="493" ></canvas>
+                            <canvas id="robot_map" class="DrawRect" width="659" height="493" ></canvas>
+                            <canvas id="reset_map" class="DrawRect" width="659" height="493" ></canvas>
+                            <div id = "localTable"> 
+                                <table class = "locInformationTable" >
+                                    <tr>
+                                        <td>
+                                            <label class = "localization_info2">R1&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x1" >0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y1">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle1">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma1">NULL</label>
+                                        </td>
+                                    </tr>
+                                    <tr>   
+                                        <td>
+                                            <label class = "localization_info2">R3&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x2">0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y2">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle2">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma2">NULL</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <label class = "localization_info2">R3&nbsp;coordinate:&nbsp;( </label>
+                                            <label class = "localization_info" id="coordinate_x3">0</label>
+                                            <label class = "localization_info2">,&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_y3">0</label>
+                                            <label class = "localization_info2">)&nbsp;&nbsp;&nbsp;&nbsp;Angle:&nbsp;</label>
+                                            <label class = "localization_info" id="coordinate_angle3">NULL</label>
+                                            <label class = "localization_info2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sigma:&nbsp; </label>
+                                            <label class = "localization_info" id="coordinate_sigma3">NULL</label>
+                                        </td>
+                                    </tr> 
+                                </table>
+                            </div>
                         </div>
                         <!-- RightButttonDiv -->
                         <div id="RobotStateDiv">
@@ -136,8 +559,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div>
-                                            <input id="RobotOneButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(1)" />
+                                        <div style="width: 120px">
+                                            <input id="RobotOneButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(1);change_robot(1);" />
                                             <label id="RobotOneButton" for="RobotOneButton">Robot 1</label>
                                         </div>
                                     </td>
@@ -152,8 +575,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div>
-                                            <input id="RobotTwoButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(2)" />
+                                        <div style="width: 120px">
+                                            <input id="RobotTwoButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(2);change_robot(2);" />
                                             <label id="RobotTwoButton" for="RobotTwoButton">Robot 2</label>
                                         </div>
                                     </td>
@@ -168,8 +591,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div>
-                                            <input id="RobotThreeButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(3)" />
+                                        <div style="width: 120px">
+                                            <input id="RobotThreeButton" type="radio" name="RobotStateButton" onclick="GetChooseRobot(3);change_robot(3);" />
                                             <label id="RobotThreeButton" for="RobotThreeButton">Robot 3</label>
                                         </div>
                                     </td>
@@ -178,7 +601,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td></td>
                                     <td>
                                         <div style="width: 120px">
                                             <input id="StandByButton" type="checkbox" name="RobotRemoteButton" onclick="RemoteSwitch(this.checked)" />
@@ -197,10 +619,10 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <input id="SpeedSlider" name="SpeedElement" type="range" min="0" max="100" value="0" oninput="ToInputValue(this.value,this.name,1);">
+                                        <input id="SpeedSlider" name="SpeedElement" type="range" min="0" max="100" value="20" oninput="ToInputValue(this.value,this.name,1);">
                                     </td>
                                     <td>
-                                        <input id="SpeedInput" name="SpeedElement" placeholder="Speed" value="0" type="number" min="0" max="100" oninput="ToSliderValue(this.value,this.name,0);" />
+                                        <input id="SpeedInput" name="SpeedElement" placeholder="Speed" value="20" type="number" min="0" max="100" oninput="ToSliderValue(this.value,this.name,0);" />
                                     </td>
                                 </tr>
                             </table>
@@ -209,7 +631,7 @@
                             <table>
                                 <tr>
                                     <td>
-                                        <input id="ShootInput" name="ShootElement" placeholder="Shoot" value="0" type="number" min="0" max="100" oninput="JudgeShootInput(this.name,this.value);" />
+                                        <input id="ShootInput" name="ShootElement" placeholder="Shoot" value="80" type="number" min="0" max="100" oninput="JudgeShootInput(this.name,this.value);" />
                                     </td>
                                     <td>
                                         <input id="ShootButton" type="button" value="Shoot" onclick="PublishTopicShoot(parseInt(document.getElementById('ShootInput').value))">
@@ -228,8 +650,24 @@
                             <table id="RobotStrategyTable1">
                                 <tr>
                                     <td>
-                                        <input id="IsTeamStrategyButton" type="radio" name="TSButton" onclick="IsTeamStrategy(1)" />
-                                        <label id="IsTeamStrategyButton" for="IsTeamStrategyButton">TeamStrategy</label>
+                                        <div id="IsTeamStrategyDiv" class="btn-group">
+                                            <input id="IsTeamStrategyButton" type="radio" name="TSButton" onclick="IsTeamStrategy(1)" />
+                                            <!----button id="IsTeamStrategyButton" class="btn btn-default btn-md dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                                strategy <span class="caret"></span>
+                                            </button>
+                                            <ul id="TeamStrategyUL" class="dropdown-menu" role="menu">
+                                                <li id="FreeKickButton" ><span>Free Kick</span></li>
+                                                <li id="PenaltyKickButton" ><span>Penalty Kick</span></li>
+                                                <li id="FreeBallButton" ><span>Free Ball</span></li>
+                                                <li id="ThrowInButton" ><span>Throw In</span></li>
+                                                <li id="CornerKickButton" ><span>Corner Kick</span></li>
+                                                <li id="GoalKickButton" ><span>Goal Kick</span></li>
+                                                <li id="ShootBrokenButton" ><span>ShootBroken</span></li>
+                                                <li id="AvoidBarrierButton" ><span>Avoid Barrier</span></li>
+                                                <li id="RobotShowButton" ><span>Robot Show</span></li>
+                                            </ul-->                
+                                            <label id="IsTeamStrategyButton" for="IsTeamStrategyButton">TeamStrategy</label>
+                                        </div>
                                     </td>
                                     <td>
                                         <div>
@@ -295,6 +733,7 @@
                                         <th class="info3">
                                             <label>Yellow</label>
                                         </th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -314,6 +753,7 @@
                                         <td class="RobotInformationTbody1 info3">
                                             <label name="RobotVision1">0 , 0°</label>
                                         </td>
+                                        
                                     </tr>
                                     <tr>
                                         <td class="RobotInformationTbody2 info1">
@@ -331,27 +771,28 @@
                                         <td class="RobotInformationTbody2 info3">
                                             <label name="RobotVision2">0 , 0°</label>
                                         </td>
+                                        
                                     </tr>
-                                </tbody>
-                                <tfoot>
                                     <tr>
-                                        <td class="info1">
+                                        <td class="RobotInformationTbody3 info1">
                                             <label>R3</label>
                                         </td>
-                                        <td class="info2">
+                                        <td class="RobotInformationTbody3 info2">
                                             <label name="RobotVision3">0</label>
                                         </td>
-                                        <td class="info3">
+                                        <td class="RobotInformationTbody3 info3">
                                             <label name="RobotVision3">0 , 0°</label>
                                         </td>
-                                        <td class="info3">
+                                        <td class="RobotInformationTbody3 info3">
                                             <label name="RobotVision3">0 , 0°</label>
                                         </td>
-                                        <td class="info3">
+                                        <td class="RobotInformationTbody3 info3">
                                             <label name="RobotVision3">0 , 0°</label>
                                         </td>
+                                        
                                     </tr>
-                                </tfoot>
+                                </tbody>
+                               
                             </table>
                         </div>
                     </div>
@@ -365,13 +806,13 @@
             <div class="modal-content GeneralContent">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">SetGeneralForm</h4>
+                    <h4 class="modal-title">General</h4>
                     <div id="GeneralSettingRobotDiv">
                         <table>
                             <tr>
                                 <td>
                                     <div>
-                                        <input id="GeneralRobot1Button" type="radio" checked="checked" name="GeneralStateButton" />
+                                        <input id="GeneralRobot1Button" type="radio" name="GeneralStateButton" />
                                         <label id="GeneralRobot1Button" for="GeneralRobot1Button">Robot 1</label>
                                     </div>
                                 </td>
@@ -542,30 +983,6 @@
                                         <input type="text" name="PathPlanElement1" value="0" />
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement1" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot angle</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement1" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement1" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot angle</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement1" value="0" />
-                                    </td>
-                                </tr>
                             </table>
                         </div>
                     </div>
@@ -719,30 +1136,6 @@
                                         <input type="text" name="PathPlanElement2" value="0" />
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement2" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot angle</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement2" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement2" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot angle</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement2" value="0" />
-                                    </td>
-                                </tr>
                             </table>
                         </div>
                     </div>
@@ -892,30 +1285,6 @@
                                 </tr>
                                 <tr>
                                     <td>(double)block delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement3" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement3" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Dorsad-Attack shoot angle</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement3" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot delay</td>
-                                    <td>
-                                        <input type="text" name="PathPlanElement3" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)Escape-Attack shoot angle</td>
                                     <td>
                                         <input type="text" name="PathPlanElement3" value="0" />
                                     </td>
@@ -1954,7 +2323,7 @@
             <div class="modal-content BehaviorContent">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">FIRA Behavior</h4>
+                    <h4 class="modal-title">Behavior</h4>
                     <div id="BehaviorSettingRobotDiv">
                         <table>
                             <tr>
@@ -1996,7 +2365,7 @@
                                     </td>
                                     <td>
                                         <input type="radio" id="Goalkeeper1" name="BehaviorStrategy1" />
-                                        <label id="Goalkeeper1" for="Goalkeeper1">Goalkeeper</label>
+                                        <label id="Goalkeeper1" for="Goalkeeper1">Goal Keeper</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -2100,31 +2469,25 @@
                                     <th>Value</th>
                                 </tr>
                                 <tr>
-                                    <td>(double)b2p_ball2opgoal_dis</td>
+                                    <td>(double)push_ball2opgoal_dis</td>
                                     <td>
                                         <input type="text" name="GoalkeeperElement1" value="0" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>(double)b2p_opgoal_dis</td>
+                                    <td>(double)push_opgoal_dis</td>
                                     <td>
                                         <input type="text" name="GoalkeeperElement1" value="0" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>(double)p2b_ball2opgoal_dis</td>
+                                    <td>(double)push_opgoal_dis</td>
                                     <td>
                                         <input type="text" name="GoalkeeperElement1" value="0" />
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>(double)p2b_opgoal_dis</td>
-                                    <td>
-                                        <input type="text" name="GoalkeeperElement1" value="0" />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>(double)shootblock_enable</td>
+                                    <td>(double)push_opgoal_dis</td>
                                     <td>
                                         <input type="text" name="GoalkeeperElement1" value="0" />
                                     </td>
@@ -2213,88 +2576,124 @@
                         </div>
                         <div class="form-group" id="StrategySelectionModule1">
                             <table>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input id="StrategySelectionProtect1" type="checkbox" style="width:50px;">protect system</label>
-                                    </th>
-                                    <th>
-                                    </th>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <th>
+                                              <label>
+                                                  <input id="StrategySelectionProtect1" type="checkbox" style="width:50px;">protect system</label>
+                                          </th>
+                                          <th>
+                                          </th>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td style="width:50%">
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="chase11" type="checkbox" style="width:50px;">Chase</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="chase12" type="checkbox" style="width:50px;">Straight-chase</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="chase13" type="checkbox" style="width:50px;">Slow Chase</label>
+                                          </td>
+                                          <td>
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack11" type="checkbox" style="width:50px;">Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack12" type="checkbox" style="width:50px;">S-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack13" type="checkbox" style="width:50px;">Dorsad-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack14" type="checkbox" style="width:50px;">Shoot-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack15" type="checkbox" style="width:50px;">Escape-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement1" id="attack16" type="checkbox" style="width:50px;">Straight-Attack</label>
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Forward</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Backward</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Left</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Right</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td style="padding-left: 50px;">
+                                              <label>Delay Time</label>
+                                          </td>
+                                          <td style="padding-left: 20px;">
+                                              <input name="StrategySelectionPrefixElement1" type="text" style="width:100%;" value="0" />
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
                                 </tr>
                                 <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Chase</label>
-                                    </th>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Straight-chase</label>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Slow Chase</label>
-                                    </th>
-                                    <th>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Attack</label>
+                                    <td >
                                     </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">S-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Dorsad-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Shoot-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Escape-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement1" type="checkbox" style="width:50px;">Straight-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Forward</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Backward</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Left</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement1" type="checkbox" style="width:50px;">Right</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding-left: 50px;">
-                                        <label>Delay Time</label>
-                                    </td>
-                                    <td style="padding-left: 20px;">
-                                        <input name="StrategySelectionPrefixElement1" type="text" style="width:100%;" value="0" />
+                                    <td >  
                                     </td>
                                 </tr>
                             </table>
@@ -2548,89 +2947,129 @@
                         </div>
                         <div class="form-group" id="StrategySelectionModule2">
                             <table>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input id="StrategySelectionProtect2" type="checkbox" style="width:50px;">protect system</label>
-                                    </th>
-                                    <th>
-                                    </th>
+                                <tr style = "width:100%;height:100%;border:1px black solid;border-radius:5px;">
+                                  <td colspan="2" >
+                                    <table style = "width:100%;">
+                                      <tr>
+                                          <th>
+                                              <label>
+                                                  <input id="StrategySelectionProtect2" type="checkbox" style="width:50px;">protect system</label>
+                                          </th>
+                                          <th>
+                                          </th>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                
+                                
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="chase21" type="checkbox" style="width:50px;">Chase</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="chase22" type="checkbox" style="width:50px;">Straight-chase</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="chase23" type="checkbox" style="width:50px;">Slow Chase</label>
+                                          </td>
+                                          <td>
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack21" type="checkbox" style="width:50px;">Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack22" type="checkbox" style="width:50px;">S-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack23" type="checkbox" style="width:50px;">Dorsad-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack24" type="checkbox" style="width:50px;">Shoot-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack25" type="checkbox" style="width:50px;">Escape-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement2" id="attack26" type="checkbox" style="width:50px;">Straight-Attack</label>
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Forward</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Backward</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Left</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Right</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td style="padding-left: 50px;">
+                                              <label>Delay Time</label>
+                                          </td>
+                                          <td style="padding-left: 20px;">
+                                              <input name="StrategySelectionPrefixElement2" type="text" style="width:100%;" value="0" />
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
                                 </tr>
                                 <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Chase</label>
-                                    </th>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Straight-chase</label>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Slow Chase</label>
-                                    </th>
-                                    <th>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">S-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Dorsad-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Shoot-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Escape-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement2" type="checkbox" style="width:50px;">Straight-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Forward</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Backward</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Left</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement2" type="checkbox" style="width:50px;">Right</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding-left: 50px;">
-                                        <label>Delay Time</label>
-                                    </td>
-                                    <td style="padding-left: 20px;">
-                                        <input name="StrategySelectionPrefixElement2" type="text" style="width:100%;" value="0" />
-                                    </td>
+                                  <td >
+                                  </td>
+                                  <td >  
+                                  </td>
                                 </tr>
                             </table>
                         </div>
@@ -2881,91 +3320,129 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="form-group" id="StrategySelectionModule3">
+                         <div class="form-group" id="StrategySelectionModule3">
                             <table>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input id="StrategySelectionProtect3" type="checkbox" style="width:50px;">protect system</label>
-                                    </th>
-                                    <th>
-                                    </th>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <th>
+                                              <label>
+                                                  <input id="StrategySelectionProtect3" type="checkbox" style="width:50px;">protect system</label>
+                                          </th>
+                                          <th>
+                                          </th>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="chase31" type="checkbox" style="width:50px;">Chase</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="chase32" type="checkbox" style="width:50px;">Straight-chase</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="chase33" type="checkbox" style="width:50px;">Slow Chase</label>
+                                          </td>
+                                          <td>
+                                          </td>
+                                      </tr>
+                                   </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack31" type="checkbox" style="width:50px;">Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack32" type="checkbox" style="width:50px;">S-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack33" type="checkbox" style="width:50px;">Dorsad-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack34" type="checkbox" style="width:50px;">Shoot-Attack</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack35" type="checkbox" style="width:50px;">Escape-Attack</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionElement3" id="attack36" type="checkbox" style="width:50px;">Straight-Attack</label>
+                                          </td>
+                                      </tr>
+                                    </table>
+                                  </td>
+                                  <td>
+                                  </td>
+                                </tr>
+                                <tr style = "width:100%;height:50px;">
+                                  <td colspan="2"  style = "width:100%;border:1px black solid;border-radius:-5px;">
+                                    <table style = "width:100%">
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Forward</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Backward</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Left</label>
+                                          </td>
+                                          <td>
+                                              <label>
+                                                  <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Right</label>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td style="padding-left: 50px;">
+                                              <label>Delay Time</label>
+                                          </td>
+                                          <td style="padding-left: 20px;">
+                                              <input name="StrategySelectionPrefixElement3" type="text" style="width:100%;" value="0" />
+                                          </td>
+                                      </tr>
+                                   </table>
+                                  </td>
+                                  <td>
+                                  </td>
                                 </tr>
                                 <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Chase</label>
-                                    </th>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Straight-chase</label>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Slow Chase</label>
-                                    </th>
-                                    <th>
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">S-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Dorsad-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Shoot-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Escape-Attack</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionElement3" type="checkbox" style="width:50px;">Straight-Attack</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Forward</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Backward</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Left</label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input name="StrategySelectionPrefixElement3" type="checkbox" style="width:50px;">Right</label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding-left: 50px;">
-                                        <label>Delay Time</label>
-                                    </td>
-                                    <td style="padding-left: 20px;">
-                                        <input name="StrategySelectionPrefixElement3" type="text" style="width:100%;" value="0" />
-                                    </td>
+                                  <td >
+                                  </td>
+                                  <td >  
+                                  </td>
                                 </tr>
                             </table>
                         </div>
@@ -3315,6 +3792,7 @@
         $("#RobotStateDiv").buttonset();
         $("#ShootDiv").buttonset();
         $("#RobotStrategyDiv").buttonset();
+        $("#StrategyParameter").buttonset();
     </script>
     <!-- General -->
     <script type="text/javascript">
@@ -3766,7 +4244,8 @@
 
         //Robot 1
         $("#SetBehaviorButton1").buttonset();
-
+        
+        $("#StateChaseModule1").show();
         $("#StateAttackModule1").hide();
         $("#GoalkeeperModule1").hide();
         $("#StateTypeSAttackModule1").hide();
@@ -4147,6 +4626,250 @@
             $("#NotShowModule").hide();
         });
     </script>
+    <script>
+      $(document).ready(function () {//单选  
+          $("input[name='StrategySelectionElement1']:checkbox").click(function(){  
+              if($(this).is(':checked')){  
+                  //console.log($(this).attr('id'))  
+                  if($(this).attr('id') === 'chase11'){  
+                      $('#chase11').attr('checked',true);  
+                      $('#chase12').attr('checked',false);
+                      $('#chase13').attr('checked',false);
+                  }
+                  if($(this).attr('id') === 'chase12'){  
+                      $('#chase11').attr('checked',false);
+                      $('#chase12').attr('checked',true);
+                      $('#chase13').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'chase13'){  
+                      $('#chase11').attr('checked',false);
+                      $('#chase12').attr('checked',false);
+                      $('#chase13').attr('checked',true);
+                  }
+                  if($(this).attr('id') === 'attack11'){  
+                      $('#attack11').attr('checked',true);  
+                      $('#attack12').attr('checked',false);
+                      $('#attack13').attr('checked',false);
+                      $('#attack14').attr('checked',false); 
+                      $('#attack15').attr('checked',false); 
+                      $('#attack16').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack12'){  
+                      $('#attack11').attr('checked',false);  
+                      $('#attack12').attr('checked',true);
+                      $('#attack13').attr('checked',false);
+                      $('#attack14').attr('checked',false); 
+                      $('#attack15').attr('checked',false); 
+                      $('#attack16').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack13'){  
+                      $('#attack11').attr('checked',false);  
+                      $('#attack12').attr('checked',false);
+                      $('#attack13').attr('checked',true);
+                      $('#attack14').attr('checked',false); 
+                      $('#attack15').attr('checked',false); 
+                      $('#attack16').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack14'){  
+                      $('#attack11').attr('checked',false);  
+                      $('#attack12').attr('checked',false);
+                      $('#attack13').attr('checked',false);
+                      $('#attack14').attr('checked',true); 
+                      $('#attack15').attr('checked',false); 
+                      $('#attack16').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack15'){  
+                      $('#attack11').attr('checked',false);  
+                      $('#attack12').attr('checked',false);
+                      $('#attack13').attr('checked',false);
+                      $('#attack14').attr('checked',false); 
+                      $('#attack15').attr('checked',true); 
+                      $('#attack16').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack16'){  
+                      $('#attack11').attr('checked',false);  
+                      $('#attack12').attr('checked',false);
+                      $('#attack13').attr('checked',false);
+                      $('#attack14').attr('checked',false); 
+                      $('#attack15').attr('checked',false); 
+                      $('#attack16').attr('checked',true); 
+                  }
+              } 
+          });  
+      });
+    </script>
+    <script>
+      $(document).ready(function () {//单选  
+          $("input[name='StrategySelectionElement2']:checkbox").click(function(){  
+              if($(this).is(':checked')){  
+                  //console.log($(this).attr('id'))  
+                  if($(this).attr('id') === 'chase21'){  
+                      $('#chase21').attr('checked',true);  
+                      $('#chase22').attr('checked',false);
+                      $('#chase23').attr('checked',false);
+                  }
+                  if($(this).attr('id') === 'chase22'){  
+                      $('#chase21').attr('checked',false);
+                      $('#chase22').attr('checked',true);
+                      $('#chase23').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'chase23'){  
+                      $('#chase21').attr('checked',false);
+                      $('#chase22').attr('checked',false);
+                      $('#chase23').attr('checked',true);
+                  }
+                  if($(this).attr('id') === 'attack21'){  
+                      $('#attack21').attr('checked',true);  
+                      $('#attack22').attr('checked',false);
+                      $('#attack23').attr('checked',false);
+                      $('#attack24').attr('checked',false); 
+                      $('#attack25').attr('checked',false); 
+                      $('#attack26').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack22'){  
+                      $('#attack21').attr('checked',false);  
+                      $('#attack22').attr('checked',true);
+                      $('#attack23').attr('checked',false);
+                      $('#attack24').attr('checked',false); 
+                      $('#attack25').attr('checked',false); 
+                      $('#attack26').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack23'){  
+                      $('#attack21').attr('checked',false);  
+                      $('#attack22').attr('checked',false);
+                      $('#attack23').attr('checked',true);
+                      $('#attack24').attr('checked',false); 
+                      $('#attack25').attr('checked',false); 
+                      $('#attack26').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack24'){  
+                      $('#attack21').attr('checked',false);  
+                      $('#attack22').attr('checked',false);
+                      $('#attack23').attr('checked',false);
+                      $('#attack24').attr('checked',true); 
+                      $('#attack25').attr('checked',false); 
+                      $('#attack26').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack25'){  
+                      $('#attack21').attr('checked',false);  
+                      $('#attack22').attr('checked',false);
+                      $('#attack23').attr('checked',false);
+                      $('#attack24').attr('checked',false); 
+                      $('#attack25').attr('checked',true); 
+                      $('#attack26').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack26'){  
+                      $('#attack21').attr('checked',false);  
+                      $('#attack22').attr('checked',false);
+                      $('#attack23').attr('checked',false);
+                      $('#attack24').attr('checked',false); 
+                      $('#attack25').attr('checked',false); 
+                      $('#attack26').attr('checked',true); 
+                  }
+              } 
+          });  
+      });
+    </script>
+    <script>
+      $(document).ready(function () {//单选  
+          $("input[name='StrategySelectionElement3']:checkbox").click(function(){  
+              if($(this).is(':checked')){  
+                  //console.log($(this).attr('id'))  
+                  if($(this).attr('id') === 'chase31'){  
+                      $('#chase31').attr('checked',true);  
+                      $('#chase32').attr('checked',false);
+                      $('#chase33').attr('checked',false);
+                  }
+                  if($(this).attr('id') === 'chase32'){  
+                      $('#chase31').attr('checked',false);
+                      $('#chase32').attr('checked',true);
+                      $('#chase33').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'chase33'){  
+                      $('#chase31').attr('checked',false);
+                      $('#chase32').attr('checked',false);
+                      $('#chase33').attr('checked',true);
+                  }
+                  if($(this).attr('id') === 'attack31'){  
+                      $('#attack31').attr('checked',true);  
+                      $('#attack32').attr('checked',false);
+                      $('#attack33').attr('checked',false);
+                      $('#attack34').attr('checked',false); 
+                      $('#attack35').attr('checked',false); 
+                      $('#attack36').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack32'){  
+                      $('#attack31').attr('checked',false);  
+                      $('#attack32').attr('checked',true);
+                      $('#attack33').attr('checked',false);
+                      $('#attack34').attr('checked',false); 
+                      $('#attack35').attr('checked',false); 
+                      $('#attack36').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack33'){  
+                      $('#attack31').attr('checked',false);  
+                      $('#attack32').attr('checked',false);
+                      $('#attack33').attr('checked',true);
+                      $('#attack34').attr('checked',false); 
+                      $('#attack35').attr('checked',false); 
+                      $('#attack36').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack34'){  
+                      $('#attack31').attr('checked',false);  
+                      $('#attack32').attr('checked',false);
+                      $('#attack33').attr('checked',false);
+                      $('#attack34').attr('checked',true); 
+                      $('#attack35').attr('checked',false); 
+                      $('#attack36').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack35'){  
+                      $('#attack31').attr('checked',false);  
+                      $('#attack32').attr('checked',false);
+                      $('#attack33').attr('checked',false);
+                      $('#attack34').attr('checked',false); 
+                      $('#attack35').attr('checked',true); 
+                      $('#attack36').attr('checked',false); 
+                  }
+                  if($(this).attr('id') === 'attack36'){  
+                      $('#attack31').attr('checked',false);  
+                      $('#attack32').attr('checked',false);
+                      $('#attack33').attr('checked',false);
+                      $('#attack34').attr('checked',false); 
+                      $('#attack35').attr('checked',false); 
+                      $('#attack36').attr('checked',true); 
+                  }
+              } 
+          });  
+      });
+    </script>
+    <script>
+        $(document).ready(function () {//单选  
+            // $("input[name='visionelement']:checkbox").click(function(){  
+            //     if($(this).is(':checked')){  
+            //         console.log($(this).attr('id'))  
+            //         $("#MCLmap").toggleClass("ui-state-active");
+            //     } 
+            // });  
+            $('#CameraSwitch,#MCLmap').change(function(){
+                //console.log($(this).prop('checked'))
+                if(!$(this).prop('checked'))
+                {
+                    return false;
+                }
+                switch($(this).attr('id'))
+                {
+                    case "CameraSwitch":
+                    $('#MCLmap').prop('checked',false);
+                    $('#MCLmap').change();
+                    break;
+                    case "MCLmap":
+                    $('#CameraSwitch').prop('checked',false);
+                    $('#CameraSwitch').change();
+                    break;
+                }
+            });
+        });
+    </script>
     <script src="js/GlobalVariable.js"></script>
     <script src="js/KeyboardControl.js"></script>
     <script src="js/RobotConnect.js"></script>
@@ -4159,9 +4882,13 @@
     <script src="js/SliderControl.js"></script>
     <script src="js/Joystick.js"></script>
     <script src="js/show.js"></script>
-    <script src="js/video.js"></script>
     <script src="js/HoldBall.js"></script>
+    <script src="js/video.js"></script>
+    <script src="js/variable.js"></script>
+    <script src="js/d_RosParam.js"></script>
+    <script src="js/d_RosService.js"></script>
 
 </body>
 
 </html>
+

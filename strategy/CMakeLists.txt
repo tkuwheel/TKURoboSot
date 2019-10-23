@@ -2,61 +2,59 @@ cmake_minimum_required(VERSION 2.8.3)
 project(strategy)
 
 find_package(catkin REQUIRED COMPONENTS
-#  dynamic_tutorials
   roscpp
   rospy
   std_msgs
   dynamic_reconfigure
+#  image_transport
+  message_filters
+  message_generation
+  genmsg
+  actionlib_msgs
+  actionlib
+  geometry_msgs
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
 # catkin_python_setup()
 
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+   FILES
+   RobotState.msg
+ )
 
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+#add_service_files(
+#  FILES
+#  GameState.srv
+#)
 
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
-
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
-
-generate_dynamic_reconfigure_options(
-  cfg/GameState.cfg
+add_action_files(
+  FILES
+  Passing.action
 )
 
-## for dynamic reconfigure
-# add_executable(game_state_server src/game_state_server.cpp)
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+  actionlib_msgs
+)
 
-## make sure configure headers are built before any node using them
-# add_dependencies(game_state_server ${PROJECT_NAME}_gencfg)
-
-## for dynamic reconfigure
-# target_link_libraries(game_state_server ${catkin_LIBRARIES})
+generate_dynamic_reconfigure_options(
+#  cfg/GameState.cfg
+  cfg/Robot.cfg
+  cfg/Passing.cfg
+  cfg/Role.cfg
+)
 
 catkin_package(
 # INCLUDE_DIRS include
-  LIBRARIES strategy
-  CATKIN_DEPENDS dynamic_reconfigure roscpp rospy std_msgs # dynamic_tutorials 
+#  LIBRARIES strategy
+  CATKIN_DEPENDS message_runtime dynamic_reconfigure roscpp rospy std_msgs message_filters# dynamic_tutorials 
   DEPENDS system_lib
 )
 
 include_directories(
-# include
   ${catkin_INCLUDE_DIRS}
 )
 

@@ -1,27 +1,27 @@
 var IsSimulator = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/IsSimulator'
+    name: 'FIRA/IsSimulator'
     // messageType: 'std_msgs/Int32'
 });
 var SPlanningVelocityBox = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/SPlanning_Velocity'
+    name: 'FIRA/SPlanning_Velocity'
 });
 var HoldConditionBox = new ROSLIB.Param({
     ros: ros,
-    name: '/FIRA/hold_condition'
+    name: 'FIRA/hold_condition'
 });
 var param_afast = new ROSLIB.Param({
     ros: ros,
-    name: '/mcl/a_fast'
+    name: 'mcl/a_fast'
 });
 var param_aslow = new ROSLIB.Param({
     ros: ros,
-    name: '/mcl/a_slow'
+    name: 'mcl/a_slow'
 });
 var param_wcmps = new ROSLIB.Param({
     ros: ros,
-    name: '/mcl/wcmps'
+    name: 'mcl/wcmps'
 });
 function GeneralTransfer(){
     let Box1 = [];
@@ -91,5 +91,43 @@ SPlanningVelocityBox.get(function(value) {
         for (var i = 0; i < obj.length; i++) {
             obj[i].value = value[i];
         }
+    }
+});
+HoldConditionBox.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("BallElement");
+        for (var i = 0; i < obj.length; i++) {
+            obj[i].value = value[i];
+        }
+    }
+    let chase = parseInt(obj[4].value);
+    console.log(obj[4].value);
+    if(chase){
+        document.getElementsByName("ChaseButton").checked =true;
+        $('#ChaseButton').prop('checked',true);
+        $('#ChaseButton').change();
+    }else{
+        document.getElementsByName("ChaseButton").checked =false;
+        $('#ChaseButton').prop('checked',false);
+        $('#ChaseButton').change();
+    }
+});
+param_afast.get(function(value) {
+    
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[0].value = value;
+    }
+});
+param_aslow.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[1].value = value;
+    }
+});
+param_wcmps.get(function(value) {
+    if (value != null) {
+        obj = document.getElementsByName("MCLElement");
+        obj[2].value = value;   
     }
 });

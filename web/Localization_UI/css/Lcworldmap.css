@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #000;
+    background: #FFFFFF;
     -moz-background-size: cover;
     background-size: cover;
     height: 100%;
@@ -11,13 +11,15 @@ body {
 }
 
 #HoldBallDiv1 {
-    position: absolate;
-    right: 100px;
-    top:10px;
-    height: 60px;
-    width: 50px;
+    position: relative;
+    left: 1348px;
+    top: 485px;  
+    z-index:100;
+    height: 28px;
+    width: 28px;
     cursor: pointer;
-    bottom: 10px;
+    border-radius:50%;
+    background-color:#ffffff;
 }
 /*====================WIFI============================*/
 
@@ -474,7 +476,7 @@ body {
 
 #Joystick {
     position: relative;
-    top: 50%;
+    top: 53%;
     left: 0.8%;
     width: 210px;
     height: 210px;
@@ -494,7 +496,7 @@ body {
     height: 60px;
     z-index: 1;
     position: relative;
-    top: 45%;
+    top: 49%;
     left: 0.5%;
     font-size: 20px;
 }
@@ -616,27 +618,47 @@ body {
 }
 
 /*==========================================================*/
-#KeyboardControlButton {
+#KeyboardControlLable {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
     color: #663D00;
     
 }
-#KeyboardControlButton.ui-state-hover {
+#KeyboardControlLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
     background-color: #FFF;
 }
 
-#KeyboardControlButton.ui-state-active {
+#KeyboardControlLable.ui-state-active {
     background-color: #FFCC00;
     font-size: 17px;
     color: #1A1A65;
 }
 /*==========================================================*/
-#LocalizationButton {
+#WhitelineLable {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+#WhitelineLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#WhitelineLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#LocalizationLable {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
@@ -644,20 +666,20 @@ body {
     
 }
 
-#LocalizationButton.ui-state-hover {
+#LocalizationLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
     background-color: #FFF;
 }
 
-#LocalizationButton.ui-state-active {
+#LocalizationLable.ui-state-active {
     background-color: #FFCC00;
     font-size: 17px;
     color: #1A1A65;
 }
 /*==========================================================*/
-#StandbyButton {
+#StandbyLable {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
@@ -665,20 +687,49 @@ body {
     
 }
 
-#StandbyButton.ui-state-hover {
+#StandbyLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
     background-color: #FFF;
 }
 
-#StandbyButton.ui-state-active {
+#StandbyLable.ui-state-active {
     background-color: #FFCC00;
     font-size: 17px;
     color: #1A1A65;
 }
 /*==========================================================*/
-#GroundButton {
+#ChaseLable {
+    text-align: center;
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    position: absolute;
+    top: 0px;
+    left: 800px;
+}
+
+#ChaseLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+#ChaseLable.ui-state-focus{
+    background-image: none;
+    background-color: #FFFFFF;
+    font-size: 17px;
+    color: #663D00;
+}
+#ChaseLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#GroundLable {
     text-align: center;
     background-image: none;
     /*background-color: #99CCFF;*/
@@ -687,14 +738,14 @@ body {
     
 }
 
-#GroundButton.ui-state-hover {
+#GroundLable.ui-state-hover {
     background-image: none;
     /*background-color: #99CCFF;*/
     font-size: 17px;
     background-color: #FFF;
 }
 
-#GroundButton.ui-state-active {
+#GroundLable.ui-state-active {
     background-color: #FFCC00;
     font-size: 17px;
     color: #1A1A65;
@@ -705,7 +756,7 @@ body {
     height: 60px;
     z-index: 1;
     position: absolute;
-    top: 150px;
+    top: 120px;
     left: 20px;
     text-align: center;
 }
@@ -755,7 +806,7 @@ body {
 
 /*==========================================================*/
 #MCLInformation{
-    width: 700px;
+    width: 900px;
     height: 60px;
     z-index: 1;
     position: absolute;
@@ -782,5 +833,13 @@ body {
 
 #coordinate_sigma{
     width: 50px;
+    font-size: 18px;
+}
+#ball_ang{
+    width: 60px;
+    font-size: 18px;
+}
+#ball_dis{
+    width: 80px;
     font-size: 18px;
 }

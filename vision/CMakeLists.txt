@@ -71,6 +71,7 @@ add_message_files(
     Two_point.msg
     bin.msg
     view.msg
+    PassingObject.msg
 )
 include_directories(${catkin_INCLUDE_DIRS})
 ##Generate services in the 'srv' folder
@@ -152,6 +153,9 @@ foreach(
     black_item
     localization_white_line
     tracking
+    passing_monitor
+    passing_interface
+    obstacle
 )
 add_subdirectory(${subdir})
 endforeach()

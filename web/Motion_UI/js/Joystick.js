@@ -95,13 +95,26 @@ joystick_canvas.addEventListener("mouseenter", function(e) {
 joystick_canvas.addEventListener("mousedown", function(e) {
     var pos = getMousePos(joystick_canvas, e);
     Pos_Vector(pos);
-    //console.log(e.button);
+    console.log(e.button);
     logButton = e.button;
     if (e.button == 0) {
         if (checkArea() == 1) {
             joy_ctx.clearRect(0, 0, windowWidth, windowHeight);
             drawjoystick(pos.x, pos.y);
             mouse_click = 1;
+        }
+    } else if (e.button == 1) {
+        if (checkArea() == 1) {
+            joy_ctx.clearRect(0, 0, windowWidth, windowHeight);
+            joy_ctx.arc(joystick_canvas.width / 2, joystick_canvas.height / 2, Round_r, 0, 2 * Math.PI);
+            joy_ctx.globalAlpha = 1;
+            joy_ctx.lineWidth = 16;
+            joy_ctx.fillStyle = "black"; //填充颜色,默认是黑色
+            joy_ctx.fill(); //画实心圆*/
+            boom.src = 'img/boom.png';
+            mouse_click = 1;
+
+            PublishTopicShoot(parseInt(document.getElementById('ShootInput').value));
         }
     } else if (e.button == 2) {
         if (checkArea() == 1) {

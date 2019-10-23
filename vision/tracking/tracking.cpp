@@ -58,6 +58,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr& msg){
 			//cv::waitKey(10);
 			FrameRate = Rate();
             ObjectProcessing();
+            
 		}else{
             cout<<"Image empty"<<endl;
         }

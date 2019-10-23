@@ -12,6 +12,7 @@
 #include <vector>
 #include <math.h>
 #include <signal.h>
+#include <fstream>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Int32MultiArray.h>
 #include "vision/center.h"

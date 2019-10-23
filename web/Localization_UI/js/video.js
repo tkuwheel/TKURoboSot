@@ -1,11 +1,15 @@
 function MonitorSwitch(checked) {
+    document.getElementById('canvasMap').style.zIndex = "0";
     var video = document.getElementById("canvasMap");
     let ground_reverse = document.getElementById("GroundButton").checked;
+   
     if (checked == true) {
+        video.src = "img/black.png";
         if(ground_reverse==true){
             document.getElementById('canvasMap').style.webkitTransform = "rotate(180deg)";
         }
-        video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=/mcl/image";
+        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";},100);
+        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";
         console.log("localization map");
     } else {
         document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";
@@ -17,9 +21,32 @@ function MonitorSwitch(checked) {
         }
         console.log("ground map");
     }
-    
+}
+function WhielineSwitch(checked) {
+    var video = document.getElementById("canvasMap");
+    let ground_reverse = document.getElementById("GroundButton").checked;
+   
+    if (checked == true) {
+        video.src = "img/black.png";
+        document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";
+        document.getElementById('canvasMap').style.zIndex = "999";
+        setTimeout(function(){video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=camera/white";},100);
+        //video.src = "http://" + document.getElementById("RobotIP").value + ":8080/stream?topic=mcl/image";
+        console.log("whieline map");
+    } else {
+        document.getElementById('canvasMap').style.webkitTransform = "rotate(0deg)";
+        document.getElementById('canvasMap').style.zIndex = "0";
+        video.src = "img/LcGround.png";
+        if (ground_reverse == false) {
+            video.src = "img/LcGround.png";
+        }else{
+            video.src = "img/LcGround2.png";
+        }
+        console.log("ground map");
+    }
 }
 function GroundSwitch(checked) {
+    document.getElementById('canvasMap').style.zIndex = "0";
     mouse_clicked = false;
     reset_bool=false;
     let ground_reverse = document.getElementById("GroundButton").checked;
@@ -27,10 +54,12 @@ function GroundSwitch(checked) {
     let canvas = document.getElementById('reset_map');
     let ctx=canvas.getContext("2d");
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    console.log('111111');
+    
+    //console.log('111111');
 //==================
     let video = document.getElementById("canvasMap");
     let map = document.getElementById("LocalizationButton").checked;
+    let whiteline = document.getElementById("WhitelineButton").checked;
     if(map == true){
         if (checked == true) {
             console.log("reverse_checked");
@@ -41,105 +70,55 @@ function GroundSwitch(checked) {
         }
     }
     else{
-        if (checked == false) {
-            video.src = "img/LcGround.png";
-            //console.log("11111111");
-        }else{
-            video.src = "img/LcGround2.png";
+        if(whiteline==false){
+          if (checked == false) {
+              video.src = "img/LcGround.png";
+              //console.log("11111111");
+          }else{
+              video.src = "img/LcGround2.png";
+          }
         }
     }
 
-    //====================================
+
     //let canva;
 	//let ctx;
 
-    let map_width = 940;
-    let map_height = 666;
+    let map_width = 1000;
+    let map_height = 723;
 
     //console.log(map_width,map_height);
     //console.log(map_width-points[0][0],map_height-points[0][1]);
+    ClearAllRectangle();
+    //====================================
+    canvas = document.getElementById('path_map');
+    ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height); 
+    let center_x = canvas.width/2;
+    let center_y = canvas.height/2;
     if(checked){
-	    for (var i=0; i<points.length; i++) {
-            //str=document.getElementById("Rect"+document.getElementsByName("LocalElement1")[i].value).style.left;
-            //console.log(str);
-            document.getElementById("Rect"+parseInt(i+1)).style.left=parseInt(map_width-points[i][0])+"px";
-            document.getElementById("Rect"+parseInt(i+1)).style.top=parseInt(map_height-points[i][1])+"px";
-        	canva = document.getElementById("Rect"+parseInt(i+1));
-        	ctx = canva.getContext("2d");
-       		ctx.clearRect(0,0,60,60);
-        }
-        var obj = document.getElementsByName("LocalElement1");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement1")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement2");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement2")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement3");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement3")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement4");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement4")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement5");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement5")[i].value);
-           	}
+        for(let i=0; i<Path.length; i+=2){
+            console.log(Path[i],Path[i+1]);
+
+            ctx.beginPath();
+            ctx.font = "50px Times New Roman";
+            ctx.fillStyle="white";
+            ctx.fillText(i/2+1,center_x-Path[i]*1.3-10,center_y+Path[i+1]*1.3+15);
+            ctx.closePath();
         }
 
     }else{
-        for (var i=0; i<points.length; i++) {
-            //str=document.getElementById("Rect"+document.getElementsByName("LocalElement1")[i].value).style.left;
-            //console.log(str);
-            document.getElementById("Rect"+parseInt(i+1)).style.left=parseInt(points[i][0])+"px";
-            document.getElementById("Rect"+parseInt(i+1)).style.top=parseInt(points[i][1])+"px";
-        	canva = document.getElementById("Rect"+parseInt(i+1));
-        	ctx = canva.getContext("2d");
-       		ctx.clearRect(0,0,60,60);
-        }
-        var obj = document.getElementsByName("LocalElement1");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement1")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement2");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement2")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement3");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement3")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement4");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement4")[i].value);
-           	}
-        }
-        obj = document.getElementsByName("LocalElement5");
-        for (var i=0; i<obj.length; i++) {
-            if (obj[i].checked == true) {
-                DrawRectangle(document.getElementsByName("LocalElement5")[i].value);
-           	}
+        for(let i=0; i<Path.length; i+=2){
+            console.log(Path[i],Path[i+1]);
+
+            ctx.beginPath();
+            ctx.font = "50px Times New Roman";
+            ctx.fillStyle="white";
+            ctx.fillText(i/2+1,center_x+Path[i]*1.3-10,center_y-Path[i+1]*1.3+15);
+            ctx.closePath();
         }
     }
+    //===================================
 }
 
 var ResetMap = document.getElementById("reset_map");

@@ -2,7 +2,7 @@
 //ParameterButton
 var TopicParameterButton = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/parameterbutton',
+    name: 'interface/parameterbutton',
     messageType: '/vision/parameterbutton'
 });
 
@@ -51,7 +51,7 @@ function topicROSParameterButton(value) {
 //camera
 var TopicCamera = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/camera',
+    name: 'interface/camera',
     messageType: '/vision/camera'
 });
 function topicROSCamera(value) {
@@ -66,12 +66,12 @@ function topicROSCamera(value) {
 //center
 var TopicCenter = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/center',
+    name: 'interface/center',
     messageType: '/vision/center'
 });
 var SubTopicCenter = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/CenterDis',
+    name: 'interface/CenterDis',
     messageType: '/vision/dis'
 });
 
@@ -81,6 +81,7 @@ function topicCenterTransfer() {
     for (var i = 0; i < 6; i++) {
         box[i] = parseInt(document.getElementsByName('CenterElement')[i].value);
     }
+    box[6] = parseInt(document.getElementsByName('HorizonElement')[0].value);
     topicROSCenter(box);
 }
 
@@ -92,7 +93,8 @@ function topicROSCenter(box) {
         Inner: box[2],
         Outer: box[3],
         Front: box[4],
-        Camera_High: box[5]
+        Camera_High: box[5],
+        Horizon: box[6]
     });
     TopicCenter.publish(Center);
 }
@@ -106,7 +108,7 @@ SubTopicCenter.subscribe(function(msg) {
 //scan
 var TopicScan = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/scan',
+    name: 'interface/scan',
     messageType: '/vision/scan'
 });
 
@@ -140,7 +142,7 @@ function topicROSScan(box) {
 //color
 var TopicColor = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/color',
+    name: 'interface/color',
     messageType: '/vision/color'
 });
 //HSV
@@ -190,7 +192,7 @@ function topicROSColor(mode) {
 //White
 var TopicWhite = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/white',
+    name: 'interface/white',
     messageType: '/vision/white'
 });
 function topicWhiteTransfer() {
@@ -212,7 +214,7 @@ function topicROSWhite(box) {
 //Black
 var TopicBlack = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/black',
+    name: 'interface/black',
     messageType: '/vision/black'
 });
 function topicBlackTransfer() {
@@ -235,7 +237,7 @@ function topicROSBlack(box) {
 //colorbutton
 var TopicColorButton = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/colorbutton',
+    name: 'interface/colorbutton',
     messageType: '/vision/colorbutton'
 });
 function topicROSColorButton(value) {
@@ -249,7 +251,7 @@ function topicROSColorButton(value) {
 //save
 var TopicSaveButton = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/bin_save',
+    name: 'interface/bin_save',
     messageType: '/vision/bin'
 });
 function topicROSSaveButton(value) {
@@ -263,7 +265,7 @@ function topicROSSaveButton(value) {
 // //checkforparameter
 // var TopicParameterCheck = new ROSLIB.Topic({
 //     ros: ros,
-//     name: '/interface/parametercheck',
+//     name: 'interface/parametercheck',
 //     messageType: '/vision/parametercheck'
 // });
 
@@ -290,7 +292,7 @@ function topicROSSaveButton(value) {
 //Monitor
 var Monitor = new ROSLIB.Topic({
     ros: ros,
-    name: '/vision/object',
+    name: 'vision/object',
     messageType: '/vision/Object'
 });
 Monitor.subscribe(function(msg) {
@@ -336,7 +338,7 @@ Monitor.subscribe(function(msg) {
 //(X,Y)
 var TopicPosition = new ROSLIB.Topic({
     ros: ros,
-    name: '/interface/position',
+    name: 'interface/position',
     messageType: '/vision/position'
 });
 
