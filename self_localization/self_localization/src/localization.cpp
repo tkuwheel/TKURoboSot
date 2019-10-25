@@ -102,7 +102,7 @@ void Localization::sensorCallback(const std_msgs::Int32MultiArray msg)
     bad_point.clear();
     point = msg.data;
     std::vector<MCL::SensorData> mcl_sensor_data;
-    int boundary_error = 0;
+    int boundary_error = 20;
 
     for(int i = 0; i<point.size();i+=2){
         int xl=point[i];
