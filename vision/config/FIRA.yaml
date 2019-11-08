@@ -7,7 +7,7 @@ Center:
   Center_Y: 255
   Front: 90
   Horizon: 188
-  Inner: 49
+  Inner: 54
   Outer: 280
   X: 308
   Y: 266
@@ -43,14 +43,14 @@ HSV:
   - 31
   Yellow:
   - 39
-  - 67
-  - 37
-  - 70
-  - 26
+  - 79
+  - 10
+  - 100
+  - 56
   - 100
   black:
     angle: 3
-    gray: 22
+    gray: 41
   white:
     angle: 3
     gray: 170

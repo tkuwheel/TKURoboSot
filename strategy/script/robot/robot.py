@@ -370,7 +370,7 @@ class Robot(object):
     _y = (y / circumference * reducer * 60)/max_rpm * 100
     return _x, _y
 
-  def RobotCtrlS(self, x, y, yaw, pass_through=False):
+  def RobotCtrlS(self, x, y, yaw, pass_through=False , max_v = 100):
     if pass_through:
       msg = Twist()
       output_x, output_y = self.Rotate(x, y, ROTATE_V_ANG)
@@ -397,6 +397,16 @@ class Robot(object):
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = output_w
+      if(abs(msg.linear.x)>max_v ):
+        if(msg.linear.x<0):
+          msg.linear.x = -max_v
+        else:
+          msg.linear.x = max_v
+      if(abs(msg.linear.y)>max_v ):
+        if(msg.linear.y<0):
+          msg.linear.y = -max_v
+        else:
+          msg.linear.y = max_v
       self.cmdvel_pub.publish(msg)
 
   def GetObjectInfo(self):

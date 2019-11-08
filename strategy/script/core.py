@@ -23,16 +23,18 @@ class Core(Robot, StateMachine):
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
   attack = State('Attack')
+  defense = State('Defense')
   shoot  = State('Shoot')
   point  = State('Point')
   movement = State('Movement')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase)
-  toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)| chase.to(attack)| point.to(attack)
-  toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot)
-  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement) | point.to(movement) 
-  toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) 
+  toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself() | defense.to(idle)
+  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase) | defense.to(chase)
+  toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)| chase.to(attack)| point.to(attack) | defense.to(attack)
+  toDefense = idle.to(defense) | defense.to.itself() | chase.to(defense)
+  toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot) | defense.to(shoot)
+  toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement) | point.to(movement)  | defense.to(movement)
+  toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) | defense.to(point)
 
   def Callback(self, config, level):
     self.game_start = config['game_start']
@@ -131,7 +133,45 @@ class Core(Robot, StateMachine):
 
   def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
+  def on_toDefense(self):
+    print("defense")
+    t = self.GetObjectInfo()
+    position = self.GetRobotInfo()
+    our_side = self.our_side
+    opp_side = self.opp_side
+    #========back to defense====
+    p_x = 0
+    p_y = 0
+    p_yaw = 0
+    if(self.our_side=="Yellow"):
+      if(  math.sqrt(math.pow((position['location']['x']-(-220)),2) + math.pow((position['location']['y']-(-60)),2))<  math.sqrt(math.pow((position['location']['x']-(-220)),2) + math.pow((position['location']['y']-(60)),2))):  
+        p_x = -220
+        p_y = -60
+        p_yaw = 0
+      else:
+        p_x = -220
+        p_y =  60
+        p_yaw = 0
 
+    elif(self.our_side=="Blue"):
+      if(  math.sqrt(math.pow((position['location']['x']-(220)),2) + math.pow((position['location']['y']-(-60)),2))<  math.sqrt(math.pow((position['location']['x']-(220)),2) + math.pow((position['location']['y']-(60)),2))):
+        p_x = 220
+        p_y = -60
+        p_yaw = 180
+      else:
+        p_x = 220
+        p_y = 60
+        p_yaw = 180
+    x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
+    if(math.sqrt(math.pow((position['location']['x']-p_x),2) + math.pow((position['location']['y']-p_y),2) ) <20 and abs(position['location']['yaw']-p_yaw)<20):
+      x=0
+      y=0
+      yaw = 0
+    if(math.sqrt(math.pow((position['location']['x']-p_x),2) + math.pow((position['location']['y']-p_y),2) ) < 60): 
+      self.MotionCtrl(x, y, yaw, False, 10)
+    else:
+       self.MotionCtrl(x, y, yaw)
+    #===========================
   def on_toMovement(self, method):
     t = self.GetObjectInfo() 
     position = self.GetRobotInfo()
@@ -306,11 +346,15 @@ class Strategy(object):
       # Can not find ball when starting
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
         print("Can not find ball")
-        self.robot.toIdle()
-      else:
-        if not self.robot.is_idle and not self.robot.game_start:
-          self.robot.toIdle()
 
+        #self.robot.toIdle()
+        self.robot.toDefense()
+      else:
+        if self.robot.is_defense:
+          self.robot.toIdle()
+        
+        if not self.robot.is_idle and not self.robot.game_start:
+          self.robot.toIdle
         if self.robot.is_idle:          
           if self.robot.game_start:
             if self.robot.shooting_start:
@@ -329,8 +373,8 @@ class Strategy(object):
               self.RunStatePoint()
             else :
               print('idle to chase')
-              self.ToChase()
-              
+              self.ToChase(
+
         if self.robot.is_chase:
           #log(self.robot.dest_angle)
           if self.robot.CheckBallHandle():
@@ -338,7 +382,6 @@ class Strategy(object):
             self.ToMovement()
           else:
             self.ToChase()
-
         if self.robot.is_movement:          
           if state == "Penalty_Kick":
             if self.robot.left_ang <= self.robot.atk_shoot_ang:
@@ -346,8 +389,7 @@ class Strategy(object):
               self.robot.toShoot(100)
               self.dclient.update_configuration({"game_state": "Kick_Off"})
             else:
-              self.ToMovement()
-                    
+              self.ToMovement()         
           elif mode == 'At_Orbit':
             if abs(targets[self.robot.opp_side]['ang']) < self.robot.orb_attack_ang:
               self.ToAttack()
