@@ -54,7 +54,9 @@ void* Motion_nodeHandle::mpThreadRun(void* p)
 
 void Motion_nodeHandle::mRun()
 {
-    ros::spin();
+    while(ros::ok()){
+        ros::spin();
+    }
 }
 
 void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &motion_msg)
@@ -75,13 +77,9 @@ void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &mot
 
 void Motion_nodeHandle::shootCallback(const std_msgs::Int32::ConstPtr &shoot_msg)
 {
-    if(shoot_msg->data>=100){
-        this->robotCMD.shoot_power = 100;
-    }else{
-        this->robotCMD.shoot_power = shoot_msg->data;
-    }
+    this->robotCMD.shoot_power = shoot_msg->data;
     this->motion_flag = true;
-
+    
 #ifdef DEBUG
     std::cout << "shootCallback(DEBUG)\n";
     std::cout << std::dec;
