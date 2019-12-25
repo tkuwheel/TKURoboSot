@@ -1,6 +1,6 @@
 .catkin_workspace
 .robot_ns
-*.0
+
 __pycache__
 *.pyc
 .vscode

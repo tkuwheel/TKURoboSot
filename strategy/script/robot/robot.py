@@ -377,7 +377,7 @@ class Robot(object):
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = yaw
-      print(output_x, output_y, yaw)
+      print("Orbit",output_x, output_y, yaw)
       self.cmdvel_pub.publish(msg)
     else:
       current_vector = math.hypot(x, y)

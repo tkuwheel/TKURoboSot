@@ -206,12 +206,12 @@ class Obstacle(object):
     #=============================================
     #find all possible angles
     for i in range (0,len(obs), 4):
-        max_rotate_ang = 120
+        max_rotate_ang = 90
         distance = obs[i+0]
         right_ang = obs[i+2]
         min_ang = abs(right_ang-goal_ang) if(abs(right_ang-goal_ang)<abs(360-abs(right_ang-goal_ang))) else abs(360-abs(right_ang-goal_ang))
         if(min_ang<ang_threshold):
-            tmp = math.sqrt(pow(distance,2)-pow(robot_radius,2))
+            tmp = math.sqrt(abs(pow(distance,2)-pow(robot_radius,2)))
             escape_ang = math.degrees(math.atan2(robot_radius, tmp))*1.2
             if(escape_ang > max_rotate_ang or distance < robot_radius):
                 escape_ang = max_rotate_ang
@@ -223,7 +223,7 @@ class Obstacle(object):
         left_ang = obs[i+3]
         min_ang = abs(left_ang-goal_ang) if(abs(left_ang-goal_ang)<abs(360-abs(left_ang-goal_ang))) else abs(360-abs(left_ang-goal_ang))
         if(min_ang<ang_threshold):
-            tmp = math.sqrt(pow(distance,2)-pow(robot_radius,2))
+            tmp = math.sqrt(abs(pow(distance,2)-pow(robot_radius,2)))
             escape_ang = math.degrees(math.atan2(robot_radius, tmp))*1.2
             if(escape_ang>max_rotate_ang):
                 escape_ang = max_rotate_ang
@@ -301,8 +301,8 @@ class Obstacle(object):
     #print("fin_ang", fin_ang)
     return v_x, v_y
   def back(self, goal_dis, goal_ang, obs):
-    back_dis = 40
-    back_ang = 20
+    back_dis = 30
+    back_ang = 10
     x = goal_dis * math.cos(math.radians(goal_ang+180))
     y = goal_dis * math.cos(math.radians(goal_ang+180))
     yaw = goal_ang+180

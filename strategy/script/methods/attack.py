@@ -69,4 +69,21 @@ class Attack(Robot,Obstacle):
       v_x, v_y = self.obstacle_escape(goal_dis, goal_ang, obs_filter, robot_info)
 
     return v_x, v_y, v_yaw
+
+  def Escape(self, goal_dis, goal_ang):
+    robot_info = self.GetRobotInfo()
+    obstacles_info = self.GetObstacleInfo()
+    obs = obstacles_info["detect_obstacles"]
+    #print(len(obs))
+    if(len(obs) == 0):
+      #print("NOOOO OBSTACLE!!!!")
+      v_x   = goal_dis * math.cos(math.radians(goal_ang))
+      v_y   = goal_dis * math.sin(math.radians(goal_ang))
+      v_yaw = goal_ang
+    else:
+      #print("YES OBSTACLE!!!!")
+      obs_filter = self.obstacle_fileter(obs, robot_info)
+      v_yaw = goal_ang
+      v_x, v_y = self.obstacle_escape(goal_dis, goal_ang, obs_filter, robot_info)
+    return v_x, v_y, v_yaw
   

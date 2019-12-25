@@ -8,7 +8,7 @@ from robot.robot import Robot
 from robot.obstacle import Obstacle
 
 ORBIT_KP_V = -0.5
-ORBIT_KP_W = 4.2
+ORBIT_KP_W = 7
 
 #REMAINING_RANGE_V = 20
 #REMAINING_RANGE_YAW = 7

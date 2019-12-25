@@ -127,6 +127,9 @@ class Core(Robot, StateMachine):
                                    t[side]['ang'])
     elif method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
+      if(arrived):
+        x, y, yaw = self.AC.Escape(t[side]['dis'],\
+                                   t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
        
     self.MotionCtrl(x, y, yaw)
@@ -352,9 +355,8 @@ class Strategy(object):
       else:
         if self.robot.is_defense:
           self.robot.toIdle()
-        
         if not self.robot.is_idle and not self.robot.game_start:
-          self.robot.toIdle
+          self.robot.toIdle()
         if self.robot.is_idle:          
           if self.robot.game_start:
             if self.robot.shooting_start:
@@ -373,7 +375,7 @@ class Strategy(object):
               self.RunStatePoint()
             else :
               print('idle to chase')
-              self.ToChase(
+              self.ToChase()
 
         if self.robot.is_chase:
           #log(self.robot.dest_angle)
