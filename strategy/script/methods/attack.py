@@ -74,6 +74,8 @@ class Attack(Robot,Obstacle):
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
+    rotate_ang = 90
+    rotate_dis = 80
     #print(len(obs))
     if(len(obs) == 0):
       #print("NOOOO OBSTACLE!!!!")
@@ -85,5 +87,15 @@ class Attack(Robot,Obstacle):
       obs_filter = self.obstacle_fileter(obs, robot_info)
       v_yaw = goal_ang
       v_x, v_y = self.obstacle_escape(goal_dis, goal_ang, obs_filter, robot_info)
+      
+       #print("default post up")
+      for j in range (0, len(obs_filter), 4):
+        dis = obs[j+0]
+        ang = obs[j+1]
+        abs_ang = abs(goal_ang-ang)
+        if (abs_ang > abs(360-abs_ang)):
+          abs_ang = abs(360-abs_ang)
+        if(goal_dis>150 and ang<rotate_ang and dis<rotate_dis):
+          v_yaw = self.obstacle_roate(obs_filter, robot_info)
     return v_x, v_y, v_yaw
   

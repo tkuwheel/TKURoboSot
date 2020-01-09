@@ -19,8 +19,6 @@ class Obstacle(object):
 
 
   def filter(self, raw ):
-    
-       
     mask=[1,0,1]
 
     self.edit = []
@@ -185,8 +183,9 @@ class Obstacle(object):
     route_filter = []
     #============判斷球門路線有無阻擋=================
     cross_flag = True
+    route_angle = goal_ang
     for i in range (0, len(obs), 4):
-        route_angle = goal_ang
+        
         dis = obs[i+0]
         right_ang = obs[i+2]
         left_ang  = obs[i+3]
@@ -300,18 +299,18 @@ class Obstacle(object):
         v_y = v_y*0.5 + goal_dis * math.sin(math.radians(goal_ang))*0.5
     #print("fin_ang", fin_ang)
     return v_x, v_y
-  def back(self, goal_dis, goal_ang, obs):
-    back_dis = 30
-    back_ang = 10
+  def back(self, goal_dis, goal_ang, obs, back_dis, back_ang):
     x = goal_dis * math.cos(math.radians(goal_ang+180))
     y = goal_dis * math.cos(math.radians(goal_ang+180))
-    yaw = goal_ang+180
+    yaw = goal_ang+180 #goal_ang = our side gaol angle
     for j in range (0, len(obs), 4):
         dis = obs[j+0]
         ang = obs[j+1]
         if(abs(ang) < back_ang and dis < back_dis):
-            x = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
-            y = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
+            #x = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
+            #y = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
+            x = 80 * math.cos(math.radians(ang+180)) #fast back
+            y = 80 * math.cos(math.radians(ang+180)) 
             yaw = 0
             break
     return x, y, yaw

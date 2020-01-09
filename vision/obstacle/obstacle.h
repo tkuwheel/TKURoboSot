@@ -18,6 +18,8 @@ class Vision : protected NodeHandle
     void find_around_black(Mat &frame_, deque<int> &find_point, int distance, int angle, int &size, int color);
     void draw_ellipse(Mat &frame_, DetectedObject &obj_, int color);
     void draw_Line(Mat &frame_, int obj_distance_max, int obj_distance_min, int obj_angle, int color);
+    Mat convertTo3Channels(const Mat &binImg);
+    Mat ColorMoldel(Mat iframe, vector<int> HSV);
     double Rate();
     double FrameRate;
     //==========================================

@@ -48,23 +48,24 @@ struct DetectedObject
 class NodeHandle
 {
   protected:
-	void Readyaml();
-	NodeHandle();
-	void Parameter_getting();
-	//========================================
-	void AngleLUT();
-	vector<double> Angle_sin;
-	vector<double> Angle_cos;
-	int Frame_Area(int coordinate, int range);
-	int Angle_Adjustment(int angle);
+    void Readyaml();
+    NodeHandle();
+    void Parameter_getting();
+    //========================================
+    void AngleLUT();
+    vector<double> Angle_sin;
+    vector<double> Angle_cos;
+    int Frame_Area(int coordinate, int range);
+    int Angle_Adjustment(int angle);
     int Angle_Interval(int radius);
-	//================center==================
-	int CenterXMsg;
-	int CenterYMsg;
-	int InnerMsg;
-	int OuterMsg;
-	int FrontMsg;
-	double Camera_HighMsg;
+    //================center==================
+    int CenterXMsg;
+    int CenterYMsg;
+    int InnerMsg;
+    int OuterMsg;
+    int FrontMsg;
+    double Camera_HighMsg;
+    int HorizonMsg;
     //================scan====================
     int Angle_Near_GapMsg;
     int Magn_Near_GapMsg;
@@ -79,24 +80,26 @@ class NodeHandle
     int Angle_range_2_3Msg;
     int Unscaned_Angle[8];
     void Set_Unscaned_Angle();
-	//================black===================
-	int BlackGrayMsg;
-	int BlackAngleMsg;
-	std_msgs::Int32MultiArray blackdis;
-	//==============distance==================
-	double camera_f(double Omni_pixel);
-	double Omni_distance(double pixel_dis);
+    //================hsv=====================
+    vector<int> HSV_robot;
+    //================black===================
+    int BlackGrayMsg;
+    int BlackAngleMsg;
+    std_msgs::Int32MultiArray blackdis;
+    //==============distance==================
+    double camera_f(double Omni_pixel);
+    double Omni_distance(double pixel_dis);
     void pub_obstacle(vector<DetectedObject> obstacle);
     void pub_pixel_obstacle(vector<DetectedObject> obstacle);
     void Pub_obstacleframe(Mat frame);
 
   private:
-	ros::NodeHandle nh;
-	ros::Subscriber save_sub;
-	void SaveButton_setting(const vision::bin msg);
-	int SaveButton;
-	//==============black====================
-	void blackcall(const vision::black msg);
+    ros::NodeHandle nh;
+    ros::Subscriber save_sub;
+    void SaveButton_setting(const vision::bin msg);
+    int SaveButton;
+    //==============black====================
+    void blackcall(const vision::black msg);
     ros::Publisher obstacle_pub;
     ros::Publisher pixel_obstacle_pub;
     ros::Publisher obstacleframe_pub;

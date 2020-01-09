@@ -63,7 +63,7 @@ class Behavior(Robot,Obstacle):
 
   def relative_goal(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    if ball_dis < 100 and goal_dis > 150:
+    if ball_dis < 100 and goal_dis > 150:                       #chase
       ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
       ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
@@ -100,41 +100,59 @@ class Behavior(Robot,Obstacle):
 
   def relative_ball(self, goal_dis, goal_ang, ball_dis, ball_ang):
 
-    if ball_dis < 100 and goal_dis > 150:
-      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
-      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    # if ball_dis < 100 and goal_dis > 150:
+    #   ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    #   ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
-      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
-      door_y = goal_dis * math.sin(math.radians(goal_ang))
+    #   door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    #   door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = (10000*ball_x + door_x ) / 10                              	#avoid to go to the goal area
-      defence_y   = (10000*ball_y + door_y ) / 10
-      defence_yaw = ball_ang
+    #   #defence_x   = (10000*ball_x + door_x ) / 10                              	#avoid to go to the goal area
+    #   #defence_y   = (10000*ball_y + door_y ) / 10
+    #   defence_x   = 0 
+    #   defence_y   = 0
+    #   defence_yaw = ball_ang
 
-    elif ball_dis  < 150 and goal_dis < 150:
+    # elif ball_dis  < 150 and goal_dis < 150:
 
-      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
-      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    #   ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    #   ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
-      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
-      door_y = goal_dis * math.sin(math.radians(goal_ang))
+    #   door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    #   door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = 0		                                		#avoid to go to the goal area
-      defence_y   = 0
-      defence_yaw = ball_ang
+    #   defence_x   = 0		                                		#avoid to go to the goal area
+    #   defence_y   = 0
+    #   defence_yaw = ball_ang
  
-    else:
+    # else:
 
-      ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
-      ball_y = ball_dis * math.sin(math.radians(ball_ang))
+    #   ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    #   ball_y = ball_dis * math.sin(math.radians(ball_ang))
 
-      door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
-      door_y = goal_dis * math.sin(math.radians(goal_ang))
+    #   door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    #   door_y = goal_dis * math.sin(math.radians(goal_ang))
 
-      defence_x   = (7.5*ball_x +door_x ) / 10               	#防守位置
-      defence_y   = (7.5*ball_y +door_y ) / 10
-      defence_yaw = ball_ang
+    #   defence_x   = (7.5*ball_x +door_x ) / 10               	#防守位置
+    #   defence_y   = (7.5*ball_y +door_y ) / 10
+    #   defence_yaw = ball_ang
 
+    ball_x = ball_dis * math.cos(math.radians(ball_ang))			#機器人看球的座標
+    ball_y = ball_dis * math.sin(math.radians(ball_ang))
+
+    door_x = goal_dis * math.cos(math.radians(goal_ang))			#機器人看門的座標
+    door_y = goal_dis * math.sin(math.radians(goal_ang))
+
+    defence_x   = (ball_x*5 +door_x ) / 6              	#防守位置
+    defence_y   = (ball_y*5 +door_y ) / 6
+
+    stable_distance = 20
+    if (abs(defence_x) < stable_distance):
+      defence_x = 0
+    if (abs(defence_y) < stable_distance):
+      defence_y = 0
+    print(defence_x, defence_y)
+    defence_yaw = ball_ang
 
     return defence_x , defence_y , defence_yaw
 
@@ -172,12 +190,12 @@ class Behavior(Robot,Obstacle):
 
     return v_x, v_y, v_yaw
 
-  def Steal(self, goal_dis, goal_ang):
+  def Steal(self, goal_dis, goal_ang, back_dis, back_ang):
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
     obs_filter = self.obstacle_fileter(obs, robot_info)
-    v_x, v_y, v_yaw = self.back(goal_dis, goal_ang, obs_filter)
+    v_x, v_y, v_yaw = self.back(goal_dis, goal_ang, obs_filter, back_dis, back_ang)
     return v_x, v_y, v_yaw
   
     

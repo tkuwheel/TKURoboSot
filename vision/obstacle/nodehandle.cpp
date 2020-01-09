@@ -73,6 +73,7 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/Center/Outer", OuterMsg);
     nh.getParam("FIRA/vision/Center/Front", FrontMsg);
     nh.getParam("FIRA/vision/Center/Camera_high", Camera_HighMsg);
+    nh.getParam("FIRA/vision/Center/Horizon", HorizonMsg);
     //==================黑白掃描參數=======================
     nh.getParam("FIRA/vision/HSV/black/gray", BlackGrayMsg);
     nh.getParam("FIRA/vision/HSV/black/angle", BlackAngleMsg);
@@ -89,6 +90,8 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/SCAN/Angle_range_1", Angle_range_1Msg);
     nh.getParam("FIRA/vision/SCAN/Angle_range_2_3", Angle_range_2_3Msg);
     Set_Unscaned_Angle();
+    //====================================================
+    nh.getParam("FIRA/vision/HSV/White", HSV_robot);
 }
 void NodeHandle::Set_Unscaned_Angle()
 {

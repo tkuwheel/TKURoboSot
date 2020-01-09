@@ -210,7 +210,6 @@ function draw_robot_map(){
     }
 }
 function draw_obstacle(x,y,w,obstacle_info){
-    
     let canvas = document.getElementById("robot_map");
     let ctx = canvas.getContext("2d");
     let center_x = canvas.width / 2;
@@ -228,6 +227,7 @@ function draw_obstacle(x,y,w,obstacle_info){
             
             let x_= x+o_dis * Math.cos(angle+o_ang);
             let y_= y+o_dis * Math.sin(angle+o_ang);
+            if(Math.abs(x_)>350 || Math.abs(y_)>200) continue;
             arc_dis = Math.sqrt(Math.pow(x-x_,2)+Math.pow(y-y_,2));
             ctx.arc(center_x + (x *0.877), center_y - (y * 0.88), arc_dis, o_ang_max-angle, o_ang_min-angle);
             ctx.stroke();
@@ -362,20 +362,26 @@ function ball_condition(){
       }
     }
     else if(ball_ang2!=999&&ball_ang3!=999){
-      let x,y;
-      m2=Math.tan((ball_ang2+w2)/180*Math.PI);
-      m3=Math.tan((ball_ang3+w3)/180*Math.PI);
-      //m2*x-y=m2*x2-y2;
-      //m3*x-y=m3*x3-y3;
       let canvas = document.getElementById("robot_map");
       let ctx = canvas.getContext("2d");
       let center_x = canvas.width / 2;
       let center_y = canvas.height / 2;
-      x=((m2*x2-y2)-(m3*x3-y3))/(m2-m3);
-      y=-(m2*x2-y2-m2*x);
-      ctx.arc(center_x + (x * 0.877), center_y - (y * 0.88),13,0,360,false);
-      ctx.fillStyle="red";//填充颜色,默认是黑色
-      ctx.fill();//画实心圆
+      let x,y;
+      if(Math.sqrt(Math.pow(x2-x3,2)+Math.pow(y2-y3,2))<30){
+        draw_ball(x2,y2,w2,ball_ang2,ball_dis2);
+      }else{
+          
+          m2=Math.tan((ball_ang2+w2)/180*Math.PI);
+          m3=Math.tan((ball_ang3+w3)/180*Math.PI);
+          //m2*x-y=m2*x2-y2;
+          //m3*x-y=m3*x3-y3;
+          
+          x=((m2*x2-y2)-(m3*x3-y3))/(m2-m3);
+          y=-(m2*x2-y2-m2*x);
+          ctx.arc(center_x + (x * 0.877), center_y - (y * 0.88),13,0,360,false);
+          ctx.fillStyle="red";//填充颜色,默认是黑色
+          ctx.fill();//画实心圆
+      }
       //=======================================
       ctx.beginPath();
       ctx.strokeStyle = '#000000';

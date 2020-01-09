@@ -35,12 +35,12 @@ HSV:
   - 20
   - 90
   White:
+  - 216
+  - 168
   - 0
-  - 360
+  - 71
   - 0
-  - 27
-  - 0
-  - 31
+  - 29
   Yellow:
   - 39
   - 79
@@ -49,11 +49,11 @@ HSV:
   - 56
   - 100
   black:
-    angle: 3
-    gray: 41
+    angle: 1
+    gray: 37
   white:
     angle: 3
-    gray: 170
+    gray: 193
 Parameterbutton: 4
 SCAN:
   Angle_Near_Gap: 4

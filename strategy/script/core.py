@@ -10,6 +10,7 @@ from my_sys import log, SysCheck, logInOne
 from methods.chase import Chase
 from methods.attack import Attack
 from methods.behavior import Behavior
+from methods.defense import Defense
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from strategy.cfg import RobotConfig
 import dynamic_reconfigure.client
@@ -19,7 +20,7 @@ class Core(Robot, StateMachine):
   last_ball_dis = 0
   last_goal_dis = 0
   last_time     = time.time()
-
+  
   idle   = State('Idle', initial = True)
   chase  = State('Chase')
   attack = State('Attack')
@@ -35,7 +36,10 @@ class Core(Robot, StateMachine):
   toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot) | defense.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement) | point.to(movement)  | defense.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) | defense.to(point)
-
+  #==================
+  back_ang = 10
+  back_dis = 30
+  #==================
   def Callback(self, config, level):
     self.game_start = config['game_start']
     self.game_state = config['game_state']
@@ -63,7 +67,7 @@ class Core(Robot, StateMachine):
     self.ChangeBallhandleCondition(config['ballhandle_dis'], config['ballhandle_ang'])
 
     self.SetMyRole(self.my_role)
-
+    
     return config
 
   def __init__(self, sim = False):
@@ -72,8 +76,10 @@ class Core(Robot, StateMachine):
     self.CC  = Chase()
     self.AC  = Attack()
     self.BC  = Behavior()
+    self.DC  = Defense()
     self.left_ang = 0
     self.dest_angle = 0
+    
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
   def on_toIdle(self):
@@ -85,6 +91,24 @@ class Core(Robot, StateMachine):
   def on_toChase(self, method = "Classic"):
     t = self.GetObjectInfo()
     side = self.opp_side
+    opp_info = self.GetOppInfo()
+    opphandle = self.GetOppHandle()
+    # print(opphandle, opp_info['ang'])
+    if(opphandle==True and opp_info['ang']!=999):
+      method = "Block"
+    if(method =="Block"):
+      #print("block")
+      dis = 0
+      ang = 0
+      if(t['ball']['ang']<999):
+        dis = t['ball']['dis']
+        ang = t['ball']['ang']
+      else:
+        dis = opp_info['dis']
+        ang = opp_info['ang']
+      x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
+                                          dis,\
+                                          ang)
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           t['ball']['dis'],\
@@ -98,8 +122,8 @@ class Core(Robot, StateMachine):
     elif method == "Straight":
       x, y, yaw = self.CC.StraightForward(t['ball']['dis'], t['ball']['ang'])
 
-    elif method == "Defense":
-      x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
+    # elif method == "Defense":
+    #   x, y, yaw = self.AC.Defense(t['ball']['dis'], t['ball']['ang'])
     if self.accelerate:
       self.Accelerator(80)
     if self.ball_speed:
@@ -113,7 +137,9 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     l = self.GetObstacleInfo()      
     if method == "Classic":
-      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
+      #x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
+      x, y, yaw = self.AC.Escape(t[side]['dis'],\
+                                 t[side]['ang'])
     elif method == "Cut":
       x, y, yaw = self.AC.Cut(t[side]['dis'], t[side]['ang'],self.run_yaw)
     elif method == "Post_up":
@@ -137,44 +163,45 @@ class Core(Robot, StateMachine):
   def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
   def on_toDefense(self):
-    print("defense")
+    #print("defense")
     t = self.GetObjectInfo()
-    position = self.GetRobotInfo()
+    robot = self.GetRobotInfo()
     our_side = self.our_side
     opp_side = self.opp_side
-    #========back to defense====
-    p_x = 0
-    p_y = 0
-    p_yaw = 0
-    if(self.our_side=="Yellow"):
-      if(  math.sqrt(math.pow((position['location']['x']-(-220)),2) + math.pow((position['location']['y']-(-60)),2))<  math.sqrt(math.pow((position['location']['x']-(-220)),2) + math.pow((position['location']['y']-(60)),2))):  
-        p_x = -220
-        p_y = -60
-        p_yaw = 0
-      else:
-        p_x = -220
-        p_y =  60
-        p_yaw = 0
+    obstacles_info = self.GetObstacleInfo()
+    obs = obstacles_info["detect_obstacles"]
+    #obs_filter = self.obstacle_fileter(obs, robot)
 
-    elif(self.our_side=="Blue"):
-      if(  math.sqrt(math.pow((position['location']['x']-(220)),2) + math.pow((position['location']['y']-(-60)),2))<  math.sqrt(math.pow((position['location']['x']-(220)),2) + math.pow((position['location']['y']-(60)),2))):
-        p_x = 220
-        p_y = -60
-        p_yaw = 180
+    # if(our_side=="Yellow"):
+    #   tmp = -1
+    # elif(our_side=="Blue"):
+    #   tmp = 1
+    # if(position['location']['y']<0):  
+    #   p_x = 200*tmp
+    #   p_y = -50
+    #   p_yaw = 0
+    # else:
+    #   p_x = 200*tmp
+    #   p_y =  50
+    #   p_yaw = 0
+      
+    if(self.robot['ball']['ang']==999):
+      #========back to defense====
+      p_x, p_y, p_yaw = self.DC.ClassicDefense(t[our_side]['dis'],\
+                                            t[our_side]['ang'],\
+                                            our_side)
+      x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
+      if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) <20 and abs(robot['location']['yaw']-p_yaw)<20):
+        x=0
+        y=0
+        yaw = 0
+      if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) < 60): 
+        self.MotionCtrl(x, y, yaw, False, 10)
       else:
-        p_x = 220
-        p_y = 60
-        p_yaw = 180
-    x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
-    if(math.sqrt(math.pow((position['location']['x']-p_x),2) + math.pow((position['location']['y']-p_y),2) ) <20 and abs(position['location']['yaw']-p_yaw)<20):
-      x=0
-      y=0
-      yaw = 0
-    if(math.sqrt(math.pow((position['location']['x']-p_x),2) + math.pow((position['location']['y']-p_y),2) ) < 60): 
-      self.MotionCtrl(x, y, yaw, False, 10)
-    else:
-       self.MotionCtrl(x, y, yaw)
-    #===========================
+        self.MotionCtrl(x, y, yaw)
+      #===========================
+
+
   def on_toMovement(self, method):
     t = self.GetObjectInfo() 
     position = self.GetRobotInfo()
@@ -187,12 +214,13 @@ class Core(Robot, StateMachine):
       self.MotionCtrl(x, y, yaw, True)
 
     elif method == "Relative_ball":
+       
       x, y, yaw = self.BC.relative_ball(t[ourside]['dis'],\
-                                             t[ourside]['ang'],\
-                                             t['ball']['dis'],\
-                                             t['ball']['ang'])
+                                        t[ourside]['ang'],\
+                                        t['ball']['dis'],\
+                                        t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
-   
+      #self.MotionCtrl(0, 0, 0)
     elif method == "Relative_goal":
       x, y, yaw = self.BC.relative_goal(t[ourside]['dis'],\
                                              t[ourside]['ang'],\
@@ -211,7 +239,9 @@ class Core(Robot, StateMachine):
       #                                  l['ranges'],\
       #                                  l['angle']['increment'])
       x, y, yaw = self.BC.Steal(t[ourside]['dis'],\
-                                t[ourside]['ang'])
+                                t[ourside]['ang'],\
+                                Core.back_dis,\
+                                Core.back_ang)
       self.MotionCtrl(x, y, yaw)
 
   def on_toPoint(self):
@@ -407,30 +437,25 @@ class Strategy(object):
             #     self.ToChase()
             # else:
             #   self.ToMovement() 
-            checked = False
-            back_dis = 40
-            back_ang = 20
+            post_up_checked = False
+           
             obs = laser["detect_obstacles"]
             for j in range (0, len(obs), 4):
               dis = obs[j+0]
               ang = obs[j+1]
-              if(abs(ang) < back_ang and dis < back_dis):
-                  checked = True
-                  break
-            if targets[self.robot.our_side]['dis']<200:
-              checked = False
-            
-            if(checked==False):
-              self.ToAttack
-            #if targets[self.robot.opp_side]['dis'] <= self.robot.atk_shoot_dis:
-            #  self.ToAttack()
-            #elif not self.robot.CheckBallHandle():
+              if(abs(ang) < Core.back_ang and dis < Core.back_dis):
+                post_up_checked = True
+                break
+            if targets[self.robot.our_side]['dis']<100:
+              post_up_checked = False
             
             if not self.robot.CheckBallHandle():
               self.ToChase()
-            elif not checked:
+            elif not post_up_checked:
+              #print("attack")
               self.ToAttack()
             else:
+              #print("back")
               self.ToMovement()             
 
           elif mode == "Defense_ball" or mode == "Defense_goal":  

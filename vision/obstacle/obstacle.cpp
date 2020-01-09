@@ -56,7 +56,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
             FrameRate = Rate();
 
             Mat blackline = Black_Item(Source);
-
+            //Mat test = ColorMoldel(Source, HSV_robot);
             //cv::imshow("Image window", cv_ptr->image);
             //cv::imshow("blackline", blackline);
             //cv::imshow("monitor", monitor);
@@ -70,13 +70,75 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
         return;
     }
 }
+Mat Vision::ColorMoldel(Mat iframe, vector<int> HSV)
+{
+    Mat hsv(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
+    Mat mask(iframe.rows, iframe.cols, CV_8UC1, Scalar(0, 0, 0));
+    Mat mask2(iframe.rows, iframe.cols, CV_8UC1, Scalar(0, 0, 0));
+    Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
+
+    //cout<<HSV.size()<<endl;
+
+    int hmin, hmax, smin, smax, vmin, vmax;
+    if (HSV.size() == 6)
+    {
+        hmin = HSV[0]*0.5;
+        hmax = HSV[1]*0.5;
+        smin = HSV[2]*2.55;
+        smax = HSV[3]*2.55;
+        vmin = HSV[4]*2.55;
+        vmax = HSV[5]*2.55;
+        
+        cvtColor(iframe, hsv, CV_BGR2HSV);
+        if (HSV[0] <= HSV[1])
+        {
+            inRange(hsv, Scalar(hmin, smin, vmin), Scalar(hmax, smax, vmax), mask);
+        }
+        else
+        {
+            inRange(hsv, Scalar(hmin, smin, vmin), Scalar(200, smax, vmax), mask);
+            inRange(hsv, Scalar(10, smin, vmin), Scalar(hmax, smax, vmax), mask2);
+            mask = mask + mask2;
+        }
+
+        //開操作 (去除一些噪點)
+        Mat element = getStructuringElement(MORPH_RECT, Size(2, 2));
+        morphologyEx(mask, mask, MORPH_OPEN, element);
+
+        //閉操作 (連接一些連通域)
+        element = getStructuringElement(MORPH_RECT, Size(3, 3));
+        morphologyEx(mask, mask, MORPH_CLOSE, element);
+        
+        //iframe.copyTo(oframe, (cv::Mat::ones(mask.size(), mask.type()) * 255 - mask));
+        oframe = convertTo3Channels(cv::Mat::ones(mask.size(), mask.type()) * 255 - mask);
+        //cv::imshow("oframe", oframe);
+        //waitKey(10);
+    }
+    else
+    {
+        cout << "HSV vector size: " << HSV.size() << " error\n";
+    }
+    return oframe;
+}
+Mat Vision::convertTo3Channels(const Mat &binImg)
+{
+    Mat three_channel = Mat::zeros(binImg.rows, binImg.cols, CV_8UC3);
+    vector<Mat> channels;
+    for (int i = 0; i < 3; i++)
+    {
+        channels.push_back(binImg);
+    }
+    merge(channels, three_channel);
+    return three_channel;
+}
 cv::Mat Vision::Black_Item(const cv::Mat iframe)
 {
     //cv::Mat threshold(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
     cv::Mat oframe(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
-
+    threshold = ColorMoldel(iframe, HSV_robot);
     //======================threshold===================
-    for (int i = 0; i < iframe.rows; i++)
+
+    /*for (int i = 0; i < iframe.rows; i++)
     {
         for (int j = 0; j < iframe.cols; j++)
         {
@@ -94,7 +156,7 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
                 threshold.data[(i * threshold.cols * 3) + (j * 3) + 2] = 255;
             }
         }
-    }
+    }*/
     //=====================draw the scan line===========
     oframe = threshold.clone();
     
@@ -109,7 +171,8 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
     int x_, y_;
     int object_size;
     int dis, ang;
-    for (int distance = InnerMsg; distance <= Magn_Far_StartMsg; distance += Magn_Near_GapMsg)
+    int search_end = HorizonMsg;
+    for (int distance = InnerMsg; distance <= search_end; distance += Magn_Near_GapMsg)
     {
         for (int angle = 0; angle < 360; angle += Angle_Interval(distance))
         {
@@ -160,7 +223,7 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
 
             find_point.clear();
 
-            if(FIND_Item.size>20)
+            if(FIND_Item.size>10)
             //if (!(FIND_Item.size < 100 && FIND_Item.distance < 50))
             {
                 obj_item.push_back(FIND_Item);
@@ -235,7 +298,7 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
     int x_, y_;
     int dis_f, ang_f;
     double angle_f;
-
+    int search_end = HorizonMsg;
     for (int i = -1; i < 2; i++)
     {
         for (int j = -1; j < 2; j++)
@@ -245,7 +308,7 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
                 dis_f = InnerMsg;
 
             //dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
-            if(dis_f>Magn_Far_StartMsg)break;
+            if(dis_f>search_end)break;
             
             ang_f = angle + j * Angle_Interval(dis_f);
             ang_f = ang_f - (ang_f % Angle_Interval(dis_f));

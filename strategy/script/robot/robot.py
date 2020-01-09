@@ -1,3 +1,4 @@
+#-*- coding: UTF-8 -*-  
 #!/usr/bin/env python
 from __future__ import print_function
 import rospy
@@ -60,9 +61,16 @@ class Robot(object):
                      'ranges' : [0],
 		                 'intensities' : [0],
                      'detect_obstacles':[0]}
-
+  __opp_info = {'dis':0,
+                'ang':999,
+                'global_x':0,
+                'global_x':0}
   __ball_is_handled = False
-
+  #======================
+  __opp_is_handled = False
+  __opp_is_blocked = False
+  #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}
+  #======================
   robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
@@ -294,11 +302,13 @@ class Robot(object):
       self.__object_info['ball']['speed_y']  = spy
       self.__object_info['ball']['speed_pwm_x']  = spwmx
       self.__object_info['ball']['speed_pwm_y']  = spwmy
-      self.__object_info['ball']['global_x'] = gbx
-      self.__object_info['ball']['global_y'] = gby
+      # self.__object_info['ball']['global_x'] = gbx
+      # self.__object_info['ball']['global_y'] = gby
       # print(spwmx, spwmy)
       Robot.ball_last_time = time.time()
-
+    if(vision.ball_ang!=999):
+      self.__object_info['ball']['global_x'] = gbx
+      self.__object_info['ball']['global_y'] = gby
     self.__object_info['ball']['dis']    = vision.ball_dis
     self.__object_info['ball']['ang']    = vision.ball_ang
     self.__object_info['Blue']['dis']    = vision.blue_fix_dis
@@ -313,6 +323,97 @@ class Robot(object):
 
   def _GetObstaclesInfo(self,obs_info):
     self.__obstacle_info['detect_obstacles'] = obs_info.data
+    #======================
+    #__opp_is_handled = False
+    #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}
+    # self.__gobal_ball_info['location']['x'] = self.__robot_info['location']['x'] + \
+    #                                           self.__object_info['ball']['dis'] * \
+    #                                           math.cos(math.radians(self.__robot_info['location']['yaw'] + self.__object_info['ball']['ang']))
+    # self.__gobal_ball_info['location']['y'] = self.__robot_info['location']['y'] + \
+    #                                           self.__object_info['ball']['dis'] * \
+    #                                           math.sin(math.radians(self.__robot_info['location']['yaw'] + self.__object_info['ball']['ang']))                                          
+    #print(self.__robot_info['location']['x'], self.__robot_info['location']['y'])
+    #print(self.__robot_info['location']['yaw'], self.__object_info['ball']['ang'])
+    #print(self.__gobal_ball_info['location']['x'], self.__gobal_ball_info['location']['y'])
+
+    obs_filter = []
+    obs = self.__obstacle_info['detect_obstacles']
+    
+    for i in range (0,len(obs), 4):
+      distance = obs[i+0]
+      angle    = obs[i+1]+self.__robot_info['location']['yaw']
+      o_x      = self.__robot_info["location"]["x"] + distance * math.cos(math.radians(angle))
+      o_y      = self.__robot_info["location"]["y"] + distance * math.sin(math.radians(angle))
+      #print(o_x, o_y)
+      if(abs(o_y)<200):
+          obs_filter.append(obs[i+0])
+          obs_filter.append(obs[i+1])
+          obs_filter.append(obs[i+2])
+          obs_filter.append(obs[i+3])
+    opp_handled_ang = 10
+    opp_handled_dis = 40
+    for i in range (0,len(obs_filter), 4):
+      dis = obs_filter[i+0]
+      ang = obs_filter[i+1]
+      left_ang = obs_filter[i+2]
+      right_ang = obs_filter[i+3]
+      abs_mid_ang = abs(self.__object_info['ball']['ang']-ang)
+      abs_mid_ang = min(abs_mid_ang, abs(360-abs_mid_ang))
+      abs_left_ang = abs(self.__object_info['ball']['ang']-left_ang)
+      abs_left_ang = min(abs_left_ang, abs(360-abs_left_ang))
+      abs_right_ang = abs(self.__object_info['ball']['ang']-right_ang)
+      abs_right_ang = min(abs_right_ang, abs(360-abs_right_ang))
+      
+      min_ang = min(abs_mid_ang, abs_left_ang, abs_right_ang)
+      if(min_ang < opp_handled_ang and self.__object_info['ball']['dis']<dis):
+        self.__opp_is_blocked = True
+      if(min_ang < opp_handled_ang and abs(self.__object_info['ball']['dis']-dis) < opp_handled_dis):
+        #print(min_ang, self.__object_info['ball']['dis']-dis)
+        self.__opp_is_handled = True
+        if(self.__object_info['ball']['ang']<999):
+            self.__opp_info['ang']=ang
+            self.__opp_info['dis']=dis
+        break
+      if(i == (len(obs_filter)-4)):
+        self.__opp_is_handled = False
+        self.__opp_is_blocked = False
+    # if(self.__object_info['ball']['ang']==999):
+    #   print("can't see ball")
+    if(self.__ball_is_handled):
+      self.__opp_is_handled = False
+      self.__opp_is_blocked = False
+    #print("self.__opp_is_handled", self.__opp_is_handled)
+    #print("self.__opp_is_blocked", self.__opp_is_blocked)
+
+    #如果找不到球 搜尋球最後大地座標周圍障礙物 若找到障礙物將其當作持球員 並以持球員大地座標座代替球大地座標
+    if(self.__object_info['ball']['ang']<999 and self.__opp_is_handled == True):
+      ob_max_dis = opp_handled_dis
+      min_ob_dis = 999
+
+      ball_dis = self.__object_info['ball']['dis']
+      ball_ang = self.__object_info['ball']['ang']
+
+      gbx = self.__object_info['ball']['global_x']
+      gby = self.__object_info['ball']['global_y']
+
+      self.__opp_info['ang']=999
+      self.__opp_info['dis']=0
+      for i in range (0,len(obs_filter), 4):
+        dis = obs_filter[i+0]
+        ang = obs_filter[i+1]
+        #sas A2=B2+C2-BCcos(A)
+        rox = dis * math.cos(math.radians(ang))
+        roy = dis * math.sin(math.radians(ang))
+        rrox, rroy = self.Rotate(rox, roy, self.__robot_info['location']['yaw'])
+        gox = rrox + self.__robot_info['location']['x']
+        goy = rroy + self.__robot_info['location']['y']
+        ob_dis = math.sqrt(math.pow(gox-gbx,2)+math.pow(goy-gby,2))
+        if(ob_dis<ob_max_dis and ob_dis<min_ob_dis):
+          self.__opp_info['ang']=ang
+          self.__opp_info['dis']=dis
+          self.__object_info['ball']['global_x']=gox
+          self.__object_info['ball']['global_y']=goy
+    #=====================
 
   def _GetTwopoint(self,vision):
     self.__twopoint_info['Blue']['right']   = vision.blue_right
@@ -435,3 +536,12 @@ class Robot(object):
 
   def RealBallHandle(self):
     return self.__ball_is_handled
+
+  def GetOppHandle(self):
+    return self.__opp_is_handled
+
+  def GetOppBlock(self):
+    return self.__opp_is_blocked
+  
+  def GetOppInfo(self):
+    return self.__opp_info
