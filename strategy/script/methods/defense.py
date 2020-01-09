@@ -17,18 +17,21 @@ class Defense(Robot,Obstacle):
     p_y = 0
     p_yaw = 0
     tmp = 0
+    yaw = 0
     if(our_side=="Yellow"):
       tmp = -1
+      yaw = 0
     elif(our_side=="Blue"):
       tmp = 1
+      yaw = 180
     if(position['location']['y']<0):  
       p_x = 200*tmp
       p_y = -50
-      p_yaw = 0
+      p_yaw = 0+yaw
     else:
       p_x = 200*tmp
       p_y =  50
-      p_yaw = 0
+      p_yaw = 0+yaw
     
     return p_x, p_y, p_yaw
   

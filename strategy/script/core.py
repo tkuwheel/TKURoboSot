@@ -185,7 +185,7 @@ class Core(Robot, StateMachine):
     #   p_y =  50
     #   p_yaw = 0
       
-    if(self.robot['ball']['ang']==999):
+    if(t['ball']['ang']==999):
       #========back to defense====
       p_x, p_y, p_yaw = self.DC.ClassicDefense(t[our_side]['dis'],\
                                             t[our_side]['ang'],\
