@@ -494,7 +494,10 @@ class Robot(object):
 
       msg = Twist()
       output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, ROTATE_V_ANG)
-
+      if(x==0 and y==0 and yaw==0):
+        output_x=0
+        output_y=0
+        output_w=0
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = output_w

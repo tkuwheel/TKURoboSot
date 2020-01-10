@@ -94,6 +94,9 @@ class Core(Robot, StateMachine):
     opp_info = self.GetOppInfo()
     opphandle = self.GetOppHandle()
     # print(opphandle, opp_info['ang'])
+    x=0
+    y=0
+    yaw=0
     if(opphandle==True and opp_info['ang']!=999):
       method = "Block"
     if(method =="Block"):
@@ -220,7 +223,6 @@ class Core(Robot, StateMachine):
                                         t['ball']['dis'],\
                                         t['ball']['ang'])
       self.MotionCtrl(x, y, yaw)
-      #self.MotionCtrl(0, 0, 0)
     elif method == "Relative_goal":
       x, y, yaw = self.BC.relative_goal(t[ourside]['dis'],\
                                              t[ourside]['ang'],\
