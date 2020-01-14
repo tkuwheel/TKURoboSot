@@ -38,7 +38,7 @@ class Core(Robot, StateMachine):
   toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) | defense.to(point)
   #==================
   back_ang = 10
-  back_dis = 30
+  back_dis = 60
   #==================
   def Callback(self, config, level):
     self.game_start = config['game_start']
@@ -91,8 +91,10 @@ class Core(Robot, StateMachine):
   def on_toChase(self, method = "Classic"):
     t = self.GetObjectInfo()
     side = self.opp_side
+    our_side = self.our_side
     opp_info = self.GetOppInfo()
     opphandle = self.GetOppHandle()
+    robot_info = self.GetRobotInfo()
     # print(opphandle, opp_info['ang'])
     x=0
     y=0
@@ -103,15 +105,37 @@ class Core(Robot, StateMachine):
       #print("block")
       dis = 0
       ang = 0
+      #========more catch ball====
       if(t['ball']['ang']<999):
         dis = t['ball']['dis']
         ang = t['ball']['ang']
       else:
         dis = opp_info['dis']
         ang = opp_info['ang']
+      #========more defense=======
+      # dis = opp_info['dis']
+      # ang = opp_info['ang']
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           dis,\
                                           ang)
+      if(our_side=="Yellow"):
+        yaw = 0
+      elif(our_side=="Blue"):
+        yaw = 180
+
+      v_yaw = yaw - robot_info['location']['yaw']
+      if abs(v_yaw - 360) < abs(v_yaw):
+        yaw = v_yaw - 360
+      elif abs(v_yaw + 360) < abs(v_yaw):
+        yaw = v_yaw + 360
+      else:
+        yaw = v_yaw
+      #======full speed block====
+      if(dis<60 and abs(ang)>10):
+        y=y*10
+      if(x<0):
+        x=x*10
+      #==========================
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           t['ball']['dis'],\
@@ -173,35 +197,42 @@ class Core(Robot, StateMachine):
     opp_side = self.opp_side
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
-    #obs_filter = self.obstacle_fileter(obs, robot)
 
-    # if(our_side=="Yellow"):
-    #   tmp = -1
-    # elif(our_side=="Blue"):
-    #   tmp = 1
-    # if(position['location']['y']<0):  
-    #   p_x = 200*tmp
-    #   p_y = -50
-    #   p_yaw = 0
-    # else:
-    #   p_x = 200*tmp
-    #   p_y =  50
-    #   p_yaw = 0
       
     if(t['ball']['ang']==999):
-      #========back to defense====
-      p_x, p_y, p_yaw = self.DC.ClassicDefense(t[our_side]['dis'],\
-                                            t[our_side]['ang'],\
-                                            our_side)
-      x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
-      if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) <20 and abs(robot['location']['yaw']-p_yaw)<20):
-        x=0
-        y=0
-        yaw = 0
-      if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) < 60): 
-        self.MotionCtrl(x, y, yaw, False, 10)
+      
+      block_flag, obs_dis, obs_ang = self.DC.BlockCheck(t[our_side]['dis'],\
+                                                        t[our_side]['ang'],\
+                                                        our_side)
+      #========block opp robot=====
+      if(block_flag):
+        #print(block_flag)
+        x, y, yaw = self.CC.ClassicRounding(t[opp_side]['ang'],\
+                                            obs_dis,\
+                                            obs_ang)
+        v_yaw = 90 - robot['location']['yaw']
+        if abs(v_yaw - 360) < abs(v_yaw):
+          yaw = v_yaw - 360
+        elif abs(v_yaw + 360) < abs(v_yaw):
+          yaw = v_yaw + 360
+        else:
+          yaw = v_yaw
+        #print(x, y, yaw, obs_dis, obs_ang)
+        self.MotionCtrl(x, y, yaw)                              
       else:
-        self.MotionCtrl(x, y, yaw)
+        #========back to defense====
+        p_x, p_y, p_yaw = self.DC.ClassicDefense(t[our_side]['dis'],\
+                                                 t[our_side]['ang'],\
+                                                 our_side)
+        x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
+        if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) <20 and abs(robot['location']['yaw']-p_yaw)<20):
+          x=0
+          y=0
+          yaw = 0
+        if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) < 60): 
+          self.MotionCtrl(x, y, yaw, False, 10)
+        else:
+          self.MotionCtrl(x, y, yaw)
       #===========================
 
 
@@ -473,6 +504,7 @@ class Strategy(object):
             self.ToAttack()
 
         if self.robot.is_attack:
+         
           if not self.robot.CheckBallHandle():
             self.robot.last_goal_dis = 0
             self.ToChase()

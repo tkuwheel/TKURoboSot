@@ -163,7 +163,7 @@ class Obstacle(object):
   def obstacle_roate(self, obs, robot):
     rf_x = 0
     rf_y = 0
-    dis_threshold = 200
+    dis_threshold = 100
     for i in range (0, len(obs), 4):
         distance = obs[i+0]
         angle    = obs[i+1]-180
@@ -178,7 +178,7 @@ class Obstacle(object):
   
   def obstacle_escape(self, goal_dis, goal_ang, obs, robot):
     route_ang = []
-    ang_threshold = 100
+    ang_threshold = 90
     robot_radius = 30
     route_filter = []
     #============判斷球門路線有無阻擋=================
@@ -205,7 +205,7 @@ class Obstacle(object):
     #=============================================
     #find all possible angles
     for i in range (0,len(obs), 4):
-        max_rotate_ang = 90
+        max_rotate_ang = 80
         distance = obs[i+0]
         right_ang = obs[i+2]
         min_ang = abs(right_ang-goal_ang) if(abs(right_ang-goal_ang)<abs(360-abs(right_ang-goal_ang))) else abs(360-abs(right_ang-goal_ang))
@@ -294,24 +294,35 @@ class Obstacle(object):
         goal_dis = 80
     v_x = goal_dis * math.cos(math.radians(fin_ang))
     v_y = goal_dis * math.sin(math.radians(fin_ang))
-    if(goal_dis<120):
-        v_x = v_x*0.5 + goal_dis * math.cos(math.radians(goal_ang))*0.5
-        v_y = v_y*0.5 + goal_dis * math.sin(math.radians(goal_ang))*0.5
+    if(goal_dis<200):
+        # v_x = v_x*0.5 + goal_dis * math.cos(math.radians(goal_ang))*1.5
+        # v_y = v_y*0.5 + goal_dis * math.sin(math.radians(goal_ang))*1.5
+        #force attack
+        #print("force attack")
+        v_x =  goal_dis * math.cos(math.radians(goal_ang))*5
+        v_y =  goal_dis * math.sin(math.radians(goal_ang))*5
     #print("fin_ang", fin_ang)
     return v_x, v_y
   def back(self, goal_dis, goal_ang, obs, back_dis, back_ang):
     x = goal_dis * math.cos(math.radians(goal_ang+180))
     y = goal_dis * math.cos(math.radians(goal_ang+180))
     yaw = goal_ang+180 #goal_ang = our side gaol angle
-    for j in range (0, len(obs), 4):
-        dis = obs[j+0]
-        ang = obs[j+1]
-        if(abs(ang) < back_ang and dis < back_dis):
-            #x = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
-            #y = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
-            x = 80 * math.cos(math.radians(ang+180)) #fast back
-            y = 80 * math.cos(math.radians(ang+180)) 
-            yaw = 0
-            break
+    if(goal_dis<100):
+        x = goal_dis * math.cos(math.radians(goal_ang+180))
+        y = goal_dis * math.cos(math.radians(goal_ang+180))
+        yaw = goal_ang+180 #goal_ang = our side gaol angle
+    else:
+        print("steal")
+        for j in range (0, len(obs), 4):
+            dis = obs[j+0]
+            ang = obs[j+1]
+            if(abs(ang) < back_ang and dis < back_dis):
+                #x = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
+                #y = (back_dis - dis) *2.5 * math.cos(math.radians(ang+180))
+                print("#fast back")
+                x = (back_dis - dis) *10 * math.cos(math.radians(ang+180)) #fast back
+                y = (back_dis - dis) *10 * math.cos(math.radians(ang+180)) 
+                yaw = 0
+                break
     return x, y, yaw
  

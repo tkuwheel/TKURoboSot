@@ -3,11 +3,11 @@ Camera:
   High: 650.0
 Center:
   Camera_high: 620
-  Center_X: 333
+  Center_X: 328
   Center_Y: 255
   Front: 90
   Horizon: 188
-  Inner: 51
+  Inner: 54
   Outer: 280
   X: 308
   Y: 266
@@ -35,12 +35,12 @@ HSV:
   - 20
   - 90
   White:
-  - 216
+  - 197
   - 168
   - 0
-  - 71
+  - 79
   - 0
-  - 29
+  - 23
   Yellow:
   - 39
   - 79
@@ -59,13 +59,13 @@ SCAN:
   Angle_Near_Gap: 4
   Angle_range_1: 2
   Angle_range_2_3: 2
-  Dont_Search_Angle_1: 31
-  Dont_Search_Angle_2: 150
-  Dont_Search_Angle_3: 268
-  Magn_Far_End: 267
-  Magn_Far_Start: 126
+  Dont_Search_Angle_1: 33
+  Dont_Search_Angle_2: 153
+  Dont_Search_Angle_3: 265
+  Magn_Far_End: 224
+  Magn_Far_Start: 154
   Magn_Middle_Start: 50
-  Magn_Near_Gap: 4
+  Magn_Near_Gap: 3
   Magn_Near_Start: 44
 blackItem:
   angle: 3

@@ -338,7 +338,7 @@ class Robot(object):
 
     obs_filter = []
     obs = self.__obstacle_info['detect_obstacles']
-    
+    #============obs_filter===============
     for i in range (0,len(obs), 4):
       distance = obs[i+0]
       angle    = obs[i+1]+self.__robot_info['location']['yaw']
@@ -350,6 +350,7 @@ class Robot(object):
           obs_filter.append(obs[i+1])
           obs_filter.append(obs[i+2])
           obs_filter.append(obs[i+3])
+    #=====================================
     opp_handled_ang = 10
     opp_handled_dis = 40
     for i in range (0,len(obs_filter), 4):
