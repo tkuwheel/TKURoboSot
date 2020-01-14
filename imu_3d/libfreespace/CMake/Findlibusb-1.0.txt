@@ -1,0 +1,1 @@
+Findlibusb-1.0.txt modified from: https://github.com/OpenKinect/libfreenect/blob/master/cmake_modules/Findlibusb-1.0.cmake

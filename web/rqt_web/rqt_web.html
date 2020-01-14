@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<script type="text/javascript" src="js/eventemitter2.min.js"></script>
+<script type="text/javascript" src="js/roslib.js"></script>
+<script src="js/Rosservice.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="jquery-ui-1.11.4/jquery-ui.js"></script>
+<script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+<script src="js/eventemitter2.min.js"></script>
+<script src="js/Keyboard_control.js"></script>
+
+<link rel="contents" href="bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="css/form.css">
+
+</head>
+
+<body>
+strategy_web
+<div id="WifiLight">
+    <canvas id="Light"></canvas>
+</div>
+<form name='form' id='form'>
+  role :
+  <select name="role" id = "role">
+      <option value="Attacker">Attacker</option>
+      <option value="Supporter">Supporter</option>
+      <!----option value="Passer">Passer</option-->  
+  </select><br/>
+  game_start:
+  <input id ='game_start'   type="checkbox"   onclick = gameStart() ><br/>
+  <input type='button' name='submit' value='送出' onclick= processFormData() /><br/>
+  chase_straight：
+  <input id ='chase_straight'      type="checkbox" value = 'true'  name='chase_straight：' ><br/>
+  Accelerate：
+  <input id ='Accelerate'      type="checkbox" value = 'true'  name='Accelerate：' ><br/>
+  change_plan:
+  <input id ='change_plan'   type="checkbox"   onclick = chg() ><br/>
+  <!----input id ='change_plan'      type="checkbox" value = 'true'  name='change_plan' ><br/-->
+  ball_pwm：
+  <input id ='ball_pwm'      type="checkbox" value = 'true'  name='ball_pwm：' ><br/>
+  shooting_start:
+  <input id ='shooting_start'      type="checkbox" value = 'true'  name='shooting_start' ><br/>
+
+  game_state：
+  <select name="game_state" id = "game_state">
+    　<option value="Kick_Off">Kick_Off</option>
+      <option value="Penalty_Kick">Penalty_Kick</option> 
+  </select><br/>
+
+
+  run_point：
+  <select name="run_point" id="run_point">
+      <option value="none">none</option>
+    　<option value="empty_hand">empty_hand</option>
+    　<option value="ball_hand">ball_hand</option>
+  </select><br/>
+
+  run_x：
+  <input id="run_xSlider" name="run_x" type="range" min="-300.0" max="300.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);"> 
+  <input id="run_xInput" name="run_x"  value="0.0" type="number" min="-300.0" max="300.0" oninput="ToSliderValue(this.value,this.name,0);" />-300 to 300<br/> 
+  run_y：
+  <input id="run_ySlider" name="run_y" type="range" min="-200.0" max="200.0" value="0.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="run_yInput" name="run_y"  value="0.0" type="number" min="-200.0" max="200.0" oninput="ToSliderValue(this.value,this.name,0);" />-200 to 200<br/> 
+  run_yaw：
+  <input id="run_yawSlider" name="run_yaw" type="range" min="-180.0" max="180" value="0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="run_yawInput" name="run_yaw"  value="0.0" type="number" min="-180.0" max="180.0" oninput="ToSliderValue(this.value,this.name,0);" />-180 to 180<br/>
+
+  our_side：
+  <select name="our_side" id="our_side">
+    　<option value="Blue">Blue(Attack_Yellow)</option>
+    　<option value="Yellow">Yellow(Attack_Bl)</option>
+  </select><br/>
+  attack_mode：
+  <select name="attack_mode" id = "attack_mode">
+    　<option value="Attack">Attack</option>
+    　<option value="Orbit">Orbit</option>
+    　<option value="Cut">Cut</option>
+     <option value="Post_up">Post_up</option>
+     <option value="Defense">Defense</option>
+  </select><br/>
+  strategy_mode：
+  <select name="strategy_mode" id = strategy_mode>
+      <option value="Fast_break">Fast_break</option>
+    　<option value="At_Orbit">At_Orbit</option>
+    　<option value="At_Post_up">Post_up</option>
+    　<option value="Defense_ball">Defense_ball</option>
+      <option value="Defense_goal">Defense_goal</option>    
+  </select><br/>
+
+  orb_attack_ang：
+  <input id="orb_attack_angSlider" name="orb_attack_ang" type="range" min="0.0" max="20.0" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="orb_attack_angInput" name="orb_attack_ang"  value="5.0" type="number" min="0.0" max="20.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 20.0<br/>
+  atk_shoot_ang：
+  <input id="atk_shoot_angSlider" name="atk_shoot_ang" type="range" min="0.0" max="10.0" value="10.0" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_angInput" name="atk_shoot_ang"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
+  atk_shoot_dis：
+  <input id="atk_shoot_disSlider" name="atk_shoot_dis" type="range" min="0.0" max="1000.0" value="300" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="atk_shoot_disInput" name="atk_shoot_dis"  value="300" type="number" min="0.0" max="1000.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 500.0<br/>
+  minimum_w：
+  <input id="minimum_wSlider" name="minimum_w" type="range" min="0.0" max="5.0" value="1.2" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_wInput" name="minimum_w"  value="1.2" type="number" min="0" max="5.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 5.0<br/>
+  maximum_w：
+  <input id="maximum_wSlider" name="maximum_w" type="range" min="10.0" max="100.0" value="35" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_wInput" name="maximum_w"  value="35" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />10.0 to 100.0<br/>
+  minimum_v：
+  <input id="minimum_vSlider" name="minimum_v" type="range" min="0.0" max="10.0" value="10" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="minimum_vInput" name="minimum_v"  value="10.0" type="number" min="0.0" max="10.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 10.0<br/>
+  maximum_v：
+  <input id="maximum_vSlider" name="maximum_v" type="range" min="10.0" max="100.0" value="50" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="maximum_vInput" name="maximum_v"  value="50" type="number" min="10.0" max="100.0" oninput="ToSliderValue(this.value,this.name,0);" />0.0 to 100.0<br/>
+  ballhandle_dis：
+  <input id="ballhandle_disSlider" name="ballhandle_dis" type="range" min="0" max="50" value="28" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_disInput" name="ballhandle_dis"  value="28" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  ballhandle_ang：
+  <input id="ballhandle_angSlider" name="ballhandle_ang" type="range" min="0" max="50" value="5" oninput="ToInputValue(this.value,this.name,1);">
+  <input id="ballhandle_angInput" name="ballhandle_ang"  value="5" type="number" min="0" max="50" oninput="ToSliderValue(this.value,this.name,0);" />0 to 50<br/>
+  
+  
+</form>
+    <div class="Wifimodal_content">
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label for="RobotIPDATA" class="control-label">Robot_IP:</label>
+                    <input name="RobotIPDATA" type="text" class="form-control" id="RobotIP" value=IP.textContent>
+                </div>
+                <div class="form-group">
+                    <label for="RobotHostDATA" class="control-label">Robot_Host:</label>
+                    <input name="RobotHostDATA" type="text" class="form-control" id="RobotHost" value=Host.textContent>
+                </div>
+            </form>
+                </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ros.close();">Close</button>
+            <button type="button" class="btn btn-primary" id="send-message" onclick="RobotConnect();history.go(0);">Connect</button>
+        </div>
+    </div>
+    <script src="js/RobotConnect.js"></script>
+    <script src="js/variable.js"></script>
+
+</body>
+</html>

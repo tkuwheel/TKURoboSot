@@ -1,0 +1,18 @@
+ 20190131
+    更新regular網頁鍵盤控制JS
+    新增vision.launch
+20190211
+    vision網頁black模式修改
+20190219
+    image_publisher, black_item, white_line, interface, monitor整理完成
+    修改class vision 使用protected繼承nodehandle資料
+    monitor增加物件平形處理
+    interface 使用rosservice確認yaml參數儲存
+    vision網頁介面使 用rosservice定期確認monitor執行情況
+    vision網頁介面增加訊息顯示欄位
+    修改yaml檔, 新的影像程式yaml儲存於config/FIRA.yaml
+20190326
+    include <fstream>
+    parameter修改/FIRA->/FIRA/vision(需要使用新版介面開啟)
+
+

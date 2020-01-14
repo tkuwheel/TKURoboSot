@@ -1,0 +1,816 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #FFFFFF;
+    -moz-background-size: cover;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    //overflow-y: hidden;
+    //overflow-x: hidden;
+}
+
+#HoldBallDiv1 {
+    position: relative;
+    left: 1348px;
+    top: 485px;  
+    z-index:100;
+    height: 28px;
+    width: 28px;
+    cursor: pointer;
+    border-radius:50%;
+    background-color:#ffffff;
+}
+/*====================WIFI============================*/
+
+#InterfaceSetting {
+    position: relative;
+    left: 130%;
+    bottom: 100%
+}
+
+#InterfaceWifi table {
+    height: 100%;
+    width: 100%;
+}
+
+#InterfaceWifi td {
+    right: 5%;
+    width: 50%;
+}
+
+#Setting_Wifi {
+    position: relative;
+    right: 5%;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    bottom: 8px;
+}
+
+#light {
+    height: 50px;
+    width: 50px;
+}
+
+#wifilight {
+    position: relative;
+    left: 4px;
+}
+
+.Wifimodal_content {
+    position: relative;
+    background-color: #FFEE99;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+
+/*===================SETTING==========================*/
+
+#leftsidesetting {
+    position: relative;
+    top: 100px;
+    right: 36%;
+}
+
+#setting_button {
+    position: relative;
+    /*left: 50px;*/
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    bottom: 7px;
+}
+#setting_block{
+    height: auto;
+    position: relative;
+    left:-10%;
+}
+#innerModalLabel {
+    font-size: 30px;
+    font-family: 'Pacifico', cursive;
+
+}
+
+#GeneralDisplay {
+    margin: auto;
+    text-align: center;
+
+}
+
+#SetGeneralExecute {
+    text-align: center;
+    position: relative;
+    top:-50%;
+}
+#SetGeneralButton{
+    position: relative;
+    top:0%;
+    left:2%;
+}
+#SettingButton{
+    position: relative;
+    left:23%;
+}
+#BallElementModule{
+    position: relative;
+    left:13.5%;
+    height: auto;
+    width:320px;
+    text-align: center;
+    border-style: solid;
+    /*    overflow: scroll;
+*/
+}
+#SPlanningVelocityModule {
+    position: relative;
+    left:13.5%;
+    height: auto;
+    width:320px;
+    /*text-align: center;*/
+    border-style: solid;
+    /*    overflow: scroll;
+*/
+}
+#SPlanningVelocityValue {
+ text-align: left;
+ position: relative;
+ left: 30%;
+}
+#BallElementValue{
+ text-align: left;
+ position: relative;
+ left: 30%;
+ width:50px;
+}
+#SPlanningVelocityTitle{
+ text-align: left;
+ position: relative;
+ left: 38%;
+}
+#BallElementTitle{
+ text-align: left;
+ position: relative;
+ left: 38%;
+}
+#SPlanningVelocity{
+    position: relative;
+    left: 120%;
+    width: 50px;
+}
+#Ball{
+    position: relative;
+    left: 120%;
+    width: 50px;
+}
+#send {
+    position: relative;
+    left: 25%;
+}
+
+#OptimizationModule {
+    position: relative;
+    top: 0%;
+    left: -0%;
+    width: 250px;
+    font-family: Signika;
+    font-size: 150%;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 0px double #FFF;
+    border-radius: 10px;
+    text-align: left;
+}
+#OptimizationTable{
+    position: relative;
+    left:10%;
+}
+#OptimizationTitle{
+    position:relative;
+    width:100%;
+    left:15%;
+}
+#OptimizationLabel{
+    width:50%;
+}
+#OptimizationCheck{
+    width:80px;
+}
+#settingLabel {
+    font-family: 'Pacifico', cursive;
+    font-size: 40px;
+}
+
+.settingmodal_content {
+    position: relative;
+    height: 450px;
+    width: 500px;
+    background-color: #FFEE99;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+}
+
+/*===============Canvas======================*/
+#robot_map {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+#reset_map {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+#Rect1 {
+    position: absolute;
+    left: 100px;
+    top: 95px;
+}
+
+#Rect2 {
+    position: absolute;
+    left: 363px;
+    top: 95px;
+}
+
+#Rect3 {
+    position: absolute;
+    left: 577px;
+    top: 95px;
+}
+
+#Rect4 {
+    position: absolute;
+    left: 840px;
+    top: 95px;
+}
+
+#Rect5 {
+    position: absolute;
+    left: 175px;
+    top: 195px;
+}
+
+#Rect6 {
+    position: absolute;
+    left: 304px;
+    top: 225px;
+}
+
+#Rect7 {
+    position: absolute;
+    left: 471px;
+    top: 203px;
+}
+
+#Rect8 {
+    position: absolute;
+    left: 639px;
+    top: 224px;
+}
+
+#Rect9 {
+    position: absolute;
+    left: 766px;
+    top: 195px;
+}
+
+#Rect10 {
+    position: absolute;
+    left: 133px;
+    top: 332px;
+}
+
+#Rect11 {
+    position: absolute;
+    left: 263px;
+    top: 333px;
+}
+
+#Rect12 {
+    position: absolute;
+    left: 678px;
+    top: 332px;
+}
+
+#Rect13 {
+    position: absolute;
+    left: 809px;
+    top: 332px;
+}
+
+#Rect14 {
+    position: absolute;
+    left: 175px;
+    top: 469px;
+}
+
+#Rect15 {
+    position: absolute;
+    left: 303px;
+    top: 442px;
+}
+
+#Rect16 {
+    position: absolute;
+    left: 472px;
+    top: 463px;
+}
+
+#Rect17 {
+    position: absolute;
+    left: 640px;
+    top: 442px;
+}
+
+#Rect18 {
+    position: absolute;
+    left: 768px;
+    top: 470px;
+}
+
+#Rect19 {
+    position: absolute;
+    left: 104px;
+    top: 571px;
+}
+
+#Rect20 {
+    position: absolute;
+    left: 365px;
+    top: 571px;
+}
+
+#Rect21 {
+    position: absolute;
+    left: 579px;
+    top:571px;
+}
+
+#Rect22 {
+    position: absolute;
+    left: 840px;
+    top: 571px;
+}
+
+
+/*=======================================================*/
+
+#background {
+    width: 1235px;
+    height: 1000px;
+}
+
+#court {
+    position: absolute;
+    width: 1000px;
+    top: 15%;
+    left: 15%;
+}
+
+#canvasMap {
+    position: absolute;
+    width: 1000px;
+    top: 170px;
+    left: 223px;
+    height: 723px;
+}
+
+#RobotModule {
+    position: absolute;
+    top: 12%;
+    left: 82.2%;
+    width: 250px;
+    font-family: Signika;
+    font-size: 150%;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 0px double #FFF;
+    border-radius: 10px;
+    text-align: left;
+}
+
+#titleModalLabel {
+    position: relative;
+    font-size: 60px;
+    left: 30%;
+    top: -15%;
+    font-family: 'Pacifico', cursive;
+}
+
+.modal-title {
+    text-align: center;
+}
+
+.motherground {
+    background-color: #FFEE99;
+    height: 900px;
+}
+
+#SimulatorButton {
+    position: relative;
+    top: 10%;
+    left: 3.5%;
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+}
+#IsSimulator.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#IsSimulator.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+.button {
+    position: relative;
+    width: 80px;
+    height: 30px;
+    text-align: center;
+    margin-left: 0px;
+    color: blue;
+    border-radius: 10px;
+    background-color: #FFF
+}
+
+.region {
+    position: relative;
+    left: 80px;
+    font-size: 18px;
+}
+
+.radio {
+    position: relative;
+    left: 50px;
+}
+
+.title {
+    position: relative;
+    width: 1000px;
+    height: 100px;
+}
+
+/*==========================================================*/
+
+
+/*JoyStick*/
+
+#Joystick {
+    position: relative;
+    top: 53%;
+    left: 0.8%;
+    width: 210px;
+    height: 210px;
+    z-index: 1;
+    border-radius: 210px;
+    /*border-style: dashed;*/
+    border-color: rgba(255, 255, 255, 0.5);
+    background-color: #fff;
+    cursor: crosshair;
+}
+#Joystick_Canvas {
+    width: 100%;
+    height: 100%;
+}
+#SpeedDiv {
+    width: 185px;
+    height: 60px;
+    z-index: 1;
+    position: relative;
+    top: 49%;
+    left: 0.5%;
+    font-size: 20px;
+}
+
+#SpeedDiv table {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+#SpeedSlider {
+    width: 185px;
+    position: relative;
+    top: 45%;
+    left:10%;
+
+}
+
+#SpeedInput {
+    width: 55px;
+    height: 25px;
+    position: relative;
+    top: 48%;
+    left: 10%;
+}
+#SpeedLabel{
+    position: relative;
+    left:10%;
+}
+/*==========================================================*/
+#SPlanningVelocityLabel {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#SPlanningVelocityLabel.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+#BallElementLabel {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#BallElementLabel.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+#MCLElementLabel {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 14px;
+    color: #663D00;
+}
+
+#MCLElementLabel.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 14px;
+    color: #1A1A65;
+}
+
+#SPlanningVelocityModule input{
+    width:60%;
+    text-align: center;
+}
+.Setting_Label{
+    text-align: left;
+}
+#SPlanningVelocityModule th{
+    text-align: center;
+}
+.Setting_Input{
+    text-align: center;
+}
+#BallElementModule th{
+    text-align: center;
+    font-weight:bold;
+}
+#BallElementModule input{
+    width:60%;
+    text-align: center;
+}
+#MCLElementModule{
+    position: relative;
+    left:13.5%;
+    height: auto;
+    width:320px;
+    text-align: center;
+    border-style: solid;
+    /*    overflow: scroll;
+*/
+}
+#MCLElementModule th{
+    text-align: center;
+    font-weight:bold;
+}
+#MCLElementModule td{
+    text-align: center;
+}
+#MCLElementModule input{
+    width:60%;
+    text-align: center;
+}
+/*==========================================================*/
+#FunctionButttonDiv{
+    width: 185px;
+    height: 60px;
+    z-index: 1;
+    position: absolute;
+    top: 250px;
+    left: 40px;
+    text-align: center;
+}
+
+/*==========================================================*/
+#KeyboardControlLable {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+#KeyboardControlLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#KeyboardControlLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#WhitelineLable {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+#WhitelineLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#WhitelineLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#LocalizationLable {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+
+#LocalizationLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#LocalizationLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#StandbyLable {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+
+#StandbyLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#StandbyLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#GroundLable {
+    text-align: center;
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    color: #663D00;
+    
+}
+
+#GroundLable.ui-state-hover {
+    background-image: none;
+    /*background-color: #99CCFF;*/
+    font-size: 17px;
+    background-color: #FFF;
+}
+
+#GroundLable.ui-state-active {
+    background-color: #FFCC00;
+    font-size: 17px;
+    color: #1A1A65;
+}
+/*==========================================================*/
+#LocalizationDiv{
+    width: 185px;
+    height: 60px;
+    z-index: 1;
+    position: absolute;
+    top: 120px;
+    left: 20px;
+    text-align: center;
+}
+/*==========================================================*/
+#ShootButton {
+    -moz-box-shadow: inset 0px 1px 0px 0px #f9eca0;
+    -webkit-box-shadow: inset 0px 1px 0px 0px #f9eca0;
+    box-shadow: inset 0px 1px 0px 0px #f9eca0;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f0c911), color-stop(1, #f2ab1e));
+    background: -moz-linear-gradient(top, #f0c911 5%, #f2ab1e 100%);
+    background: -webkit-linear-gradient(top, #f0c911 5%, #f2ab1e 100%);
+    background: -o-linear-gradient(top, #f0c911 5%, #f2ab1e 100%);
+    background: -ms-linear-gradient(top, #f0c911 5%, #f2ab1e 100%);
+    background: linear-gradient(to bottom, #f0c911 5%, #f2ab1e 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#f0c911', endColorstr='#f2ab1e', GradientType=0);
+    background-color: #f0c911;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    /*border: 1px solid #e65f44;*/
+    display: inline-block;
+    cursor: pointer;
+    color: #663D00;
+    font-family: Arial;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 6px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #ded17c;
+}
+
+#ShootButton:hover {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f2ab1e), color-stop(1, #f0c911));
+    background: -moz-linear-gradient(top, #f2ab1e 5%, #f0c911 100%);
+    background: -webkit-linear-gradient(top, #f2ab1e 5%, #f0c911 100%);
+    background: -o-linear-gradient(top, #f2ab1e 5%, #f0c911 100%);
+    background: -ms-linear-gradient(top, #f2ab1e 5%, #f0c911 100%);
+    background: linear-gradient(to bottom, #f2ab1e 5%, #f0c911 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#f2ab1e', endColorstr='#f0c911', GradientType=0);
+    background-color: #f2ab1e;
+}
+
+#ShootButton:active {
+    position: relative;
+    top: 1px;
+}
+
+/*==========================================================*/
+#MCLInformation{
+    width: 900px;
+    height: 60px;
+    z-index: 1;
+    position: absolute;
+    top: 120px;
+    left: 300px;
+    text-align: left;
+    font-size: 20px;
+}
+
+#coordinate_x {
+    width: 40px;
+    font-size: 18px;
+}
+
+#coordinate_y {
+    width: 40px;
+    font-size: 18px;
+}
+
+#coordinate_angle{
+    width: 70px;
+    font-size: 18px;
+}
+
+#coordinate_sigma{
+    width: 50px;
+    font-size: 18px;
+}
+#ball_ang{
+    width: 60px;
+    font-size: 18px;
+}
+#ball_dis{
+    width: 80px;
+    font-size: 18px;
+}

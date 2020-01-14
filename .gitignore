@@ -1,0 +1,39 @@
+.catkin_workspace
+.robot_setting
+*.0
+__pycache__
+*.pyc
+.vscode
+CATKIN_IGNORE
+.qsys_edit
+*.swp
+*.swo
+*~
+
+# fpga
+db
+export_db
+incremental_db
+output_files
+work
+sopc
+signaltap
+obj
+software
+
+*.qdf
+*.bak
+*.rpt
+*.qws
+*.bsf
+*.cmp
+
+# ROS2 ignore
+build
+install
+log
+
+# Vision configs
+FIRA.yaml
+HSVcolormap.bin
+.DS_Store
