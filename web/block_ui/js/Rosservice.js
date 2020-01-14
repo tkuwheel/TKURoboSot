@@ -76,7 +76,7 @@
             data:  myBoolean1
         });
         
-         var request = new ROSLIB.ServiceRequest({
+        var request = new ROSLIB.ServiceRequest({
         config: {
             bools: [
                 {name: 'game_start', value: game_start.data},

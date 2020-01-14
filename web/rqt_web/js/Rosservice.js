@@ -174,6 +174,13 @@
         }
 
         });
+        dynaRecClient.callService(request, function(result) {
+            console.log('Result for service call on '
+                + dynaRecClient.name
+                + ': '
+                + JSON.stringify(result, null, 2));
+            });
+    }
     function chg(){
             if(document.getElementById("change_plan").checked) {
                 myBoolean6 = Boolean(1);
@@ -187,15 +194,15 @@
             var request = new ROSLIB.ServiceRequest({
             config: {
                 bools: [
-                    {name: 'change_plan', value: change_plan.data},
+                    {name: 'Change_Plan', value: change_plan.data},
                    
                 ]
                
             }
     
             });
-        dynaRecClient.callService(request, function(result) {
-        console.log('Result for service call on '
+           dynaRecClient.callService(request, function(result) {
+           console.log('Result for service call on '
             + dynaRecClient.name
             + ': '
             + JSON.stringify(result, null, 2));
