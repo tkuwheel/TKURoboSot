@@ -43,8 +43,8 @@ generate_messages(
 generate_dynamic_reconfigure_options(
 #  cfg/GameState.cfg
   cfg/Robot.cfg
-  cfg/Passing.cfg
-  cfg/Role.cfg
+#  cfg/Passing.cfg
+#  cfg/Role.cfg
 )
 
 catkin_package(

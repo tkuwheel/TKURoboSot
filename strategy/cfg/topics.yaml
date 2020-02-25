@@ -1,7 +1,0 @@
-topics:
-  - topic: "robot2/strategy/state"
-    type: "strategy/msg/RobotState"
-    queue_size: 5
-  - topic: 'robot3/strategy/state'
-    type: "strategy/msg/RobotState"
-    queue_size: 5
