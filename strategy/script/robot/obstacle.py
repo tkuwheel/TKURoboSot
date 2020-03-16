@@ -291,16 +291,16 @@ class Obstacle(object):
             fin_ang = route_filter[i]
             #print(fin_ang)
     if(goal_dis<80):
-        goal_dis = 80
+        goal_dis = 200
     v_x = goal_dis * math.cos(math.radians(fin_ang))
     v_y = goal_dis * math.sin(math.radians(fin_ang))
-    if(goal_dis<200):
+    #if(goal_dis<200):
         # v_x = v_x*0.5 + goal_dis * math.cos(math.radians(goal_ang))*1.5
         # v_y = v_y*0.5 + goal_dis * math.sin(math.radians(goal_ang))*1.5
         #force attack
         #print("force attack")
-        v_x =  goal_dis * math.cos(math.radians(goal_ang))*5
-        v_y =  goal_dis * math.sin(math.radians(goal_ang))*5
+        #v_x =  goal_dis * math.cos(math.radians(goal_ang))*5
+        #v_y =  goal_dis * math.sin(math.radians(goal_ang))*5
     #print("fin_ang", fin_ang)
     return v_x, v_y
   def back(self, goal_dis, goal_ang, obs, back_dis, back_ang):

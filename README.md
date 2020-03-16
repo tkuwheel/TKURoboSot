@@ -47,10 +47,12 @@ $ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
 ```bash
 $ cd <ros1_ws>/src/ros2/ros2_ws
 # Build ros2 message first
+$ source /opt/ros/dashing/setup.bash
 $ colcon build --symlink-install --packages-select strategy
 ```
 ## Build custom ros1_bridge
 ```bash
+# open new terminal
 $ source /opt/ros/dashing/setup.bash
 $ source <ros1_ws>/devel/setup.bash
 $ source <ros2_ws>/install/setup.bash

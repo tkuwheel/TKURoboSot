@@ -1,0 +1,563 @@
+[0.000000] (-) TimerEvent: {}
+[0.000557] (strategy) JobQueued: {'identifier': 'strategy', 'dependencies': OrderedDict()}
+[0.000671] (strategy) JobStarted: {'identifier': 'strategy'}
+[0.012104] (strategy) JobProgress: {'identifier': 'strategy', 'progress': 'cmake'}
+[0.012432] (strategy) Command: {'cmd': ['/usr/bin/cmake', '/home/iclab/kym_fira/src/ros2/ros2_ws/src/strategy', '-DAMENT_CMAKE_SYMLINK_INSTALL=1', '-DCMAKE_INSTALL_PREFIX=/home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy'], 'cwd': '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'iclab'), ('LC_TIME', 'lzh_TW'), ('TEXTDOMAIN', 'im-config'), ('OSPL_INFOFILE', '<stdout>'), ('XDG_SEAT', 'seat0'), ('SSH_AGENT_PID', '1104'), ('XDG_SESSION_TYPE', 'x11'), ('ROS_PACKAGE_PATH', '/home/iclab/kym_fira/src:/opt/ros/melodic/share'), ('LD_LIBRARY_PATH', '/opt/ros/dashing/opt/yaml_cpp_vendor/lib:/opt/ros/dashing/opt/rviz_ogre_vendor/lib:/usr/lib:/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/ros/dashing/lib:/home/iclab/kym_fira/devel/lib:/opt/ros/melodic/lib'), ('ROS_ETC_DIR', '/opt/ros/melodic/etc/ros'), ('SHLVL', '1'), ('OLDPWD', '/home/iclab/kym_fira/src/ros2'), ('OSPL_URI', 'file:///opt/ros/dashing/share/opensplice_cmake_module/config/ros_ospl.xml'), ('QT4_IM_MODULE', 'xim'), ('HOME', '/home/iclab'), ('DESKTOP_SESSION', 'ubuntu'), ('ROBOT_NS', '/robot3'), ('OSPL_VERBOSITY', '2'), ('NDDSHOME', '/opt/rti.com/rti_connext_dds-5.3.1'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('ROS_PYTHON_VERSION', '3'), ('LC_MONETARY', 'lzh_TW'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('OSPL_TMPL_PATH', '/usr/etc/opensplice/idlpp'), ('COLORTERM', 'truecolor'), ('CAMERA_SERIAL', ''), ('IM_CONFIG_PHASE', '2'), ('ROS_DISTRO', 'dashing'), ('LOGNAME', 'iclab'), ('GTK_IM_MODULE', 'ibus'), ('DESKTOP_AUTOSTART_ID', '10a13c15e8dcf49cd4158434327880094100000010090007'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('PKG_CONFIG_PATH', '/home/iclab/kym_fira/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig'), ('USERNAME', 'iclab'), ('XDG_SESSION_ID', '1'), ('TERM', 'xterm-256color'), ('OSPL_ERRORFILE', '<stderr>'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '1'), ('PATH', '/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/rti.com/rti_connext_dds-5.3.1/bin:/opt/ros/dashing/bin:/opt/ros/melodic/bin:/home/iclab/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('SESSION_MANAGER', 'local/iclab-desktop:@/tmp/.ICE-unix/1009,unix/iclab-desktop:/tmp/.ICE-unix/1009'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_TERMINAL_SCREEN', '/org/gnome/Terminal/screen/f060618f_0e0d_4bce_9f27_7d26d13c6896'), ('LC_ADDRESS', 'lzh_TW'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('OSPL_HOME', '/usr'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LC_TELEPHONE', 'lzh_TW'), ('RMW_IMPLEMENTATION', 'rmw_connext_cpp'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('ROS_ROOT', '/opt/ros/melodic/share/ros'), ('XMODIFIERS', '@im=ibus'), ('GNOME_TERMINAL_SERVICE', ':1.132'), ('ROSLISP_PACKAGE_DIRECTORIES', '/home/iclab/kym_fira/devel/share/common-lisp'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('AMENT_PREFIX_PATH', '/opt/ros/dashing'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('LC_NAME', 'lzh_TW'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('ROS_MASTER_URI', 'http://localhost:11311'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'lzh_TW'), ('TEXTDOMAINDIR', '/usr/share/locale/'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('LC_IDENTIFICATION', 'lzh_TW'), ('XDG_VTNR', '1'), ('QT_IM_MODULE', 'ibus'), ('LC_ALL', 'en_US.UTF-8'), ('PWD', '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy'), ('CLUTTER_IM_MODULE', 'xim'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('LC_NUMERIC', 'lzh_TW'), ('PYTHONPATH', '/opt/ros/dashing/lib/python3.6/site-packages:/home/iclab/kym_fira/devel/lib/python2.7/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages'), ('LC_PAPER', 'lzh_TW'), ('VTE_VERSION', '5202'), ('CMAKE_PREFIX_PATH', '/opt/ros/dashing:/home/iclab/kym_fira/devel:/opt/ros/melodic')]), 'shell': False}
+[0.078415] (strategy) StdoutLine: {'line': b'-- The C compiler identification is GNU 7.5.0\n'}
+[0.098603] (-) TimerEvent: {}
+[0.141285] (strategy) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 7.5.0\n'}
+[0.144408] (strategy) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc\n'}
+[0.198712] (-) TimerEvent: {}
+[0.218228] (strategy) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc -- works\n'}
+[0.218876] (strategy) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.293465] (strategy) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.298185] (strategy) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.298758] (-) TimerEvent: {}
+[0.399101] (-) TimerEvent: {}
+[0.499439] (-) TimerEvent: {}
+[0.525439] (strategy) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.527521] (strategy) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++\n'}
+[0.599621] (-) TimerEvent: {}
+[0.612374] (strategy) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ -- works\n'}
+[0.612964] (strategy) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.698007] (strategy) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[0.699626] (-) TimerEvent: {}
+[0.702362] (strategy) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[0.799808] (-) TimerEvent: {}
+[0.900270] (-) TimerEvent: {}
+[1.000666] (-) TimerEvent: {}
+[1.060773] (strategy) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[1.065424] (strategy) StdoutLine: {'line': b'-- Found ament_cmake: 0.7.3 (/opt/ros/dashing/share/ament_cmake/cmake)\n'}
+[1.099201] (strategy) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.6.8", minimum required is "3") \n'}
+[1.099548] (strategy) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[1.100692] (-) TimerEvent: {}
+[1.201033] (-) TimerEvent: {}
+[1.301382] (-) TimerEvent: {}
+[1.308789] (strategy) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[1.330979] (strategy) StdoutLine: {'line': b'-- Found rosidl_default_generators: 0.7.0 (/opt/ros/dashing/share/rosidl_default_generators/cmake)\n'}
+[1.353250] (strategy) StdoutLine: {'line': b'-- Found RTI Connext: /opt/rti.com/rti_connext_dds-5.3.1\n'}
+[1.401515] (-) TimerEvent: {}
+[1.501955] (-) TimerEvent: {}
+[1.602383] (-) TimerEvent: {}
+[1.702747] (-) TimerEvent: {}
+[1.803122] (-) TimerEvent: {}
+[1.903514] (-) TimerEvent: {}
+[2.003886] (-) TimerEvent: {}
+[2.104260] (-) TimerEvent: {}
+[2.204656] (-) TimerEvent: {}
+[2.212029] (strategy) StdoutLine: {'line': b'-- Found rosidl_adapter: 0.7.4 (/opt/ros/dashing/share/rosidl_adapter/cmake)\n'}
+[2.304798] (-) TimerEvent: {}
+[2.323855] (strategy) StdoutLine: {'line': b'-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1") \n'}
+[2.344067] (strategy) StdoutLine: {'line': b'-- Found FastRTPS: /opt/ros/dashing/include  \n'}
+[2.404863] (-) TimerEvent: {}
+[2.406785] (strategy) StdoutLine: {'line': b'-- Found PrismTech OpenSplice: /usr/share/opensplice/cmake\n'}
+[2.436762] (strategy) StdoutLine: {'line': b'-- Found std_msgs: 0.7.0 (/opt/ros/dashing/share/std_msgs/cmake)\n'}
+[2.454618] (strategy) StdoutLine: {'line': b'-- Found geometry_msgs: 0.7.0 (/opt/ros/dashing/share/geometry_msgs/cmake)\n'}
+[2.462163] (strategy) StdoutLine: {'line': b'-- Found rclcpp: 0.7.6 (/opt/ros/dashing/share/rclcpp/cmake)\n'}
+[2.477530] (strategy) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 0.7.2 (/opt/ros/dashing/share/rmw_implementation_cmake/cmake)\n'}
+[2.479662] (strategy) StdoutLine: {'line': b'-- Looking for pthread.h\n'}
+[2.504934] (-) TimerEvent: {}
+[2.561811] (strategy) StdoutLine: {'line': b'-- Looking for pthread.h - found\n'}
+[2.562272] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create\n'}
+[2.605066] (-) TimerEvent: {}
+[2.644432] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create - not found\n'}
+[2.644803] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads\n'}
+[2.705177] (-) TimerEvent: {}
+[2.712305] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create in pthreads - not found\n'}
+[2.712595] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create in pthread\n'}
+[2.789660] (strategy) StdoutLine: {'line': b'-- Looking for pthread_create in pthread - found\n'}
+[2.790803] (strategy) StdoutLine: {'line': b'-- Found Threads: TRUE  \n'}
+[2.805270] (-) TimerEvent: {}
+[2.817265] (strategy) StdoutLine: {'line': b'-- Found rclcpp_lifecycle: 0.7.6 (/opt/ros/dashing/share/rclcpp_lifecycle/cmake)\n'}
+[2.871793] (strategy) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found version "3.6.8") \n'}
+[2.905356] (-) TimerEvent: {}
+[3.005737] (-) TimerEvent: {}
+[3.051329] (strategy) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_connext_c;rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c;rosidl_typesupport_opensplice_c\n'}
+[3.093714] (strategy) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_connext_cpp;rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp;rosidl_typesupport_opensplice_cpp\n'}
+[3.105779] (-) TimerEvent: {}
+[3.206159] (-) TimerEvent: {}
+[3.306535] (-) TimerEvent: {}
+[3.406892] (-) TimerEvent: {}
+[3.507267] (-) TimerEvent: {}
+[3.607603] (-) TimerEvent: {}
+[3.705739] (strategy) StdoutLine: {'line': b'-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.6.8", minimum required is "3.5") \n'}
+[3.707135] (strategy) StdoutLine: {'line': b'-- Found python_cmake_module: 0.7.7 (/opt/ros/dashing/share/python_cmake_module/cmake)\n'}
+[3.707624] (-) TimerEvent: {}
+[3.735687] (strategy) StdoutLine: {'line': b'-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.6m.so (found suitable version "3.6.8", minimum required is "3.5") \n'}
+[3.735931] (strategy) StdoutLine: {'line': b'-- Using PYTHON_EXECUTABLE: /usr/bin/python3\n'}
+[3.736080] (strategy) StdoutLine: {'line': b'-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.6m\n'}
+[3.736223] (strategy) StdoutLine: {'line': b'-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.6m.so\n'}
+[3.763309] (strategy) StdoutLine: {'line': b'-- Found PythonExtra: .so  \n'}
+[3.807795] (-) TimerEvent: {}
+[3.908195] (-) TimerEvent: {}
+[3.980831] (strategy) StdoutLine: {'line': b'-- Configuring done\n'}
+[4.008303] (-) TimerEvent: {}
+[4.108663] (-) TimerEvent: {}
+[4.208999] (-) TimerEvent: {}
+[4.261949] (strategy) StdoutLine: {'line': b'-- Generating done\n'}
+[4.265814] (strategy) StdoutLine: {'line': b'-- Build files have been written to: /home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy\n'}
+[4.272372] (strategy) CommandEnded: {'returncode': 0}
+[4.273412] (strategy) JobProgress: {'identifier': 'strategy', 'progress': 'build'}
+[4.275554] (strategy) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy', '--', '-j4', '-l4'], 'cwd': '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'iclab'), ('LC_TIME', 'lzh_TW'), ('TEXTDOMAIN', 'im-config'), ('OSPL_INFOFILE', '<stdout>'), ('XDG_SEAT', 'seat0'), ('SSH_AGENT_PID', '1104'), ('XDG_SESSION_TYPE', 'x11'), ('ROS_PACKAGE_PATH', '/home/iclab/kym_fira/src:/opt/ros/melodic/share'), ('LD_LIBRARY_PATH', '/opt/ros/dashing/opt/yaml_cpp_vendor/lib:/opt/ros/dashing/opt/rviz_ogre_vendor/lib:/usr/lib:/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/ros/dashing/lib:/home/iclab/kym_fira/devel/lib:/opt/ros/melodic/lib'), ('ROS_ETC_DIR', '/opt/ros/melodic/etc/ros'), ('SHLVL', '1'), ('OLDPWD', '/home/iclab/kym_fira/src/ros2'), ('OSPL_URI', 'file:///opt/ros/dashing/share/opensplice_cmake_module/config/ros_ospl.xml'), ('QT4_IM_MODULE', 'xim'), ('HOME', '/home/iclab'), ('DESKTOP_SESSION', 'ubuntu'), ('ROBOT_NS', '/robot3'), ('OSPL_VERBOSITY', '2'), ('NDDSHOME', '/opt/rti.com/rti_connext_dds-5.3.1'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('ROS_PYTHON_VERSION', '3'), ('LC_MONETARY', 'lzh_TW'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('OSPL_TMPL_PATH', '/usr/etc/opensplice/idlpp'), ('COLORTERM', 'truecolor'), ('CAMERA_SERIAL', ''), ('IM_CONFIG_PHASE', '2'), ('ROS_DISTRO', 'dashing'), ('LOGNAME', 'iclab'), ('GTK_IM_MODULE', 'ibus'), ('DESKTOP_AUTOSTART_ID', '10a13c15e8dcf49cd4158434327880094100000010090007'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('PKG_CONFIG_PATH', '/home/iclab/kym_fira/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig'), ('USERNAME', 'iclab'), ('XDG_SESSION_ID', '1'), ('TERM', 'xterm-256color'), ('OSPL_ERRORFILE', '<stderr>'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '1'), ('PATH', '/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/rti.com/rti_connext_dds-5.3.1/bin:/opt/ros/dashing/bin:/opt/ros/melodic/bin:/home/iclab/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('SESSION_MANAGER', 'local/iclab-desktop:@/tmp/.ICE-unix/1009,unix/iclab-desktop:/tmp/.ICE-unix/1009'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_TERMINAL_SCREEN', '/org/gnome/Terminal/screen/f060618f_0e0d_4bce_9f27_7d26d13c6896'), ('LC_ADDRESS', 'lzh_TW'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('OSPL_HOME', '/usr'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LC_TELEPHONE', 'lzh_TW'), ('RMW_IMPLEMENTATION', 'rmw_connext_cpp'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('ROS_ROOT', '/opt/ros/melodic/share/ros'), ('XMODIFIERS', '@im=ibus'), ('GNOME_TERMINAL_SERVICE', ':1.132'), ('ROSLISP_PACKAGE_DIRECTORIES', '/home/iclab/kym_fira/devel/share/common-lisp'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('AMENT_PREFIX_PATH', '/opt/ros/dashing'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('LC_NAME', 'lzh_TW'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('ROS_MASTER_URI', 'http://localhost:11311'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'lzh_TW'), ('TEXTDOMAINDIR', '/usr/share/locale/'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('LC_IDENTIFICATION', 'lzh_TW'), ('XDG_VTNR', '1'), ('QT_IM_MODULE', 'ibus'), ('LC_ALL', 'en_US.UTF-8'), ('PWD', '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy'), ('CLUTTER_IM_MODULE', 'xim'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('LC_NUMERIC', 'lzh_TW'), ('PYTHONPATH', '/opt/ros/dashing/lib/python3.6/site-packages:/home/iclab/kym_fira/devel/lib/python2.7/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages'), ('LC_PAPER', 'lzh_TW'), ('VTE_VERSION', '5202'), ('CMAKE_PREFIX_PATH', '/opt/ros/dashing:/home/iclab/kym_fira/devel:/opt/ros/melodic')]), 'shell': False}
+[4.309155] (-) TimerEvent: {}
+[4.328135] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__dds_opensplice_idl\x1b[0m\n'}
+[4.328581] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__dds_connext_idl\x1b[0m\n'}
+[4.328863] (strategy) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[4.329091] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__cpp\x1b[0m\n'}
+[4.350871] (strategy) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating DDS interfaces\x1b[0m\n'}
+[4.351238] (strategy) StdoutLine: {'line': b'[  4%] \x1b[34m\x1b[1mGenerating DDS interfaces\x1b[0m\n'}
+[4.360160] (strategy) StdoutLine: {'line': b'[  5%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[4.409260] (-) TimerEvent: {}
+[4.509662] (-) TimerEvent: {}
+[4.610154] (-) TimerEvent: {}
+[4.710685] (-) TimerEvent: {}
+[4.762797] (strategy) StdoutLine: {'line': b'[  5%] Built target strategy__dds_connext_idl\n'}
+[4.810821] (-) TimerEvent: {}
+[4.811778] (strategy) StdoutLine: {'line': b'[  5%] Built target strategy__cpp\n'}
+[4.818612] (strategy) StdoutLine: {'line': b'[  5%] Built target strategy__dds_opensplice_idl\n'}
+[4.826871] (strategy) StdoutLine: {'line': b'[  7%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[4.832063] (strategy) StdoutLine: {'line': b'[  8%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[4.846645] (strategy) StdoutLine: {'line': b"[ 10%] \x1b[34m\x1b[1mGenerating C++ type support for RTI Connext (using '/opt/rti.com/rti_connext_dds-5.3.1/bin/rtiddsgen_server')\x1b[0m\n"}
+[4.895605] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_generator_c\x1b[0m\n'}
+[4.910907] (-) TimerEvent: {}
+[4.925371] (strategy) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_generator_c.dir/rosidl_generator_c/strategy/msg/robot_state__functions.c.o\x1b[0m\n'}
+[4.997804] (strategy) StdoutLine: {'line': b'[ 13%] \x1b[32m\x1b[1mLinking C shared library libstrategy__rosidl_generator_c.so\x1b[0m\n'}
+[5.011016] (-) TimerEvent: {}
+[5.073985] (strategy) StdoutLine: {'line': b'[ 13%] Built target strategy__rosidl_generator_c\n'}
+[5.094296] (strategy) StdoutLine: {'line': b'[ 14%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[5.111121] (-) TimerEvent: {}
+[5.211549] (-) TimerEvent: {}
+[5.281556] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_introspection_cpp\x1b[0m\n'}
+[5.306537] (strategy) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/strategy/msg/robot_state__type_support.cpp.o\x1b[0m\n'}
+[5.307930] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_cpp\x1b[0m\n'}
+[5.311690] (-) TimerEvent: {}
+[5.335649] (strategy) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/strategy/msg/robot_state__type_support.cpp.o\x1b[0m\n'}
+[5.411810] (-) TimerEvent: {}
+[5.512271] (-) TimerEvent: {}
+[5.604061] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_fastrtps_cpp\x1b[0m\n'}
+[5.612420] (-) TimerEvent: {}
+[5.650975] (strategy) StdoutLine: {'line': b'[ 19%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/strategy/msg/dds_fastrtps/robot_state__type_support.cpp.o\x1b[0m\n'}
+[5.683069] (strategy) StdoutLine: {'line': b'[ 20%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[5.712547] (-) TimerEvent: {}
+[5.713765] (strategy) StdoutLine: {'line': b'[ 22%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[5.790025] (strategy) StdoutLine: {'line': b'[ 22%] Built target strategy__rosidl_typesupport_introspection_cpp\n'}
+[5.805777] (strategy) StdoutLine: {'line': b'[ 22%] Built target strategy__rosidl_typesupport_cpp\n'}
+[5.812641] (-) TimerEvent: {}
+[5.820118] (strategy) StdoutLine: {'line': b'[ 23%] \x1b[34m\x1b[1mGenerating C++ type support for PrismTech OpenSplice\x1b[0m\n'}
+[5.820530] (strategy) StdoutLine: {'line': b'[ 25%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[5.912745] (-) TimerEvent: {}
+[6.013306] (-) TimerEvent: {}
+[6.113831] (-) TimerEvent: {}
+[6.214349] (-) TimerEvent: {}
+[6.314873] (-) TimerEvent: {}
+[6.390323] (strategy) StdoutLine: {'line': b'[ 26%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[6.415009] (-) TimerEvent: {}
+[6.442775] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_introspection_c\x1b[0m\n'}
+[6.493788] (strategy) StdoutLine: {'line': b'[ 28%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/strategy/msg/robot_state__type_support.c.o\x1b[0m\n'}
+[6.515148] (-) TimerEvent: {}
+[6.546388] (strategy) StdoutLine: {'line': b'[ 29%] \x1b[32m\x1b[1mLinking C shared library libstrategy__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[6.615245] (-) TimerEvent: {}
+[6.615694] (strategy) StdoutLine: {'line': b'[ 29%] Built target strategy__rosidl_typesupport_fastrtps_cpp\n'}
+[6.628222] (strategy) StdoutLine: {'line': b'[ 29%] Built target strategy__rosidl_typesupport_introspection_c\n'}
+[6.663461] (strategy) StdoutLine: {'line': b'[ 31%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[6.668640] (strategy) StdoutLine: {'line': b'[ 32%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[6.715363] (-) TimerEvent: {}
+[6.796937] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_opensplice_cpp\x1b[0m\n'}
+[6.815502] (-) TimerEvent: {}
+[6.915985] (-) TimerEvent: {}
+[7.012888] (strategy) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_cpp.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.016092] (-) TimerEvent: {}
+[7.116514] (-) TimerEvent: {}
+[7.216951] (-) TimerEvent: {}
+[7.269406] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_fastrtps_c\x1b[0m\n'}
+[7.283992] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_c\x1b[0m\n'}
+[7.313859] (strategy) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_c.dir/rosidl_typesupport_c/strategy/msg/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.318918] (-) TimerEvent: {}
+[7.324758] (strategy) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/strategy/msg/robot_state__type_support_c.cpp.o\x1b[0m\n'}
+[7.419062] (-) TimerEvent: {}
+[7.428318] (strategy) StdoutLine: {'line': b'[ 38%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_c.so\x1b[0m\n'}
+[7.481044] (strategy) StdoutLine: {'line': b'INFO com.rti.ndds.nddsgen.Main Running rtiddsgen version 2.5.2, please wait ...\n'}
+[7.481635] (strategy) StdoutLine: {'line': b'INFO com.rti.ndds.nddsgen.Main Done\n'}
+[7.519138] (-) TimerEvent: {}
+[7.554600] (strategy) StdoutLine: {'line': b'[ 38%] Built target strategy__rosidl_typesupport_c\n'}
+[7.619257] (-) TimerEvent: {}
+[7.653081] (strategy) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_cpp.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_.cpp.o\x1b[0m\n'}
+[7.659741] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_connext_cpp\x1b[0m\n'}
+[7.719390] (-) TimerEvent: {}
+[7.785842] (strategy) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_cpp.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/robot_state__type_support.cpp.o\x1b[0m\n'}
+[7.819513] (-) TimerEvent: {}
+[7.826536] (strategy) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_cpp.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_Dcps.cpp.o\x1b[0m\n'}
+[7.919646] (-) TimerEvent: {}
+[7.926515] (strategy) StdoutLine: {'line': b'[ 44%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[8.019826] (-) TimerEvent: {}
+[8.046368] (strategy) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_cpp.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_Dcps_impl.cpp.o\x1b[0m\n'}
+[8.089564] (strategy) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_cpp.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_SplDcps.cpp.o\x1b[0m\n'}
+[8.101303] (strategy) StdoutLine: {'line': b'[ 47%] Built target strategy__rosidl_typesupport_fastrtps_c\n'}
+[8.117715] (strategy) StdoutLine: {'line': b'[ 49%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_cpp.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_.cxx.o\x1b[0m\n'}
+[8.119872] (-) TimerEvent: {}
+[8.220324] (-) TimerEvent: {}
+[8.320851] (-) TimerEvent: {}
+[8.421313] (-) TimerEvent: {}
+[8.449384] (strategy) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_cpp.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_Plugin.cxx.o\x1b[0m\n'}
+[8.521440] (-) TimerEvent: {}
+[8.621616] (strategy) StdoutLine: {'line': b'[ 52%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_cpp.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_Support.cxx.o\x1b[0m\n'}
+[8.622100] (-) TimerEvent: {}
+[8.642906] (strategy) StdoutLine: {'line': b'[ 53%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_opensplice_cpp.so\x1b[0m\n'}
+[8.722306] (-) TimerEvent: {}
+[8.822786] (-) TimerEvent: {}
+[8.923297] (-) TimerEvent: {}
+[9.024021] (-) TimerEvent: {}
+[9.074743] (strategy) StdoutLine: {'line': b'[ 55%] Built target strategy__rosidl_typesupport_opensplice_cpp\n'}
+[9.090328] (strategy) StdoutLine: {'line': b'[ 56%] \x1b[34m\x1b[1mGenerating C type support for PrismTech OpenSplice\x1b[0m\n'}
+[9.124109] (-) TimerEvent: {}
+[9.224455] (-) TimerEvent: {}
+[9.324815] (-) TimerEvent: {}
+[9.383813] (strategy) StdoutLine: {'line': b'[ 58%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_connext_cpp.so\x1b[0m\n'}
+[9.424959] (-) TimerEvent: {}
+[9.495691] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_opensplice_c\x1b[0m\n'}
+[9.525085] (-) TimerEvent: {}
+[9.557895] (strategy) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_c.dir/rosidl_typesupport_opensplice_c/strategy/msg/dds_opensplice_c/robot_state__type_support_c.cpp.o\x1b[0m\n'}
+[9.558274] (strategy) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_c.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_.cpp.o\x1b[0m\n'}
+[9.560595] (strategy) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_c.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_Dcps.cpp.o\x1b[0m\n'}
+[9.625267] (-) TimerEvent: {}
+[9.725767] (-) TimerEvent: {}
+[9.740546] (strategy) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_c.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_Dcps_impl.cpp.o\x1b[0m\n'}
+[9.825975] (-) TimerEvent: {}
+[9.859099] (strategy) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_opensplice_c.dir/rosidl_typesupport_opensplice_cpp/strategy/msg/dds_opensplice/RobotState_SplDcps.cpp.o\x1b[0m\n'}
+[9.926062] (-) TimerEvent: {}
+[10.029650] (-) TimerEvent: {}
+[10.097212] (strategy) StdoutLine: {'line': b'[ 67%] Built target strategy__rosidl_typesupport_connext_cpp\n'}
+[10.120058] (strategy) StdoutLine: {'line': b'[ 68%] \x1b[34m\x1b[1mGenerating C type support for RTI Connext\x1b[0m\n'}
+[10.129701] (-) TimerEvent: {}
+[10.230155] (-) TimerEvent: {}
+[10.330695] (-) TimerEvent: {}
+[10.386857] (strategy) StdoutLine: {'line': b'[ 70%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_opensplice_c.so\x1b[0m\n'}
+[10.430884] (-) TimerEvent: {}
+[10.476157] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_connext_c\x1b[0m\n'}
+[10.530968] (-) TimerEvent: {}
+[10.551687] (strategy) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_c.dir/rosidl_typesupport_connext_c/strategy/msg/dds_connext/robot_state__type_support_c.cpp.o\x1b[0m\n'}
+[10.552325] (strategy) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_c.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_.cxx.o\x1b[0m\n'}
+[10.553960] (strategy) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_c.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_Plugin.cxx.o\x1b[0m\n'}
+[10.631200] (-) TimerEvent: {}
+[10.731825] (-) TimerEvent: {}
+[10.832344] (-) TimerEvent: {}
+[10.932834] (-) TimerEvent: {}
+[10.951636] (strategy) StdoutLine: {'line': b'[ 77%] Built target strategy__rosidl_typesupport_opensplice_c\n'}
+[10.970351] (strategy) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding CXX object CMakeFiles/strategy__rosidl_typesupport_connext_c.dir/rosidl_typesupport_connext_cpp/strategy/msg/dds_connext/RobotState_Support.cxx.o\x1b[0m\n'}
+[11.032937] (-) TimerEvent: {}
+[11.133411] (-) TimerEvent: {}
+[11.233872] (-) TimerEvent: {}
+[11.334399] (-) TimerEvent: {}
+[11.434809] (-) TimerEvent: {}
+[11.535233] (-) TimerEvent: {}
+[11.550638] (strategy) StdoutLine: {'line': b'[ 80%] \x1b[32m\x1b[1mLinking CXX shared library libstrategy__rosidl_typesupport_connext_c.so\x1b[0m\n'}
+[11.635437] (-) TimerEvent: {}
+[11.736070] (-) TimerEvent: {}
+[11.836690] (-) TimerEvent: {}
+[11.937242] (-) TimerEvent: {}
+[12.037721] (-) TimerEvent: {}
+[12.138226] (-) TimerEvent: {}
+[12.238648] (-) TimerEvent: {}
+[12.333300] (strategy) StdoutLine: {'line': b'[ 83%] Built target strategy__rosidl_typesupport_connext_c\n'}
+[12.338761] (-) TimerEvent: {}
+[12.346805] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy\x1b[0m\n'}
+[12.358972] (strategy) StdoutLine: {'line': b'[ 83%] Built target strategy\n'}
+[12.372229] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__py\x1b[0m\n'}
+[12.388381] (strategy) StdoutLine: {'line': b'[ 85%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[12.438852] (-) TimerEvent: {}
+[12.539182] (-) TimerEvent: {}
+[12.639511] (-) TimerEvent: {}
+[12.739829] (-) TimerEvent: {}
+[12.800209] (strategy) StdoutLine: {'line': b'[ 85%] Built target strategy__py\n'}
+[12.811822] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__python\x1b[0m\n'}
+[12.839970] (-) TimerEvent: {}
+[12.842035] (strategy) StdoutLine: {'line': b'[ 86%] \x1b[32mBuilding C object CMakeFiles/strategy__python.dir/rosidl_generator_py/strategy/msg/_robot_state_s.c.o\x1b[0m\n'}
+[12.921214] (strategy) StdoutLine: {'line': b'[ 88%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/strategy/libstrategy__python.so\x1b[0m\n'}
+[12.940097] (-) TimerEvent: {}
+[12.973684] (strategy) StdoutLine: {'line': b'[ 88%] Built target strategy__python\n'}
+[12.992763] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_fastrtps_c__pyext\x1b[0m\n'}
+[12.995448] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_c__pyext\x1b[0m\n'}
+[12.995977] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_connext_c__pyext\x1b[0m\n'}
+[12.996570] (strategy) StdoutLine: {'line': b'\x1b[35m\x1b[1mScanning dependencies of target strategy__rosidl_typesupport_opensplice_c__pyext\x1b[0m\n'}
+[13.030763] (strategy) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/strategy/_strategy_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[13.034418] (strategy) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_typesupport_connext_c__pyext.dir/rosidl_generator_py/strategy/_strategy_s.ep.rosidl_typesupport_connext_c.c.o\x1b[0m\n'}
+[13.034955] (strategy) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_typesupport_opensplice_c__pyext.dir/rosidl_generator_py/strategy/_strategy_s.ep.rosidl_typesupport_opensplice_c.c.o\x1b[0m\n'}
+[13.035257] (strategy) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/strategy__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/strategy/_strategy_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[13.040231] (-) TimerEvent: {}
+[13.140728] (-) TimerEvent: {}
+[13.143822] (strategy) StdoutLine: {'line': b'[ 95%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/strategy/strategy_s__rosidl_typesupport_fastrtps_c.cpython-36m-x86_64-linux-gnu.so\x1b[0m\n'}
+[13.149768] (strategy) StdoutLine: {'line': b'[ 98%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/strategy/strategy_s__rosidl_typesupport_connext_c.cpython-36m-x86_64-linux-gnu.so\x1b[0m\n'}
+[13.150102] (strategy) StdoutLine: {'line': b'[ 98%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/strategy/strategy_s__rosidl_typesupport_c.cpython-36m-x86_64-linux-gnu.so\x1b[0m\n'}
+[13.174637] (strategy) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/strategy/strategy_s__rosidl_typesupport_opensplice_c.cpython-36m-x86_64-linux-gnu.so\x1b[0m\n'}
+[13.240879] (-) TimerEvent: {}
+[13.248344] (strategy) StdoutLine: {'line': b'[100%] Built target strategy__rosidl_typesupport_c__pyext\n'}
+[13.267165] (strategy) StdoutLine: {'line': b'[100%] Built target strategy__rosidl_typesupport_fastrtps_c__pyext\n'}
+[13.326151] (strategy) StdoutLine: {'line': b'[100%] Built target strategy__rosidl_typesupport_opensplice_c__pyext\n'}
+[13.340989] (-) TimerEvent: {}
+[13.441477] (-) TimerEvent: {}
+[13.541845] (-) TimerEvent: {}
+[13.542175] (strategy) StdoutLine: {'line': b'[100%] Built target strategy__rosidl_typesupport_connext_c__pyext\n'}
+[13.642089] (-) TimerEvent: {}
+[13.742815] (-) TimerEvent: {}
+[13.843552] (-) TimerEvent: {}
+[13.944321] (-) TimerEvent: {}
+[14.045071] (-) TimerEvent: {}
+[14.145736] (-) TimerEvent: {}
+[14.246420] (-) TimerEvent: {}
+[14.347084] (-) TimerEvent: {}
+[14.447713] (-) TimerEvent: {}
+[14.548283] (-) TimerEvent: {}
+[14.648970] (-) TimerEvent: {}
+[14.749628] (-) TimerEvent: {}
+[14.850251] (-) TimerEvent: {}
+[14.950892] (-) TimerEvent: {}
+[15.051744] (-) TimerEvent: {}
+[15.152512] (-) TimerEvent: {}
+[15.253268] (-) TimerEvent: {}
+[15.353921] (-) TimerEvent: {}
+[15.454750] (-) TimerEvent: {}
+[15.555576] (-) TimerEvent: {}
+[15.656380] (-) TimerEvent: {}
+[15.757190] (-) TimerEvent: {}
+[15.857980] (-) TimerEvent: {}
+[15.958670] (-) TimerEvent: {}
+[16.059342] (-) TimerEvent: {}
+[16.160113] (-) TimerEvent: {}
+[16.260924] (-) TimerEvent: {}
+[16.361698] (-) TimerEvent: {}
+[16.462458] (-) TimerEvent: {}
+[16.563162] (-) TimerEvent: {}
+[16.663869] (-) TimerEvent: {}
+[16.764695] (-) TimerEvent: {}
+[16.865506] (-) TimerEvent: {}
+[16.966219] (-) TimerEvent: {}
+[17.066850] (-) TimerEvent: {}
+[17.167431] (-) TimerEvent: {}
+[17.268030] (-) TimerEvent: {}
+[17.368638] (-) TimerEvent: {}
+[17.469260] (-) TimerEvent: {}
+[17.570028] (-) TimerEvent: {}
+[17.670786] (-) TimerEvent: {}
+[17.771459] (-) TimerEvent: {}
+[17.872123] (-) TimerEvent: {}
+[17.972926] (-) TimerEvent: {}
+[18.073682] (-) TimerEvent: {}
+[18.174443] (-) TimerEvent: {}
+[18.275328] (-) TimerEvent: {}
+[18.376042] (-) TimerEvent: {}
+[18.476833] (-) TimerEvent: {}
+[18.577510] (-) TimerEvent: {}
+[18.678083] (-) TimerEvent: {}
+[18.778836] (-) TimerEvent: {}
+[18.879572] (-) TimerEvent: {}
+[18.980328] (-) TimerEvent: {}
+[19.081022] (-) TimerEvent: {}
+[19.181680] (-) TimerEvent: {}
+[19.282322] (-) TimerEvent: {}
+[19.382933] (-) TimerEvent: {}
+[19.483653] (-) TimerEvent: {}
+[19.584341] (-) TimerEvent: {}
+[19.685053] (-) TimerEvent: {}
+[19.785742] (-) TimerEvent: {}
+[19.886331] (-) TimerEvent: {}
+[19.987069] (-) TimerEvent: {}
+[20.087832] (-) TimerEvent: {}
+[20.188658] (-) TimerEvent: {}
+[20.289466] (-) TimerEvent: {}
+[20.390265] (-) TimerEvent: {}
+[20.491064] (-) TimerEvent: {}
+[20.591824] (-) TimerEvent: {}
+[20.692559] (-) TimerEvent: {}
+[20.793381] (-) TimerEvent: {}
+[20.894139] (-) TimerEvent: {}
+[20.994847] (-) TimerEvent: {}
+[21.095523] (-) TimerEvent: {}
+[21.196102] (-) TimerEvent: {}
+[21.296818] (-) TimerEvent: {}
+[21.397578] (-) TimerEvent: {}
+[21.498230] (-) TimerEvent: {}
+[21.598879] (-) TimerEvent: {}
+[21.699603] (-) TimerEvent: {}
+[21.800284] (-) TimerEvent: {}
+[21.900972] (-) TimerEvent: {}
+[22.001726] (-) TimerEvent: {}
+[22.102369] (-) TimerEvent: {}
+[22.202909] (-) TimerEvent: {}
+[22.303521] (-) TimerEvent: {}
+[22.404254] (-) TimerEvent: {}
+[22.505044] (-) TimerEvent: {}
+[22.605859] (-) TimerEvent: {}
+[22.706619] (-) TimerEvent: {}
+[22.807305] (-) TimerEvent: {}
+[22.908078] (-) TimerEvent: {}
+[23.008793] (-) TimerEvent: {}
+[23.109434] (-) TimerEvent: {}
+[23.210167] (-) TimerEvent: {}
+[23.310925] (-) TimerEvent: {}
+[23.411598] (-) TimerEvent: {}
+[23.512179] (-) TimerEvent: {}
+[23.612799] (-) TimerEvent: {}
+[23.713502] (-) TimerEvent: {}
+[23.814420] (-) TimerEvent: {}
+[23.915159] (-) TimerEvent: {}
+[24.015967] (-) TimerEvent: {}
+[24.116756] (-) TimerEvent: {}
+[24.217562] (-) TimerEvent: {}
+[24.318423] (-) TimerEvent: {}
+[24.419144] (-) TimerEvent: {}
+[24.519876] (-) TimerEvent: {}
+[24.620554] (-) TimerEvent: {}
+[24.721123] (-) TimerEvent: {}
+[24.821763] (-) TimerEvent: {}
+[24.922450] (-) TimerEvent: {}
+[25.023161] (-) TimerEvent: {}
+[25.123990] (-) TimerEvent: {}
+[25.224756] (-) TimerEvent: {}
+[25.325456] (-) TimerEvent: {}
+[25.426264] (-) TimerEvent: {}
+[25.526988] (-) TimerEvent: {}
+[25.627648] (-) TimerEvent: {}
+[25.728449] (-) TimerEvent: {}
+[25.829244] (-) TimerEvent: {}
+[25.930003] (-) TimerEvent: {}
+[26.030738] (-) TimerEvent: {}
+[26.131392] (-) TimerEvent: {}
+[26.232075] (-) TimerEvent: {}
+[26.332796] (-) TimerEvent: {}
+[26.433619] (-) TimerEvent: {}
+[26.534449] (-) TimerEvent: {}
+[26.635128] (-) TimerEvent: {}
+[26.735714] (-) TimerEvent: {}
+[26.836457] (-) TimerEvent: {}
+[26.937112] (-) TimerEvent: {}
+[27.037789] (-) TimerEvent: {}
+[27.138310] (-) TimerEvent: {}
+[27.239036] (-) TimerEvent: {}
+[27.339779] (-) TimerEvent: {}
+[27.440463] (-) TimerEvent: {}
+[27.541288] (-) TimerEvent: {}
+[27.642072] (-) TimerEvent: {}
+[27.663912] (strategy) CommandEnded: {'returncode': 0}
+[27.742163] (-) TimerEvent: {}
+[27.743615] (strategy) JobProgress: {'identifier': 'strategy', 'progress': 'install'}
+[27.745569] (strategy) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy', '--target', 'install'], 'cwd': '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy', 'env': OrderedDict([('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'iclab'), ('LC_TIME', 'lzh_TW'), ('TEXTDOMAIN', 'im-config'), ('OSPL_INFOFILE', '<stdout>'), ('XDG_SEAT', 'seat0'), ('SSH_AGENT_PID', '1104'), ('XDG_SESSION_TYPE', 'x11'), ('ROS_PACKAGE_PATH', '/home/iclab/kym_fira/src:/opt/ros/melodic/share'), ('LD_LIBRARY_PATH', '/opt/ros/dashing/opt/yaml_cpp_vendor/lib:/opt/ros/dashing/opt/rviz_ogre_vendor/lib:/usr/lib:/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/ros/dashing/lib:/home/iclab/kym_fira/devel/lib:/opt/ros/melodic/lib'), ('ROS_ETC_DIR', '/opt/ros/melodic/etc/ros'), ('SHLVL', '1'), ('OLDPWD', '/home/iclab/kym_fira/src/ros2'), ('OSPL_URI', 'file:///opt/ros/dashing/share/opensplice_cmake_module/config/ros_ospl.xml'), ('QT4_IM_MODULE', 'xim'), ('HOME', '/home/iclab'), ('DESKTOP_SESSION', 'ubuntu'), ('ROBOT_NS', '/robot3'), ('OSPL_VERBOSITY', '2'), ('NDDSHOME', '/opt/rti.com/rti_connext_dds-5.3.1'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('ROS_PYTHON_VERSION', '3'), ('LC_MONETARY', 'lzh_TW'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('OSPL_TMPL_PATH', '/usr/etc/opensplice/idlpp'), ('COLORTERM', 'truecolor'), ('CAMERA_SERIAL', ''), ('IM_CONFIG_PHASE', '2'), ('ROS_DISTRO', 'dashing'), ('LOGNAME', 'iclab'), ('GTK_IM_MODULE', 'ibus'), ('DESKTOP_AUTOSTART_ID', '10a13c15e8dcf49cd4158434327880094100000010090007'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('PKG_CONFIG_PATH', '/home/iclab/kym_fira/devel/lib/pkgconfig:/opt/ros/melodic/lib/pkgconfig'), ('USERNAME', 'iclab'), ('XDG_SESSION_ID', '1'), ('TERM', 'xterm-256color'), ('OSPL_ERRORFILE', '<stderr>'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('WINDOWPATH', '1'), ('PATH', '/opt/rti.com/rti_connext_dds-5.3.1/lib/x64Linux3gcc5.4.0:/opt/rti.com/rti_connext_dds-5.3.1/bin:/opt/ros/dashing/bin:/opt/ros/melodic/bin:/home/iclab/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin'), ('SESSION_MANAGER', 'local/iclab-desktop:@/tmp/.ICE-unix/1009,unix/iclab-desktop:/tmp/.ICE-unix/1009'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_TERMINAL_SCREEN', '/org/gnome/Terminal/screen/f060618f_0e0d_4bce_9f27_7d26d13c6896'), ('LC_ADDRESS', 'lzh_TW'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('LANG', 'en_US.UTF-8'), ('OSPL_HOME', '/usr'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('LC_TELEPHONE', 'lzh_TW'), ('RMW_IMPLEMENTATION', 'rmw_connext_cpp'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('ROS_ROOT', '/opt/ros/melodic/share/ros'), ('XMODIFIERS', '@im=ibus'), ('GNOME_TERMINAL_SERVICE', ':1.132'), ('ROSLISP_PACKAGE_DIRECTORIES', '/home/iclab/kym_fira/devel/share/common-lisp'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('AMENT_PREFIX_PATH', '/opt/ros/dashing'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('LC_NAME', 'lzh_TW'), ('SHELL', '/bin/bash'), ('QT_ACCESSIBILITY', '1'), ('ROS_MASTER_URI', 'http://localhost:11311'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('LC_MEASUREMENT', 'lzh_TW'), ('TEXTDOMAINDIR', '/usr/share/locale/'), ('GPG_AGENT_INFO', '/run/user/1000/gnupg/S.gpg-agent:0:1'), ('LC_IDENTIFICATION', 'lzh_TW'), ('XDG_VTNR', '1'), ('QT_IM_MODULE', 'ibus'), ('LC_ALL', 'en_US.UTF-8'), ('PWD', '/home/iclab/kym_fira/src/ros2/ros2_ws/build/strategy'), ('CLUTTER_IM_MODULE', 'xim'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share:/usr/share:/var/lib/snapd/desktop'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('LC_NUMERIC', 'lzh_TW'), ('PYTHONPATH', '/opt/ros/dashing/lib/python3.6/site-packages:/home/iclab/kym_fira/devel/lib/python2.7/dist-packages:/opt/ros/melodic/lib/python2.7/dist-packages'), ('LC_PAPER', 'lzh_TW'), ('VTE_VERSION', '5202'), ('CMAKE_PREFIX_PATH', '/opt/ros/dashing:/home/iclab/kym_fira/devel:/opt/ros/melodic')]), 'shell': False}
+[27.808510] (strategy) StdoutLine: {'line': b'[  4%] Built target strategy__rosidl_generator_c\n'}
+[27.836688] (strategy) StdoutLine: {'line': b'[  5%] Built target strategy__cpp\n'}
+[27.842173] (-) TimerEvent: {}
+[27.865816] (strategy) StdoutLine: {'line': b'[ 10%] Built target strategy__rosidl_typesupport_cpp\n'}
+[27.899186] (strategy) StdoutLine: {'line': b'[ 14%] Built target strategy__rosidl_typesupport_introspection_cpp\n'}
+[27.923642] (strategy) StdoutLine: {'line': b'[ 16%] Built target strategy__dds_connext_idl\n'}
+[27.942313] (-) TimerEvent: {}
+[27.962769] (strategy) StdoutLine: {'line': b'[ 26%] Built target strategy__rosidl_typesupport_connext_cpp\n'}
+[28.008815] (strategy) StdoutLine: {'line': b'[ 38%] Built target strategy__rosidl_typesupport_connext_c\n'}
+[28.039132] (strategy) StdoutLine: {'line': b'[ 43%] Built target strategy__rosidl_typesupport_c\n'}
+[28.042415] (-) TimerEvent: {}
+[28.071342] (strategy) StdoutLine: {'line': b'[ 47%] Built target strategy__rosidl_typesupport_fastrtps_cpp\n'}
+[28.105371] (strategy) StdoutLine: {'line': b'[ 52%] Built target strategy__rosidl_typesupport_fastrtps_c\n'}
+[28.129882] (strategy) StdoutLine: {'line': b'[ 53%] Built target strategy__dds_opensplice_idl\n'}
+[28.142533] (-) TimerEvent: {}
+[28.167501] (strategy) StdoutLine: {'line': b'[ 65%] Built target strategy__rosidl_typesupport_opensplice_cpp\n'}
+[28.212927] (strategy) StdoutLine: {'line': b'[ 79%] Built target strategy__rosidl_typesupport_opensplice_c\n'}
+[28.239319] (strategy) StdoutLine: {'line': b'[ 83%] Built target strategy__rosidl_typesupport_introspection_c\n'}
+[28.242650] (-) TimerEvent: {}
+[28.265680] (strategy) StdoutLine: {'line': b'[ 83%] Built target strategy\n'}
+[28.293713] (strategy) StdoutLine: {'line': b'[ 85%] Built target strategy__py\n'}
+[28.321482] (strategy) StdoutLine: {'line': b'[ 88%] Built target strategy__python\n'}
+[28.342756] (-) TimerEvent: {}
+[28.353775] (strategy) StdoutLine: {'line': b'[ 91%] Built target strategy__rosidl_typesupport_connext_c__pyext\n'}
+[28.390300] (strategy) StdoutLine: {'line': b'[ 94%] Built target strategy__rosidl_typesupport_c__pyext\n'}
+[28.422133] (strategy) StdoutLine: {'line': b'[ 97%] Built target strategy__rosidl_typesupport_opensplice_c__pyext\n'}
+[28.442889] (-) TimerEvent: {}
+[28.453961] (strategy) StdoutLine: {'line': b'[100%] Built target strategy__rosidl_typesupport_fastrtps_c__pyext\n'}
+[28.475422] (strategy) StdoutLine: {'line': b'\x1b[36mInstall the project...\x1b[0m\n'}
+[28.486609] (strategy) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[28.487181] (strategy) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[28.487538] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/ament_index/resource_index/rosidl_interfaces/strategy\n'}
+[28.497236] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_c.so\n'}
+[28.507196] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/environment/library_path.sh\n'}
+[28.516650] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_cpp.so\n'}
+[28.526686] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_connext_c.h\n'}
+[28.535935] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_connext_c__visibility_control.h\n'}
+[28.542995] (-) TimerEvent: {}
+[28.545668] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_connext_c.so\n'}
+[28.555417] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state.h\n'}
+[28.564638] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__functions.h\n'}
+[28.574236] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__struct.h\n'}
+[28.587507] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__type_support.h\n'}
+[28.597090] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_generator_c__visibility_control.h\n'}
+[28.606701] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_generator_c.so\n'}
+[28.616498] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/msg/dds_connext/RobotState_.idl\n'}
+[28.626463] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_.cxx\n'}
+[28.635610] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_.h\n'}
+[28.643107] (-) TimerEvent: {}
+[28.644857] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_Plugin.cxx\n'}
+[28.654316] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_Plugin.h\n'}
+[28.663484] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_Support.cxx\n'}
+[28.672823] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_connext/RobotState_Support.h\n'}
+[28.682281] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_connext_cpp.hpp\n'}
+[28.694887] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_connext_cpp__visibility_control.h\n'}
+[28.705543] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_connext_cpp.so\n'}
+[28.715075] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state.hpp\n'}
+[28.724289] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__struct.hpp\n'}
+[28.733543] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__traits.hpp\n'}
+[28.743287] (-) TimerEvent: {}
+[28.743534] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_fastrtps_c.h\n'}
+[28.752700] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[28.762336] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_fastrtps_c.so\n'}
+[28.772100] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[28.785488] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[28.795169] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_fastrtps_cpp.so\n'}
+[28.804867] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_introspection_c.h\n'}
+[28.814862] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[28.825358] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_introspection_c.so\n'}
+[28.835275] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_opensplice_c.h\n'}
+[28.843319] (-) TimerEvent: {}
+[28.844601] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_opensplice_c__visibility_control.h\n'}
+[28.854344] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_opensplice_c.so\n'}
+[28.863902] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/msg/dds_opensplice/RobotState_.idl\n'}
+[28.874170] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_opensplice/RobotState_.h\n'}
+[28.886253] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_opensplice/RobotState_Dcps.h\n'}
+[28.896344] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_opensplice/RobotState_Dcps_impl.h\n'}
+[28.906729] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_opensplice/RobotState_SplDcps.h\n'}
+[28.917115] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/dds_opensplice/ccpp_RobotState_.h\n'}
+[28.926557] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_opensplice_cpp.hpp\n'}
+[28.935811] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/rosidl_typesupport_opensplice_cpp__visibility_control.h\n'}
+[28.943430] (-) TimerEvent: {}
+[28.945317] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_opensplice_cpp.so\n'}
+[28.955044] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/include/strategy/msg/robot_state__rosidl_typesupport_introspection_cpp.hpp\n'}
+[28.964752] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__rosidl_typesupport_introspection_cpp.so\n'}
+[28.974364] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/environment/pythonpath.sh\n'}
+[28.983799] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/__init__.py\n'}
+[28.997075] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/msg/__init__.py\n'}
+[29.006385] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/msg/_robot_state.py\n'}
+[29.016049] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/strategy_s__rosidl_typesupport_c.cpython-36m-x86_64-linux-gnu.so\n'}
+[29.025710] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/strategy_s__rosidl_typesupport_connext_c.cpython-36m-x86_64-linux-gnu.so\n'}
+[29.035247] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/strategy_s__rosidl_typesupport_fastrtps_c.cpython-36m-x86_64-linux-gnu.so\n'}
+[29.043545] (-) TimerEvent: {}
+[29.044717] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/strategy_s__rosidl_typesupport_opensplice_c.cpython-36m-x86_64-linux-gnu.so\n'}
+[29.054193] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/libstrategy__python.so\n'}
+[29.064058] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/msg/RobotState.idl\n'}
+[29.075657] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/msg/RobotState.msg\n'}
+[29.088902] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/my_mapping_rules.yaml\n'}
+[29.099859] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/ament_index/resource_index/package_run_dependencies/strategy\n'}
+[29.110790] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/ament_index/resource_index/parent_prefix_path/strategy\n'}
+[29.120073] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/environment/ament_prefix_path.sh\n'}
+[29.129600] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/environment/path.sh\n'}
+[29.139007] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/local_setup.bash\n'}
+[29.143653] (-) TimerEvent: {}
+[29.148514] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/local_setup.sh\n'}
+[29.157924] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/local_setup.zsh\n'}
+[29.167394] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/ament_index/resource_index/packages/strategy\n'}
+[29.177208] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/rosidl_cmake-extras.cmake\n'}
+[29.188573] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[29.198061] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[29.207545] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[29.217040] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[29.226315] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/strategyConfig.cmake\n'}
+[29.235521] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/cmake/strategyConfig-version.cmake\n'}
+[29.243778] (-) TimerEvent: {}
+[29.244975] (strategy) StdoutLine: {'line': b'-- Symlinking: /home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/share/strategy/package.xml\n'}
+[29.285472] (strategy) StdoutLine: {'line': b"Compiling '/home/iclab/kym_fira/src/ros2/ros2_ws/install/strategy/lib/python3.6/site-packages/strategy/__init__.py'...\n"}
+[29.299140] (strategy) CommandEnded: {'returncode': 0}
+[29.317092] (strategy) JobEnded: {'identifier': 'strategy', 'rc': 0}
+[29.318025] (-) EventReactorShutdown: {}
