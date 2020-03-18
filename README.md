@@ -43,6 +43,19 @@ $ catkin_make
 $ sudo cp <path to motion>/rule/* /etc/udev/rules.d/
 ```
 
+## Admit ros1 topic to connect ros2
+```bash
+# edit topics.yaml
+# note : you have to compiler ros1 msgs 
+topics:
+  - topic: "robot2/strategy/state"
+    type: "strategy/msg/RobotState"
+    queue_size: 5
+  - topic: 'robot3/strategy/state'
+    type: "strategy/msg/RobotState"
+    queue_size: 5
+```
+
 ## Compiling ROS2
 ```bash
 $ cd <ros1_ws>/src/ros2/ros2_ws
@@ -89,8 +102,10 @@ $ rqt
 ```
 
 ```bash
+# admit ros1 topic in topics.yaml
+# rosparam load topics.yaml in core.launch 
 $ source <ros2_ws>/install/setup.bash
-$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+$ ros2 run ros1_bridge parameter_bridge
 ```
 
 # Troubleshooting
