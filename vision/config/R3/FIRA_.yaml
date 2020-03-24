@@ -1,0 +1,75 @@
+Camera:
+  Focal: 13.971313932573906
+  High: 650.0
+Center:
+  Camera_high: 620
+  Center_X: 328
+  Center_Y: 255
+  Front: 90
+  Horizon: 188
+  Inner: 54
+  Outer: 280
+  X: 308
+  Y: 266
+FPS: 16
+HSV:
+  Ball:
+  - 0
+  - 26
+  - 30
+  - 100
+  - 18
+  - 100
+  Blue:
+  - 224
+  - 261
+  - 68
+  - 100
+  - 40
+  - 99
+  Green:
+  - 150
+  - 213
+  - 51
+  - 96
+  - 17
+  - 98
+  White:
+  - 197
+  - 168
+  - 0
+  - 79
+  - 0
+  - 23
+  Yellow:
+  - 39
+  - 79
+  - 10
+  - 100
+  - 56
+  - 100
+  black:
+    angle: 1
+    gray: 37
+  white:
+    angle: 3
+    gray: 193
+Parameterbutton: 4
+SCAN:
+  Angle_Near_Gap: 4
+  Angle_range_1: 2
+  Angle_range_2_3: 2
+  Dont_Search_Angle_1: 33
+  Dont_Search_Angle_2: 153
+  Dont_Search_Angle_3: 265
+  Magn_Far_End: 224
+  Magn_Far_Start: 154
+  Magn_Middle_Start: 50
+  Magn_Near_Gap: 3
+  Magn_Near_Start: 44
+blackItem:
+  angle: 3
+  gray: 40
+whiteline:
+  angle: 4
+  gray: 100

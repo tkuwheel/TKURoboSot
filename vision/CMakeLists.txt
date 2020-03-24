@@ -152,9 +152,6 @@ foreach(
     white_line
     black_item
     localization_white_line
-    tracking
-    passing_monitor
-    passing_interface
     obstacle
 )
 add_subdirectory(${subdir})

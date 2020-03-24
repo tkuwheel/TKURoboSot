@@ -7,7 +7,7 @@ NodeHandle::NodeHandle()
 
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     //whiteframe_pub = nh.advertise<sensor_msgs::Image>("/camera/white", 1);
-    whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("/vision/WhiteRealDis", 1);
+    whitedis_pub = nh.advertise<std_msgs::Int32MultiArray>("vision/WhiteRealDis", 1);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
 }
 void NodeHandle::AngleLUT()

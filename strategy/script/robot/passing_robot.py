@@ -126,7 +126,7 @@ class Robot(object):
 
     rospy.Subscriber(VISION_TOPIC, PassingObject, self._GetVision)
     rospy.Subscriber(POSITION_TOPIC, PoseWithCovarianceStamped, self._GetPosition)
-    rospy.Subscriber('BlackRealDis', Int32MultiArray, self._GetBlackItemInfo)
+    rospy.Subscriber('vision/BlackRealDis', Int32MultiArray, self._GetBlackItemInfo)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
