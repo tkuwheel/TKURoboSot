@@ -8,3 +8,4 @@ CATKIN_IGNORE
 backup/
 build/
 install/
+log/

@@ -2,8 +2,8 @@
 <launch> 
 <group ns="$(env ROBOT_NS)">
   <include file="$(find pointgrey_camera_driver)/launch/camera.launch" />
-  <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-  <node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>
+  <!--include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" /-->
+  <!--node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/-->
   <node name="Attack_motion" pkg="motion" type="fira7"/>
   <include file="$(find strategy)/launch/vision.launch" />
   <include file="$(find strategy)/launch/localization.launch" />

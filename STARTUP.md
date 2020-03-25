@@ -28,3 +28,25 @@ $ roslaunch strategy core.launch
 $ . src/ros2/ros2_ws/install/setup.bash
 $ ros2 run ros1_bridge parameter_bridge
 ```
+
+# SIMULATOR  
+  - install topic_tools  
+    ```
+    sudo apt-get install ros-topic-tools-srvs
+    ```
+  - start  
+    ```bash
+    # Gazebo Simulator
+    $ roslaunch nubot_gazebo game_ready.launch
+
+    # Strategy w/ simulation mode
+    $ roslaunch strategy core.launch sim:=true
+
+    # Launch robot devices
+    $ roslaunch strategy main_7th_all.launch
+
+    # GUI
+    # using plugin of dynamic_reconfigure
+    $ rqt
+    ```
+

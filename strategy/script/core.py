@@ -289,7 +289,7 @@ class Strategy(object):
     while not rospy.is_shutdown():
       self.robot.PubCurrentState()
       self.robot.Supervisor()
-
+      print(self.robot.MyRole())
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
       mode = self.robot.strategy_mode
