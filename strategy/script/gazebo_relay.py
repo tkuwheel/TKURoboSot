@@ -10,6 +10,7 @@ from nubot_common.srv import BallHandle
 from transfer.msg import PPoint
 from vision.msg import Object
 from std_msgs.msg import Int32
+from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseWithCovarianceStamped
 
@@ -25,7 +26,7 @@ YELLOW_GOAL = {'x': -300, 'y': 0}
 handle_pub = rospy.Publisher('BallIsHandle', Bool, queue_size=1)
 vision_pub = rospy.Publisher('vision/object', Object, queue_size=1)
 location_pub = rospy.Publisher('akf_pose', PoseWithCovarianceStamped, queue_size=1) 
-
+mcl_std_pub = rospy.Publisher('mcl/std', Float32, queue_size=1)
 def OmniVisionCallback(data):
     rx = data.robotinfo[1 -1].pos.x
     ry = data.robotinfo[1 -1].pos.y
@@ -39,6 +40,7 @@ def OmniVisionCallback(data):
     q.pose.pose.orientation.z = qn[2]
     q.pose.pose.orientation.w = qn[3]
     location_pub.publish(q)
+    mcl_std_pub.publish(0.0)
 
     m = Object()
     m.ball_dis = data.ballinfo.real_pos.radius

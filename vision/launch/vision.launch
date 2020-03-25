@@ -7,6 +7,7 @@
   <!--node name="web_video_server" pkg="web_video_server" type="web_video_server"/-->
 
   <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="false" respawn_delay="5" output="screen">
+    <arg name="trigger_mode" value="streaming" />
     <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml"/>
   </node>
 <!--

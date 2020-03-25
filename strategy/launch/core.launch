@@ -2,6 +2,7 @@
 <launch>
 <arg name="sim" default="false" />
 <group if="$(arg sim)">
+  <include ns="$(env ROBOT_NS)" file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
   <!-- Rotate -90 degrees from tku robot to sim robot -->
   <node name="mapping" pkg="topic_tools" type="transform"
         args="$(env ROBOT_NS)/motion/cmd_vel /nubot1/nubotcontrol/velcmd nubot_common/VelCmd

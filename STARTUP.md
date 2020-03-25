@@ -42,9 +42,6 @@ $ ros2 run ros1_bridge parameter_bridge
     # Strategy w/ simulation mode
     $ roslaunch strategy core.launch sim:=true
 
-    # Launch robot devices
-    $ roslaunch strategy main_7th_all.launch
-
     # GUI
     # using plugin of dynamic_reconfigure
     $ rqt

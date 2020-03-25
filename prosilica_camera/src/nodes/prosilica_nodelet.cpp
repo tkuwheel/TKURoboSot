@@ -734,7 +734,7 @@ private:
         }
         else
         {
-            NODELET_ERROR("Invalid trigger mode '%s' in reconfigure request", config.trigger_mode.c_str());
+            // NODELET_ERROR("Invalid trigger mode '%s' in reconfigure request", config.trigger_mode.c_str());
         }
 
         if(config.trig_timestamp_topic != last_config_.trig_timestamp_topic)

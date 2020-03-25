@@ -3,11 +3,6 @@
   <!--for web ui controller-->
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
   <node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server"/>
-  
-  <!--camera-->
-  <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node" respawn="false" respawn_delay="5" output="screen">
-    <rosparam command="load" file="$(find vision)/config/prosilica_driver.yaml"/>
-  </node>
 
   <!--image processing-->
   <rosparam command="load" file="$(find vision)/config/FIRA.yaml" ns="FIRA"/>
