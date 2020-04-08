@@ -271,6 +271,7 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       return self.r3_role
     else:
+      return self.r1_role
       print("Wrong Namespace")
       return "Wrong Namespace"
 
@@ -282,6 +283,7 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       self.r3_role = role
     else:
+      self.r1_role = role
       print("Wrong Namespace")
 
 

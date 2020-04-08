@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <launch>
 <arg name="sim" default="false" />
 <group if="$(arg sim)">

@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<launch>
+
+  <group ns="robot2">
+
+    <node  name="gazebo_rival2" pkg="strategy" type="gazebo_rival2.py" output="screen" />
+    <node name="core" pkg="strategy" type="core.py"  args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping2" pkg="topic_tools" type="transform"
+          args="/robot2/motion/cmd_vel /rival2/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+    <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
+  </group>
+
+</launch>

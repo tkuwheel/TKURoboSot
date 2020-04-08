@@ -4,10 +4,10 @@ Camera:
 Center:
   Camera_high: 620
   Center_X: 328
-  Center_Y: 255
+  Center_Y: 252
   Front: 90
   Horizon: 188
-  Inner: 54
+  Inner: 57
   Outer: 280
   X: 308
   Y: 266

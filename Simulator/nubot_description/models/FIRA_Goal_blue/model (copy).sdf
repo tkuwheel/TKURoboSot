@@ -1,0 +1,251 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="FIRA_Goal">
+    <static>true</static>
+
+    <link name="left_post">
+      <!-- <pose>-0.0625 1.0625 0.5 0 0 0</pose> -->
+      <pose>-0.078125 0.796875 0.375 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.125 0.125 1.0</size></box> -->
+          <box><size>0.09375 0.09375 0.75</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.125 0.125 1.0</size></box> -->
+          <box><size>0.09375 0.09375 0.75</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+
+    <link name="right_post">
+      <!-- <pose>-0.0625 -1.0625 0.5 0 0 0</pose> -->
+      <pose>-0.078125 -0.796875 0.375 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.125 0.125 1.0</size></box> -->
+          <box><size>0.09375 0.09375 0.75</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.125 0.125 1.0</size></box> -->
+          <box><size>0.09375 0.09375 0.75</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <link name="crossbar">
+      <!-- <pose>-0.0625 0 1.0625 0 0 0</pose> -->
+      <pose>-0.078125 0 0.796875 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.125 2.25 0.125</size></box> -->
+          <box><size>0.09375 1.6875 0.09375</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.125 2.25 0.125</size></box> -->
+          <box><size>0.09375 1.6875 0.09375</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <link name="left_support_horiz_lower">
+      <!-- <pose>0.25 1.0625 0.2 0 0 0</pose> -->
+      <pose>0.15625 0.796875 0.15 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.5 0.125 0.4</size></box> -->
+          <box><size>0.375 0.09375 0.3</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.5 0.125 0.4</size></box> -->
+          <box><size>0.375 0.09375 0.3</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <link name="right_support_horiz_lower">
+      <!-- <pose>0.25 -1.0625 0.2 0 0 0</pose> -->
+      <pose>0.15625 -0.796875 0.15 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.5 0.125 0.4</size></box> -->
+          <box><size>0.375 0.09375 0.3</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.5 0.125 0.4</size></box> -->
+          <box><size>0.375 0.09375 0.3</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+        <link name="center_support_horiz_lower">
+      <!-- <pose>0.55 0 0.2 0 0 0</pose> -->
+      <pose>0.309375 0 0.15 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.10 2.25 0.4</size></box> -->
+          <box><size>0.075 1.6875 0.3</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+        <!-- <box><size>0.10 2.25 0.4</size></box> -->
+        <box><size>0.075 1.6875 0.3</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/White</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+    <link name="center_net">
+      <!-- <pose>0.5 0 0.7625 0 0 0</pose> -->
+      <pose>0.271875 0 0.561875 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <!-- <box><size>0.01 2.125 0.725</size></box> -->
+          <box><size>0.01 1.59375 0.54375</size></box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <!-- <box><size>0.01 2.125 0.725</size></box> -->
+          <box><size>0.01 1.59375 0.54375</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://materials/scripts/</uri>
+            <uri>file://materials/textures/</uri>
+            <name>RoboCup/Net</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <link name="left_net">
+     <!-- <pose>0.25 1.0625 0.7625 0 0 0</pose> -->
+      <pose>0.08125 0.796875 0.561875 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <!-- <size>0.5 0.01 0.725</size> -->
+            <size>0.375 0.01 0.54375</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <!-- <size>0.5 0.01 0.725</size> -->
+            <size>0.375 0.01 0.54375</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://materials/scripts/</uri>
+            <uri>file://materials/textures/</uri>
+            <name>RoboCup/Net</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <link name="right_net">
+      <!-- <pose>0.25 -1.0625 0.7625 0 0 0</pose> -->
+      <pose>0.08125 -0.796875 0.561875 0 0 0</pose>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <!-- <size>0.5 0.01 0.725</size> -->
+            <size>0.375 0.01 0.54375</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <!-- <size>0.5 0.01 0.725</size> -->
+            <size>0.375 0.01 0.54375</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://materials/scripts/</uri>
+            <uri>file://materials/textures/</uri>
+            <name>RoboCup/Net</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <link name='upper_net'>
+      <!-- <pose>0.25 0 1.125 0 0 0</pose> -->
+      <pose>0.08125 0 0.83375 0 0 0</pose>
+      <collision name='collision'>
+        <geometry>
+          <!-- <box><size>0.5 2.125 0.01</size></box> -->
+          <box><size>0.375 1.59375 0.01</size></box>
+        </geometry>
+        <max_contacts>10</max_contacts>
+      </collision>
+      <visual name='visual'>
+        <geometry>
+          <!-- <box><size>0.5 2.125 0.01</size></box> -->
+          <box><size>0.375 1.59375 0.01</size></box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://materials/scripts/</uri>
+            <uri>file://materials/textures/</uri>
+            <name>RoboCup/Net</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    
+  </model>
+</sdf>

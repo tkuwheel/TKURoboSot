@@ -20,7 +20,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>
@@ -64,7 +64,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>
@@ -101,7 +101,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>
@@ -138,7 +138,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>
@@ -175,7 +175,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>
@@ -212,7 +212,7 @@
         <material>
           <script>
             <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/White</name>
+            <name>Gazebo/Yellow</name>
           </script>
         </material>
       </visual>

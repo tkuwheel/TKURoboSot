@@ -132,7 +132,7 @@
 <!-- RoboCup 2015 MSL Goal right -->
     <include>
         <pose>3.13 0 0.01 0 0 0 </pose>
-        <uri>model://FIRA_Goal</uri>
+        <uri>model://FIRA_Goal_blue</uri>
         <name>right_goal</name>
         <static>true</static>
     </include>

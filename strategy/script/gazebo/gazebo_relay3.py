@@ -13,11 +13,12 @@ from std_msgs.msg import Int32
 from std_msgs.msg import Float32
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from imu_3d.msg import inertia
 
 ## Simulator Topics or Services
-NUBOT_OMNI_VISION = "/nubot1/omnivision/OmniVisionInfo"
-NUBOT_SHOOT_SRV   = "/nubot1/Shoot"
-NUBOT_HANDLE_SRV  = "/nubot1/BallHandle"
+NUBOT_OMNI_VISION = "/nubot3/omnivision/OmniVisionInfo"
+NUBOT_SHOOT_SRV   = "/nubot3/Shoot"
+NUBOT_HANDLE_SRV  = "/nubot3/BallHandle"
 
 ROBOT_NUM = 1
 BLUE_GOAL = {'x': 300, 'y': 0}
@@ -27,10 +28,12 @@ handle_pub = rospy.Publisher('BallIsHandle', Bool, queue_size=1)
 vision_pub = rospy.Publisher('vision/object', Object, queue_size=1)
 location_pub = rospy.Publisher('akf_pose', PoseWithCovarianceStamped, queue_size=1) 
 mcl_std_pub = rospy.Publisher('mcl/std', Float32, queue_size=1)
+imu_pub = rospy.Publisher('imu_3d', inertia, queue_size=1)
+
 def OmniVisionCallback(data):
-    rx = data.robotinfo[1 -1].pos.x
-    ry = data.robotinfo[1 -1].pos.y
-    ra = data.robotinfo[1 -1].heading.theta
+    rx = data.robotinfo[3 -1].pos.x
+    ry = data.robotinfo[3 -1].pos.y
+    ra = data.robotinfo[3 -1].heading.theta
     q = PoseWithCovarianceStamped()
     q.pose.pose.position.x = rx * 0.01
     q.pose.pose.position.y = ry * 0.01
@@ -40,7 +43,17 @@ def OmniVisionCallback(data):
     q.pose.pose.orientation.z = qn[2]
     q.pose.pose.orientation.w = qn[3]
     location_pub.publish(q)
-    mcl_std_pub.publish(0.0)
+    mcl_std_pub.publish(5.0)
+    #-------imu-----
+    qx = qn[0]
+    qy = qn[1]
+    qz = qn[2]
+    qw = qn[3]
+    w = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)
+    imu_msg = inertia()
+    imu_msg.yaw=-w+1.57
+    imu_pub.publish(imu_msg)
+    #---------------
 
     m = Object()
     m.ball_dis = data.ballinfo.real_pos.radius

@@ -39,7 +39,7 @@ $ ros2 run ros1_bridge parameter_bridge
     # Gazebo Simulator
     $ roslaunch nubot_gazebo game_ready.launch
 
-    # Strategy w/ simulation mode
+    # Strategy simulation mode
     $ roslaunch strategy core.launch sim:=true
 
     # GUI
