@@ -325,6 +325,7 @@ class Robot(object):
 
   def _GetObstaclesInfo(self,obs_info):
     self.__obstacle_info['detect_obstacles'] = obs_info.data
+    # self.near_robot.__robot_info['location']['x']
     #======================
     #__opp_is_handled = False
     #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}

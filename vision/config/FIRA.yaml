@@ -6,7 +6,7 @@ Center:
   Center_X: 328
   Center_Y: 252
   Front: 90
-  Horizon: 188
+  Horizon: 163
   Inner: 57
   Outer: 280
   X: 308
@@ -59,9 +59,9 @@ SCAN:
   Angle_Near_Gap: 4
   Angle_range_1: 2
   Angle_range_2_3: 2
-  Dont_Search_Angle_1: 33
+  Dont_Search_Angle_1: 32
   Dont_Search_Angle_2: 153
-  Dont_Search_Angle_3: 265
+  Dont_Search_Angle_3: 267
   Magn_Far_End: 224
   Magn_Far_Start: 154
   Magn_Middle_Start: 50

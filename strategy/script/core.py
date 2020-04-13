@@ -418,7 +418,7 @@ class Strategy(object):
         self.robot.toDefense()
       else:
         if self.robot.is_defense:
-          self.robot.toIdle()
+          self.robot.toDefense()
         if not self.robot.is_idle and not self.robot.game_start:
           self.robot.toIdle()
         if self.robot.is_idle:          
@@ -438,12 +438,17 @@ class Strategy(object):
             elif self.robot.run_point == "empty_hand":
               self.RunStatePoint()
             else :
-              print('idle to chase')
-              self.ToChase()
+              if(self.robot.MyRole()=="Supporter"):
+                self.robot.toDefense()
+              else:
+                print('idle to chase')
+                self.ToChase()
 
         if self.robot.is_chase:
+          if(self.robot.MyRole()=="Supporter"):
+            self.robot.toDefense()
           #log(self.robot.dest_angle)
-          if self.robot.CheckBallHandle():
+          elif self.robot.CheckBallHandle():
             print('chase to move')
             self.ToMovement()
           else:

@@ -1,5 +1,6 @@
 #include "obstacle.h"
-
+#define TO_RAD M_PI/180.0
+#define TO_DEG 180.0/M_PI
 Vision::Vision()
 {
     //image_sub = nh.subscribe(VISION_TOPIC, 1,static_cast<void (Vision::*)(const sensor_msgs::ImageConstPtr&)>(&Vision::imageCb),this);
@@ -171,8 +172,8 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
     int x_, y_;
     int object_size;
     int dis, ang;
-    //int search_end = HorizonMsg;
-    int search_end = Magn_Far_StartMsg;
+    int search_end = HorizonMsg;
+    //int search_end = Magn_Far_StartMsg;
     for (int distance = InnerMsg; distance <= search_end; distance += Magn_Near_GapMsg)
     {
         for (int angle = 0; angle < 360; angle += Angle_Interval(distance))
@@ -224,9 +225,12 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
 
             find_point.clear();
 
-            if(FIND_Item.size>10 && abs(FIND_Item.ang_max-FIND_Item.ang_min)<90)
+            double ang_tmp = abs(FIND_Item.ang_max-FIND_Item.ang_min)/2;
+            double obj_width = 2*Omni_distance(FIND_Item.dis_min)*sin(ang_tmp*TO_RAD)/cos(ang_tmp*TO_RAD);
+            if(FIND_Item.size>10 && obj_width<80 && FIND_Item)
             //if (!(FIND_Item.size < 100 && FIND_Item.distance < 50))
             {
+                
                 obj_item.push_back(FIND_Item);
             }
         }
@@ -299,8 +303,8 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
     int x_, y_;
     int dis_f, ang_f;
     double angle_f;
-    //int search_end = HorizonMsg;
-    int search_end = Magn_Far_StartMsg;
+    int search_end = HorizonMsg;
+    //int search_end = Magn_Far_StartMsg;
     for (int i = -1; i < 2; i++)
     {
         for (int j = -1; j < 2; j++)
