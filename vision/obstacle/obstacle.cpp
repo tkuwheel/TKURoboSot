@@ -227,7 +227,7 @@ cv::Mat Vision::Black_Item(const cv::Mat iframe)
 
             double ang_tmp = abs(FIND_Item.ang_max-FIND_Item.ang_min)/2;
             double obj_width = 2*Omni_distance(FIND_Item.dis_min)*sin(ang_tmp*TO_RAD)/cos(ang_tmp*TO_RAD);
-            if(FIND_Item.size>10 && obj_width<80 && FIND_Item)
+            if(FIND_Item.size>10 && obj_width<80)
             //if (!(FIND_Item.size < 100 && FIND_Item.distance < 50))
             {
                 

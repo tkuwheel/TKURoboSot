@@ -149,14 +149,15 @@ class Obstacle(object):
     obs_filter = []
     r_x = self.near_robot['position']['x']
     r_y = self.near_robot['position']['y']
+    # print(r_x, r_y)
     for i in range (0,len(obs), 4):
         distance = obs[i+0]
         angle    = obs[i+1]+robot["location"]["yaw"]
         o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
         dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
-        #print(o_x, o_y)
-        if(abs(o_y)<200 and dis<50):
+        # print(o_x, o_y)
+        if(abs(o_y)<200 and dis>50):
             obs_filter.append(obs[i+0])
             obs_filter.append(obs[i+1])
             obs_filter.append(obs[i+2])
@@ -187,6 +188,7 @@ class Obstacle(object):
     #============判斷球門路線有無阻擋=================
     cross_flag = True
     route_angle = goal_ang
+    
     for i in range (0, len(obs), 4):
         
         dis = obs[i+0]
@@ -207,9 +209,15 @@ class Obstacle(object):
         route_filter.append(route_angle)
     #=============================================
     #find all possible angles
+    
+    distance_filter = 150
     for i in range (0,len(obs), 4):
+        
         max_rotate_ang = 80
         distance = obs[i+0]
+
+        if(distance>distance_filter):
+            continue
         right_ang = obs[i+2]
         min_ang = abs(right_ang-goal_ang) if(abs(right_ang-goal_ang)<abs(360-abs(right_ang-goal_ang))) else abs(360-abs(right_ang-goal_ang))
         if(min_ang<ang_threshold):
@@ -257,8 +265,8 @@ class Obstacle(object):
                 min_ang = right_min_ang if(right_min_ang<left_min_ang) else left_min_ang
                 hypotenuse = dis/math.cos(math.radians(min_ang))
                 obs_min_dis = hypotenuse*math.sin(math.radians(min_ang))
-                if(min_ang>90):
-                    obs_min_dis = 999
+                # if(min_ang>90):
+                #     obs_min_dis = 999
                 #若碰撞 計算兩障礙物間距是否可以通過
                 if(obs_min_dis<robot_radius*0.8 or (route_angle < right_ang and route_angle > left_ang)):
                     right_min_ang = abs(right_ang-route_obs_left_ang) if(abs(right_ang-route_obs_left_ang)<abs(360-abs(right_ang-route_obs_left_ang))) else abs(360-abs(right_ang-route_obs_left_ang))

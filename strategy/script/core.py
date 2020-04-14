@@ -242,6 +242,7 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     ourside = self.our_side
     l = self.GetObstacleInfo()
+    arrived = False
     #log('move')
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
@@ -276,7 +277,7 @@ class Core(Robot, StateMachine):
                                 Core.back_dis,\
                                 Core.back_ang)
       self.MotionCtrl(x, y, yaw)
-
+    return arrived
   def on_toPoint(self):
     t = self.GetObjectInfo()
     our_side = self.our_side
@@ -388,7 +389,9 @@ class Strategy(object):
       #log("movement")
       self.robot.toMovement("At_Post_up")
     elif mode == "At_Orbit":
-      self.robot.toMovement("Orbit")
+      arrived = self.robot.toMovement("Orbit")
+      if(arrived):
+        self.ToAttack()
     elif mode == "Defense_ball":
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":

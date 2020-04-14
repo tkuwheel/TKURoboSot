@@ -3,7 +3,7 @@
 ```bash
 #-------compiling ros1---------
 $ source /opt/ros/melodic/setup.bash
-$ touch src/ros2 CATKIN_IGNORE
+$ touch src/ros2/CATKIN_IGNORE
 $ catkin_make
 #-------compiling ros2---------
 $ cd src/ros2/ros2_ws
