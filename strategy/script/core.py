@@ -179,9 +179,11 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.AC.Post_up2(t[side]['dis'],\
                                    t[side]['ang'])
     elif method == "Orbit":
-      x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
-      if(arrived):
-        x, y, yaw = self.AC.Escape(t[side]['dis'],\
+      # x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
+      # if(arrived):
+      #   x, y, yaw = self.AC.Escape(t[side]['dis'],\
+      #                              t[side]['ang'])
+      x, y, yaw = self.AC.Escape(t[side]['dis'],\
                                    t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
        

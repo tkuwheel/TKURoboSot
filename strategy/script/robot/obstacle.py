@@ -1,9 +1,11 @@
 #-*- coding: UTF-8 -*-  
 from __future__ import print_function
+from robot import Robot
+
 import rospy
 import math
 import numpy as np
-
+import time
 
 class Obstacle(object): 
   def state(self, ranges):
@@ -147,6 +149,12 @@ class Obstacle(object):
 #======================Avoid Strategy===================
   def obstacle_fileter(self, obs, robot):
     obs_filter = []
+    info_time = Robot.sync_last_time
+    now = time.time()
+    dt = abs(info_time-now)
+    # print(Robot.sync_last_time)
+    # print("now", time.time())
+    # print("dt", dt)
     r_x = self.near_robot['position']['x']
     r_y = self.near_robot['position']['y']
     # print(r_x, r_y)
@@ -156,6 +164,9 @@ class Obstacle(object):
         o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
         dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
+        #未接到隊友資訊
+        if(dt>5):
+            dis = 999
         # print(o_x, o_y)
         if(abs(o_y)<200 and dis>50):
             obs_filter.append(obs[i+0])
