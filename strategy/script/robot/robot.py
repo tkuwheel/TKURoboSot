@@ -446,6 +446,8 @@ class Robot(object):
     m.state = state
     m.ball_is_handled = self.__ball_is_handled
     m.ball_dis = self.__object_info['ball']['dis']
+    m.ball_ang = self.__object_info['ball']['ang']
+    m.obstacles = self.__obstacle_info['detect_obstacles']
     m.position.linear.x  = self.__robot_info['location']['x']
     m.position.linear.y  = self.__robot_info['location']['y']
     m.position.angular.z = self.__robot_info['location']['yaw']

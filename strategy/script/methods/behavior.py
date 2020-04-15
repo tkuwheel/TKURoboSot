@@ -152,7 +152,7 @@ class Behavior(Robot,Obstacle):
       defence_x = 0
     if (abs(defence_y) < stable_distance):
       defence_y = 0
-    print(defence_x, defence_y)
+    # print(defence_x, defence_y)
     defence_yaw = ball_ang
 
     return defence_x , defence_y , defence_yaw
