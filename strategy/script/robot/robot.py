@@ -271,6 +271,7 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       return self.r3_role
     else:
+      return self.r1_role
       print("Wrong Namespace")
       return "Wrong Namespace"
 
@@ -282,6 +283,7 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       self.r3_role = role
     else:
+      self.r1_role = role
       print("Wrong Namespace")
 
 
@@ -323,6 +325,7 @@ class Robot(object):
 
   def _GetObstaclesInfo(self,obs_info):
     self.__obstacle_info['detect_obstacles'] = obs_info.data
+    # self.near_robot.__robot_info['location']['x']
     #======================
     #__opp_is_handled = False
     #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}

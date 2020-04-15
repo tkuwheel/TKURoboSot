@@ -147,13 +147,16 @@ class Obstacle(object):
 #======================Avoid Strategy===================
   def obstacle_fileter(self, obs, robot):
     obs_filter = []
+    r_x = self.near_robot['position']['x']
+    r_y = self.near_robot['position']['y']
     for i in range (0,len(obs), 4):
         distance = obs[i+0]
         angle    = obs[i+1]+robot["location"]["yaw"]
         o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
+        dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
         #print(o_x, o_y)
-        if(abs(o_y)<200):
+        if(abs(o_y)<200 and dis<50):
             obs_filter.append(obs[i+0])
             obs_filter.append(obs[i+1])
             obs_filter.append(obs[i+2])

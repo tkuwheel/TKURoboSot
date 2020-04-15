@@ -198,7 +198,3 @@ class Behavior(Robot,Obstacle):
     v_x, v_y, v_yaw = self.back(goal_dis, goal_ang, obs_filter, back_dis, back_ang)
     return v_x, v_y, v_yaw
   
-    
-
-
-  

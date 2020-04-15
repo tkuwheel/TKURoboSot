@@ -2,13 +2,14 @@
 <launch>
 <arg name="sim" default="false" />
 <group if="$(arg sim)">
+  <include ns="$(env ROBOT_NS)" file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
   <!-- Rotate -90 degrees from tku robot to sim robot -->
   <node name="mapping" pkg="topic_tools" type="transform"
         args="$(env ROBOT_NS)/motion/cmd_vel /nubot1/nubotcontrol/velcmd nubot_common/VelCmd
               'nubot_common.msg.VelCmd(
                Vx=m.linear.y,
                Vy=m.linear.x * -1,
-                w=m.angular.z)' --import nubot_common" />
+                w=m.angular.z * 0.3)' --import nubot_common" />
   <node ns="$(env ROBOT_NS)" name="gazebo_relay" pkg="strategy" type="gazebo_relay.py" output="screen" />
 </group>
 <group ns="$(env ROBOT_NS)">

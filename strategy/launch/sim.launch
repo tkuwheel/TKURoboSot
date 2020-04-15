@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<launch>
+  <group ns="robot1">
+    <node  name="gazebo_relay1" pkg="strategy" type="gazebo_relay1.py" output="screen" />
+    <node name="blocker" pkg="strategy" type="blocker.py" args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping1" pkg="topic_tools" type="transform"
+          args="/robot1/motion/cmd_vel /nubot1/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+  </group>
+  <group ns="robot2">
+    <node  name="gazebo_relay2" pkg="strategy" type="gazebo_relay2.py" output="screen" />
+    <node name="core" pkg="strategy" type="core.py"  args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping2" pkg="topic_tools" type="transform"
+          args="/robot2/motion/cmd_vel /nubot2/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+    <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
+  </group>
+  <group ns="robot3">
+    <node  name="gazebo_relay3" pkg="strategy" type="gazebo_relay3.py" output="screen" />
+    <node name="core" pkg="strategy" type="core.py"  args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping3" pkg="topic_tools" type="transform"
+          args="/robot3/motion/cmd_vel /nubot3/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+    <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
+  </group>
+  <group ns="robot4">
+    <node  name="gazebo_rival1" pkg="strategy" type="gazebo_rival1.py" output="screen" />
+    <node name="blocker" pkg="strategy" type="blocker.py" args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping4" pkg="topic_tools" type="transform"
+          args="/robot4/motion/cmd_vel /rival1/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+  </group>
+  <group ns="robot5">
+    <node  name="gazebo_rival2" pkg="strategy" type="gazebo_rival2.py" output="screen" />
+    <node name="core" pkg="strategy" type="core.py"  args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping5" pkg="topic_tools" type="transform"
+          args="/robot5/motion/cmd_vel /rival2/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+    <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
+  </group>
+  <group ns="robot6">
+    <node  name="gazebo_rival3" pkg="strategy" type="gazebo_rival3.py" output="screen" />
+    <node name="core" pkg="strategy" type="core.py"  args="true" output="screen" />
+    <!-- Rotate -90 degrees from tku robot to sim robot -->
+    <node name="mapping6" pkg="topic_tools" type="transform"
+          args="/robot6/motion/cmd_vel /rival3/nubotcontrol/velcmd nubot_common/VelCmd
+                'nubot_common.msg.VelCmd(
+                 Vx=m.linear.y,
+                 Vy=m.linear.x * -1,
+                  w=m.angular.z * 0.3)' --import nubot_common" />
+    <rosparam command="load" file="$(find strategy)/cfg/topics.yaml" />
+  </group>
+
+</launch>
