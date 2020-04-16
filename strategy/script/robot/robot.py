@@ -50,7 +50,8 @@ class Robot(object):
 
   __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
                    'imu_3d' : {'yaw' : 0}}
-  __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
+  __object_info = {'update_time' : 0,
+                   'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
                            'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
                    'Blue':{'dis' : 0, 'ang' : 0},
                    'Yellow':{'dis' : 0, 'ang' : 0},
@@ -71,10 +72,10 @@ class Robot(object):
   __opp_is_blocked = False
   #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}
   #======================
-  robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
-  robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
-  robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
-  near_robot = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  near_robot = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   near_robot_ns = ""
   r1_role = ""
   r2_role = ""
@@ -191,11 +192,15 @@ class Robot(object):
     Robot.sync_last_time = time.time()
     self.robot2['ball_is_handled'] = r2_data.ball_is_handled
     self.robot2['ball_dis']        = r2_data.ball_dis
+    self.robot2['ball_ang']        = r2_data.ball_ang
+    self.robot2['obstacles']       = r2_data.obstacles
     self.robot2['position']['x']   = r2_data.position.linear.x
     self.robot2['position']['y']   = r2_data.position.linear.y
     self.robot2['position']['yaw'] = r2_data.position.angular.z
     self.robot3['ball_is_handled'] = r3_data.ball_is_handled
     self.robot3['ball_dis']        = r3_data.ball_dis
+    self.robot3['ball_ang']        = r3_data.ball_ang
+    self.robot3['obstacles']       = r3_data.obstacles
     self.robot3['position']['x']   = r3_data.position.linear.x
     self.robot3['position']['y']   = r3_data.position.linear.y
     self.robot3['position']['yaw'] = r3_data.position.angular.z
@@ -212,8 +217,24 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       self.near_robot_ns = "/robot2"
       self.near_robot = self.robot2
-
+    #--------------
+    
+   
   def Supervisor(self):
+    if(self.__object_info['ball']['ang']==999 and self.near_robot['ball_ang']<999 and self.near_robot['ball_dis']<999):
+      rbx = self.near_robot['ball_dis'] * math.cos(math.radians(self.near_robot['ball_ang']))
+      rby = self.near_robot['ball_dis'] * math.sin(math.radians(self.near_robot['ball_ang']))
+      rrbx, rrby = self.Rotate(rbx, rby, self.near_robot['position']['yaw'])
+      gbx = rrbx + self.near_robot['position']['x']-150
+      gby = rrby + self.near_robot['position']['y']
+      b_dis = math.hypot(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
+      ang_tmp = math.atan2(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
+      b_ang = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
+      # print("b_dis", int(b_dis) , self.__object_info['ball']['dis'])
+      # print("b_ang",int(b_ang) , self.__object_info['ball']['ang'])
+      self.__object_info['ball']['dis'] = b_dis
+      self.__object_info['ball']['ang'] = b_ang
+
     duration = time.time() - Robot.sync_last_time
     if duration > 5:
       #print("Lossing Connection with teammates...{}".format(duration), end='\r')
@@ -291,6 +312,7 @@ class Robot(object):
     return rospy.Publisher(topic, mtype, queue_size=1)
 
   def _GetVision(self, vision):
+    self.__object_info['update_time'] = time.time()
     rbx = vision.ball_dis * math.cos(math.radians(vision.ball_ang))
     rby = vision.ball_dis * math.sin(math.radians(vision.ball_ang))
     rrbx, rrby = self.Rotate(rbx, rby, self.__robot_info['location']['yaw'])
@@ -317,7 +339,7 @@ class Robot(object):
     self.__object_info['Blue']['ang']    = vision.blue_fix_ang
     self.__object_info['Yellow']['dis']  = vision.yellow_fix_dis
     self.__object_info['Yellow']['ang']  = vision.yellow_fix_ang
-
+    
     if self.__object_info['ball']['dis'] <= self.__handle_dis and abs(self.__object_info['ball']['ang']) <= self.__handle_ang:
       self.__ball_is_handled = True
     else:
@@ -451,6 +473,9 @@ class Robot(object):
     m.position.linear.x  = self.__robot_info['location']['x']
     m.position.linear.y  = self.__robot_info['location']['y']
     m.position.angular.z = self.__robot_info['location']['yaw']
+    if(abs(self.__object_info['update_time']-time.time())>1):
+      m.ball_dis = 999
+      m.ball_ang = 999
     self.state_pub.publish(m)
 
   def ConvertSpeedToPWM(self, x, y):
