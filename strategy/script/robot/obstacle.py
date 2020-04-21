@@ -147,7 +147,7 @@ class Obstacle(object):
     return  v_x ,v_y,v_yaw
 
 #======================Avoid Strategy===================
-  def obstacle_fileter(self, obs, robot):
+  def obstacle_fileter(self, obs, robot, near_robot=None):
     obs_filter = []
     info_time = Robot.sync_last_time
     now = time.time()
@@ -155,8 +155,12 @@ class Obstacle(object):
     # print(Robot.sync_last_time)
     # print("now", time.time())
     # print("dt", dt)
-    r_x = self.near_robot['position']['x']
-    r_y = self.near_robot['position']['y']
+    r_x = 999
+    r_y = 999
+    if(near_robot is not None):
+        r_x = near_robot['position']['x']
+        r_y = near_robot['position']['y']
+        
     # print(r_x, r_y)
     for i in range (0,len(obs), 4):
         distance = obs[i+0]

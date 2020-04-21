@@ -64,7 +64,8 @@ class Attack(Robot,Obstacle):
       v_yaw = 0
     else:
       #print("YES OBSTACLE!!!!")
-      obs_filter = self.obstacle_fileter(obs, robot_info)
+      near_robot = self.GetState("near_robot")
+      obs_filter = self.obstacle_fileter(obs, robot_info, near_robot)
       v_yaw = 0.7*self.obstacle_roate(obs_filter, robot_info)
       v_x, v_y = self.obstacle_escape(goal_dis, goal_ang, obs_filter, robot_info)
 
@@ -84,7 +85,8 @@ class Attack(Robot,Obstacle):
       v_yaw = goal_ang
     else:
       #print("YES OBSTACLE!!!!")
-      obs_filter = self.obstacle_fileter(obs, robot_info)
+      near_robot = self.GetState("near_robot")
+      obs_filter = self.obstacle_fileter(obs, robot_info, near_robot)
       v_yaw = goal_ang
       v_x, v_y = self.obstacle_escape(goal_dis, goal_ang, obs_filter, robot_info)
       

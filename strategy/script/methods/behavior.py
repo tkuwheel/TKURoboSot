@@ -195,7 +195,8 @@ class Behavior(Robot,Obstacle):
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
-    obs_filter = self.obstacle_fileter(obs, robot_info)
+    near_robot = self.GetState("near_robot")
+    obs_filter = self.obstacle_fileter(obs, robot_info, near_robot)
     v_x, v_y, v_yaw = self.back(goal_dis, goal_ang, obs_filter, back_dis, back_ang)
     return v_x, v_y, v_yaw
   
