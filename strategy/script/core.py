@@ -86,7 +86,7 @@ class Core(Robot, StateMachine):
     self.goal_dis = 0
     for i in range(0, 10):
         self.MotionCtrl(0,0,0)
-    log("To Idle1")
+    log("To Idle")
 
   def on_toChase(self, method = "Classic"):
     t = self.GetObjectInfo()
@@ -179,9 +179,11 @@ class Core(Robot, StateMachine):
       x, y, yaw = self.AC.Post_up2(t[side]['dis'],\
                                    t[side]['ang'])
     elif method == "Orbit":
-      x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
-      if(arrived):
-        x, y, yaw = self.AC.Escape(t[side]['dis'],\
+      # x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
+      # if(arrived):
+      #   x, y, yaw = self.AC.Escape(t[side]['dis'],\
+      #                              t[side]['ang'])
+      x, y, yaw = self.AC.Escape(t[side]['dis'],\
                                    t[side]['ang'])
       self.MotionCtrl(x, y, yaw, True)
        
@@ -234,7 +236,14 @@ class Core(Robot, StateMachine):
         else:
           self.MotionCtrl(x, y, yaw)
       #===========================
-
+    else:#TODO: support teammate
+      #Relative_ball
+      ourside = self.our_side
+      x, y, yaw = self.BC.relative_ball(t[ourside]['dis'],\
+                                        t[ourside]['ang'],\
+                                        t['ball']['dis'],\
+                                        t['ball']['ang'])
+      self.MotionCtrl(x, y, yaw)
 
   def on_toMovement(self, method):
     t = self.GetObjectInfo() 
@@ -242,6 +251,7 @@ class Core(Robot, StateMachine):
     side = self.opp_side
     ourside = self.our_side
     l = self.GetObstacleInfo()
+    arrived = False
     #log('move')
     if method == "Orbit":
       x, y, yaw, arrived = self.BC.Orbit(t[side]['ang'])
@@ -276,7 +286,7 @@ class Core(Robot, StateMachine):
                                 Core.back_dis,\
                                 Core.back_ang)
       self.MotionCtrl(x, y, yaw)
-
+    return arrived
   def on_toPoint(self):
     t = self.GetObjectInfo()
     our_side = self.our_side
@@ -388,7 +398,9 @@ class Strategy(object):
       #log("movement")
       self.robot.toMovement("At_Post_up")
     elif mode == "At_Orbit":
-      self.robot.toMovement("Orbit")
+      arrived = self.robot.toMovement("Orbit")
+      if(arrived):
+        self.ToAttack()
     elif mode == "Defense_ball":
       self.robot.toMovement("Relative_ball")
     elif mode == "Defense_goal":

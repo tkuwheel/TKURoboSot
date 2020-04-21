@@ -18,7 +18,8 @@ class Behavior(Robot,Obstacle):
     self.penalty_angle = []
 
   def Orbit(self, goal_ang, REMAINING_RANGE_YAW = 5):
-    orbit_radius = 33.5 # 22.5 + 11 cm
+    #orbit_radius = 33.5 # 22.5 + 11 cm
+    orbit_radius = 15
     velocity = goal_ang
     # velocity = velocity if abs(velocity) < 45 else 45 # maximum speed
     w = (velocity / orbit_radius)
@@ -151,7 +152,7 @@ class Behavior(Robot,Obstacle):
       defence_x = 0
     if (abs(defence_y) < stable_distance):
       defence_y = 0
-    print(defence_x, defence_y)
+    # print(defence_x, defence_y)
     defence_yaw = ball_ang
 
     return defence_x , defence_y , defence_yaw
