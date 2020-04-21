@@ -247,6 +247,7 @@ class Robot(object):
       r_x = self.near_robot['position']['x']
       r_y = self.near_robot['position']['y']
       # print("r_x, r_y", r_x, r_y)
+      #=============
       if(self.__object_info['ball']['ang']==999 and self.near_robot['ball_ang']<999 and self.near_robot['ball_dis']<999):
         # r_x = self.near_robot['position']['x']
         # r_y = self.near_robot['position']['y']
@@ -261,9 +262,13 @@ class Robot(object):
         b_ang = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
         # print("b_dis", int(b_dis) , self.__object_info['ball']['dis'])
         # print("b_ang",int(b_ang) , self.__object_info['ball']['ang'])
+        if(b_ang>180):
+          b_ang=b_ang-360
+        elif(b_ang<(-180)):
+          b_ang=b_ang+360
         self.__object_info['ball']['dis'] = b_dis
         self.__object_info['ball']['ang'] = b_ang
-        
+      #=============
       if self.MyRole() is "Catcher" or self.MyRole is "Passer":
         if self.robot2['ball_is_handled']:
           self.r2_role = "Attacker"
@@ -390,6 +395,7 @@ class Robot(object):
     r_x = self.near_robot['position']['x']
     r_y = self.near_robot['position']['y']
     r_yaw = self.near_robot['position']['yaw']
+
     for i in range (0,len(obs), 4):
       distance = obs[i+0]
       angle    = obs[i+1]+self.__robot_info["location"]["yaw"]
@@ -403,9 +409,13 @@ class Robot(object):
       # print(o_x, o_y)
       ang_tmp = math.atan2(r_y - self.__robot_info['location']['y'], r_x - self.__robot_info['location']['x'])
       r_angle = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
+      if(r_angle<(-180)):
+          r_angle=r_angle+360
+      elif(r_angle>180):
+          r_angle=r_angle-360
       abs_yaw = abs(r_angle-obs[i+1])
- 
-      if(abs(o_y)<200 and abs_yaw>10):
+
+      if(abs(o_y)<200 and abs_yaw>50):
           obs_filter.append(obs[i+0])
           obs_filter.append(obs[i+1])
           obs_filter.append(obs[i+2])
@@ -413,6 +423,7 @@ class Robot(object):
     #=====================================
     opp_handled_ang = 10
     opp_handled_dis = 40
+
     for i in range (0,len(obs_filter), 4):
       dis = obs_filter[i+0]
       ang = obs_filter[i+1]

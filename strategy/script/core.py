@@ -243,7 +243,7 @@ class Core(Robot, StateMachine):
           self.MotionCtrl(x, y, yaw)
         #===========================
     else:#TODO: support teammate
-      print("t['ball']['ang']", t['ball']['ang'])
+      # print("t['ball']['ang']", t['ball']['ang'])
       #Relative_ball
       ourside = self.our_side
       if(self.near_robot['ball_is_handled']):

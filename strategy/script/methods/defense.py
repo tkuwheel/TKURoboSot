@@ -39,8 +39,8 @@ class Defense(Robot,Obstacle):
 
     block_flag = False
     for i in range (0, len(obs_filter), 4):
-        dis = obs[i+0]
-        ang = obs[i+1]
+        dis = obs_filter[i+0]
+        ang = obs_filter[i+1]
 
         rox = dis * math.cos(math.radians(ang))
         roy = dis * math.sin(math.radians(ang))
@@ -99,6 +99,7 @@ class Defense(Robot,Obstacle):
     min_dis = 999
     min_dis_count = 0
     for i in range (0, len(dis_tmp), 1):
+      # print("dis_tmp[i]", dis_tmp[i])
       if(min_dis>dis_tmp[i]):
         min_dis = dis_tmp[i]
         min_dis_count = i
@@ -108,13 +109,14 @@ class Defense(Robot,Obstacle):
     elif(min_dis_count==1):
       self_pos = "down"
       teammate_pos = "up"
-    elif(min_dis_count==3):
+    elif(min_dis_count==2):
       teammate_pos = "up"
       self_pos = "down"
-    elif(min_dis_count==4):
+    elif(min_dis_count==3):
       teammate_pos = "down"
       self_pos = "up"
-
+    # print("min_dis_count", min_dis_count)
+    # print("self_pos", self_pos)
     if(self_pos=="down"):
       p_x = 150*tmp
       p_y = back_y_dis*(-1)
