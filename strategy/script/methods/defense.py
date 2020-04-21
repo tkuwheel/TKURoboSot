@@ -66,7 +66,7 @@ class Defense(Robot,Obstacle):
                   obs_ang = ang
                   block_flag = True
     return block_flag, obs_dis, obs_ang
-  def ClassicDefense(self, goal_dis, goal_ang, our_side): #back to our side
+  def ClassicDefense(self, goal_dis, goal_ang, our_side, near_robot=None): #back to our side
     robot_info = self.GetRobotInfo()
 
     tmp = 0
@@ -82,13 +82,19 @@ class Defense(Robot,Obstacle):
     p_y = 0
     p_yaw = 0
     #========back to defense====
-    if(robot_info['location']['y']<0):  
-      p_x = 200*tmp
-      p_y = -50
+    r_x=999
+    r_y=999
+    if(near_robot is not None):
+      r_x = near_robot['position']['x']
+      r_y = near_robot['position']['y']
+    print(r_x, r_y)
+    if(math.hypot(robot_info['location']['x'] - 150, robot_info['location']['y'] - (-100))<math.hypot(r_x - 150, r_y - (-50))):
+      p_x = 150*tmp
+      p_y = -100
       p_yaw = 0+yaw
     else:
-      p_x = 200*tmp
-      p_y =  50
+      p_x = 150*tmp
+      p_y =  100
       p_yaw = 0+yaw
     
     return p_x, p_y, p_yaw

@@ -160,7 +160,7 @@ class Obstacle(object):
     if(near_robot is not None):
         r_x = near_robot['position']['x']
         r_y = near_robot['position']['y']
-        
+        r_yaw = near_robot['position']['yaw']
     # print(r_x, r_y)
     for i in range (0,len(obs), 4):
         distance = obs[i+0]
@@ -171,8 +171,10 @@ class Obstacle(object):
         #未接到隊友資訊
         if(dt>5):
             dis = 999
+        # print("dis", dis)
         # print(o_x, o_y)
-        if(abs(o_y)<200 and dis>50):
+        abs_yaw = abs(robot["location"]["yaw"]-angle)
+        if(abs(o_y)<200 and abs_yaw>10):
             obs_filter.append(obs[i+0])
             obs_filter.append(obs[i+1])
             obs_filter.append(obs[i+2])
