@@ -387,13 +387,22 @@ class Robot(object):
     obs_filter = []
     obs = self.__obstacle_info['detect_obstacles']
     #============obs_filter===============
+    r_x = self.near_robot['position']['x']
+    r_y = self.near_robot['position']['y']
+    r_yaw = self.near_robot['position']['yaw']
     for i in range (0,len(obs), 4):
       distance = obs[i+0]
-      angle    = obs[i+1]+self.__robot_info['location']['yaw']
+      angle    = obs[i+1]+self.__robot_info["location"]["yaw"]
       o_x      = self.__robot_info["location"]["x"] + distance * math.cos(math.radians(angle))
       o_y      = self.__robot_info["location"]["y"] + distance * math.sin(math.radians(angle))
-      #print(o_x, o_y)
-      if(abs(o_y)<200):
+      dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
+      #未接到隊友資訊
+      # if(dt>5):
+      #     dis = 999
+      # print("dis", dis)
+      # print(o_x, o_y)
+      abs_yaw = abs(self.__robot_info["location"]["yaw"]-angle)
+      if(abs(o_y)<200 and abs_yaw>10):
           obs_filter.append(obs[i+0])
           obs_filter.append(obs[i+1])
           obs_filter.append(obs[i+2])

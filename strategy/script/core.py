@@ -227,7 +227,8 @@ class Core(Robot, StateMachine):
         #========back to defense====
         p_x, p_y, p_yaw = self.DC.ClassicDefense(t[our_side]['dis'],\
                                                  t[our_side]['ang'],\
-                                                 our_side)
+                                                 our_side,\
+                                                 self.near_robot)
         x, y, yaw, arrived = self.BC.Go2Point(p_x, p_y, p_yaw)
         if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) <20 and abs(robot['location']['yaw']-p_yaw)<20):
           x=0
@@ -241,10 +242,46 @@ class Core(Robot, StateMachine):
     else:#TODO: support teammate
       #Relative_ball
       ourside = self.our_side
-      x, y, yaw = self.BC.relative_ball(t[ourside]['dis'],\
-                                        t[ourside]['ang'],\
-                                        t['ball']['dis'],\
-                                        t['ball']['ang'])
+      if(self.near_robot['ball_is_handled']):
+        x, y, yaw = self.BC.relative_ball(t[ourside]['dis'],\
+                                          t[ourside]['ang'],\
+                                          t['ball']['dis'],\
+                                          t['ball']['ang'])
+      else:
+        #print("block")
+        dis = 0
+        ang = 0
+        #========more catch ball====
+        if(t['ball']['ang']<999):
+          dis = t['ball']['dis']
+          ang = t['ball']['ang']
+        else:
+          dis = opp_info['dis']
+          ang = opp_info['ang']
+        #========more defense=======
+        # dis = opp_info['dis']
+        # ang = opp_info['ang']
+        x, y, yaw = self.CC.ClassicRounding(t[opp_side]['ang'],\
+                                            dis,\
+                                            ang)
+        if(our_side=="Yellow"):
+          yaw = 0
+        elif(our_side=="Blue"):
+          yaw = 180
+
+        v_yaw = yaw - robot['location']['yaw']
+        if abs(v_yaw - 360) < abs(v_yaw):
+          yaw = v_yaw - 360
+        elif abs(v_yaw + 360) < abs(v_yaw):
+          yaw = v_yaw + 360
+        else:
+          yaw = v_yaw
+        #======full speed block====
+        if(dis<60 and abs(ang)>10):
+          y=y*10
+        if(x<0):
+          x=x*10
+        #==========================
       self.MotionCtrl(x, y, yaw)
 
   def on_toMovement(self, method):

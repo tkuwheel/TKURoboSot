@@ -173,7 +173,9 @@ class Obstacle(object):
         # print("r_x, r_y", r_x, r_y)
         if(dt>5):
             dis = 999
-        print("dis", dis)
+
+        # print("dis", dis)
+
         # print(o_x, o_y)
         abs_yaw = abs(robot["location"]["yaw"]-angle)
         if(abs(o_y)<200 and abs_yaw>10):
