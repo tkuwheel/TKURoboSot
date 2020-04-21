@@ -25,6 +25,7 @@ from sensor_msgs.msg import JointState
 from strategy.msg import RobotState
 from std_srvs.srv import *
 
+import copy
 ## Rotate 90 for 6th robot
 ## DO NOT CHANGE THIS VALUE
 ROTATE_V_ANG = 90
@@ -76,6 +77,7 @@ class Robot(object):
   robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   near_robot = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'ball_ang':0, 'obstacles':[], 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  
   near_robot_ns = ""
   r1_role = ""
   r2_role = ""
@@ -213,15 +215,37 @@ class Robot(object):
       self.near_robot = self.robot2 if dd12 < dd13 else self.robot3
     elif "robot2" in rospy.get_namespace():
       self.near_robot_ns = "/robot3"
-      self.near_robot = self.robot3
+      # self.near_robot = self.robot3
+
+      self.near_robot['ball_is_handled'] = r3_data.ball_is_handled
+      self.near_robot['ball_dis']        = r3_data.ball_dis
+      self.near_robot['ball_ang']        = r3_data.ball_ang
+      self.near_robot['obstacles']       = r3_data.obstacles
+      self.near_robot['position']['x']   = r3_data.position.linear.x
+      self.near_robot['position']['y']   = r3_data.position.linear.y
+      self.near_robot['position']['yaw'] = r3_data.position.angular.z
     elif "robot3" in rospy.get_namespace():
       self.near_robot_ns = "/robot2"
-      self.near_robot = self.robot2
+      # self.near_robot = self.robot2
+
+      self.near_robot['ball_is_handled'] = r2_data.ball_is_handled
+      self.near_robot['ball_dis']        = r2_data.ball_dis
+      self.near_robot['ball_ang']        = r2_data.ball_ang
+      self.near_robot['obstacles']       = r2_data.obstacles
+      self.near_robot['position']['x']   = r2_data.position.linear.x
+      self.near_robot['position']['y']   = r2_data.position.linear.y
+      self.near_robot['position']['yaw'] = r2_data.position.angular.z
     #--------------
     
    
   def Supervisor(self):
+    r_x = self.near_robot['position']['x']
+    r_y = self.near_robot['position']['y']
+    # print("r_x, r_y", r_x, r_y)
     if(self.__object_info['ball']['ang']==999 and self.near_robot['ball_ang']<999 and self.near_robot['ball_dis']<999):
+      # r_x = self.near_robot['position']['x']
+      # r_y = self.near_robot['position']['y']
+      # print("r_x, r_y", r_x, r_y)
       rbx = self.near_robot['ball_dis'] * math.cos(math.radians(self.near_robot['ball_ang']))
       rby = self.near_robot['ball_dis'] * math.sin(math.radians(self.near_robot['ball_ang']))
       rrbx, rrby = self.Rotate(rbx, rby, self.near_robot['position']['yaw'])

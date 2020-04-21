@@ -18,7 +18,9 @@ class Defense(Robot,Obstacle):
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
-    obs_filter = self.obstacle_fileter(obs, robot_info)
+    # obs_filter = self.obstacle_fileter(obs, robot_info)
+    near_robot = self.GetState("near_robot")
+    obs_filter = self.obstacle_fileter(obs, robot_info, near_robot)
 
     tmp = 0
     yaw = 0
