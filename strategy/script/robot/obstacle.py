@@ -169,11 +169,15 @@ class Obstacle(object):
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
         dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
         #未接到隊友資訊
+        ang_tmp = math.atan2(r_y - robot['location']['y'], r_x - robot['location']['x'])
+        r_angle = math.degrees(ang_tmp)-robot['location']['yaw']
+        abs_yaw = abs(r_angle-obs[i+1])
         if(dt>5):
             dis = 999
+            abs_yaw=999
         # print("dis", dis)
         # print(o_x, o_y)
-        abs_yaw = abs(robot["location"]["yaw"]-angle)
+        
         if(abs(o_y)<200 and abs_yaw>10):
             obs_filter.append(obs[i+0])
             obs_filter.append(obs[i+1])

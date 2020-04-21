@@ -239,31 +239,31 @@ class Robot(object):
     
    
   def Supervisor(self):
-    r_x = self.near_robot['position']['x']
-    r_y = self.near_robot['position']['y']
-    # print("r_x, r_y", r_x, r_y)
-    if(self.__object_info['ball']['ang']==999 and self.near_robot['ball_ang']<999 and self.near_robot['ball_dis']<999):
-      # r_x = self.near_robot['position']['x']
-      # r_y = self.near_robot['position']['y']
-      # print("r_x, r_y", r_x, r_y)
-      rbx = self.near_robot['ball_dis'] * math.cos(math.radians(self.near_robot['ball_ang']))
-      rby = self.near_robot['ball_dis'] * math.sin(math.radians(self.near_robot['ball_ang']))
-      rrbx, rrby = self.Rotate(rbx, rby, self.near_robot['position']['yaw'])
-      gbx = rrbx + self.near_robot['position']['x']
-      gby = rrby + self.near_robot['position']['y']
-      b_dis = math.hypot(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
-      ang_tmp = math.atan2(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
-      b_ang = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
-      # print("b_dis", int(b_dis) , self.__object_info['ball']['dis'])
-      # print("b_ang",int(b_ang) , self.__object_info['ball']['ang'])
-      self.__object_info['ball']['dis'] = b_dis
-      self.__object_info['ball']['ang'] = b_ang
-
     duration = time.time() - Robot.sync_last_time
     if duration > 2:
       #print("Lossing Connection with teammates...{}".format(duration), end='\r')
       self.SetMyRole(rospy.get_param('core/role'))
     else:
+      r_x = self.near_robot['position']['x']
+      r_y = self.near_robot['position']['y']
+      # print("r_x, r_y", r_x, r_y)
+      if(self.__object_info['ball']['ang']==999 and self.near_robot['ball_ang']<999 and self.near_robot['ball_dis']<999):
+        # r_x = self.near_robot['position']['x']
+        # r_y = self.near_robot['position']['y']
+        # print("r_x, r_y", r_x, r_y)
+        rbx = self.near_robot['ball_dis'] * math.cos(math.radians(self.near_robot['ball_ang']))
+        rby = self.near_robot['ball_dis'] * math.sin(math.radians(self.near_robot['ball_ang']))
+        rrbx, rrby = self.Rotate(rbx, rby, self.near_robot['position']['yaw'])
+        gbx = rrbx + self.near_robot['position']['x']
+        gby = rrby + self.near_robot['position']['y']
+        b_dis = math.hypot(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
+        ang_tmp = math.atan2(gby - self.__robot_info['location']['y'], gbx - self.__robot_info['location']['x'])
+        b_ang = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
+        # print("b_dis", int(b_dis) , self.__object_info['ball']['dis'])
+        # print("b_ang",int(b_ang) , self.__object_info['ball']['ang'])
+        self.__object_info['ball']['dis'] = b_dis
+        self.__object_info['ball']['ang'] = b_ang
+        
       if self.MyRole() is "Catcher" or self.MyRole is "Passer":
         if self.robot2['ball_is_handled']:
           self.r2_role = "Attacker"
@@ -401,7 +401,10 @@ class Robot(object):
       #     dis = 999
       # print("dis", dis)
       # print(o_x, o_y)
-      abs_yaw = abs(self.__robot_info["location"]["yaw"]-angle)
+      ang_tmp = math.atan2(r_y - self.__robot_info['location']['y'], r_x - self.__robot_info['location']['x'])
+      r_angle = math.degrees(ang_tmp)-self.__robot_info['location']['yaw']
+      abs_yaw = abs(r_angle-obs[i+1])
+ 
       if(abs(o_y)<200 and abs_yaw>10):
           obs_filter.append(obs[i+0])
           obs_filter.append(obs[i+1])

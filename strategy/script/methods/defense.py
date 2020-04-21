@@ -87,15 +87,42 @@ class Defense(Robot,Obstacle):
     if(near_robot is not None):
       r_x = near_robot['position']['x']
       r_y = near_robot['position']['y']
-    print(r_x, r_y)
-    if(math.hypot(robot_info['location']['x'] - 150, robot_info['location']['y'] - (-100))<math.hypot(r_x - 150, r_y - (-50))):
+    # print(r_x, r_y)
+    back_y_dis = 80
+    dis_tmp = []
+    dis_tmp.append(math.hypot(robot_info['location']['x'] - 150*tmp, robot_info['location']['y'] - (back_y_dis)))
+    dis_tmp.append(math.hypot(robot_info['location']['x'] - 150*tmp, robot_info['location']['y'] - (back_y_dis*(-1))))
+    dis_tmp.append(math.hypot(r_x - 150*tmp, r_y - (back_y_dis)))
+    dis_tmp.append(math.hypot(r_x - 150*tmp, r_y - (back_y_dis*(-1))))
+    self_pos=None
+    teammate_pos=None
+    min_dis = 999
+    min_dis_count = 0
+    for i in range (0, len(dis_tmp), 1):
+      if(min_dis>dis_tmp[i]):
+        min_dis = dis_tmp[i]
+        min_dis_count = i
+    if(min_dis_count==0):
+      self_pos = "up"
+      teammate_pos = "down"
+    elif(min_dis_count==1):
+      self_pos = "down"
+      teammate_pos = "up"
+    elif(min_dis_count==3):
+      teammate_pos = "up"
+      self_pos = "down"
+    elif(min_dis_count==4):
+      teammate_pos = "down"
+      self_pos = "up"
+
+    if(self_pos=="down"):
       p_x = 150*tmp
-      p_y = -100
+      p_y = back_y_dis*(-1)
       p_yaw = 0+yaw
     else:
       p_x = 150*tmp
-      p_y =  100
+      p_y =  back_y_dis
       p_yaw = 0+yaw
-    
+
     return p_x, p_y, p_yaw
   

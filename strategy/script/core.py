@@ -194,21 +194,24 @@ class Core(Robot, StateMachine):
   def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
   def on_toDefense(self):
-    #print("defense")
+    # print("defense")
     t = self.GetObjectInfo()
     robot = self.GetRobotInfo()
     our_side = self.our_side
     opp_side = self.opp_side
     obstacles_info = self.GetObstacleInfo()
+    opp_info = self.GetOppInfo()
     obs = obstacles_info["detect_obstacles"]
-
-      
+    x=0
+    y=0
+    yaw=0
     if(t['ball']['ang']==999):
       
       block_flag, obs_dis, obs_ang = self.DC.BlockCheck(t[our_side]['dis'],\
                                                         t[our_side]['ang'],\
                                                         our_side)
       #========block opp robot=====
+      # print("block_flag", block_flag)
       if(block_flag):
         #print(block_flag)
         x, y, yaw = self.CC.ClassicRounding(t[opp_side]['ang'],\
@@ -234,12 +237,13 @@ class Core(Robot, StateMachine):
           x=0
           y=0
           yaw = 0
-        if(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) < 60): 
+        elif(math.sqrt(math.pow((robot['location']['x']-p_x),2) + math.pow((robot['location']['y']-p_y),2) ) < 60): 
           self.MotionCtrl(x, y, yaw, False, 10)
         else:
           self.MotionCtrl(x, y, yaw)
-      #===========================
+        #===========================
     else:#TODO: support teammate
+      print("t['ball']['ang']", t['ball']['ang'])
       #Relative_ball
       ourside = self.our_side
       if(self.near_robot['ball_is_handled']):
