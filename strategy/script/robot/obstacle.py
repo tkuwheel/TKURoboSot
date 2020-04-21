@@ -329,7 +329,7 @@ class Obstacle(object):
     x = goal_dis * math.cos(math.radians(goal_ang+180))
     y = goal_dis * math.cos(math.radians(goal_ang+180))
     yaw = goal_ang+180 #goal_ang = our side gaol angle
-    if(goal_dis<100):
+    if(goal_dis<200):#only blocked
         x = goal_dis * math.cos(math.radians(goal_ang+180))
         y = goal_dis * math.cos(math.radians(goal_ang+180))
         yaw = goal_ang+180 #goal_ang = our side gaol angle

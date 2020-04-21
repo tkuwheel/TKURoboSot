@@ -236,7 +236,7 @@ class Robot(object):
       self.__object_info['ball']['ang'] = b_ang
 
     duration = time.time() - Robot.sync_last_time
-    if duration > 5:
+    if duration > 2:
       #print("Lossing Connection with teammates...{}".format(duration), end='\r')
       self.SetMyRole(rospy.get_param('core/role'))
     else:

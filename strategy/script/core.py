@@ -38,7 +38,7 @@ class Core(Robot, StateMachine):
   toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) | defense.to(point)
   #==================
   back_ang = 10
-  back_dis = 60
+  back_dis = 40
   #==================
   def Callback(self, config, level):
     self.game_start = config['game_start']
@@ -99,7 +99,9 @@ class Core(Robot, StateMachine):
     x=0
     y=0
     yaw=0
-    if(opphandle==True and opp_info['ang']!=999):
+    duration = time.time() - Robot.sync_last_time
+    if(opphandle==True and opp_info['ang']!=999 and t[our_side]['dis']<200 ):
+      #if(self.robot.MyRole()=="Supporter" or duration>2):
       method = "Block"
     if(method =="Block"):
       #print("block")
