@@ -165,6 +165,8 @@ class Obstacle(object):
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
         dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
         #未接到隊友資訊
+        print("o_X, o_y", o_x, o_y)
+        print("r_x, r_y", r_x, r_y)
         if(dt>5):
             dis = 999
         # print(o_x, o_y)
@@ -329,7 +331,7 @@ class Obstacle(object):
     x = goal_dis * math.cos(math.radians(goal_ang+180))
     y = goal_dis * math.cos(math.radians(goal_ang+180))
     yaw = goal_ang+180 #goal_ang = our side gaol angle
-    if(goal_dis<100):
+    if(goal_dis<200):#only blocked
         x = goal_dis * math.cos(math.radians(goal_ang+180))
         y = goal_dis * math.cos(math.radians(goal_ang+180))
         yaw = goal_ang+180 #goal_ang = our side gaol angle

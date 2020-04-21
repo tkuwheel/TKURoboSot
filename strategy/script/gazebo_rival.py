@@ -68,7 +68,7 @@ def OmniVisionCallback(data):
     if gr_ang > 180:
       gr_ang = gr_ang - 360
     m.blue_ang = gr_ang
-    m.blue_dis = math.hypot(BLUE_GOAL['x'] - rx, BLUE_GOAL['y'] - ry)
+    m.blue_dis = math.(BLUE_GOAL['x'] - rx, BLUE_GOAL['y'] - ry)
     m.blue_fix_ang = m.blue_ang
     m.blue_fix_dis = m.blue_dis
 
