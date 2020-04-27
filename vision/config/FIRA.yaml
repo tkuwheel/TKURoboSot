@@ -3,12 +3,12 @@ Camera:
   High: 650.0
 Center:
   Camera_high: 620
-  Center_X: 328
-  Center_Y: 252
+  Center_X: 332
+  Center_Y: 254
   Front: 90
   Horizon: 144
-  Inner: 57
-  Outer: 280
+  Inner: 58
+  Outer: 282
   X: 308
   Y: 266
 FPS: 16

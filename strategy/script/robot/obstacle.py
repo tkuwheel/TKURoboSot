@@ -147,48 +147,7 @@ class Obstacle(object):
     return  v_x ,v_y,v_yaw
 
 #======================Avoid Strategy===================
-  def obstacle_fileter(self, obs, robot, near_robot=None):
-    obs_filter = []
-    info_time = Robot.sync_last_time
-    now = time.time()
-    dt = abs(info_time-now)
-    # print(Robot.sync_last_time)
-    # print("now", time.time())
-    # print("dt", dt)
-    r_x = 999
-    r_y = 999
-    if(near_robot is not None):
-        r_x = near_robot['position']['x']
-        r_y = near_robot['position']['y']
-        r_yaw = near_robot['position']['yaw']
-    # print(r_x, r_y)
-    for i in range (0,len(obs), 4):
-        distance = obs[i+0]
-        angle    = obs[i+1]+robot["location"]["yaw"]
-        o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
-        o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
-        dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
-        #未接到隊友資訊
-
-        ang_tmp = math.atan2(r_y - robot['location']['y'], r_x - robot['location']['x'])
-        r_angle = math.degrees(ang_tmp)-robot['location']['yaw']
-        if(r_angle<(-180)):
-            r_angle=r_angle+360
-        elif(r_angle>180):
-            r_angle=r_angle-360
-        abs_yaw = abs(r_angle-obs[i+1])
-        if(dt>5):
-            dis = 999
-            abs_yaw=999
-        # print("dis", dis)
-        # print(o_x, o_y)
-        # print ("abs_yaw", abs_yaw, r_angle, obs[i+1])
-        if(abs(o_y)<200 and abs_yaw>50):
-            obs_filter.append(obs[i+0])
-            obs_filter.append(obs[i+1])
-            obs_filter.append(obs[i+2])
-            obs_filter.append(obs[i+3])
-    return obs_filter
+  
 
   def obstacle_roate(self, obs, robot):
     rf_x = 0
