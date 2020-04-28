@@ -433,6 +433,7 @@ class Robot(object):
     obs_filter = []
     obs = self.__obstacle_info['detect_obstacles']
     #============obs_filter===============
+
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]

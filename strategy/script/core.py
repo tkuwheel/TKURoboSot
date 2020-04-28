@@ -472,8 +472,7 @@ class Strategy(object):
         #self.robot.toIdle()
         self.robot.toDefense()
       else:
-        if self.robot.is_defense:
-          self.robot.toDefense()
+        
         if not self.robot.is_idle and not self.robot.game_start:
           self.robot.toIdle()
         if self.robot.is_idle:          
@@ -588,7 +587,12 @@ class Strategy(object):
           else:
             self.RunStatePoint()
 
-
+        if self.robot.is_defense:
+          # print(self.robot.MyRole())
+          if(self.robot.MyRole()=="Attacker"):
+            self.robot.toChase()
+          else:
+            self.robot.toDefense()
         if rospy.is_shutdown():
           log('shutdown')
           break
