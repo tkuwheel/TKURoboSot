@@ -50,7 +50,7 @@ HSV:
   - 100
   black:
     angle: 1
-    gray: 37
+    gray: 30
   white:
     angle: 3
     gray: 193
@@ -60,8 +60,8 @@ SCAN:
   Angle_range_1: 2
   Angle_range_2_3: 2
   Dont_Search_Angle_1: 30
-  Dont_Search_Angle_2: 149
-  Dont_Search_Angle_3: 277
+  Dont_Search_Angle_2: 150
+  Dont_Search_Angle_3: 276
   Magn_Far_End: 224
   Magn_Far_Start: 154
   Magn_Middle_Start: 50

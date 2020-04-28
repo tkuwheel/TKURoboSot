@@ -147,48 +147,7 @@ class Obstacle(object):
     return  v_x ,v_y,v_yaw
 
 #======================Avoid Strategy===================
-  def obstacle_fileter(self, obs, robot, near_robot=None):
-    obs_filter = []
-    info_time = Robot.sync_last_time
-    now = time.time()
-    dt = abs(info_time-now)
-    # print(Robot.sync_last_time)
-    # print("now", time.time())
-    # print("dt", dt)
-    r_x = 999
-    r_y = 999
-    if(near_robot is not None):
-        r_x = near_robot['position']['x']
-        r_y = near_robot['position']['y']
-        r_yaw = near_robot['position']['yaw']
-    # print(r_x, r_y)
-    for i in range (0,len(obs), 4):
-        distance = obs[i+0]
-        angle    = obs[i+1]+robot["location"]["yaw"]
-        o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
-        o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
-        dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
-        #未接到隊友資訊
 
-        ang_tmp = math.atan2(r_y - robot['location']['y'], r_x - robot['location']['x'])
-        r_angle = math.degrees(ang_tmp)-robot['location']['yaw']
-        if(r_angle<(-180)):
-            r_angle=r_angle+360
-        elif(r_angle>180):
-            r_angle=r_angle-360
-        abs_yaw = abs(r_angle-obs[i+1])
-        if(dt>5):
-            dis = 999
-            abs_yaw=999
-        # print("dis", dis)
-        # print(o_x, o_y)
-        # print ("abs_yaw", abs_yaw, r_angle, obs[i+1])
-        if(abs(o_y)<200 and abs_yaw>50):
-            obs_filter.append(obs[i+0])
-            obs_filter.append(obs[i+1])
-            obs_filter.append(obs[i+2])
-            obs_filter.append(obs[i+3])
-    return obs_filter
 
   def obstacle_roate(self, obs, robot):
     rf_x = 0
@@ -205,7 +164,11 @@ class Obstacle(object):
     v_yaw = math.degrees(math.atan2(rf_y, rf_x))
     #print(v_yaw)
     return v_yaw
-  
+  def absAngle(self, ang):
+    min_ang = abs(ang)
+    if(min_ang>180):
+        min_ang = 360-min_ang
+    return min_ang
   def obstacle_escape(self, goal_dis, goal_ang, obs, robot):
     route_ang = []
     ang_threshold = 90
@@ -220,9 +183,9 @@ class Obstacle(object):
         dis = obs[i+0]
         right_ang = obs[i+2]
         left_ang  = obs[i+3]
-        right_min_ang = abs(right_ang-route_angle) if(abs(right_ang-route_angle)<abs(360-abs(right_ang-route_angle))) else abs(360-abs(right_ang-route_angle))
-        left_min_ang = abs(left_ang-route_angle) if(abs(left_ang-route_angle)<abs(360-abs(left_ang-route_angle))) else abs(360-abs(left_ang-route_angle))
-        min_ang = right_min_ang if(right_min_ang<left_min_ang) else left_min_ang
+        right_min_ang = self.absAngle(right_ang-route_angle)
+        left_min_ang = self.absAngle(left_ang-route_angle)
+        min_ang = min(right_min_ang, left_min_ang)
         min_dis = dis * math.sin(math.radians(min_ang))
         if(abs(robot["location"]["y"])>80 and abs(robot["location"]["x"])>250):
 
@@ -235,7 +198,6 @@ class Obstacle(object):
         route_filter.append(route_angle)
     #=============================================
     #find all possible angles
-    
     distance_filter = 150
     for i in range (0,len(obs), 4):
         
@@ -245,7 +207,7 @@ class Obstacle(object):
         if(distance>distance_filter):
             continue
         right_ang = obs[i+2]
-        min_ang = abs(right_ang-goal_ang) if(abs(right_ang-goal_ang)<abs(360-abs(right_ang-goal_ang))) else abs(360-abs(right_ang-goal_ang))
+        min_ang = self.absAngle(right_ang-goal_ang)
         if(min_ang<ang_threshold):
             tmp = math.sqrt(abs(pow(distance,2)-pow(robot_radius,2)))
             escape_ang = math.degrees(math.atan2(robot_radius, tmp))*1.2
@@ -257,7 +219,7 @@ class Obstacle(object):
             route_ang.append(right_ang)
             
         left_ang = obs[i+3]
-        min_ang = abs(left_ang-goal_ang) if(abs(left_ang-goal_ang)<abs(360-abs(left_ang-goal_ang))) else abs(360-abs(left_ang-goal_ang))
+        min_ang = self.absAngle(left_ang-goal_ang)
         if(min_ang<ang_threshold):
             tmp = math.sqrt(abs(pow(distance,2)-pow(robot_radius,2)))
             escape_ang = math.degrees(math.atan2(robot_radius, tmp))*1.2
@@ -271,7 +233,7 @@ class Obstacle(object):
     #filter blocked angles
     for i in range (0, len(route_ang), 1):
         cross_flag = True
-        #print("route_ang", route_ang[i])
+        # print("route_ang", route_ang[i])
         route_obs_num = i/2
         route_obs_dis = obs[route_obs_num*4+0]
         route_obs_ang = obs[route_obs_num*4+1]
@@ -286,47 +248,55 @@ class Obstacle(object):
             left_ang  = obs[j+3]
             if(j/4!=route_obs_num):
                 #計算路徑是否碰撞障礙物
-                right_min_ang = abs(right_ang-route_angle) if(abs(right_ang-route_angle)<abs(360-abs(right_ang-route_angle))) else abs(360-abs(right_ang-route_angle))
-                left_min_ang = abs(left_ang-route_angle) if(abs(left_ang-route_angle)<abs(360-abs(left_ang-route_angle))) else abs(360-abs(left_ang-route_angle))
-                min_ang = right_min_ang if(right_min_ang<left_min_ang) else left_min_ang
+                right_min_ang = self.absAngle(right_ang-route_angle)
+                left_min_ang = self.absAngle(left_ang-route_angle)
+                min_ang = min(right_min_ang, left_min_ang)
                 hypotenuse = dis/math.cos(math.radians(min_ang))
-                obs_min_dis = hypotenuse*math.sin(math.radians(min_ang))
+                obs_min_dis = abs(hypotenuse*math.sin(math.radians(min_ang)))
+      
                 # if(min_ang>90):
                 #     obs_min_dis = 999
                 #若碰撞 計算兩障礙物間距是否可以通過
+               
                 if(obs_min_dis<robot_radius*0.8 or (route_angle < right_ang and route_angle > left_ang)):
-                    right_min_ang = abs(right_ang-route_obs_left_ang) if(abs(right_ang-route_obs_left_ang)<abs(360-abs(right_ang-route_obs_left_ang))) else abs(360-abs(right_ang-route_obs_left_ang))
-                    left_min_ang  = abs(left_ang-route_obs_right_ang) if(abs(left_ang-route_obs_right_ang)<abs(360-abs(left_ang-route_obs_right_ang))) else abs(360-abs(left_ang-route_obs_right_ang))
-                    min_ang = right_min_ang if(right_min_ang<left_min_ang) else left_min_ang
+                    # print("route_angle", route_angle, "right_Ang", right_ang, "left_ang", left_ang)
+                    right_min_ang = self.absAngle(right_ang-route_obs_left_ang) 
+                    left_min_ang  = self.absAngle(left_ang-route_obs_right_ang)
+                    min_ang = min(right_min_ang,left_min_ang)
                     #SAS a^2 = b^2 + c^2 -2bc*cos(A)
                     min_dis = math.sqrt(math.pow(dis,2)+math.pow(route_obs_dis,2)-2*dis*route_obs_dis*math.cos(math.radians(min_ang)))
                     if(min_dis<robot_radius*2*0.7):
                         cross_flag = False
+                    door_obs_ang = self.absAngle(ang-goal_ang)
+                    if(dis<route_obs_dis+20 and door_obs_ang<120):
+                        cross_flag = False
+                    # if(cross_flag==True):#cross middle of the angle
       
         angle = route_ang[i]+robot["location"]["yaw"]
         x =  robot["location"]["x"] + 150 * math.cos(math.radians(angle))
         y = -robot["location"]["y"] - 150 * math.sin(math.radians(angle))
         #print("x", x,"y", y)
         #if((abs(robot["location"]["y"])>150 and abs(x)>300 and abs(y)>80)or ( abs(y)>200) ):
-        if((abs(robot["location"]["y"])<60 and abs(y)>150) or (abs(robot["location"]["y"])>60 and(abs(x)>300 or abs(y)>200)) ):
-            cross_flag = False
+        # if((abs(robot["location"]["y"])<60 and abs(y)>150) or (abs(robot["location"]["y"])>60 and(abs(x)>300 or abs(y)>200)) ):
+        #     cross_flag = False
         if(cross_flag==True):
             route_filter.append(route_ang[i])
     #find min angle
     min_ang = 999
     fin_ang = goal_ang
     #print ("obs size", len(obs)/4)
-    #print ("route_ang size " , len(route_ang))
-    #print ("route_filter size " , len(route_filter))
+    # print ("goal_ang " , goal_ang)
+    # print ("route_ang size " , len(route_ang))
+    # print ("route_filter size " , len(route_filter))
     for i in range(0, len(route_filter), 1):
         #print(min_ang)
         ang_tmp = abs(route_filter[i]-goal_ang) if(abs(route_filter[i]-goal_ang)<abs(360-abs(route_filter[i]-goal_ang))) else abs(360-abs(route_filter[i]-goal_ang))
         #print(ang_tmp, min_ang)
-       
+        # print("route_filter[i]",route_filter[i])
         if(ang_tmp<min_ang):
             min_ang = ang_tmp
             fin_ang = route_filter[i]
-            #print(fin_ang)
+            # print("route_filter[i]",fin_ang)
     if(goal_dis<80):
         goal_dis = 200
     v_x = goal_dis * math.cos(math.radians(fin_ang))
@@ -338,7 +308,7 @@ class Obstacle(object):
         #print("force attack")
         #v_x =  goal_dis * math.cos(math.radians(goal_ang))*5
         #v_y =  goal_dis * math.sin(math.radians(goal_ang))*5
-    #print("fin_ang", fin_ang)
+    # print("fin_ang", fin_ang)
     return v_x, v_y
   def back(self, goal_dis, goal_ang, obs, back_dis, back_ang):
     x = goal_dis * math.cos(math.radians(goal_ang+180))
