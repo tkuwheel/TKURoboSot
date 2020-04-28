@@ -32,3 +32,8 @@ software
 build
 install
 log
+
+# Vision configs
+FIRA.yaml
+HSVcolormap.bin
+.DS_Store
