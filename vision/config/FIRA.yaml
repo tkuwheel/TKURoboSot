@@ -3,21 +3,12 @@ Camera:
   High: 650.0
 Center:
   Camera_high: 620
-<<<<<<< HEAD
   Center_X: 327
   Center_Y: 253
   Front: 90
   Horizon: 144
   Inner: 54
   Outer: 282
-=======
-  Center_X: 318
-  Center_Y: 258
-  Front: 91
-  Horizon: 134
-  Inner: 44
-  Outer: 229
->>>>>>> bf346f0f13baa2929a17737eb9455f821da98053
   X: 308
   Y: 266
 FPS: 16
@@ -68,15 +59,9 @@ SCAN:
   Angle_Near_Gap: 4
   Angle_range_1: 2
   Angle_range_2_3: 2
-<<<<<<< HEAD
   Dont_Search_Angle_1: 32
   Dont_Search_Angle_2: 151
   Dont_Search_Angle_3: 267
-=======
-  Dont_Search_Angle_1: 30
-  Dont_Search_Angle_2: 150
-  Dont_Search_Angle_3: 276
->>>>>>> bf346f0f13baa2929a17737eb9455f821da98053
   Magn_Far_End: 224
   Magn_Far_Start: 154
   Magn_Middle_Start: 50
