@@ -3,8 +3,8 @@ Camera:
   High: 650.0
 Center:
   Camera_high: 620
-  Center_X: 327
-  Center_Y: 253
+  Center_X: 331
+  Center_Y: 245
   Front: 90
   Horizon: 144
   Inner: 54
@@ -38,9 +38,9 @@ HSV:
   - 197
   - 168
   - 0
-  - 79
+  - 82
   - 0
-  - 23
+  - 18
   Yellow:
   - 39
   - 79
