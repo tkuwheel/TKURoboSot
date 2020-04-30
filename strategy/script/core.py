@@ -32,7 +32,7 @@ class Core(Robot, StateMachine):
   toIdle   = chase.to(idle) | attack.to(idle)  | movement.to(idle) | point.to(idle) | shoot.to(idle) | idle.to.itself() | defense.to(idle)
   toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself() | movement.to(chase) | point.to(chase) | defense.to(chase)
   toAttack = attack.to.itself() | shoot.to(attack) | movement.to(attack)| chase.to(attack)| point.to(attack) | defense.to(attack)
-  toDefense = idle.to(defense) | defense.to.itself() | chase.to(defense)
+  toDefense = idle.to(defense) | chase.to(defense) | attack.to(defense) | defense.to.itself() | shoot.to(defense) | movement.to(defense)
   toShoot  = attack.to(shoot)| idle.to(shoot)|movement.to(shoot) | defense.to(shoot)
   toMovement = chase.to(movement) | movement.to.itself()| idle.to(movement) | point.to(movement)  | defense.to(movement)
   toPoint  = point.to.itself() | idle.to(point) | movement.to(point) | chase.to(point) | defense.to(point)
@@ -100,43 +100,41 @@ class Core(Robot, StateMachine):
     y=0
     yaw=0
     duration = time.time() - Robot.sync_last_time
-    if(opphandle==True and opp_info['ang']!=999 and t[our_side]['dis']<200 ):
+    #SAS a^2 = b^2 + c^2 -2bc*cos(A)
+    ball_door_ang = abs(self.Angle_Adjustment(t[our_side]['ang']-t['ball']['ang']))
+    ball_door_dis = math.sqrt(math.pow(t[our_side]['dis'],2)+math.pow(t['ball']['dis'],2)-2*t[our_side]['dis']*t['ball']['dis']*math.cos(math.radians(ball_door_ang)))
+    # print("ball_door_dis", ball_door_dis)
+    if(opphandle==True and opp_info['ang']!=999 and abs(t[our_side]['dis']-t['ball']['dis'])<350 ):
       #if(self.robot.MyRole()=="Supporter" or duration>2):
       method = "Block"
     if(method =="Block"):
-      #print("block")
-      dis = 0
-      ang = 0
-      #========more catch ball====
-      if(t['ball']['ang']<999):
-        dis = t['ball']['dis']
-        ang = t['ball']['ang']
-      else:
-        dis = opp_info['dis']
-        ang = opp_info['ang']
+      print("block")
+      dis = t['ball']['dis']
+      ang = t['ball']['ang']
+      # #========more catch ball====
+      # if(t['ball']['ang']<999):
+      #   dis = t['ball']['dis']
+      #   ang = t['ball']['ang']
+      # else:
+      #   dis = opp_info['dis']
+      #   ang = opp_info['ang']
       #========more defense=======
       # dis = opp_info['dis']
       # ang = opp_info['ang']
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           dis,\
                                           ang)
+      yaw_tmp = 0
       if(our_side=="Yellow"):
-        yaw = 0
+        yaw_tmp = 0
       elif(our_side=="Blue"):
-        yaw = 180
-
-      v_yaw = yaw - robot_info['location']['yaw']
-      if abs(v_yaw - 360) < abs(v_yaw):
-        yaw = v_yaw - 360
-      elif abs(v_yaw + 360) < abs(v_yaw):
-        yaw = v_yaw + 360
-      else:
-        yaw = v_yaw
+        yaw_tmp = 180
+      yaw = self.Angle_Adjustment(yaw_tmp - robot_info['location']['yaw'])
       #======full speed block====
       if(dis<60 and abs(ang)>10):
-        y=y*10
+        y=y*20
       if(x<0):
-        x=x*10
+        x=x*20
       #==========================
     if method == "Classic":
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
@@ -468,7 +466,6 @@ class Strategy(object):
       # Can not find ball when starting
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
         print("Can not find ball")
-
         #self.robot.toIdle()
         self.robot.toDefense()
       else:

@@ -337,7 +337,6 @@ class Robot(object):
       self.r1_role = role
       print("Wrong Namespace")
 
-
   def _Publisher(self, topic, mtype):
     return rospy.Publisher(topic, mtype, queue_size=1)
 
@@ -374,11 +373,19 @@ class Robot(object):
       self.__ball_is_handled = True
     else:
       self.__ball_is_handled = False
+
+  def Angle_Adjustment(self, ang):
+    if(ang > 180):
+        ang = 360-ang
+    elif(ang < (-180)):
+        ang = ang + 360
+    return ang
+
   def obstacle_fileter(self, obs, robot, near_robot=None):
     obs_filter = []
     info_time = Robot.sync_last_time
     now = time.time()
-    dt = abs(info_time-now)
+    dt = abs(now-info_time)
     # print(Robot.sync_last_time)
     # print("now", time.time())
     # print("dt", dt)
@@ -390,21 +397,18 @@ class Robot(object):
         r_yaw = near_robot['position']['yaw']
     # print(r_x, r_y)
     for i in range (0,len(obs), 4):
+        if(len(obs)==0):
+          break
         distance = obs[i+0]
         angle    = obs[i+1]+robot["location"]["yaw"]
         o_x      = robot["location"]["x"] + distance * math.cos(math.radians(angle))
         o_y      = robot["location"]["y"] + distance * math.sin(math.radians(angle))
         dis      = math.sqrt(math.pow((r_x-o_x),2)+math.pow((r_y-o_y),2))
         #未接到隊友資訊
-
         ang_tmp = math.atan2(r_y - robot['location']['y'], r_x - robot['location']['x'])
-        r_angle = math.degrees(ang_tmp)-robot['location']['yaw']
-        if(r_angle<(-180)):
-            r_angle=r_angle+360
-        elif(r_angle>180):
-            r_angle=r_angle-360
+        r_angle = self.Angle_Adjustment(math.degrees(ang_tmp)-robot['location']['yaw'])
         abs_yaw = abs(r_angle-obs[i+1])
-        if(dt>5 or near_robot==None):
+        if(dt>2 or near_robot==None):
             dis = 999
             abs_yaw=999
         # print("dis", dis)
@@ -418,27 +422,12 @@ class Robot(object):
     return obs_filter
   def _GetObstaclesInfo(self,obs_info):
     self.__obstacle_info['detect_obstacles'] = obs_info.data
-    #======================
-    #__opp_is_handled = False
-    #__gobal_ball_info = {'location':{'x' : 0, 'y' : 0}}
-    # self.__gobal_ball_info['location']['x'] = self.__robot_info['location']['x'] + \
-    #                                           self.__object_info['ball']['dis'] * \
-    #                                           math.cos(math.radians(self.__robot_info['location']['yaw'] + self.__object_info['ball']['ang']))
-    # self.__gobal_ball_info['location']['y'] = self.__robot_info['location']['y'] + \
-    #                                           self.__object_info['ball']['dis'] * \
-    #                                           math.sin(math.radians(self.__robot_info['location']['yaw'] + self.__object_info['ball']['ang']))                                          
-    #print(self.__robot_info['location']['x'], self.__robot_info['location']['y'])
-    #print(self.__robot_info['location']['yaw'], self.__object_info['ball']['ang'])
-    #print(self.__gobal_ball_info['location']['x'], self.__gobal_ball_info['location']['y'])
-
-    obs_filter = []
     obs = self.__obstacle_info['detect_obstacles']
     #============obs_filter===============
-
     robot_info = self.GetRobotInfo()
     obstacles_info = self.GetObstacleInfo()
     obs = obstacles_info["detect_obstacles"]
-    self.obstacle_fileter(obs, robot_info, self.near_robot)
+    obs_filter = self.obstacle_fileter(obs, robot_info, self.near_robot)
     #=====================================
     opp_handled_ang = 10
     opp_handled_dis = 40
@@ -470,7 +459,8 @@ class Robot(object):
         self.__opp_is_blocked = False
     # if(self.__object_info['ball']['ang']==999):
     #   print("can't see ball")
-    if(self.__ball_is_handled):
+    dt = time.time() - Robot.sync_last_time
+    if(self.__ball_is_handled or(dt<2 and self.near_robot['ball_is_handled']==True)):
       self.__opp_is_handled = False
       self.__opp_is_blocked = False
     #print("self.__opp_is_handled", self.__opp_is_handled)

@@ -2,6 +2,7 @@
 from __future__ import print_function
 import rospy
 import math
+import time
 import numpy as np
 from robot.robot import Robot
 from robot.obstacle import Obstacle
@@ -84,7 +85,8 @@ class Defense(Robot,Obstacle):
     #========back to defense====
     r_x=999
     r_y=999
-    if(near_robot is not None):
+    dt = time.time()-Robot.sync_last_time
+    if(near_robot is not None and dt<2):
       r_x = near_robot['position']['x']
       r_y = near_robot['position']['y']
     # print(r_x, r_y)
@@ -127,4 +129,3 @@ class Defense(Robot,Obstacle):
       p_yaw = 0+yaw
 
     return p_x, p_y, p_yaw
-  
