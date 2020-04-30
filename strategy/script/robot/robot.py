@@ -299,6 +299,7 @@ class Robot(object):
     elif "robot3" in robot_ns.lower():
       return self.robot3
     elif "near_robot" in robot_ns.lower():
+      # print(self.near_robot)
       return self.near_robot
     else:
       print("Wrong Namespace")
