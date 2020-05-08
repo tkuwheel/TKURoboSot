@@ -118,9 +118,10 @@ class Core(Robot, StateMachine):
       # else:
       #   dis = opp_info['dis']
       #   ang = opp_info['ang']
-      #========more defense=======
+      #========more defense========
       # dis = opp_info['dis']
       # ang = opp_info['ang']
+      #============================
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           dis,\
                                           ang)
@@ -454,7 +455,7 @@ class Strategy(object):
     while not rospy.is_shutdown():
       self.robot.PubCurrentState()
       self.robot.Supervisor()
-      # print(self.robot.MyRole())
+      print(self.robot.MyRole())
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()

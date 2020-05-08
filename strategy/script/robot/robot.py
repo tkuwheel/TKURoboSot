@@ -192,6 +192,7 @@ class Robot(object):
 
   def MulticastReceiver(self, r2_data, r3_data):
     Robot.sync_last_time = time.time()
+    self.robot2['state']           = r2_data.state
     self.robot2['ball_is_handled'] = r2_data.ball_is_handled
     self.robot2['ball_dis']        = r2_data.ball_dis
     self.robot2['ball_ang']        = r2_data.ball_ang
@@ -199,6 +200,7 @@ class Robot(object):
     self.robot2['position']['x']   = r2_data.position.linear.x
     self.robot2['position']['y']   = r2_data.position.linear.y
     self.robot2['position']['yaw'] = r2_data.position.angular.z
+    self.robot3['state']           = r3_data.state
     self.robot3['ball_is_handled'] = r3_data.ball_is_handled
     self.robot3['ball_dis']        = r3_data.ball_dis
     self.robot3['ball_ang']        = r3_data.ball_ang
@@ -216,7 +218,7 @@ class Robot(object):
     elif "robot2" in rospy.get_namespace():
       self.near_robot_ns = "/robot3"
       # self.near_robot = self.robot3
-
+      self.near_robot['state']           = r3_data.state
       self.near_robot['ball_is_handled'] = r3_data.ball_is_handled
       self.near_robot['ball_dis']        = r3_data.ball_dis
       self.near_robot['ball_ang']        = r3_data.ball_ang
@@ -227,7 +229,7 @@ class Robot(object):
     elif "robot3" in rospy.get_namespace():
       self.near_robot_ns = "/robot2"
       # self.near_robot = self.robot2
-
+      self.near_robot['state']           = r2_data.state
       self.near_robot['ball_is_handled'] = r2_data.ball_is_handled
       self.near_robot['ball_dis']        = r2_data.ball_dis
       self.near_robot['ball_ang']        = r2_data.ball_ang
@@ -290,6 +292,10 @@ class Robot(object):
         else:
           self.r2_role = "Attacker" if self.robot2['ball_dis'] < self.robot3['ball_dis'] else "Supporter"
           self.r3_role = "Supporter" if self.r2_role is "Attacker" else "Attacker"
+          if(self.robot2['state']=='Idle'):
+            self.r3_role = "Attacker"
+          if(self.robot3['state']=='Idle'):
+            self.r2_role = "Attacker"
 
   def GetState(self, robot_ns):
     if "robot1" in robot_ns.lower():
