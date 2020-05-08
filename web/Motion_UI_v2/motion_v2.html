@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://blog.themearmada.com/demos/off-canvas-menu/ -->
+<html>
+<head>
+    <title>motion UI v2</title>
+    <meta charset="UTF-8">
+    <!--Font-->
+    <link rel="shortcut icon" href="img/setting.png" />
+    <link rel="stylesheet" href="font-awesome-4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="jquery-ui-1.11.4/jquery-ui.css">
+    <link rel="stylesheet" href="css/general.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico">
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <!--script src="js/main.js"></script-->
+    <script src="jquery-ui-1.11.4/jquery-ui.js"></script>
+    <script src="jquery-ui-1.11.4/jquery-ui.min.js"></script>
+    <script src="js/eventemitter2.min.js"></script>
+    <script src="js/close_right_button.js"></script>
+    <script src="js/CloseReverseOut.js"></script>
+    <script src="js/roslib.js"></script>
+    <!--<script src="js/RobotConnect.js"></script>-->
+
+</head>
+
+<body onload="joystick_main();KeyboardState(true);setTimeout(RemoteSwitch,500)">
+    <div class="modal-dialog" id="background" >
+        <div  class="modal-content motherground" id="body_setting" style="height:650px">
+            <div>
+                <table id="InterfaceSetting">
+                    <tr>
+                        <td>
+                            <div>
+                                <img id="Setting_Wifi" src="img/wifi.png" data-toggle="modal" data-target="#connect_Robot"></img>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="wifilight">
+                                <canvas id="Light" width="50" height="50" z-index:="5"></canvas>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--<div id="infomation"> </div>-->
+            <div id="infomation">
+                <table>
+                    <tr>
+                        <td>
+                            <label id="vel_info" ></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id = "valuediv">
+                <table>
+                    <tr>
+                        <td>
+                            <label >topic name:</label>
+                        </td>
+                        <td>
+                            <input id="topic_name_input" value="motion/cmd_vel" type="text" oninput="set_speed_topic(this.value);reset_cmd()" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label >max speed:</label>
+                        </td>
+                        <td style="width:140px;">
+                            <input id="max_speed_input" value="100" type="number" min="0" max="100" oninput="set_max_speed(this.value)" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="SpeedDiv">
+                <table>
+                    <tr>
+                        <td colspan="3">
+                            <div id="HoldBallDiv1" vlaue="0">
+                                <i id="HoldBallButton1" class="fa fa-futbol-o fa-2x" aria-hidden="true"></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <label id="SpeedLabel">Speed&nbsp;<i class="fa fa-bolt "></i></label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>0</label>
+                        <td>
+                        <td>
+                            <input id="SpeedSlider" name="SpeedElement" step="1" type="range" min="0" max="100" value="20" oninput="set_speed(this.value);ToInputValue(this.value,this.name,1);">
+                        </td>
+                        <td>
+                            <label id="max_speed">100</label>
+                        <td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <input id="SpeedInput" name="SpeedElement" placeholder="Speed" value="20" type="number" min="0" max="100" oninput="set_speed(this.value);ToSliderValue(this.value,this.name,0);" />
+                        </td>
+                    </tr>
+                </table>
+                <div id="ShootDiv"  >
+                    <table style="align:center;">
+                        <tr >
+                            <td>
+                                <input id="ShootInput" name="ShootElement" placeholder="Shoot" value="70" type="number" min="0" max="100" oninput="JudgeShootInput(this.name,this.value);" />
+                            </td>
+                            <td>
+                                <input id="ShootButton" type="button" value="Shoot" onclick="PublishTopicShoot(parseInt(document.getElementById('ShootInput').value))">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div id="Joystick">
+                <canvas id="Joystick_Canvas">
+                    Your browser does not support the HTML5 canvas tag.
+                </canvas>
+            </div>
+            
+             <div id="FunctionButttonDiv">
+                <table>
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="on" id="KeyboardControlButton" type="checkbox" name="KeyboardControl" onclick="KeyboardState(this.checked)" />
+                            <label id="KeyboardControlLable" for="KeyboardControlButton">Keyboard Control</label>
+                        </div>
+                    </tr>
+
+                    <tr>
+                        <div style="width:140px;">
+                            <input autocomplete="on" id="StandbyButton" type="checkbox" name="RobotRemoteButton" onclick="RemoteSwitch(this.checked);" />
+                            <label id="StandbyLable" for="StandbyButton">&nbsp;&nbsp;&nbsp;Stand by&nbsp;&nbsp;&nbsp;</label>
+                        </div>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="coord1input" name="coord" type="radio" value="1" onclick="set_coord(this.value)" />
+                            <label style="line-height: 5000000000000000px "id="coord1label" for="coord1input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y⇧&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↺z</br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╚⇨x&nbsp;&nbsp;&nbsp;</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="coord2input" name="coord" type="radio" value="2" onclick="set_coord(this.value)" />
+                            <label id="coord2label" for="coord2input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⇧x&nbsp;&nbsp;&nbsp;&nbsp;↺z</br>y⇦╝ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal fade" id="connect_Robot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="Wifimodal_content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="innerModalLabel">Connect To Robot</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="RobotIPDATA" class="control-label">Robot_IP:</label>
+                                    <input name="RobotIPDATA" type="text" class="form-control" id="RobotIP" value=IP.textContent>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RobotHostDATA" class="control-label">Robot_Host:</label>
+                                    <input name="RobotHostDATA" type="text" class="form-control" id="RobotHost" value=Host.textContent>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ros.close();">Close</button>
+                            <button type="button" class="btn btn-primary" id="send-message" onclick="RobotConnect();history.go(0);">Connect</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+    <script src="js/RobotConnect.js"></script>
+    <script src="js/variable.js"></script>
+    <script src="js/LcROS.js"></script>
+    <script src="js/Joystick.js"></script>
+    <script src="js/speed.js"></script>
+    <script src="js/RosTopic.js"></script>
+    <script src="js/RosParam.js"></script>
+    <script src="js/HoldBall.js"></script>
+    <script src="js/KeyboardControl.js"></script>
+    <script src="js/SendMsgs.js"></script> 
+    <script type="text/javascript">
+        $("#FunctionButttonDiv").buttonset();
+        $("#coorddiv").buttonset();
+    </script>
+</body>
+</html>

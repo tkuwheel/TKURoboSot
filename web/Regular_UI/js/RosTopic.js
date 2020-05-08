@@ -197,9 +197,10 @@ function draw_robot_map(){
         ctx.beginPath();
 
         //draw_robot(1,sigma1,x1,y1,w1,catchball1,imu1);
+        
+        ball_condition();
         draw_robot(2,sigma2,x2,y2,w2,catchball2,imu2);
         draw_robot(3,sigma3,x3,y3,w3,catchball3,imu3);
-        ball_condition();
         draw_obstacle(x1,y1,w1,obstacle_info1);
         draw_obstacle(x2,y2,w2,obstacle_info2);
         draw_obstacle(x3,y3,w3,obstacle_info3);
@@ -210,6 +211,7 @@ function draw_robot_map(){
     }
 }
 function draw_obstacle(x,y,w,obstacle_info){
+    
     let canvas = document.getElementById("robot_map");
     let ctx = canvas.getContext("2d");
     let center_x = canvas.width / 2;
@@ -249,6 +251,7 @@ function draw_move_line(x,y,w,move_angle,move_speed,move_w){
     if(move_angle!=999){
         //Y = ( ( X - X1 )( Y2 - Y1) / ( X2 - X1) ) + Y1
         let length = (move_speed-0)*(60-15)/(80-0)+15;
+        if(length>50)length=50;
         //console.log(move_speed);
         ctx.strokeStyle = '#3366ff';
         x_= x+length * Math.cos(move_angle+angle);
@@ -367,22 +370,12 @@ function ball_condition(){
       let center_x = canvas.width / 2;
       let center_y = canvas.height / 2;
       let x,y;
-      if(Math.sqrt(Math.pow(x2-x3,2)+Math.pow(y2-y3,2))<30){
-        draw_ball(x2,y2,w2,ball_ang2,ball_dis2);
+      if(ball_dis2<ball_dis3){
+         draw_ball(x2,y2,w2,ball_ang2,ball_dis2);
       }else{
-          
-          m2=Math.tan((ball_ang2+w2)/180*Math.PI);
-          m3=Math.tan((ball_ang3+w3)/180*Math.PI);
-          //m2*x-y=m2*x2-y2;
-          //m3*x-y=m3*x3-y3;
-          
-          x=((m2*x2-y2)-(m3*x3-y3))/(m2-m3);
-          y=-(m2*x2-y2-m2*x);
-          ctx.arc(center_x + (x * 0.877), center_y - (y * 0.88),13,0,360,false);
-          ctx.fillStyle="red";//填充颜色,默认是黑色
-          ctx.fill();//画实心圆
+         draw_ball(x3,y3,w3,ball_ang3,ball_dis3);
       }
-      //=======================================
+      
       ctx.beginPath();
       ctx.strokeStyle = '#000000';
       ctx.arc(center_x+(x*0.877), center_y-(y*0.88), 13, 0, 2*Math.PI);
