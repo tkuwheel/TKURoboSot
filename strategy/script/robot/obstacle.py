@@ -288,6 +288,7 @@ class Obstacle(object):
             min_ang = ang_tmp
             fin_ang = route_filter[i]
             # print("route_filter[i]",fin_ang)
+
     v_x = goal_dis * math.cos(math.radians(fin_ang))
     v_y = goal_dis * math.sin(math.radians(fin_ang))
     if(goal_dis<80):

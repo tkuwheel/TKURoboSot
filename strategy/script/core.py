@@ -118,9 +118,10 @@ class Core(Robot, StateMachine):
       # else:
       #   dis = opp_info['dis']
       #   ang = opp_info['ang']
-      #========more defense=======
+      #========more defense========
       # dis = opp_info['dis']
       # ang = opp_info['ang']
+      #============================
       x, y, yaw = self.CC.ClassicRounding(t[side]['ang'],\
                                           dis,\
                                           ang)
@@ -585,7 +586,6 @@ class Strategy(object):
             self.RunStatePoint()
 
         if self.robot.is_defense:
-          # print(self.robot.MyRole())
           if(self.robot.MyRole()=="Attacker"):
             self.robot.toChase()
           else:
