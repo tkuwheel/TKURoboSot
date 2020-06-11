@@ -3,6 +3,7 @@ import rospy
 import sys
 import math
 import time
+import numpy as np
 from statemachine import StateMachine, State
 from robot.robot import Robot
 from std_msgs.msg import String
@@ -70,13 +71,18 @@ class Core(Robot, StateMachine):
   def on_toBlock(self, methods = "Classic"):
     t  = self.GetObjectInfo()
     position = self.GetRobotInfo()
+    defense_front = 0
+    if(self.our_side=="Yellow"):
+      defense_front = 0
+    elif(self.our_side=="Blue"):
+      defense_front = 180
     if methods == "Classic":
       log("to block classic")
       x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
                                           t['ball']['ang'],\
                                           position['location']['yaw'],\
                                           t['ball']['speed_pwm_x'], t['ball']['speed_pwm_y'],\
-                                          self.cp_value)
+                                          defense_front)
     elif methods == "Limit":
       log("to block limit")
       x = 0
@@ -96,10 +102,18 @@ class Core(Robot, StateMachine):
     if self.locate:
       x, y, yaw, arrived = self.BC.Go2Point(self.run_x, self.run_y, self.run_yaw)
     else :
-      x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], self.cp_value)
+      defense_front = 0
+      if(self.our_side=="Yellow"):
+        defense_front = 0
+      elif(self.our_side=="Blue"):
+        defense_front = 180
+      print("self.our_side", self.our_side)
+      # x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], self.cp_value)
+      x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], defense_front)
       arrived = 0
     
     self.MotionCtrl(x, y, yaw)
+    # print("self.our_side", self.our_side)
     log("Returnig")
     return arrived
   
@@ -184,17 +198,25 @@ class Strategy(object):
             self.robot.toBlock()          
           else:
             self.robot.toRet() 
-            
+        goal_limit = 50
         if self.robot.is_block:
           if targets['ball']['dis'] > 300 and not targets['ball']['dis'] == 999:
             self.robot.toWait()
           else :
-            if twopoint[our_side]['left'] > 120 and twopoint[our_side]['left'] > twopoint[our_side]['right'] and targets['ball']['ang'] <= 0:
+            # if twopoint[our_side]['left'] > 120 and twopoint[our_side]['left'] > twopoint[our_side]['right'] and targets['ball']['ang'] <= 0:
+            #   self.robot.toBlock('Limit')
+            # elif twopoint[our_side]['right'] > 120 and twopoint[our_side]['left'] < twopoint[our_side]['right'] and targets['ball']['ang'] >= 0:
+            #   self.robot.toBlock('Limit')
+            if( our_side=="Blue" and\
+               (((position['location']['y'])<goal_limit*(-1) and targets['ball']['ang'] > 0) or\
+                ((position['location']['y'])>goal_limit      and targets['ball']['ang'] < 0))):
               self.robot.toBlock('Limit')
-            elif twopoint[our_side]['right'] > 120 and twopoint[our_side]['left'] < twopoint[our_side]['right'] and targets['ball']['ang'] >= 0:
+            elif( our_side=="Yellow" and\
+               (((position['location']['y'])<goal_limit*(-1) and targets['ball']['ang'] < 0) or\
+                ((position['location']['y'])>goal_limit      and targets['ball']['ang'] > 0))):
               self.robot.toBlock('Limit')
-            elif targets['ball']['dis'] <= 45:
-                self.robot.toPush()                 
+            # elif targets['ball']['dis'] <= 45:
+            #   self.robot.toPush()                 
             elif twopoint[our_side]['right'] == 999 or \
                twopoint[our_side]['left'] == 999 and \
                targets['ball']['ang'] == 999:

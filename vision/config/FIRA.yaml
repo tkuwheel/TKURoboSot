@@ -3,13 +3,12 @@ Camera:
   High: 650.0
 Center:
   Camera_high: 620
-  Center_X: 318
-  Center_Y: 258
+  Center_X: 320
+  Center_Y: 260
   Front: 91
   Horizon: 134
-  Inner: 44
-  Outer: 229
-
+  Inner: 37
+  Outer: 224
   X: 308
   Y: 266
 FPS: 16
@@ -22,12 +21,12 @@ HSV:
   - 18
   - 100
   Blue:
-  - 213
+  - 217
   - 261
-  - 53
+  - 74
   - 100
-  - 48
-  - 99
+  - 29
+  - 100
   Green:
   - 150
   - 213
@@ -59,14 +58,14 @@ Parameterbutton: 4
 SCAN:
   Angle_Near_Gap: 4
   Angle_range_1: 2
-  Angle_range_2_3: 2
+  Angle_range_2_3: 3
   Dont_Search_Angle_1: 30
-  Dont_Search_Angle_2: 151
-  Dont_Search_Angle_3: 274
+  Dont_Search_Angle_2: 149
+  Dont_Search_Angle_3: 275
   Magn_Far_End: 224
   Magn_Far_Start: 154
   Magn_Middle_Start: 50
-  Magn_Near_Gap: 3
+  Magn_Near_Gap: 4
   Magn_Near_Start: 35
 blackItem:
   angle: 3

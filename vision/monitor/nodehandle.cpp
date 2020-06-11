@@ -475,7 +475,7 @@ void NodeHandle::Pub_object()
     //==========================================
     object_msg.fps = RateMsg;
 
-    if (Red_Item.size > SizeFilter)
+    //if (Red_Item.size > SizeFilter)
     {
         object_msg.ball_x = Red_Item.x - CenterXMsg;
         object_msg.ball_y = 0 - (Red_Item.y - CenterYMsg);
