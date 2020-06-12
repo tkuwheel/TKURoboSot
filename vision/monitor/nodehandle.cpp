@@ -57,27 +57,14 @@ NodeHandle::NodeHandle()
     //Parameter_default();
     Readyaml();
     AngleLUT();
-    SizeFilter = 10;
+    SizeFilter = 5;
     connect_srv = nh.advertiseService("monitor/connect", &NodeHandle::connectcall, this);
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
-    obstacle_sub = nh.subscribe("vision/pixel_obstacle", 1000, &NodeHandle::obstaclecall, this);
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
     //http://localhost:8080/stream?topic=/camera/image_monitor webfor /camera/image
     monitor_pub = nh.advertise<sensor_msgs::Image>("camera/image_monitor", 1);
     object_pub = nh.advertise<vision::Object>("vision/object", 1);
     Two_point_pub = nh.advertise<vision::Two_point>("interface/Two_point", 1);
-}
-void NodeHandle::obstaclecall(const std_msgs::Int32MultiArray msg){
-    obstacles.clear();
-    DetectedObject tmp;
-    for(int i=0; i<msg.data.size(); i+=4){
-        tmp.dis_min  = msg.data.at(i+0);
-        tmp.angle    = msg.data.at(i+1);
-        tmp.ang_max  = msg.data.at(i+2);
-        tmp.ang_min  = msg.data.at(i+3);
-        obstacles.push_back(tmp);
-    }
-    //obstacles.assign(msg.data.begin(), msg.data.end()); 
 }
 void NodeHandle::AngleLUT()
 {
@@ -102,7 +89,8 @@ void NodeHandle::Readyaml()
     }
     else
     {
-        cout << "yaml file does not exist" << endl;
+        cout << "YAML file does not exist" << endl;
+        //exit(0);
     }
     Parameter_getting();
 }
@@ -164,7 +152,6 @@ void NodeHandle::Parameter_getting()
     nh.getParam("FIRA/vision/HSV/white/angle", WhiteAngleMsg);
     nh.getParam("FIRA/vision/HSV/black/gray", BlackGrayMsg);
     nh.getParam("FIRA/vision/HSV/black/angle", BlackAngleMsg);
-    //HSVmap();
     color_map = ColorFile();
 }
 double NodeHandle::camera_f(double Omni_pixel)
@@ -251,132 +238,13 @@ int NodeHandle::Angle_Interval(int radius)
     }
     return angle_gap;
 }
-void NodeHandle::HSVmap()
-{
-    string vision_path = ros::package::getPath("vision");
-    string FILE_PATH = "/config/HSVcolormap.bin";
-    unsigned char *HSVmap = new unsigned char[256 * 256 * 256];
-    if (!HSV_red.empty() && !HSV_green.empty() && !HSV_blue.empty() && !HSV_yellow.empty() && !HSV_white.empty())
-    {
-        //cout<<"get all hsv"<<endl;
-        for (int b = 0; b < 256; b++)
-        {
-            for (int g = 0; g < 256; g++)
-            {
-                for (int r = 0; r < 256; r++)
-                {
-                    double R, G, B, H_sum, S_sum, V_sum;
-                    B = b / 255.0;
-                    G = g / 255.0;
-                    R = r / 255.0;
-                    double Max = (max(R, G) > max(G, B)) ? max(R, G) : max(G, B);
-                    double Min = (min(R, G) < min(G, B)) ? min(R, G) : min(G, B);
-                    if (Max == Min)
-                    {
-                        Max += 1;
-                    }
-                    if (R == Max)
-                    {
-                        H_sum = (G - B) * 60 / (Max - Min);
-                    }
-                    if (G == Max)
-                    {
-                        H_sum = 120 + (B - R) * 60 / (Max - Min);
-                    }
-                    if (B == Max)
-                    {
-                        H_sum = 240 + (R - G) * 60 / (Max - Min);
-                    }
-                    if (B == G && B == R)
-                    {
-                        H_sum = 0;
-                    }
-                    if (H_sum < 0)
-                    {
-                        H_sum = H_sum + 360;
-                    }
-                    if (Max == 0)
-                    {
-                        S_sum = 0;
-                    }
-                    S_sum = (((Max - Min) * 100) / Max);
-                    V_sum = Max * 100;
-                    HSVmap[r + (g << 8) + (b << 16)] = 0x00;
-                    if (HSV_red[0] < HSV_red[1])
-                    {
-                        if ((H_sum >= HSV_red[0]) && (H_sum <= HSV_red[1]) && (S_sum >= HSV_red[2]) && (S_sum <= HSV_red[3]) && (V_sum >= HSV_red[4]) && (V_sum <= HSV_red[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_red[0]) || (H_sum <= HSV_red[1]) && (S_sum >= HSV_red[2]) && (S_sum <= HSV_red[3]) && (V_sum >= HSV_red[4]) && (V_sum <= HSV_red[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDITEM;
-                    }
-                    if (HSV_green[0] < HSV_green[1])
-                    {
-                        if ((H_sum >= HSV_green[0]) && (H_sum <= HSV_green[1]) && (S_sum >= HSV_green[2]) && (S_sum <= HSV_green[3]) && (V_sum >= HSV_green[4]) && (V_sum <= HSV_green[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | GREENITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_green[0]) || (H_sum <= HSV_green[1]) && (S_sum >= HSV_green[2]) && (S_sum <= HSV_green[3]) && (V_sum >= HSV_green[4]) && (V_sum <= HSV_green[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | GREENITEM;
-                    }
-                    if (HSV_blue[0] < HSV_blue[1])
-                    {
-
-                        if ((H_sum >= HSV_blue[0]) && (H_sum <= HSV_blue[1]) && (S_sum >= HSV_blue[2]) && (S_sum <= HSV_blue[3]) && (V_sum >= HSV_blue[4]) && (V_sum <= HSV_blue[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | BLUEITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_blue[0]) || (H_sum <= HSV_blue[1]) && (S_sum >= HSV_blue[2]) && (S_sum <= HSV_blue[3]) && (V_sum >= HSV_blue[4]) && (V_sum <= HSV_blue[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | BLUEITEM;
-                    }
-                    if (HSV_yellow[0] < HSV_yellow[1])
-                    {
-                        if ((H_sum >= HSV_yellow[0]) && (H_sum <= HSV_yellow[1]) && (S_sum >= HSV_yellow[2]) && (S_sum <= HSV_yellow[3]) && (V_sum >= HSV_yellow[4]) && (V_sum <= HSV_yellow[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | YELLOWITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_yellow[0]) || (H_sum <= HSV_yellow[1]) && (S_sum >= HSV_yellow[2]) && (S_sum <= HSV_yellow[3]) && (V_sum >= HSV_yellow[4]) && (V_sum <= HSV_yellow[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | YELLOWITEM;
-                    }
-                    if (HSV_white[0] < HSV_white[1])
-                    {
-                        if ((H_sum >= HSV_white[0]) && (H_sum <= HSV_white[1]) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | WHITEITEM;
-                    }
-                    else
-                    {
-                        if ((H_sum >= HSV_white[0]) || (H_sum <= HSV_white[1]) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
-                            HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | WHITEITEM;
-                    }
-                }
-            }
-        }
-        string Filename = vision_path + FILE_PATH;
-        const char *Filename_Path = Filename.c_str();
-
-        FILE *file = fopen(Filename_Path, "rb+"); //開啟檔案來寫
-        fwrite(HSVmap, 1, 256 * 256 * 256, file);
-        fclose(file);
-
-        //if (SaveButton != 0) {
-        //	FILE *file = fopen(Filename_Path, "rb+"); //開啟檔案來寫
-        //	fwrite( HSVmap, 1, 256 * 256 * 256 , file );
-        //	fclose(file);
-        //	SaveButton = 0;
-        //}
-    }
-}
 vector<BYTE> NodeHandle::ColorFile()
 {
     string vision_path = ros::package::getPath("vision");
     string FILE_PATH = "/config/HSVcolormap.bin";
     string Filename = vision_path + FILE_PATH;
     const char *Filename_Path = Filename.c_str();
+    if (ifstream(Filename_Path)){
     // open the file:
     streampos fileSize;
     std::ifstream file(Filename_Path, ios::binary);
@@ -388,6 +256,11 @@ vector<BYTE> NodeHandle::ColorFile()
     vector<BYTE> fileData(fileSize);
     file.read((char *)&fileData[0], fileSize);
     return fileData;
+    }
+    else{
+        cout << "COLORMAP file does not exist" << endl;
+        exit(0);
+    }
 }
 void NodeHandle::Set_Unscaned_Angle()
 {
@@ -475,7 +348,7 @@ void NodeHandle::Pub_object()
     //==========================================
     object_msg.fps = RateMsg;
 
-    //if (Red_Item.size > SizeFilter)
+    // if (Red_Item.size > SizeFilter)
     {
         object_msg.ball_x = Red_Item.x - CenterXMsg;
         object_msg.ball_y = 0 - (Red_Item.y - CenterYMsg);
@@ -484,7 +357,7 @@ void NodeHandle::Pub_object()
         object_msg.ball_dis = Omni_distance(Red_Item.distance);
     }
 
-    if (Blue_Item.size > SizeFilter)
+    // if (Blue_Item.size > SizeFilter)
     {
         object_msg.blue_x = Blue_Item.x - CenterXMsg;
         object_msg.blue_y = 0 - (Blue_Item.y - CenterYMsg);
@@ -497,7 +370,7 @@ void NodeHandle::Pub_object()
         object_msg.blue_fix_dis = Omni_distance(Blue_Item.fix_distance);
     }
 
-    if (Yellow_Item.size > SizeFilter)
+    // if (Yellow_Item.size > SizeFilter)
     {
         object_msg.yellow_x = Yellow_Item.x - CenterXMsg;
         object_msg.yellow_y = 0 - (Yellow_Item.y - CenterYMsg);

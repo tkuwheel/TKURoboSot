@@ -94,11 +94,31 @@ function PublishTopicCmdVel(vec3) {
         }
     });
     let str;
-    //str="---"+"<br/>"+"linear:<br/>"+"&ensp;&ensp;x: "+String(Math.round(vec3.x*100)/100)+"<br/>"+"&ensp;&ensp;y: "+String(Math.round(vec3.y*100)/100)+"<br/>"+"&ensp;&ensp;z: 0.0<br/>";
-    //str=str+"angular:<br/>"+"&ensp;&ensp;x: 0.0"+"<br/>"+"&ensp;&ensp;y: 0.0"+"<br/>"+"&ensp;&ensp;z: "+String(Math.round(vec3.z*100)/100);
+    str="---"+"<br/>"+"linear:<br/>"+"&ensp;&ensp;x: "+ num2str(vec3.x) +"<br/>"+"&ensp;&ensp;y: "+ num2str(vec3.y)+"<br/>"+"&ensp;&ensp;z: 0.0<br/>";
+    str=str+"angular:<br/>"+"&ensp;&ensp;x: 0.0"+"<br/>"+"&ensp;&ensp;y: 0.0"+"<br/>"+"&ensp;&ensp;z: "+ num2str(vec3.z) + "<br/>---";
     if (RemoteState) {
-      console.log(twist);
+      //console.log(twist);
       //SendMsgs(str,0);
+      show_vel(str);
       cmdVel1.publish(twist);
     }
 }
+function num2str(value){
+    value = parseFloat(Math.round(value*100)/100);
+    let str;    
+    if((value*10)%10==0){
+        str = String(value)+".0";
+    }else{
+        str = String(value);
+    }
+    return str;
+}
+function show_vel(str)
+{
+    document.getElementById("vel_info").innerHTML = str;
+}
+
+var str;
+str="---"+"<br/>"+"linear:<br/>"+"&ensp;&ensp;x: "+ "0.0" +"<br/>"+"&ensp;&ensp;y: "+ "0.0" +"<br/>"+"&ensp;&ensp;z: 0.0<br/>";
+str=str+"angular:<br/>"+"&ensp;&ensp;x: 0.0"+"<br/>"+"&ensp;&ensp;y: 0.0"+"<br/>"+"&ensp;&ensp;z: "+ "0.0" + "<br/>---";
+show_vel(str);

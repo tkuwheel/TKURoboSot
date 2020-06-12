@@ -146,6 +146,52 @@ function gameStart(){
         StrategyStop();
     }
 }
+function all_start(){
+    if(document.getElementById("StopInput").checked == true && Robot_Ctl!=null){
+        document.getElementById("game_start").checked = false;
+        StrategyStop();
+    }
+    if(document.getElementById("StartInput").checked == true && Robot_Ctl!=null){
+        document.getElementById("game_start").checked = true;
+    }
+    var start = false;
+    
+    var request = new ROSLIB.ServiceRequest({
+        config: {
+            bools: [
+                {name: 'game_start', value: document.getElementById("game_start").checked},
+            ]
+        }
+    });
+    dynaRecClient.callService(request, function(result) {
+        //console.log('Result for service call on '
+        //    + dynaRecClient.name
+        //    + ': '
+        //    + JSON.stringify(result, null, 2));
+    });
+
+    dynaRecClient2.callService(request, function(result) {
+        //console.log('Result for service call on '
+        //    + dynaRecClient.name
+        //    + ': '
+        //    + JSON.stringify(result, null, 2));
+    });  
+    dynaRecClient3.callService(request, function(result) {
+        //console.log('Result for service call on '
+        //    + dynaRecClient.name
+        //    + ': '
+        //    + JSON.stringify(result, null, 2));
+    });
+
+    vec3 = new ROSLIB.Message({
+        x: 0,
+        y: 0,
+        z: 0
+    });
+    if(document.getElementById("game_start").checked==false){
+        StrategyStop();
+    }
+}
 function all_stop(){
     document.getElementById("game_start").checked = false;
     var request = new ROSLIB.ServiceRequest({

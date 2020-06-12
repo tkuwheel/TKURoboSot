@@ -76,19 +76,27 @@ class Core(Robot, StateMachine):
       defense_front = 0
     elif(self.our_side=="Blue"):
       defense_front = 180
-    if methods == "Classic":
-      log("to block classic")
-      x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
+      
+    # if methods == "Classic":
+    #   log("to block classic")
+    #   x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
+    #                                       t['ball']['ang'],\
+    #                                       position['location']['yaw'],\
+    #                                       t['ball']['speed_pwm_x'], t['ball']['speed_pwm_y'],\
+    #                                       defense_front)
+    # elif methods == "Limit":
+    #   log("to block limit")
+    #   x = 0
+    #   y = 0
+    #   yaw = 0
+    x, y, yaw = self.BK.ClassicBlocking(t['ball']['dis'],\
                                           t['ball']['ang'],\
                                           position['location']['yaw'],\
                                           t['ball']['speed_pwm_x'], t['ball']['speed_pwm_y'],\
                                           defense_front)
-    elif methods == "Limit":
-      log("to block limit")
-      x = 0
-      y = 0
-      yaw = 0
-    
+    if methods == "Limit":
+      x=0
+      y=0
     self.MotionCtrl(x, y, yaw)
 
   def on_toWait(self):
@@ -107,7 +115,7 @@ class Core(Robot, StateMachine):
         defense_front = 0
       elif(self.our_side=="Blue"):
         defense_front = 180
-      print("self.our_side", self.our_side)
+      # print("self.our_side", self.our_side)
       # x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], self.cp_value)
       x, y, yaw = self.BK.Return(t[self.our_side]['dis'], t[self.our_side]['ang'], position['location']['yaw'], defense_front)
       arrived = 0

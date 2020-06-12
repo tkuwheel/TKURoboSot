@@ -13,7 +13,11 @@ int main(int argc, char **argv)
     signal(SIGINT, SigintHandler);
     //Vision cam(VISION_TOPIC);
     Vision cam("camera/image_raw");
-    ros::spin();
+    ros::Rate loop_rate(100);
+    while(ros::ok()){
+        ros::spinOnce();
+        loop_rate.sleep();
+    }
     ROS_INFO("Node exit");
     printf("Process exit\n");
     return 0;

@@ -136,11 +136,6 @@ void Vision::ObjectProcessing()
            objectdet_change(YELLOWITEM, Yellow_Item);
         }
     }
-    for(int i=0; i<obstacles.size(); i++){
-        //cout<<obstacles.size()<<endl;
-        ellipse(Monitor, Point(CenterXMsg, CenterYMsg), Size(obstacles.at(i).dis_min, obstacles.at(i).dis_min), 0, 360 - obstacles.at(i).ang_max, 360 - obstacles.at(i).ang_min, Scalar(255, 0, 255), 2);
-    }
-    
 }
 void Vision::objectdet_change( int color, DetectedObject &obj_item)
 {
@@ -154,7 +149,8 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     DetectedObject FIND_Item;
     deque<int> find_point;
     //find_point.clear();
-    //FIND_Item.Reset();
+    FIND_Item.Reset();
+
     for (int distance = Magn_Near_StartMsg; distance <= Magn_Far_EndMsg; distance += Magn_Near_GapMsg)
     {
         for (int angle = 0; angle < 360; angle += Angle_Interval(distance))
@@ -210,7 +206,8 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
         }
     }
 
-    //if (obj_item.size > SizeFilter)
+    // if (obj_item.size > SizeFilter)
+    if (obj_item.size > 0)
     {
         find_object_point(obj_item, color);
         draw_ellipse(Monitor, obj_item, color);
@@ -262,29 +259,23 @@ void Vision::find_around(Mat &frame_, deque<int> &find_point, int distance, int 
     {
         for (int j = -1; j < 2; j++)
         {
-            dis_f = distance + i;//Magn_Near_GapMsg;
-            
+            dis_f = distance + i*Magn_Near_GapMsg;
+
             if (dis_f < Magn_Near_StartMsg)
                 dis_f = Magn_Near_StartMsg;
 
-            //dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
-            if(dis_f>Magn_Far_EndMsg)break;
+            dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
             ang_f = angle + j * Angle_Interval(dis_f);
-            ang_f = ang_f - (ang_f % Angle_Interval(dis_f));
 
             while ((Angle_Adjustment(ang_f) > Unscaned_Angle[0] && Angle_Adjustment(ang_f) < Unscaned_Angle[1]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[2] && Angle_Adjustment(ang_f) < Unscaned_Angle[3]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[4] && Angle_Adjustment(ang_f) < Unscaned_Angle[5]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[6] && Angle_Adjustment(ang_f) < Unscaned_Angle[7]))
             {
-                if (j < 0){
+                if (j < 0)
                     ang_f += -1 * Angle_Interval(dis_f);
-                    ang_f = ang_f - (ang_f % Angle_Interval(dis_f));
-                }
-                else{
+                else
                     ang_f += 1 * Angle_Interval(dis_f);
-                    ang_f = ang_f + (Angle_Interval(dis_f) - (ang_f % Angle_Interval(dis_f)) );
-                }
             }
 
             angle_f = Angle_Adjustment(ang_f);
@@ -317,31 +308,23 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
     {
         for (int j = -1; j < 2; j++)
         {
-            dis_f = distance + i;
-            //dis_f = distance + Magn_Near_GapMsg;
+            dis_f = distance + i * Magn_Near_GapMsg;
 
-            if (dis_f < InnerMsg)
-                dis_f = InnerMsg;
+            if (dis_f < Magn_Near_StartMsg)
+                dis_f = Magn_Near_StartMsg;
 
-            //dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
-            if(dis_f>Magn_Far_EndMsg)break;
+            dis_f = Frame_Area(dis_f, Magn_Far_EndMsg);
             ang_f = angle + j * Angle_Interval(dis_f);
-            ang_f = ang_f - (ang_f % Angle_Interval(dis_f));
 
             while ((Angle_Adjustment(ang_f) > Unscaned_Angle[0] && Angle_Adjustment(ang_f) < Unscaned_Angle[1]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[2] && Angle_Adjustment(ang_f) < Unscaned_Angle[3]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[4] && Angle_Adjustment(ang_f) < Unscaned_Angle[5]) ||
                    (Angle_Adjustment(ang_f) > Unscaned_Angle[6] && Angle_Adjustment(ang_f) < Unscaned_Angle[7]))
             {
-                if (j < 0){
+                if (j < 0)
                     ang_f += -1 * Angle_Interval(dis_f);
-                    ang_f = ang_f - (ang_f % Angle_Interval(dis_f));
-                }
                 else
-                {
                     ang_f += 1 * Angle_Interval(dis_f);
-                    ang_f = ang_f + (Angle_Interval(dis_f) - (ang_f % Angle_Interval(dis_f)) );
-                }
             }
 
             angle_f = Angle_Adjustment(ang_f);
@@ -420,61 +403,62 @@ void Vision::find_object_point(DetectedObject &obj_, int color)
         obj_.y = y;
         obj_.distance = distance_;
         obj_.angle = find_angle;
-        // angle_ = Angle_Adjustment((obj_.ang_max + obj_.ang_min) / 2);
-        // angle_range = 0.7 * Angle_Adjustment((obj_.ang_max - obj_.ang_min) / 2);
+        /*
+        angle_ = Angle_Adjustment((obj_.ang_max + obj_.ang_min) / 2);
+        angle_range = 0.7 * Angle_Adjustment((obj_.ang_max - obj_.ang_min) / 2);
 
-        // for (int distance = obj_.dis_min; distance <= obj_.dis_max; distance++)
-        // {
-        //     for (int angle = 0; angle <= angle_range; angle++)
-        //     {
-        //         find_angle = Angle_Adjustment(angle_ + angle);
+        for (int distance = obj_.dis_min; distance <= obj_.dis_max; distance++)
+        {
+            for (int angle = 0; angle <= angle_range; angle++)
+            {
+                find_angle = Angle_Adjustment(angle_ + angle);
 
-        //         x_ = distance * Angle_cos[find_angle];
-        //         y_ = distance * Angle_sin[find_angle];
+                x_ = distance * Angle_cos[find_angle];
+                y_ = distance * Angle_sin[find_angle];
 
-        //         x = Frame_Area(CenterXMsg + x_, Source.cols);
-        //         y = Frame_Area(CenterYMsg - y_, Source.rows);
+                x = Frame_Area(CenterXMsg + x_, Source.cols);
+                y = Frame_Area(CenterYMsg - y_, Source.rows);
 
-        //         B = Source.data[(y * Source.cols + x) * 3 + 0];
-        //         G = Source.data[(y * Source.cols + x) * 3 + 1];
-        //         R = Source.data[(y * Source.cols + x) * 3 + 2];
+                B = Source.data[(y * Source.cols + x) * 3 + 0];
+                G = Source.data[(y * Source.cols + x) * 3 + 1];
+                R = Source.data[(y * Source.cols + x) * 3 + 2];
 
-        //         if (color_map[R + (G << 8) + (B << 16)] & color)
-        //         {
-        //             obj_.x = x;
-        //             obj_.y = y;
-        //             obj_.distance = distance;
-        //             obj_.angle = find_angle;
-        //             break;
-        //         }
+                if (color_map[R + (G << 8) + (B << 16)] & color)
+                {
+                    obj_.x = x;
+                    obj_.y = y;
+                    obj_.distance = distance;
+                    obj_.angle = find_angle;
+                    break;
+                }
 
-        //         find_angle = Angle_Adjustment(angle_ - angle);
+                find_angle = Angle_Adjustment(angle_ - angle);
 
-        //         x_ = distance * Angle_cos[find_angle];
-        //         y_ = distance * Angle_sin[find_angle];
+                x_ = distance * Angle_cos[find_angle];
+                y_ = distance * Angle_sin[find_angle];
 
-        //         x = Frame_Area(CenterXMsg + x_, Source.cols);
-        //         y = Frame_Area(CenterYMsg - y_, Source.rows);
+                x = Frame_Area(CenterXMsg + x_, Source.cols);
+                y = Frame_Area(CenterYMsg - y_, Source.rows);
 
-        //         B = Source.data[(y * Source.cols + x) * 3 + 0];
-        //         G = Source.data[(y * Source.cols + x) * 3 + 1];
-        //         R = Source.data[(y * Source.cols + x) * 3 + 2];
+                B = Source.data[(y * Source.cols + x) * 3 + 0];
+                G = Source.data[(y * Source.cols + x) * 3 + 1];
+                R = Source.data[(y * Source.cols + x) * 3 + 2];
 
-        //         if (color_map[R + (G << 8) + (B << 16)] & color)
-        //         {
-        //             obj_.x = x;
-        //             obj_.y = y;
-        //             obj_.distance = distance;
-        //             obj_.angle = find_angle;
-        //             break;
-        //         }
-        //     }
-        //     if (obj_.distance != 0)
-        //     {
-        //         break;
-        //     }
-        // }
-        
+                if (color_map[R + (G << 8) + (B << 16)] & color)
+                {
+                    obj_.x = x;
+                    obj_.y = y;
+                    obj_.distance = distance;
+                    obj_.angle = find_angle;
+                    break;
+                }
+            }
+            if (obj_.distance != 0)
+            {
+                break;
+            }
+        }
+        */
     }
 
     if (Angle_Adjustment(angle_ - FrontMsg) < 180)
@@ -510,7 +494,7 @@ void Vision::find_edge_point(DetectedObject &obj_, int color)
 
             x = Frame_Area(CenterXMsg + x_, Source.cols);
             y = Frame_Area(CenterYMsg - y_, Source.rows);
-            
+
             B = Source.data[(y * Source.cols + x) * 3 + 0];
             G = Source.data[(y * Source.cols + x) * 3 + 1];
             R = Source.data[(y * Source.cols + x) * 3 + 2];
@@ -520,17 +504,9 @@ void Vision::find_edge_point(DetectedObject &obj_, int color)
                 temp = distance;
                 if (temp < obj_.right_dis)
                 {
-                    //obj_.right_x = x;
-                    //obj_.right_y = y;
-                    obj_.right_dis = temp;
-
-                    x_ = temp * Angle_cos[right_angle];
-                    y_ = temp * Angle_sin[right_angle];
-
-                    x = Frame_Area(CenterXMsg + x_, Source.cols);
-                    y = Frame_Area(CenterYMsg - y_, Source.rows);
                     obj_.right_x = x;
                     obj_.right_y = y;
+                    obj_.right_dis = temp;
                 }
             }
         }
@@ -547,7 +523,7 @@ void Vision::find_edge_point(DetectedObject &obj_, int color)
 
             x = Frame_Area(CenterXMsg + x_, Source.cols);
             y = Frame_Area(CenterYMsg - y_, Source.rows);
-            
+
             B = Source.data[(y * Source.cols + x) * 3 + 0];
             G = Source.data[(y * Source.cols + x) * 3 + 1];
             R = Source.data[(y * Source.cols + x) * 3 + 2];
@@ -557,16 +533,9 @@ void Vision::find_edge_point(DetectedObject &obj_, int color)
                 temp = distance;
                 if (temp < obj_.left_dis)
                 {
-                    //obj_.left_x = x;
-                    //obj_.left_y = y;
-                    obj_.left_dis = distance;
-                    x_ = temp * Angle_cos[left_angle];
-                    y_ = temp * Angle_sin[left_angle];
-
-                    x = Frame_Area(CenterXMsg + x_, Source.cols);
-                    y = Frame_Area(CenterYMsg - y_, Source.rows);
                     obj_.left_x = x;
                     obj_.left_y = y;
+                    obj_.left_dis = distance;
                 }
             }
         }
@@ -690,9 +659,7 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
         obj_item.ang_min=obj_item.ang_min-360;
         obj_item.ang_max=obj_item.ang_max-360;
     }
-    if(obj_item.size>0){
-        draw_ellipse(Monitor, obj_item, 5);
-    }
+    draw_ellipse2(Monitor, obj_item, 5);
     //if (color == BLUEITEM){
     //    cv::imshow("threshold", threshold);
     //    waitKey(10);
@@ -810,7 +777,7 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
     int left_gap = obj_item.ang_min-obj_.ang_min;
     
     if(obj_item.ang_max!=0||obj_item.ang_min!=0){
-      if(fabs(right_gap-left_gap)>fabs(obj_.ang_max-obj_.ang_min)*0.15){
+      if(fabs(right_gap-left_gap)>fabs(obj_.ang_max-obj_.ang_min)*0.2){
         if(right_gap>left_gap){
             find_gap[0][2] = obj_item.ang_max;
             find_gap[0][5] = obj_.ang_max;
@@ -821,10 +788,8 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
         find_gap[0][6] = find_gap[0][5] - find_gap[0][2];
       }else{
         double right_center=Angle_Adjustment((obj_.ang_max+obj_item.ang_max)/2);
-        double rgap = abs(right_center-FrontMsg) < abs(360-abs(right_center-FrontMsg))?abs(right_center-FrontMsg):abs(360-abs(right_center-FrontMsg));
         double left_center=Angle_Adjustment((obj_item.ang_min+obj_.ang_min)/2);
-        double lgap = abs(left_center-FrontMsg) < abs(360-abs(left_center-FrontMsg))?abs(left_center-FrontMsg):abs(360-abs(left_center-FrontMsg));
-        if(rgap<lgap){
+        if(fabs(right_center-FrontMsg)<fabs(left_center-FrontMsg)){
             find_gap[0][2] = obj_item.ang_max;
             find_gap[0][5] = obj_.ang_max;
         }else{
@@ -955,13 +920,15 @@ void Vision::draw_ellipse(Mat &frame_, DetectedObject &obj_, int color)
     ellipse(frame_, Point(CenterXMsg, CenterYMsg), Size(obj_.dis_max, obj_.dis_max), 0, 360 - obj_.ang_max, 360 - obj_.ang_min, Scalar(255, 255, 0), 1);
     draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_max, color);
     draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_min, color);
+    circle(frame_, Point(obj_.x, obj_.y), 2, Scalar(0, 0, 0), -1);
+}
+void Vision::draw_ellipse2(Mat &frame_, DetectedObject &obj_, int color)
+{
     //goalkeeper
-    if(color==5){
-        ellipse(frame_, Point(CenterXMsg, CenterYMsg), Size(obj_.dis_min, obj_.dis_min), 0, 360 - obj_.ang_max, 360 - obj_.ang_min, Scalar(255, 0, 255), 2);
-        ellipse(frame_, Point(CenterXMsg, CenterYMsg), Size(obj_.dis_max, obj_.dis_max), 0, 360 - obj_.ang_max, 360 - obj_.ang_min, Scalar(255, 0, 255), 2);
-        draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_max, 5, 2);
-        draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_min, 5, 2);
-    }
+    ellipse(frame_, Point(CenterXMsg, CenterYMsg), Size(obj_.dis_min, obj_.dis_min), 0, 360 - obj_.ang_max, 360 - obj_.ang_min, Scalar(0, 255, 255), 1);
+    ellipse(frame_, Point(CenterXMsg, CenterYMsg), Size(obj_.dis_max, obj_.dis_max), 0, 360 - obj_.ang_max, 360 - obj_.ang_min, Scalar(0, 255, 255), 1);
+    draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_max, 5);
+    draw_Line(frame_, obj_.dis_max, obj_.dis_min, obj_.ang_min, 5);
     circle(frame_, Point(obj_.x, obj_.y), 2, Scalar(0, 0, 0), -1);
 }
 void Vision::draw_center()
@@ -999,7 +966,7 @@ void Vision::draw_center()
     line(Monitor, Point(CenterXMsg, CenterYMsg), Point(x, y), Scalar(255, 255, 255), 1);
 
 }
-void Vision::draw_Line(Mat &frame_, int obj_distance_max, int obj_distance_min, int obj_angle, int color, int width)
+void Vision::draw_Line(Mat &frame_, int obj_distance_max, int obj_distance_min, int obj_angle, int color)
 {
     int x_, y_;
     double angle_f;
@@ -1021,7 +988,7 @@ void Vision::draw_Line(Mat &frame_, int obj_distance_max, int obj_distance_min, 
 
     line(frame_, Point(x[0], y[0]), Point(x[1], y[1]), Scalar(255, 255, 0), 1);
     if(color==5){
-        line(frame_, Point(x[0], y[0]), Point(x[1], y[1]), Scalar(255, 0, 255), width);
+        line(frame_, Point(x[0], y[0]), Point(x[1], y[1]), Scalar(0, 255, 255), 1);
     }
 }
 void Vision::draw_point(cv::Mat &frame_, DetectedObject &obj_, string color, Scalar Textcolor)

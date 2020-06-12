@@ -19,10 +19,18 @@ class Block(Robot):
     # print("cp_value", cp_value)
     # v_x, v_y = self.Rotate(o_x, o_y, front_ang) 
     v_yaw = cp_value - front_ang
-
+    #========
+    if abs(v_yaw - 360) < abs(v_yaw):
+      v_yaw = v_yaw - 360
+    elif abs(v_yaw + 360) < abs(v_yaw):
+      v_yaw = v_yaw + 360
     v_x=o_x
     v_y=o_y
-    v_yaw = 0
+    # print("t['location']['x']", t['location']['x'])
+    if(abs(t['location']['x'])<270 and v_x>0):
+      v_x=0
+    # v_yaw = 0
+
     if v_x < 0 :
       v_x = 0
     return v_x, v_y, v_yaw

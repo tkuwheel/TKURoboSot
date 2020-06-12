@@ -240,6 +240,7 @@ function rebuild_parameter(){
 }
 
 function get_dynamic_parameter(){
+    //setTimeout(get_dynamic_parameter, 1000);
     role_param.get(function(value) {
         document.getElementById("role").value = value;
     });

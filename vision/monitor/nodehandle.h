@@ -11,7 +11,6 @@
 #include <math.h>
 #include <signal.h>
 #include <std_msgs/Int32.h>
-#include <std_msgs/Int32MultiArray.h>
 #include <std_srvs/Empty.h>
 #include <fstream>
 #include "vision/Two_point.h"
@@ -78,7 +77,6 @@ class NodeHandle
     int SizeFilter;
     //======================================
     void Set_Unscaned_Angle();
-    void HSVmap();
     vector<BYTE> ColorFile();
     vector<BYTE> color_map;
     int b_end_gap;
@@ -129,7 +127,6 @@ class NodeHandle
     int BlackGrayMsg;
     int BlackAngleMsg;
     //========================================
-    vector <DetectedObject> obstacles;
   private:
     ros::NodeHandle nh;
     ros::Subscriber save_sub;
@@ -138,13 +135,11 @@ class NodeHandle
     //ros::Subscriber view_sub;
     //void View(const vision::view msg);
     //int viewcheck;
-    ros::Subscriber obstacle_sub;
-    void obstaclecall(const std_msgs::Int32MultiArray msg);
     ros::Publisher monitor_pub;
     ros::Publisher object_pub;
     ros::Publisher Two_point_pub;
     //====================================
     ros::ServiceServer connect_srv;
     bool connectcall(std_srvs::Empty::Request  &req,
-                     std_srvs::Empty::Response &res);
+                 std_srvs::Empty::Response &res);
 };

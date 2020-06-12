@@ -40,105 +40,67 @@ function keysdown(e) {
             SetBehaviorKeyborard([1, 0, 0, 1, 0, 0, 0]);
             e.preventDefault();
         }
+        //==============
         //RobotControl
-        if (keys[87] && keys[68]) {
-            vec3 = new ROSLIB.Message({
-                x: parseFloat(speed / Math.pow(2, 0.5)),
-                y: parseFloat(speed / Math.pow(2, 0.5)),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[87] && keys[65]) {
-            vec3 = new ROSLIB.Message({
-                x: -parseFloat(speed / Math.pow(2, 0.5)),
-                y: parseFloat(speed / Math.pow(2, 0.5)),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[83] && keys[68]) {
-            vec3 = new ROSLIB.Message({
-                x: parseFloat(speed / Math.pow(2, 0.5)),
-                y: -parseFloat(speed / Math.pow(2, 0.5)),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[83] && keys[65]) {
-            vec3 = new ROSLIB.Message({
-                x: -parseFloat(speed / Math.pow(2, 0.5)),
-                y: -parseFloat(speed / Math.pow(2, 0.5)),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[87]) {
-            vec3 = new ROSLIB.Message({
-                x: 0,
-                y: parseFloat(speed),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-           // PublishTopicCmdVel(vec3);
-        } else if (keys[68]) {
-            vec3 = new ROSLIB.Message({
-                x: parseFloat(speed),
-                y: 0,
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[83]) {
-            vec3 = new ROSLIB.Message({
-                x: 0,
-                y: -parseFloat(speed),
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[65]) {
-            vec3 = new ROSLIB.Message({
-                x: -parseFloat(speed),
-                y: 0,
-                z: 0
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[69]) {
-            var speed_;
-            if (Math.abs(parseFloat(speed)) > 15){
-              speed_ = parseFloat(speed) * 0.5;
-            }else{
-              speed_ = speed;
-            }
-            vec3 = new ROSLIB.Message({
-                x: 0,
-                y: 0,
-                z: -parseFloat(speed_)
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
-        } else if (keys[81]) {
-            var speed_;
-            if (Math.abs(parseFloat(speed)) > 15){
-              speed_ = parseFloat(speed) * 0.5;
-            }else{
-              speed_ = speed;
-            }
-            vec3 = new ROSLIB.Message({
-                x: 0,
-                y: 0,
-                z: parseFloat(speed_)
-            });
-            PublishTopicCmdVel(vec3);
-            //PublishTopicCmdVel(vec3);
+        vec3 = new ROSLIB.Message({
+            x: 0,
+            y: 0,
+            z: 0
+        });
+
+        if (keys[87]) {//w
+            vec3.y = parseFloat(speed);
         }
+        if (keys[68]) {//d
+            vec3.x = parseFloat(speed);
+        }
+        if (keys[83]) {//s
+            vec3.y = -parseFloat(speed);
+        }
+        if (keys[65]) {//a
+            vec3.x = -parseFloat(speed);
+        }
+        if (keys[69]) {//e
+            let speed_;
+            if (Math.abs(parseFloat(speed)) > 15) {
+                speed_ = parseFloat(speed) * 0.5;
+            } else {
+                speed_ = speed;
+            }
+            vec3.z = -parseFloat(speed_);
+        }
+        if (keys[81]) {//q
+            let speed_;
+            if (Math.abs(parseFloat(speed)) > 15) {
+                speed_ = parseFloat(speed) * 0.5;
+            } else {
+                speed_ = speed;
+            }
+            vec3.z = parseFloat(speed_);
+        }
+        if (keys[87] && keys[68]) {
+            vec3.x = parseFloat(speed / Math.pow(2, 0.5));
+            vec3.y = parseFloat(speed / Math.pow(2, 0.5));
+        }
+        if (keys[87] && keys[65]) {
+            vec3.x = -parseFloat(speed / Math.pow(2, 0.5));
+            vec3.y = parseFloat(speed / Math.pow(2, 0.5));
+        }
+        if (keys[83] && keys[68]) {
+            vec3.x = parseFloat(speed / Math.pow(2, 0.5));
+            vec3.y = -parseFloat(speed / Math.pow(2, 0.5));
+        }
+        if (keys[83] && keys[65]) {
+            vec3.x = -parseFloat(speed / Math.pow(2, 0.5));
+            vec3.y = -parseFloat(speed / Math.pow(2, 0.5));
+        }
+        PublishTopicCmdVel(vec3);
+        //==============
         //shoot key space
-        if(keys[74]){
+        if (keys[74]) {
             PublishTopicShoot(parseInt(document.getElementById('ShootInput').value));
         }
-        if(keys[73]){
+        if (keys[73]) {
             if (RemoteState) {
                 if (ChooseRobot == 1) {
                     holdball(1);
@@ -154,20 +116,21 @@ function keysdown(e) {
         if (keys[80]) {
             PublishTopicGameState(0);
             StrategyStop();
-            $('#StartInput').prop('checked',false);
+            $('#StartInput').prop('checked', false);
             $('#StartInput').change();
-            $('#StopInput').prop('checked',true);
+            $('#StopInput').prop('checked', true);
             $('#StopInput').change();
             all_stop();
         }
         // O start 
         else if (keys[79]) {
             PublishTopicGameState(1);
-            $('#StartInput').prop('checked',true);
+            $('#StartInput').prop('checked', true);
             $('#StartInput').change();
-            $('#StopInput').prop('checked',false);
+            $('#StopInput').prop('checked', false);
             $('#StopInput').change();
-            start_state();
+            //start_state();
+            all_start();
         }
 
     }
@@ -179,29 +142,29 @@ function releasebutton(state) {
         y: 0,
         z: 0
     });
-    switch(state){
-      case 81:
-        vec3.z = 0;
-        break;
-      case 69:
-        vec3.z = 0;
-        break;
-      case 87:
-        vec3.y = 0;
-        break;
-      case 65:
-        vec3.x = 0;
-        break;
-      case 83:
-        vec3.y = 0;
-        break;
-      case 68:
-        vec3.x = 0;
-        break;
-      default:
-        vec3.x = 0;
-        vec3.y = 0;
-        vec3.Z = 0;
+    switch (state) {
+        case 81:
+            vec3.z = 0;
+            break;
+        case 69:
+            vec3.z = 0;
+            break;
+        case 87:
+            vec3.y = 0;
+            break;
+        case 65:
+            vec3.x = 0;
+            break;
+        case 83:
+            vec3.y = 0;
+            break;
+        case 68:
+            vec3.x = 0;
+            break;
+        default:
+            vec3.x = 0;
+            vec3.y = 0;
+            vec3.Z = 0;
     }
     //if(state==81||state==69||state==87||state==65||state==83||state==68){
     //    console.log("stop");
