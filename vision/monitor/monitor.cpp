@@ -69,7 +69,7 @@ void Vision::imageCb(const sensor_msgs::ImageConstPtr &msg)
         FrameRate = Rate();
         RateMsg = FrameRate;
         Monitor = Source.clone();
-        source2threshold();
+        // source2threshold();
         ObjectProcessing();
         Pub_monitor(Monitor);
         Pub_object();
@@ -135,6 +135,10 @@ void Vision::ObjectProcessing()
         {
            objectdet_change(YELLOWITEM, Yellow_Item);
         }
+    }
+    for(int i=0; i<obstacles.size(); i++){
+        //cout<<obstacles.size()<<endl;
+        ellipse(Monitor, Point(CenterXMsg, CenterYMsg), Size(obstacles.at(i).dis_min, obstacles.at(i).dis_min), 0, 360 - obstacles.at(i).ang_max, 360 - obstacles.at(i).ang_min, Scalar(255, 0, 255), 2);
     }
 }
 void Vision::objectdet_change( int color, DetectedObject &obj_item)
@@ -207,7 +211,7 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
     }
 
     // if (obj_item.size > SizeFilter)
-    if (obj_item.size > 0)
+    if (obj_item.size > 1)
     {
         find_object_point(obj_item, color);
         draw_ellipse(Monitor, obj_item, color);
@@ -309,7 +313,7 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
         for (int j = -1; j < 2; j++)
         {
             dis_f = distance + i * Magn_Near_GapMsg;
-
+            if(dis_f < InnerMsg)continue;
             if (dis_f < Magn_Near_StartMsg)
                 dis_f = Magn_Near_StartMsg;
 
@@ -335,9 +339,18 @@ void Vision::find_around_black(Mat &frame_, deque<int> &find_point, int distance
             x = Frame_Area(CenterXMsg + x_, frame_.cols);
             y = Frame_Area(CenterYMsg - y_, frame_.rows);
 					
-            if (Threshold.data[(y * Threshold.cols + x) * 3 + 0] == 0 && frame_.data[(y * frame_.cols + x) * 3 + 0] == 0)
+            // if (Threshold.data[(y * Threshold.cols + x) * 3 + 0] == 0 && frame_.data[(y * frame_.cols + x) * 3 + 0] == 0)
+            // {
+            //     Mark_point(frame_, find_point, dis_f, ang_f, x, y, size, color);
+                	
+            // }
+            unsigned char B = Source.data[(y * Source.cols + x) * 3 + 0];
+            unsigned char G = Source.data[(y * Source.cols + x) * 3 + 1];
+            unsigned char R = Source.data[(y * Source.cols + x) * 3 + 2];
+            if (color_map[R + (G << 8) + (B << 16)] & WHITEITEM && frame_.data[(y * frame_.cols + x) * 3 + 0] == 0)  
             {
-                Mark_point(frame_, find_point, dis_f, ang_f, x, y, size, color);	
+                // circle(Monitor, Point(x, y), 1, Scalar(255, 255, 255), -1);
+                Mark_point(frame_, find_point, dis_f, ang_f, x, y, size, color);
             }
         }
     }
@@ -575,7 +588,7 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
     
     Mat iframe = Source.clone();
     Mat frame_(iframe.rows, iframe.cols, CV_8UC3, Scalar(0, 0, 0));
-    Mat threshold=Threshold.clone();
+    // Mat threshold=Threshold.clone();
     DetectedObject FIND_Item;//找守門員位置
     DetectedObject obj_item;
     deque<int> find_point;
@@ -588,9 +601,9 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
         angle_min = angle_min+360;
         angle_max = angle_max+360;
     }
-    for (int distance = InnerMsg; distance <= obj_.dis_max; distance += Magn_Near_GapMsg)
+    for (int distance = InnerMsg; distance <= obj_.dis_max*0.8; distance += Magn_Near_GapMsg)
     {
-        for (int angle = angle_min-5; angle < angle_max+5; angle += Angle_Interval(distance))
+        for (int angle = angle_min; angle < angle_max; angle += Angle_Interval(distance))
         {
             int find_angle = Angle_Adjustment(angle);
             if ((find_angle >= Unscaned_Angle[0] && angle <= Unscaned_Angle[1]) ||
@@ -609,11 +622,16 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
             x = Frame_Area(CenterXMsg + x_, frame_.cols);
             y = Frame_Area(CenterYMsg - y_, frame_.rows);
 
+            unsigned char B = Source.data[(y * Source.cols + x) * 3 + 0];
+            unsigned char G = Source.data[(y * Source.cols + x) * 3 + 1];
+            unsigned char R = Source.data[(y * Source.cols + x) * 3 + 2];
             
-            if (threshold.data[(y * threshold.cols + x) * 3 + 0] == 0&&
-                threshold.data[(y * threshold.cols + x) * 3 + 1] == 0&&
-                threshold.data[(y * threshold.cols + x) * 3 + 2] == 0 )
+            if (color_map[R + (G << 8) + (B << 16)] & WHITEITEM && frame_.data[(y * frame_.cols + x) * 3 + 0] == 0)
+            // if (threshold.data[(y * threshold.cols + x) * 3 + 0] == 0&&
+            //     threshold.data[(y * threshold.cols + x) * 3 + 1] == 0&&
+            //     threshold.data[(y * threshold.cols + x) * 3 + 2] == 0 )
             {
+                // circle(Monitor, Point(x, y), 1, Scalar(255, 255, 255), -1);
                 Mark_point(frame_, find_point, distance, find_angle, x, y, object_size, color);
 
                 FIND_Item.dis_max = distance;
@@ -644,7 +662,10 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
                 FIND_Item.ang_min=FIND_Item.ang_min-360;
                 FIND_Item.ang_max=FIND_Item.ang_max-360;
             }
-            if (FIND_Item.size > obj_item.size&&FIND_Item.ang_min>=obj_.ang_min&&FIND_Item.ang_max<=obj_.ang_max)
+            int FIND_Item_ang_mid = (FIND_Item.ang_max+FIND_Item.ang_min)/2;
+            if (FIND_Item.size > obj_item.size &&
+                FIND_Item_ang_mid>obj_.ang_min &&
+                FIND_Item_ang_mid<obj_.ang_max)
             {
                 obj_item = FIND_Item;
             }
@@ -773,8 +794,13 @@ void Vision::find_shoot_point(DetectedObject &obj_, int color)
     }
 */
     //===================================
-    int right_gap = obj_.ang_max-obj_item.ang_max;
+    int right_gap = obj_.ang_max-obj_item.ang_max;   
     int left_gap = obj_item.ang_min-obj_.ang_min;
+    // if(color==BLUEITEM)
+    // {
+    //     cout<<"right"<<right_gap<<endl;
+    //     cout<<"left"<<left_gap<<endl;
+    // }   
     
     if(obj_item.ang_max!=0||obj_item.ang_min!=0){
       if(fabs(right_gap-left_gap)>fabs(obj_.ang_max-obj_.ang_min)*0.2){

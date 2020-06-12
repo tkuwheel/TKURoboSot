@@ -9,8 +9,10 @@
 #include <vector>
 #include <deque>
 #include <math.h>
+#include <malloc.h>
 #include <signal.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <std_srvs/Empty.h>
 #include <fstream>
 #include "vision/Two_point.h"
@@ -25,7 +27,7 @@
 #define GREENITEM 0x02
 #define BLUEITEM 0x04
 #define YELLOWITEM 0x08
-#define WHITEITEM 0x10 //WHITEITEM=robot
+#define WHITEITEM 0x10 //ROBOTITEM=robot
 #define VISION_TOPIC "camera/image_raw"
 #define USB_CAM_TOPIC "usb_cam/image_raw"
 #define YAML_PATH ros::package::getPath("vision") + "/config/FIRA.yaml"
@@ -79,6 +81,7 @@ class NodeHandle
     void Set_Unscaned_Angle();
     vector<BYTE> ColorFile();
     vector<BYTE> color_map;
+    void HSVmap();
     int b_end_gap;
     int y_end_gap;
     //======================================
@@ -127,6 +130,7 @@ class NodeHandle
     int BlackGrayMsg;
     int BlackAngleMsg;
     //========================================
+    vector <DetectedObject> obstacles;
   private:
     ros::NodeHandle nh;
     ros::Subscriber save_sub;
@@ -135,6 +139,8 @@ class NodeHandle
     //ros::Subscriber view_sub;
     //void View(const vision::view msg);
     //int viewcheck;
+    ros::Subscriber obstacle_sub;
+    void obstaclecall(const std_msgs::Int32MultiArray msg);
     ros::Publisher monitor_pub;
     ros::Publisher object_pub;
     ros::Publisher Two_point_pub;
