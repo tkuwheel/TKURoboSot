@@ -29,15 +29,17 @@ class MyStateMachine(Robot, StateMachine):
 
     return config
 
-  idle   = State('Idle', initial = True)
-  chase  = State('Chase')
-  attack = State('Attack')
-  shoot  = State('Shoot')
+  idle      = State('Idle', initial = True)
+  chase     = State('Chase')
+  attack    = State('Attack')
+  shoot     = State('Shoot')
+  formation = State('Formation')
 
-  toIdle   = chase.to(idle) | attack.to(idle)  | shoot.to(idle) | idle.to.itself()
-  toChase  = idle.to(chase) | attack.to(chase) | chase.to.itself()
-  toAttack = attack.to.itself() | shoot.to(attack) | chase.to(attack)
-  toShoot  = attack.to(shoot)| idle.to(shoot)
+  toIdle      = chase.to(idle) | attack.to(idle)  | shoot.to(idle) | idle.to.itself()
+  toChase     = idle.to(chase) | attack.to(chase) | chase.to.itself()
+  toAttack    = attack.to.itself() | shoot.to(attack) | chase.to(attack)
+  toShoot     = attack.to(shoot)| idle.to(shoot)
+  toFormation = idle.to('formation')
 
   def on_toIdle(self):
     self.MotionCtrl(0,0,0)
@@ -61,6 +63,9 @@ class MyStateMachine(Robot, StateMachine):
 
   def on_toShoot(self, power, pos = 1):
     self.RobotShoot(power, pos)
+
+  def on_toFormation(self):
+    # self.RobotShoot(power, pos)
 
   def CheckBallHandle(self):
     if self.RobotBallHandle():
