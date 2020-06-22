@@ -47,6 +47,7 @@ class Robot(object):
   passing_last_time = time.time()
 
   __robot_info  = {'location' : {'x' : 0, 'y' : 0, 'yaw' : 0},
+                  'cmd_vel' : {'x' : 0, 'y' : 0, 'yaw' : 0},
                    'imu_3d' : {'yaw' : 0}}
   __object_info = {'ball':{'dis' : 0, 'ang' : 0, 'global_x' : 0, 'global_y' : 0, \
                            'speed_x': 0, 'speed_y': 0, 'speed_pwm_x': 0, 'speed_pwm_y': 0},
@@ -61,9 +62,9 @@ class Robot(object):
 
   __ball_is_handled = False
 
-  robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
-  robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
-  robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot1 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}, 'cmd_vel': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot2 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}, 'cmd_vel': {'x': 0, 'y': 0, 'yaw': 0}}
+  robot3 = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}, 'cmd_vel': {'x': 0, 'y': 0, 'yaw': 0}}
   near_robot = {'state': '', 'ball_is_handled': False, 'ball_dis': 0, 'position': {'x': 0, 'y': 0, 'yaw': 0}}
   near_robot_ns = ""
   r1_role = ""
@@ -123,6 +124,7 @@ class Robot(object):
     rospy.Subscriber(VISION_TOPIC, Object, self._GetVision)
     rospy.Subscriber(POSITION_TOPIC, PoseWithCovarianceStamped, self._GetPosition)
     rospy.Subscriber('BlackRealDis', Int32MultiArray, self._GetBlackItemInfo)
+    rospy.Subscriber(CMDVEL_TOPIC, Twist, self._GetCmdVelInfo)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
@@ -182,11 +184,19 @@ class Robot(object):
     self.robot2['position']['x']   = r2_data.position.linear.x
     self.robot2['position']['y']   = r2_data.position.linear.y
     self.robot2['position']['yaw'] = r2_data.position.angular.z
+    self.robot2['cmd_vel']['x']   = r2_data.cmd_vel.linear.x
+    self.robot2['cmd_vel']['y']   = r2_data.cmd_vel.linear.y
+    self.robot2['cmd_vel']['yaw'] = r2_data.cmd_vel.angular.z
+
     self.robot3['ball_is_handled'] = r3_data.ball_is_handled
     self.robot3['ball_dis']        = r3_data.ball_dis
     self.robot3['position']['x']   = r3_data.position.linear.x
     self.robot3['position']['y']   = r3_data.position.linear.y
     self.robot3['position']['yaw'] = r3_data.position.angular.z
+    self.robot3['cmd_vel']['x']   = r3_data.cmd_vel.linear.x
+    self.robot3['cmd_vel']['y']   = r3_data.cmd_vel.linear.y
+    self.robot3['cmd_vel']['yaw'] = r3_data.cmd_vel.angular.z
+
     if "robot1" in rospy.get_namespace():
       dd12 = np.linalg.norm(np.array([self.__robot_info['locatoin']['x'] - self.robot2['position']['x'],
                                       self.__robot_info['location']['y'] - self.robot2['position']['y']]))
@@ -262,6 +272,17 @@ class Robot(object):
       print("Wrong Namespace")
       return "Wrong Namespace"
 
+  def MyNamespace(self):
+    if "robot1" in rospy.get_namespace():
+      return "robot1"
+    elif "robot2" in rospy.get_namespace():
+      return "robot2"
+    elif "robot3" in rospy.get_namespace():
+      return "robot3"
+    else:
+      # print("Wrong Namespace")
+      return "Wrong Namespace"
+
   def SetMyRole(self, role):
     if "robot1" in rospy.get_namespace():
       self.r1_role = role
@@ -307,6 +328,11 @@ class Robot(object):
     else:
       self.__ball_is_handled = False
 
+  def _GetCmdVelInfo(self,cmd_vel):
+    self.__robot_info['cmd_vel']['x']   = cmd_vel.linear.x
+    self.__robot_info['cmd_vel']['y']   = cmd_vel.linear.y
+    self.__robot_info['cmd_vel']['yaw'] = cmd_vel.angular.z
+
   def _GetTwopoint(self,vision):
     self.__twopoint_info['Blue']['right']   = vision.blue_right
     self.__twopoint_info['Blue']['left']    = vision.blue_left
@@ -314,7 +340,7 @@ class Robot(object):
     self.__twopoint_info['Yellow']['left']  = vision.yellow_left
 
   def _GetBlackItemInfo(self, vision):
-    self.__obstacle_info['ranges'] =vision.data
+    self.__obstacle_info['ranges'] = vision.data
 
   def _GetImu(self, imu_3d):
     front_ang = math.degrees(imu_3d.yaw) + 90 
@@ -338,6 +364,9 @@ class Robot(object):
     m.position.linear.x  = self.__robot_info['location']['x']
     m.position.linear.y  = self.__robot_info['location']['y']
     m.position.angular.z = self.__robot_info['location']['yaw']
+    m.cmd_vel.linear.x  = self.__robot_info['cmd_vel']['x']
+    m.cmd_vel.linear.y  = self.__robot_info['cmd_vel']['y']
+    m.cmd_vel.angular.z = self.__robot_info['cmd_vel']['yaw']
     self.state_pub.publish(m)
 
   def ConvertSpeedToPWM(self, x, y):
@@ -386,12 +415,22 @@ class Robot(object):
 
       msg = Twist()
       output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, ROTATE_V_ANG)
-
+      if(x==0 and y==0 and yaw==0):
+        output_x=0
+        output_y=0
+        output_w=0
       msg.linear.x   = output_x
       msg.linear.y   = output_y
       msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
 
+  def PubCmdVel(self, x, y, yaw):
+    msg = Twist()
+    msg.linear.x   = x
+    msg.linear.y   = y
+    msg.angular.z  = yaw
+    self.cmdvel_pub.publish(msg)
+    
   def GetObjectInfo(self):
     return self.__object_info
 

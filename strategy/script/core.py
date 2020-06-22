@@ -31,8 +31,9 @@ class Strategy(object):
 
         if self.robot.is_idle:
           if self.robot.game_start:
-              self.robot.toChase()
-
+            # self.robot.toChase()
+            self.robot.toFormation()'
+            
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
             self.robot.toAttack()

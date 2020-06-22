@@ -65,6 +65,8 @@ class MyStateMachine(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toFormation(self):
+    
+    # Go2Point_cmd_vel + master_cmd_vel_to_global
     # self.RobotShoot(power, pos)
 
   def CheckBallHandle(self):
