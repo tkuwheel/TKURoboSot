@@ -71,6 +71,8 @@ class Robot(object):
   r2_role = ""
   r3_role = ""
 
+  formation_info = {'master':'robot2', 'method':'center', 'distance':50, 'total':2, 'n':0}
+ 
   ## Configs
   __minimum_w = 0
   __maximum_w = 0
@@ -460,6 +462,30 @@ class Robot(object):
       msg.linear.y   = output_y
       msg.angular.z  = output_w
       self.cmdvel_pub.publish(msg)
+      
+  def RobotCtrlS2(self, x, y, yaw):
+    current_vector = math.hypot(x, y)
+    output_v = self.pid_v(current_vector * -1)
+    output_w = self.pid_w(yaw) * -1
+    output_w = output_w if abs(output_w) > self.__minimum_w else self.__minimum_w* np.sign(output_w)
+
+    magnitude = math.sqrt(x**2 + y**2)
+    if magnitude == 0:
+      unit_vector = (0, 0)
+    else:
+      unit_vector = (x / magnitude, y / magnitude)
+
+    msg = Twist()
+    output_x, output_y = self.Rotate(unit_vector[0]*output_v, unit_vector[1]*output_v, ROTATE_V_ANG)
+    if(x==0 and y==0 and yaw==0):
+      output_x=0
+      output_y=0
+      output_w=0
+    msg.linear.x   = output_x
+    msg.linear.y   = output_y
+    msg.angular.z  = output_w
+    # self.cmdvel_pub.publish(msg)
+    return output_x, output_y, output_w
 
   def PubCmdVel(self, x, y, yaw):
     msg = Twist()
@@ -481,19 +507,22 @@ class Robot(object):
     return self.__obstacle_info
 
   def GetMasterGlobalVector(self):
-    master = 'robot2'
+    # master = 'robot2'
+    master = self.formation_info['master']
+    # print(self.formation_info['master'])
     master_data = self.GetState(master)
     m_x = master_data['cmd_vel']['x']
     m_y = master_data['cmd_vel']['y']
+    m_yaw = master_data['cmd_vel']['yaw']
     # print(m_x)
     m_v = math.hypot(m_x,m_y)
-    m_yaw = math.atan2(m_x, m_y)
+    m_v_angle = math.atan2(m_x, m_y)
     # print("m_yaw",m_yaw)
-    m_gyaw = master_data['position']['yaw']
-    m_gvyaw = m_gyaw + m_yaw
+    m_g_angle = master_data['position']['yaw']
+    m_g_v_angle = m_g_angle + m_v_angle
     # print("m_gvyaw", math.degrees(m_gvyaw) )
     # master = GetNamespace("master")
-    return m_v, m_gvyaw
+    return m_v, m_yaw, m_g_v_angle
 
   def RealShoot(self, power, pos) :
     msg = Int32()

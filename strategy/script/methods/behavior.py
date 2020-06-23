@@ -171,6 +171,27 @@ class Behavior(Robot,Obstacle):
         v_x,v_y,v_yaw = self.Force_Calculation(obstacle_force_x , obstacle_force_y ,goal_ang, goal_dis,0)
 
     return v_x, v_y, v_yaw
+
+  # def CenterFormationPoint(self):
+
+  def MasterMoveCoverter(self):
+    robot = self.GetRobotInfo()
+    m_v, m_yaw, m_g_v_angle = self.GetMasterGlobalVector()
+
+    angle = m_g_v_angle - robot['location']['yaw']
+    x = m_v * math.cos(math.radians(angle))
+    y = m_v * math.sin(math.radians(angle))
+    yaw = m_yaw
+    # method = self.robot.formation_info['method']
+    # if(method = 'center'):
+    #   x,y,yaw = self.BC.CenterFormationPoint()
+    #   v_x, v_y, yaw, arrived = self.BC.Go2Point(x, y, yaw)
+    # self.MotionCtrl(0, 0, 0)
+    # Go2Point_cmd_vel + master_cmd_vel_to_global
+    # PubCmdVel(self, x, y, yaw)
+
+    return x, y, yaw
+
     
 
 

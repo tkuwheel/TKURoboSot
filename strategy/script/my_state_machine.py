@@ -1,6 +1,7 @@
 from statemachine import StateMachine, State
 from methods.chase import Chase
 from methods.attack import Attack
+from methods.behavior import Behavior
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from strategy.cfg import RobotConfig
 from robot.robot import Robot
@@ -12,6 +13,8 @@ class MyStateMachine(Robot, StateMachine):
     StateMachine.__init__(self)
     self.CC  = Chase()
     self.AC  = Attack()
+    self.BC  = Behavior()
+
     dsrv = DynamicReconfigureServer(RobotConfig, self.Callback)
 
   def Callback(self, config, level):
@@ -65,11 +68,10 @@ class MyStateMachine(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toFormation(self):
-    m_v, m_gvaw = self.GetMasterGlobalVector()
-    # self.MotionCtrl(0, 0, 0)
-    # Go2Point_cmd_vel + master_cmd_vel_to_global
-    # self.RobotShoot(power, pos)
-
+    x, y, yaw = self.BC.MasterMoveCoverter()
+    if(self.MyState() != self.formation_info['master']):
+      self.PubCmdVel(x, y, yaw)
+      
   def CheckBallHandle(self):
     if self.RobotBallHandle():
       ## Back to normal from Accelerator
