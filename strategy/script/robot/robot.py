@@ -125,15 +125,18 @@ class Robot(object):
     rospy.Subscriber(POSITION_TOPIC, PoseWithCovarianceStamped, self._GetPosition)
     rospy.Subscriber('BlackRealDis', Int32MultiArray, self._GetBlackItemInfo)
     rospy.Subscriber(CMDVEL_TOPIC, Twist, self._GetCmdVelInfo)
+    rospy.Subscriber('/robot1/strategy/state', RobotState, self._GetState1)
+    rospy.Subscriber('/robot2/strategy/state', RobotState, self._GetState2)
+    rospy.Subscriber('/robot3/strategy/state', RobotState, self._GetState3)
     self.MotionCtrl = self.RobotCtrlS
     self.RobotShoot = self.RealShoot
     self.cmdvel_pub = self._Publisher(CMDVEL_TOPIC, Twist)
     self.state_pub  = self._Publisher(STRATEGY_STATE_TOPIC, RobotState)
     self.shoot_pub  = self._Publisher(SHOOT_TOPIC, Int32)
-    robot2_sub = message_filters.Subscriber('/robot2/strategy/state', RobotState)
-    robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
-    ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
-    ts.registerCallback(self.MulticastReceiver)
+    # robot2_sub = message_filters.Subscriber('/robot2/strategy/state', RobotState)
+    # robot3_sub = message_filters.Subscriber('/robot3/strategy/state', RobotState)
+    # ts = message_filters.ApproximateTimeSynchronizer([robot2_sub, robot3_sub], 10, 0.1, allow_headerless=True)
+    # ts.registerCallback(self.MulticastReceiver)
     s = rospy.Service('passing_action', Trigger, self._PassingServer)
 
     if not sim :
@@ -355,7 +358,40 @@ class Robot(object):
     qw = loc.pose.pose.orientation.w
     self.__robot_info['location']['yaw'] = math.atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz)\
                                            / math.pi * 180  #caculate front angle by self_localization
-                                                                                                                                         
+                                           
+  def _GetState1(self,state):
+    self.robot1['ball_is_handled'] = state.ball_is_handled
+    self.robot1['ball_dis']        = state.ball_dis
+    self.robot1['position']['x']   = state.position.linear.x
+    self.robot1['position']['y']   = state.position.linear.y
+    self.robot1['position']['yaw'] = state.position.angular.z
+    self.robot1['cmd_vel']['x']   = state.cmd_vel.linear.x
+    self.robot1['cmd_vel']['y']   = state.cmd_vel.linear.y
+    self.robot1['cmd_vel']['yaw'] = state.cmd_vel.angular.z
+
+  def _GetState2(self,state):
+    self.robot2['ball_is_handled'] = state.ball_is_handled
+    self.robot2['ball_dis']        = state.ball_dis
+    self.robot2['position']['x']   = state.position.linear.x
+    self.robot2['position']['y']   = state.position.linear.y
+    self.robot2['position']['yaw'] = state.position.angular.z
+    self.robot2['cmd_vel']['x']   = state.cmd_vel.linear.x
+    self.robot2['cmd_vel']['y']   = state.cmd_vel.linear.y
+    self.robot2['cmd_vel']['yaw'] = state.cmd_vel.angular.z
+
+  def _GetState3(self,state):
+    self.robot3['ball_is_handled'] = state.ball_is_handled
+    self.robot3['ball_dis']        = state.ball_dis
+    self.robot3['position']['x']   = state.position.linear.x
+    self.robot3['position']['y']   = state.position.linear.y
+    self.robot3['position']['yaw'] = state.position.angular.z
+    self.robot3['cmd_vel']['x']   = state.cmd_vel.linear.x
+    self.robot3['cmd_vel']['y']   = state.cmd_vel.linear.y
+    self.robot3['cmd_vel']['yaw'] = state.cmd_vel.angular.z
+
+  def PubCurrentState(self):
+    self.RobotStatePub(self.current_state.identifier)
+                                                                                                                               
   def RobotStatePub(self, state):
     m = RobotState()
     m.state = state
@@ -363,7 +399,8 @@ class Robot(object):
     m.ball_dis = self.__object_info['ball']['dis']
     m.position.linear.x  = self.__robot_info['location']['x']
     m.position.linear.y  = self.__robot_info['location']['y']
-    m.position.angular.z = self.__robot_info['location']['yaw']
+    # m.position.angular.z = self.__robot_info['location']['yaw']
+    m.position.angular.z = self.__robot_info['imu_3d']['yaw']
     m.cmd_vel.linear.x  = self.__robot_info['cmd_vel']['x']
     m.cmd_vel.linear.y  = self.__robot_info['cmd_vel']['y']
     m.cmd_vel.angular.z = self.__robot_info['cmd_vel']['yaw']
@@ -442,6 +479,21 @@ class Robot(object):
 
   def GetObstacleInfo(self):
     return self.__obstacle_info
+
+  def GetMasterGlobalVector(self):
+    master = 'robot2'
+    master_data = self.GetState(master)
+    m_x = master_data['cmd_vel']['x']
+    m_y = master_data['cmd_vel']['y']
+    # print(m_x)
+    m_v = math.hypot(m_x,m_y)
+    m_yaw = math.atan2(m_x, m_y)
+    # print("m_yaw",m_yaw)
+    m_gyaw = master_data['position']['yaw']
+    m_gvyaw = m_gyaw + m_yaw
+    # print("m_gvyaw", math.degrees(m_gvyaw) )
+    # master = GetNamespace("master")
+    return m_v, m_gvyaw
 
   def RealShoot(self, power, pos) :
     msg = Int32()

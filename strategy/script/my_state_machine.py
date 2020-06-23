@@ -35,11 +35,11 @@ class MyStateMachine(Robot, StateMachine):
   shoot     = State('Shoot')
   formation = State('Formation')
 
-  toIdle      = chase.to(idle) | attack.to(idle)  | shoot.to(idle) | idle.to.itself()
+  toIdle      = chase.to(idle) | attack.to(idle)  | shoot.to(idle) | formation.to(idle) | idle.to.itself()
   toChase     = idle.to(chase) | attack.to(chase) | chase.to.itself()
   toAttack    = attack.to.itself() | shoot.to(attack) | chase.to(attack)
   toShoot     = attack.to(shoot)| idle.to(shoot)
-  toFormation = idle.to('formation')
+  toFormation = idle.to(formation) | formation.to.itself()
 
   def on_toIdle(self):
     self.MotionCtrl(0,0,0)
@@ -65,7 +65,8 @@ class MyStateMachine(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toFormation(self):
-    
+    m_v, m_gvaw = self.GetMasterGlobalVector()
+    # self.MotionCtrl(0, 0, 0)
     # Go2Point_cmd_vel + master_cmd_vel_to_global
     # self.RobotShoot(power, pos)
 

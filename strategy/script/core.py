@@ -16,7 +16,8 @@ class Strategy(object):
 
   def main(self):
     while not rospy.is_shutdown():
-      print(self.robot.current_state)
+      self.robot.PubCurrentState()
+      # print(self.robot.current_state)
 
       targets = self.robot.GetObjectInfo()
       position = self.robot.GetRobotInfo()
@@ -32,7 +33,7 @@ class Strategy(object):
         if self.robot.is_idle:
           if self.robot.game_start:
             # self.robot.toChase()
-            self.robot.toFormation()'
+            self.robot.toFormation()
             
         if self.robot.is_chase:
           if self.robot.CheckBallHandle():
@@ -53,12 +54,14 @@ class Strategy(object):
 
         ## Keep Current State Running
         keepState = 'to' + self.robot.current_state.name
-        getattr(self.robot, keepState)
+        # print(keepState)
+        getattr(self.robot, keepState)()
 
         self.rate.sleep()
 
 if __name__ == '__main__':
   try:
-      s = Strategy(True) # True is simulated mode
+      # s = Strategy(True) # True is simulated mode
+      s = Strategy(False)
   except rospy.ROSInterruptException:
     pass 

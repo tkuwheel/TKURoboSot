@@ -153,6 +153,7 @@ foreach(
     black_item
     localization_white_line
     tracking
+    obstacle
     passing_monitor
     passing_interface
 )

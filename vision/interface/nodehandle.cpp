@@ -42,7 +42,8 @@ void NodeHandle::Readyaml()
     }
     else
     {
-        cout << "yaml file does not exist" << endl;
+	ROS_ERROR("YAML file does NOT exist");
+        //cout << "yaml file does not exist" << endl;
     }
     Parameter_getting();
 }
@@ -53,7 +54,14 @@ void NodeHandle::Saveyaml()
     const char *save = temp.c_str();
     system(save);
     cout << "Save the yaml file" << endl;
-    Parameter_getting();
+}
+void NodeHandle::Saveprosilica()
+{
+    std::string param = PROSILICA_PATH;
+    std::string temp = "rosparam dump " + param + " prosilica_driver";
+    const char *save = temp.c_str();
+    system(save);
+    cout << "Save prosilica_driver parameter" << endl;
 }
 void NodeHandle::Parameter_getting()
 {
@@ -98,12 +106,14 @@ void NodeHandle::Parameter_getting()
 //======================前置處理結束=======================
 //========================save===========================
 bool NodeHandle::savecall(std_srvs::Empty::Request  &req,
-         std_srvs::Empty::Response &res)
+                          std_srvs::Empty::Response &res)
 {
-	//cout<<"Save\n";
-    Saveyaml();
+    //cout<<"Save\n";
+    Parameter_getting();
+    Saveprosilica();
     HSVmap();
-	return true;
+    Saveyaml();
+    return true;
 }
 //========================mode===========================
 void NodeHandle::modebuttoncall(const vision::parameterbutton msg)
@@ -400,7 +410,7 @@ void NodeHandle::HSVmap()
                     }
                     else
                     {
-                        if ((H_sum >= HSV_red[0]) || (H_sum <= HSV_red[1]) && (S_sum >= HSV_red[2]) && (S_sum <= HSV_red[3]) && (V_sum >= HSV_red[4]) && (V_sum <= HSV_red[5]))
+                        if (((H_sum >= HSV_red[0]) || (H_sum <= HSV_red[1])) && (S_sum >= HSV_red[2]) && (S_sum <= HSV_red[3]) && (V_sum >= HSV_red[4]) && (V_sum <= HSV_red[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | REDITEM;
                     }
                     if (HSV_green[0] < HSV_green[1])
@@ -410,18 +420,17 @@ void NodeHandle::HSVmap()
                     }
                     else
                     {
-                        if ((H_sum >= HSV_green[0]) || (H_sum <= HSV_green[1]) && (S_sum >= HSV_green[2]) && (S_sum <= HSV_green[3]) && (V_sum >= HSV_green[4]) && (V_sum <= HSV_green[5]))
+                        if (((H_sum >= HSV_green[0]) || (H_sum <= HSV_green[1])) && (S_sum >= HSV_green[2]) && (S_sum <= HSV_green[3]) && (V_sum >= HSV_green[4]) && (V_sum <= HSV_green[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | GREENITEM;
                     }
                     if (HSV_blue[0] < HSV_blue[1])
                     {
-
                         if ((H_sum >= HSV_blue[0]) && (H_sum <= HSV_blue[1]) && (S_sum >= HSV_blue[2]) && (S_sum <= HSV_blue[3]) && (V_sum >= HSV_blue[4]) && (V_sum <= HSV_blue[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | BLUEITEM;
                     }
                     else
                     {
-                        if ((H_sum >= HSV_blue[0]) || (H_sum <= HSV_blue[1]) && (S_sum >= HSV_blue[2]) && (S_sum <= HSV_blue[3]) && (V_sum >= HSV_blue[4]) && (V_sum <= HSV_blue[5]))
+                        if (((H_sum >= HSV_blue[0]) || (H_sum <= HSV_blue[1])) && (S_sum >= HSV_blue[2]) && (S_sum <= HSV_blue[3]) && (V_sum >= HSV_blue[4]) && (V_sum <= HSV_blue[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | BLUEITEM;
                     }
                     if (HSV_yellow[0] < HSV_yellow[1])
@@ -431,7 +440,7 @@ void NodeHandle::HSVmap()
                     }
                     else
                     {
-                        if ((H_sum >= HSV_yellow[0]) || (H_sum <= HSV_yellow[1]) && (S_sum >= HSV_yellow[2]) && (S_sum <= HSV_yellow[3]) && (V_sum >= HSV_yellow[4]) && (V_sum <= HSV_yellow[5]))
+                        if (((H_sum >= HSV_yellow[0]) || (H_sum <= HSV_yellow[1])) && (S_sum >= HSV_yellow[2]) && (S_sum <= HSV_yellow[3]) && (V_sum >= HSV_yellow[4]) && (V_sum <= HSV_yellow[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | YELLOWITEM;
                     }
                     if (HSV_white[0] < HSV_white[1])
@@ -441,7 +450,7 @@ void NodeHandle::HSVmap()
                     }
                     else
                     {
-                        if ((H_sum >= HSV_white[0]) || (H_sum <= HSV_white[1]) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
+                        if (((H_sum >= HSV_white[0]) || (H_sum <= HSV_white[1])) && (S_sum >= HSV_white[2]) && (S_sum <= HSV_white[3]) && (V_sum >= HSV_white[4]) && (V_sum <= HSV_white[5]))
                             HSVmap[r + (g << 8) + (b << 16)] = HSVmap[r + (g << 8) + (b << 16)] | WHITEITEM;
                     }
                 }
