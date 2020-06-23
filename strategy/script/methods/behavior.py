@@ -179,6 +179,7 @@ class Behavior(Robot,Obstacle):
     m_v, m_yaw, m_g_v_angle = self.GetMasterGlobalVector()
 
     angle = m_g_v_angle - robot['location']['yaw']
+
     x = m_v * math.cos(math.radians(angle))
     y = m_v * math.sin(math.radians(angle))
     yaw = m_yaw
@@ -199,7 +200,12 @@ class Behavior(Robot,Obstacle):
     p_y = master['position']['y']+self.formation_info['distance']*math.sin(math.radians(master['position']['yaw']+self.formation_info['angle']))
     p_yaw = math.degrees(math.atan2(master['position']['y']-robot['location']['y'],master['position']['x']-robot['location']['x']))
     v_x, v_y, v_yaw, arrived = self.Go2Point(p_x, p_y, p_yaw)
-    return v_x, v_y, v_yaw
+    r_x, r_y, r_yaw = self.RobotCtrlS2(v_x, v_y, v_yaw)
+    if(arrived):
+      r_x = 0
+      r_y = 0
+      r_yaw = 0
+    return r_x, r_y, r_yaw
     
 
 

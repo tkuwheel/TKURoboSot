@@ -9,5 +9,5 @@
   <node name="interface" pkg="vision" type="interface" respawn="true" respawn_delay="5"/>
   <!--node name="black_item" pkg="vision" type="black_item" respawn="true" respawn_delay="5"/-->
   <node name="monitor" pkg="vision" type="monitor" respawn="true" respawn_delay="5" />
-  <node name="obstacle" pkg="vision" type="obstacle" respawn="true" respawn_delay="5" />
+  <!--node name="obstacle" pkg="vision" type="obstacle" respawn="true" respawn_delay="5" /-->
 </launch>

@@ -32,25 +32,22 @@ int main(int argc, char **argv)
             printf("hi\n");
         }
     }
-    Motion_nodeHandle Node(argc, argv);
-    //    ros::init(argc, argv, "Test");
-    //    ros::NodeHandle n;
-    BaseController Base(argc, argv, false);
+	Motion_nodeHandle Node(argc, argv);
+//    ros::init(argc, argv, "Test");
+//    ros::NodeHandle n;
+	BaseController Base(argc, argv, false);
 
-    RobotCommand robotCMD={0};
+	RobotCommand robotCMD={0};
     RobotCommand robotOdo={0};
     MotorSpeed currRPM;
     signal(SIGINT, inturrupt);
-    printf("\033[1;32m***FIRA7 IS RUNNING!***\n\033[0;37m");
-    ros::Rate loop_rate(CMD_FREQUENCY);
+	printf("\033[1;32m***FIRA7 IS RUNNING!***\n\033[0;37m");
+	ros::Rate loop_rate(CMD_FREQUENCY);
     unsigned int counter_cmd = 0;
-    unsigned int counter = 0;
+    unsigned int counter_fb = 0;
     unsigned int counter_shoot = 0;
-    bool no_cmd = false;
-    bool cmd = false;
-    struct timeval last, now;
-    gettimeofday(&last, 0);
-    while(true){
+    unsigned int counter = 0;
+	while(true){
         // close 
         if(flag){
             Base.Close();
@@ -63,28 +60,22 @@ int main(int argc, char **argv)
             sleep(1);
             continue;
         }
+        //reset shoot
+        if(robotCMD.shoot_power>0){
+            if(counter_shoot>=(CMD_FREQUENCY/2)){
+                Node.clearShoot();
+                counter_shoot = 0;
+            }else{
+                counter_shoot++;
+            }
+        }
         // Get command
         if(Node.getMotionFlag()){
             counter_cmd = 0;
             robotCMD = Node.getMotion();
             Base.Send(robotCMD);
-            if(robotCMD.shoot_power>0){
-//                gettimeofday(&now, 0);
-//                int s = (now.tv_sec - last.tv_sec)*1000;
-//                double us = (now.tv_usec - last.tv_usec)/1000;
-//                printf("%d shoot %f\n", counter_shoot++, (double)s+us);
-//                fflush(stdout); 
-//                last = now;
-                Node.clearShoot();
-            }
-            no_cmd = false;
-            if(!cmd){
-                cmd = true;
-                counter++;
-                printf("\033[1;32m\nFIRA7 GET COMMAND--- %d\n\033[0;37m", counter);
-            }
 #ifdef DEBUG
-            printf("\n*****get motion******\n");
+            printf("\033[0;37m\n*****get motion******\n\033[0;37m");
             Node.ShowCommand();
             Base.ShowCsslSend();
 #endif
@@ -93,12 +84,8 @@ int main(int argc, char **argv)
                 counter_cmd = 0;
                 Node.clearAll();
                 Base.Close();
-                cmd = false;
-                if(!no_cmd){
-                    no_cmd = true;
-                    counter++;
-                    printf("\033[0;33m\nFIRA7 CANNOT GET COMMAND--- %d\n\033[0;37m", counter);
-                }
+                counter++;
+                printf("\033[0;33m\nmCANNOT GET COMMAND--- %d\n\033[0;37m", counter);
             }else{
                 counter_cmd++;
             }
@@ -107,15 +94,15 @@ int main(int argc, char **argv)
         if(Base.GetBaseFlag()){
             currRPM = Base.GetCurrRPM();
             Node.pub_robotFB(Base.GetOdometry());
-#ifdef DEBUG
+#ifdef DEBUG_
             printf("\n*****get feedback******\n");
             printf("motor1 rpm %f\nmotor2 rpm %f\nmotor3 rpm %f\n", currRPM.w1, currRPM.w2, currRPM.w3);
 #endif
         }
-        loop_rate.sleep();
-    }
-    std::cout << "\033[0;32mClose FIRA7 Motion\n";
-    return 0;
+		loop_rate.sleep();
+	}
+	std::cout << "\033[0;32mClose FIRA7 Motion\n";
+	return 0;
 }
 
 

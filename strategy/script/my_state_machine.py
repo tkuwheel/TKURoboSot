@@ -69,16 +69,31 @@ class MyStateMachine(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toFormation(self):
+    robot = self.GetRobotInfo()
+    master = self.GetState(self.formation_info['master'])
     m_x, m_y, m_yaw = self.BC.MasterMoveCoverter()
     if(self.MyNamespace() != self.formation_info['master']):
       v_x, v_y, v_yaw = self.BC.CenterFormationPoint()
       #vtan = r*w
-      v_x += (m_x+self.formation_info['distance']*math.cos(math.radians(m_yaw)))
-      v_y += (m_y+self.formation_info['distance']*math.sin(math.radians(m_yaw)))
+      dis = math.hypot(master['position']['y']-robot['location']['y'], master['position']['x']-robot['location']['x'])
+      vtan = self.formation_info['distance']*0.06*m_yaw
+      # vtan = dis*0.06*m_yaw
+      front = math.atan2(master['position']['y']-robot['location']['y'], master['position']['x']-robot['location']['x'])
+      angle = math.degrees(front) - robot['location']['yaw']-3
+     
+      v_x += (m_x+vtan*math.cos(math.radians(angle)))
+      v_y += (m_y+vtan*math.sin(math.radians(angle)))
       v_yaw += m_yaw
+      # if(m_yaw>0):
+      #   angle+=90
+      # else:
+      #   angle-=90
+      # v_x = vtan*math.cos(math.radians(angle))
+      # v_y = vtan*math.sin(math.radians(angle))
+      # v_yaw = m_yaw
       # print(v_x, v_y, v_yaw)
-      self.PubCmdVel(m_x, m_y, m_yaw)
-      # self.PubCmdVel(v_x, v_y, v_yaw)
+      # self.PubCmdVel(m_x, m_y, m_yaw)
+      self.PubCmdVel(v_x, v_y, v_yaw)
 
   def CheckBallHandle(self):
     if self.RobotBallHandle():
