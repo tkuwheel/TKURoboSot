@@ -1,3 +1,4 @@
+import math
 from statemachine import StateMachine, State
 from methods.chase import Chase
 from methods.attack import Attack
@@ -68,10 +69,15 @@ class MyStateMachine(Robot, StateMachine):
     self.RobotShoot(power, pos)
 
   def on_toFormation(self):
-    x, y, yaw = self.BC.MasterMoveCoverter()
+    m_x, m_y, m_yaw = self.BC.MasterMoveCoverter()
     if(self.MyState() != self.formation_info['master']):
-      self.PubCmdVel(x, y, yaw)
-      
+      v_x, v_y, v_yaw = self.BC.CenterFormationPoint()
+      #vtan = r*w
+      v_x += (m_x+self.formation_info['distance']*math.cos(math.radians(m_yaw)))
+      v_y += (m_y+self.formation_info['distance']*math.sin(math.radians(m_yaw)))
+      v_yaw += m_yaw
+    self.PubCmdVel(v_x, v_y, v_yaw)
+
   def CheckBallHandle(self):
     if self.RobotBallHandle():
       ## Back to normal from Accelerator

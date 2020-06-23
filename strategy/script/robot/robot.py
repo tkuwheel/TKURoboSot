@@ -71,7 +71,7 @@ class Robot(object):
   r2_role = ""
   r3_role = ""
 
-  formation_info = {'master':'robot2', 'method':'center', 'distance':50, 'total':2, 'n':0}
+  formation_info = {'master':'robot2', 'method':'center', 'distance':50, 'angle':90 }
  
   ## Configs
   __minimum_w = 0
