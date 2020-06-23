@@ -210,8 +210,7 @@ void Vision::objectdet_change( int color, DetectedObject &obj_item)
         }
     }
 
-    // if (obj_item.size > SizeFilter)
-    if (obj_item.size > 1)
+    if (obj_item.size > SizeFilter)
     {
         find_object_point(obj_item, color);
         draw_ellipse(Monitor, obj_item, color);

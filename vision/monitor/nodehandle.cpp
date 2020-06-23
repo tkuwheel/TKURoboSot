@@ -57,7 +57,7 @@ NodeHandle::NodeHandle()
     //Parameter_default();
     Readyaml();
     AngleLUT();
-    SizeFilter = 5;
+    SizeFilter = 2;
     connect_srv = nh.advertiseService("monitor/connect", &NodeHandle::connectcall, this);
     save_sub = nh.subscribe("interface/bin_save", 1000, &NodeHandle::SaveButton_setting, this);
     //view_sub = nh.subscribe("vision/view", 1000, &NodeHandle::View, this);
@@ -476,7 +476,7 @@ void NodeHandle::Pub_object()
     //==========================================
     object_msg.fps = RateMsg;
 
-    // if (Red_Item.size > SizeFilter)
+    if (Red_Item.size > SizeFilter)
     {
         object_msg.ball_x = Red_Item.x - CenterXMsg;
         object_msg.ball_y = 0 - (Red_Item.y - CenterYMsg);
@@ -485,7 +485,7 @@ void NodeHandle::Pub_object()
         object_msg.ball_dis = Omni_distance(Red_Item.distance);
     }
 
-    // if (Blue_Item.size > SizeFilter)
+    if (Blue_Item.size > SizeFilter)
     {
         object_msg.blue_x = Blue_Item.x - CenterXMsg;
         object_msg.blue_y = 0 - (Blue_Item.y - CenterYMsg);
@@ -498,7 +498,7 @@ void NodeHandle::Pub_object()
         object_msg.blue_fix_dis = Omni_distance(Blue_Item.fix_distance);
     }
 
-    // if (Yellow_Item.size > SizeFilter)
+    if (Yellow_Item.size > SizeFilter)
     {
         object_msg.yellow_x = Yellow_Item.x - CenterXMsg;
         object_msg.yellow_y = 0 - (Yellow_Item.y - CenterYMsg);

@@ -70,13 +70,15 @@ class MyStateMachine(Robot, StateMachine):
 
   def on_toFormation(self):
     m_x, m_y, m_yaw = self.BC.MasterMoveCoverter()
-    if(self.MyState() != self.formation_info['master']):
+    if(self.MyNamespace() != self.formation_info['master']):
       v_x, v_y, v_yaw = self.BC.CenterFormationPoint()
       #vtan = r*w
       v_x += (m_x+self.formation_info['distance']*math.cos(math.radians(m_yaw)))
       v_y += (m_y+self.formation_info['distance']*math.sin(math.radians(m_yaw)))
       v_yaw += m_yaw
-    self.PubCmdVel(v_x, v_y, v_yaw)
+      # print(v_x, v_y, v_yaw)
+      self.PubCmdVel(m_x, m_y, m_yaw)
+      # self.PubCmdVel(v_x, v_y, v_yaw)
 
   def CheckBallHandle(self):
     if self.RobotBallHandle():

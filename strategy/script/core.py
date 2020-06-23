@@ -25,7 +25,8 @@ class Strategy(object):
       # Can not find ball when starting
       if targets is None or targets['ball']['ang'] == 999 and self.robot.game_start:
         print("Can not find ball")
-        self.robot.toIdle()
+        # self.robot.toIdle()
+        self.robot.toFormation()
       else:
         if not self.robot.is_idle and not self.robot.game_start:
           self.robot.toIdle()
