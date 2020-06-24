@@ -77,7 +77,13 @@ class MyStateMachine(Robot, StateMachine):
       self.PubCmdVel(v_x, v_y, v_yaw)
     else:
       v_x, v_y, v_yaw = self.BC.CircleR()
-      self.PubCmdVel(v_x, v_y, v_yaw)
+      #=======
+      t = self.GetObjectInfo()
+      side = self.opp_side
+      x, y, yaw = self.AC.ClassicAttacking(t[side]['dis'], t[side]['ang'])
+      r_x, r_y, r_yaw = self.RobotCtrlS2(x, y, yaw)
+      #=======
+      self.PubCmdVel(v_x+r_x, v_y+r_y, v_yaw)
 
   def CheckBallHandle(self):
     if self.RobotBallHandle():

@@ -238,12 +238,12 @@ class Behavior(Robot,Obstacle):
   
   def CircleR(self):
     #v_tan = r*w
-    v_yaw = 10
-    v_tan = self.formation_info['distance']*0.08*v_yaw
+    v_yaw = 15
+    v_tan = self.formation_info['distance']*0.08 * 0.5 *v_yaw
     
     angle = 0
-    v_x = vtan*math.cos(math.radians(angle))
-    v_y = vtan*math.sin(math.radians(angle))
+    v_x = v_tan*math.cos(math.radians(angle))
+    v_y = v_tan*math.sin(math.radians(angle))
 
     return v_x, v_y, v_yaw
 
