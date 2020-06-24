@@ -193,7 +193,7 @@ class Behavior(Robot,Obstacle):
 
     return x, y, yaw
 
-  def CenterFormationPoint(self):
+  def CenterFormation(self):
     master = self.GetState(self.formation_info['master'])
     robot = self.GetRobotInfo()
     p_x = master['position']['x']+self.formation_info['distance']*math.cos(math.radians(master['position']['yaw']+self.formation_info['angle']))
@@ -205,8 +205,46 @@ class Behavior(Robot,Obstacle):
       r_x = 0
       r_y = 0
       r_yaw = 0
+      
+    m_x, m_y, m_yaw = self.MasterMoveCoverter()
+    #vtan = r*w
+    dis = math.hypot(master['position']['y']-robot['location']['y'], master['position']['x']-robot['location']['x'])
+    vtan = self.formation_info['distance']*0.08*m_yaw
+    # vtan = dis*0.06*m_yaw
+    front = math.atan2(master['position']['y']-robot['location']['y'], master['position']['x']-robot['location']['x'])
+    angle = math.degrees(front) - robot['location']['yaw']
+    if(m_yaw<0):
+      angle-=3
+    else:
+      angle+=3
+    r_x += (m_x+vtan*math.cos(math.radians(angle)))
+    r_y += (m_y+vtan*math.sin(math.radians(angle)))
+    r_yaw += m_yaw
+    # if(m_yaw>0):
+    #   angle+=90
+    # else:
+    #   angle-=90
+    # v_x = vtan*math.cos(math.radians(angle))
+    # v_y = vtan*math.sin(math.radians(angle))
+    # v_yaw = m_yaw
+    # print(v_x, v_y, v_yaw)
+    # self.PubCmdVel(m_x, m_y, m_yaw)
+
     return r_x, r_y, r_yaw
     
+  def CircleFormation(self):
+    m_x, m_y, m_y = self.MasterMoveCoverter()
+    return m_x, m_y, m_y
+  
+  def CircleR(self):
+    #v_tan = r*w
+    v_yaw = 10
+    v_tan = self.formation_info['distance']*0.08*v_yaw
+    
+    angle = 0
+    v_x = vtan*math.cos(math.radians(angle))
+    v_y = vtan*math.sin(math.radians(angle))
 
+    return v_x, v_y, v_yaw
 
   
