@@ -12,11 +12,7 @@
 #---build custom ros1_bridge---
   # open new terminal
   $ source /opt/ros/dashing/setup.bash
-<<<<<<< HEAD
   $ cd../../.. (cd <ros1_ws>)
-=======
-  $ cd <ros1_ws>
->>>>>>> ebf7fcd8f11255db41af2958ec8c40aee973ce88
   $ . devel/setup.bash
   $ cd src/ros2/ros2_ws
   $ . install/setup.bash
@@ -29,12 +25,8 @@
   $ . devel/setup.bash
   $ roslaunch strategy main_6th_all.launch
   $ roslaunch strategy core.launch
-<<<<<<< HEAD
   $ cd src/ros2/ros2_ws
   $ . install/setup.bash
-=======
-  $ . src/ros2/ros2_ws/install/setup.bash
->>>>>>> ebf7fcd8f11255db41af2958ec8c40aee973ce88
   $ ros2 run ros1_bridge parameter_bridge
 ```
 

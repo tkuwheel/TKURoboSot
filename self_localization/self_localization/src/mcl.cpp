@@ -7,7 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include "fMatrix/fVector.h"
 
-#define N_PARTICLE 100
+#define N_PARTICLE 200
 #define TO_RAD M_PI/180.0
 
 #define FIELD_WIDTH 600
