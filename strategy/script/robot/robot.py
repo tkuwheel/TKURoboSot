@@ -402,7 +402,7 @@ class Robot(object):
     m.position.linear.x  = self.__robot_info['location']['x']
     m.position.linear.y  = self.__robot_info['location']['y']
     # m.position.angular.z = self.__robot_info['location']['yaw']
-    m.position.angular.z = self.__robot_info['imu_3d']['yaw']
+    m.position.angular.z = self.__robot_info['location']['yaw']
     m.cmd_vel.linear.x  = self.__robot_info['cmd_vel']['x']
     m.cmd_vel.linear.y  = self.__robot_info['cmd_vel']['y']
     m.cmd_vel.angular.z = self.__robot_info['cmd_vel']['yaw']
