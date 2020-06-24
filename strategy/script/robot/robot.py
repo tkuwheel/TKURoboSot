@@ -71,7 +71,7 @@ class Robot(object):
   r2_role = ""
   r3_role = ""
 
-  formation_info = {'master':'robot2', 'method':'center', 'distance':50, 'angle':90 }
+  formation_info = {'master':'robot2', 'method':'center', 'distance':80, 'angle':0 }
  
   ## Configs
   __minimum_w = 0
@@ -509,18 +509,15 @@ class Robot(object):
   def GetMasterGlobalVector(self):
     # master = 'robot2'
     master = self.formation_info['master']
-    # print(self.formation_info['master'])
     master_data = self.GetState(master)
     m_x = master_data['cmd_vel']['x']
     m_y = master_data['cmd_vel']['y']
     m_yaw = master_data['cmd_vel']['yaw']
-    # print(m_x)
     m_v = math.hypot(m_x,m_y)
-    m_v_angle = math.atan2(m_x, m_y)
-    # print("m_yaw",m_yaw)
+    m_v_angle = math.atan2(m_y,m_x)
     m_g_angle = master_data['position']['yaw']
-    m_g_v_angle = m_g_angle + m_v_angle
-    # print("m_gvyaw", math.degrees(m_gvyaw) )
+   
+    m_g_v_angle = m_g_angle + math.degrees(m_v_angle)
     # master = GetNamespace("master")
     return m_v, m_yaw, m_g_v_angle
 

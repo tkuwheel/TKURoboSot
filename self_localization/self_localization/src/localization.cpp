@@ -122,8 +122,10 @@ void Localization::sensorCallback(const std_msgs::Int32MultiArray msg)
             mcl_sensor_data.push_back(MCL::SensorData(point[i],point[i+1]));
         }
     }
+    //printf("fuck\n");
     if(mcl_sensor_data.size()>0){
         mcl.updateSensor(mcl_sensor_data);
+	//cout<<"size "<<mcl_sensor_data.size()<<endl;
     }
     //mcl.updateMotion(0,0,0);
     

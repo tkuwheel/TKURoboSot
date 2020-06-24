@@ -6,7 +6,7 @@
 #define HEAD_2 0x01
 #define FB_FREQUENCY 200     //Hz
 #define CMD_FREQUENCY 60   //Hz
-#define TX_PACKAGE_SIZE 15  //bytes
+#define TX_PACKAGE_SIZE 12  //bytes
 #define RX_PACKAGE_SIZE 16  //bytes
 #define MAX_MOTOR_RPM 7000  //rpm
 #define MIN_MOTOR_RPM 50  //rpm

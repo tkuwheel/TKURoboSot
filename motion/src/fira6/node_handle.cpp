@@ -76,11 +76,7 @@ void Motion_nodeHandle::motionCallback(const geometry_msgs::Twist::ConstPtr &mot
 
 void Motion_nodeHandle::shootCallback(const std_msgs::Int32::ConstPtr &shoot_msg)
 {
-    if(shoot_msg->data>=100){
-        this->robotCMD.shoot_power = 100;
-    }else{
-        this->robotCMD.shoot_power = shoot_msg->data;
-    }
+    this->robotCMD.shoot_power = shoot_msg->data;
     this->motion_flag = true;
     
 #ifdef DEBUG
@@ -125,8 +121,8 @@ void Motion_nodeHandle::pub_robotFB(RobotCommand robotFB)
 {
     geometry_msgs::Twist FB;
 
-    FB.linear.x = robotFB.x;
-    FB.linear.y = robotFB.y;
+    FB.linear.x = robotFB.x*2;
+    FB.linear.y = robotFB.y*2;
     FB.angular.z = robotFB.yaw;
     pub(FB);
 }
